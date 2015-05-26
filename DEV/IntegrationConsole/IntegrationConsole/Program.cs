@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using IntegrationConsole.TIPWebIT;
 
 namespace IntegrationConsole
 {
@@ -7,7 +8,7 @@ namespace IntegrationConsole
     {
         static int Main(string[] args)
         {
-            using (TIPWebIT.WebServiceSoapClient client = new TIPWebIT.WebServiceSoapClient())
+            using (WebServiceSoapClient client = new WebServiceSoapClient())
             {
                 client.ExternalBulkUpdate("SAP", "SAP1234!");
                 return 0;
