@@ -10,8 +10,8 @@
 <DTS:Property DTS:Name="PackagePriorityClass">0</DTS:Property>
 <DTS:Property DTS:Name="VersionMajor">1</DTS:Property>
 <DTS:Property DTS:Name="VersionMinor">0</DTS:Property>
-<DTS:Property DTS:Name="VersionBuild">107</DTS:Property>
-<DTS:Property DTS:Name="VersionGUID">{8488A277-B07F-4D2D-9066-328C0D1FD61D}</DTS:Property>
+<DTS:Property DTS:Name="VersionBuild">108</DTS:Property>
+<DTS:Property DTS:Name="VersionGUID">{6A9E50E0-CF53-4160-8A47-54F529966B2F}</DTS:Property>
 <DTS:Property DTS:Name="EnableConfig">-1</DTS:Property>
 <DTS:Property DTS:Name="CheckpointFileName"></DTS:Property>
 <DTS:Property DTS:Name="SaveCheckpoints">0</DTS:Property>
@@ -553,7 +553,7 @@
 <DTS:Property DTS:Name="DTSID">{C796696E-E2D8-4143-91E8-64FDD6C9F9CF}</DTS:Property>
 <DTS:Property DTS:Name="Description">Execute SQL Task</DTS:Property>
 <DTS:Property DTS:Name="CreationName">Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</DTS:Property>
-<DTS:Property DTS:Name="DisableEventHandlers">0</DTS:Property><DTS:ObjectData><SQLTask:SqlTaskData SQLTask:Connection="{0F3AE158-BCC2-4D38-87F8-A205FEA89288}" SQLTask:TimeOut="0" SQLTask:IsStoredProc="False" SQLTask:BypassPrepare="True" SQLTask:SqlStmtSourceType="DirectInput" SQLTask:SqlStatementSource="UPDATE _ETL_Inventory&#xA;SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;FROM _ETL_Purchases&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice)  AS Purchases&#xA;ON Tags.PurchaseUID = Purchases.PurchaseUID&#xA;AND Tags.ItemUID = Purchases.ItemUID&#xA;AND Tags.FundingSourceUID = Purchases.FundingSourceUID&#xA;AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;WHERE Purchases.ItemUID &gt; 0&#xA;AND (Tags.PurchaseItemDetailUID IS NULL&#xA;OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;UPDATE _ETL_Inventory&#xA;SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice)  AS Purchases&#xA;ON Tags.PurchaseUID = Purchases.PurchaseUID&#xA;AND Tags.ItemUID = Purchases.ItemUID&#xA;AND Tags.FundingSourceUID = Purchases.FundingSourceUID&#xA;AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;UPDATE tblTechPurchaseItemDetails&#xA;SET QuantityOrdered = ISNULL(Tags.c, 0),&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchaseItemDetails AS TPID&#xA;JOIN (SELECT COUNT(*) AS c, PurchaseItemDetailUID&#xA;FROM _ETL_Inventory&#xA;GROUP BY PurchaseItemDetailUID) AS Tags&#xA;ON TPID.PurchaseItemDetailUID = Tags.PurchaseItemDetailUID&#xA;WHERE TPID.QuantityOrdered &lt; ISNULL(Tags.c, 0)&#xA;&#xA;UPDATE tblTechPurchaseItemDetails&#xA;SET QuantityReceived = ISNULL(Tags.c, 0),&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchaseItemDetails AS TPID&#xA;JOIN (SELECT COUNT(*) AS c, PurchaseItemDetailUID&#xA;FROM _ETL_Inventory&#xA;GROUP BY PurchaseItemDetailUID) AS Tags&#xA;ON TPID.PurchaseItemDetailUID = Tags.PurchaseItemDetailUID&#xA;WHERE TPID.QuantityReceived &lt; ISNULL(Tags.c, 0)&#xA;" SQLTask:CodePage="1252" SQLTask:ResultType="ResultSetType_None" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask"/></DTS:ObjectData></DTS:Executable>
+<DTS:Property DTS:Name="DisableEventHandlers">0</DTS:Property><DTS:ObjectData><SQLTask:SqlTaskData SQLTask:Connection="{0F3AE158-BCC2-4D38-87F8-A205FEA89288}" SQLTask:TimeOut="0" SQLTask:IsStoredProc="False" SQLTask:BypassPrepare="True" SQLTask:SqlStmtSourceType="DirectInput" SQLTask:SqlStatementSource="UPDATE _ETL_Inventory&#xA;SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN (SELECT P1.PurchaseUID, P1.ItemUID, P1.FundingSourceUID,&#xA;P1.PurchasePrice, P2.PurchaseItemDetailUID&#xA;FROM (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(LineNumber) AS LineNumber&#xA;FROM _ETL_Purchases&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice) AS P1&#xA;JOIN (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice) AS P2&#xA;ON P1.FundingSourceUID = P2.FundingSourceUID&#xA;AND P1.ItemUID = P2.ItemUID&#xA;AND P1.PurchasePrice = P2.PurchasePrice&#xA;AND P1.PurchaseUID = P1.PurchaseUID) AS Purchases&#xA;ON Tags.PurchaseUID = Purchases.PurchaseUID&#xA;AND Tags.ItemUID = Purchases.ItemUID&#xA;AND Tags.FundingSourceUID = Purchases.FundingSourceUID&#xA;AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;WHERE Purchases.ItemUID &gt; 0&#xA;AND (Tags.PurchaseItemDetailUID IS NULL&#xA;OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;UPDATE _ETL_Inventory&#xA;SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN (SELECT P1.PurchaseUID, P1.ItemUID, P1.FundingSourceUID,&#xA;P1.PurchasePrice, P2.PurchaseItemDetailUID&#xA;FROM (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(LineNumber) AS LineNumber&#xA;FROM _ETL_Purchases&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice) AS P1&#xA;JOIN (SELECT PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice,&#xA;MIN(PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice) AS P2&#xA;ON P1.FundingSourceUID = P2.FundingSourceUID&#xA;AND P1.ItemUID = P2.ItemUID&#xA;AND P1.PurchasePrice = P2.PurchasePrice&#xA;AND P1.PurchaseUID = P1.PurchaseUID) AS Purchases&#xA;ON Tags.PurchaseUID = Purchases.PurchaseUID&#xA;AND Tags.ItemUID = Purchases.ItemUID&#xA;AND Tags.FundingSourceUID = Purchases.FundingSourceUID&#xA;AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;GO&#xA;&#xA;WHILE (SELECT COUNT(*)&#xA;FROM (SELECT PurchaseItemDetailUID, COUNT(*) AS c&#xA;FROM _ETL_Inventory&#xA;GROUP BY PurchaseItemDetailUID) AS P1&#xA;JOIN (SELECT EP.PurchaseItemDetailUID AS PID1, EP.QuantityOrdered,&#xA;EP1.PurchaseItemDetailUID AS PID2, EP1.LineNumber&#xA;FROM _ETL_Purchases EP&#xA;LEFT JOIN _ETL_Purchases EP1&#xA;ON EP.PurchaseUID = EP1.PurchaseUID&#xA;AND EP.ItemUID = EP1.ItemUID&#xA;AND EP.FundingSourceUID = EP1.FundingSourceUID&#xA;AND EP.PurchasePrice = EP1.PurchasePrice&#xA;AND EP.LineNumber &lt; EP1.LineNumber) AS P2&#xA;ON P1.PurchaseItemDetailUID = P2.PID1&#xA;AND P1.c &gt; P2.QuantityOrdered&#xA;AND PID2 IS NOT NULL) &gt; 0&#xA;BEGIN&#xA;	DECLARE @pidUID INT&#xA;	DECLARE @quantity1 INT&#xA;	DECLARE @purchase INT&#xA;	DECLARE @funding INT&#xA;	DECLARE @price MONEY&#xA;	DECLARE @line INT&#xA;	DECLARE @lastUID INT&#xA;	DECLARE @nextline INT&#xA;	DECLARE @nextpidUID INT&#xA;&#xA;	DECLARE pidUIDcursor CURSOR FOR&#xA;	SELECT DISTINCT P1.PurchaseItemDetailUID&#xA;	FROM (SELECT PurchaseItemDetailUID, COUNT(*) AS c&#xA;	FROM _ETL_Inventory&#xA;	GROUP BY PurchaseItemDetailUID) AS P1&#xA;	JOIN (SELECT EP.PurchaseItemDetailUID AS PID1, EP.QuantityOrdered,&#xA;	EP1.PurchaseItemDetailUID AS PID2, EP1.LineNumber&#xA;	FROM _ETL_Purchases EP&#xA;	LEFT JOIN _ETL_Purchases EP1&#xA;	ON EP.PurchaseUID = EP1.PurchaseUID&#xA;	AND EP.ItemUID = EP1.ItemUID&#xA;	AND EP.FundingSourceUID = EP1.FundingSourceUID&#xA;	AND EP.PurchasePrice = EP1.PurchasePrice&#xA;	AND EP.LineNumber &lt; EP1.LineNumber) AS P2&#xA;	ON P1.PurchaseItemDetailUID = P2.PID1&#xA;	AND P1.c &gt; P2.QuantityOrdered&#xA;	AND PID2 IS NOT NULL&#xA;&#xA;	OPEN pidUIDcursor&#xA;	FETCH NEXT FROM pidUIDcursor INTO @pidUID&#xA;&#xA;	WHILE @@FETCH_STATUS = 0&#xA;	BEGIN&#xA;		SELECT @quantity1 = EP.QuantityOrdered,&#xA;		@purchase = EP.PurchaseUID,&#xA;		@funding = EP.FundingSourceUID,&#xA;		@price = EP.PurchasePrice,&#xA;		@line = EP.LineNumber&#xA;		FROM _ETL_Purchases EP&#xA;		WHERE EP.PurchaseItemDetailUID = @pidUID&#xA;		&#xA;		SELECT @lastUID = MAX(temp.ETLInventoryUID)&#xA;		FROM (SELECT TOP(@quantity1)&#xA;		EI.PurchaseItemDetailUID, EI.ETLInventoryUID&#xA;		FROM _ETL_Inventory EI&#xA;		WHERE EI.PurchaseItemDetailUID = @pidUID&#xA;		ORDER BY EI.ETLInventoryUID) AS temp&#xA;		GROUP BY temp.PurchaseItemDetailUID&#xA;		&#xA;		SELECT @nextline = MIN(temp.LineNumber)&#xA;		FROM (SELECT EP.PurchaseUID,&#xA;		EP.FundingSourceUID, EP.PurchasePrice,&#xA;		EP.LineNumber&#xA;		FROM _ETL_Purchases EP&#xA;		WHERE EP.PurchaseUID = @purchase&#xA;		AND EP.FundingSourceUID = @funding&#xA;		AND EP.PurchasePrice = @price&#xA;		AND EP.LineNumber &gt; @line) AS temp&#xA;		GROUP BY temp.PurchaseUID,&#xA;		temp.FundingSourceUID, temp.PurchasePrice&#xA;		&#xA;		SELECT @nextpidUID = EP.PurchaseItemDetailUID&#xA;		FROM _ETL_Purchases EP&#xA;		WHERE EP.PurchaseUID = @purchase&#xA;		AND EP.FundingSourceUID = @funding&#xA;		AND EP.PurchasePrice = @price&#xA;		AND EP.LineNumber = @nextline&#xA;		&#xA;		UPDATE _ETL_Inventory&#xA;		SET PurchaseItemDetailUID = @nextpidUID&#xA;		WHERE PurchaseItemDetailUID = @pidUID&#xA;		AND ETLInventoryUID &gt; @lastUID&#xA;		&#xA;		FETCH NEXT FROM pidUIDcursor INTO @pidUID &#xA;	END&#xA;&#xA;	CLOSE pidUIDcursor&#xA;	DEALLOCATE pidUIDcursor&#xA;END&#xA;&#xA;UPDATE tblTechPurchaseItemDetails&#xA;SET QuantityOrdered = ISNULL(Tags.c, 0),&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchaseItemDetails AS TPID&#xA;JOIN (SELECT COUNT(*) AS c, PurchaseItemDetailUID&#xA;FROM _ETL_Inventory&#xA;GROUP BY PurchaseItemDetailUID) AS Tags&#xA;ON TPID.PurchaseItemDetailUID = Tags.PurchaseItemDetailUID&#xA;WHERE TPID.QuantityOrdered &lt; ISNULL(Tags.c, 0)&#xA;&#xA;UPDATE tblTechPurchaseItemDetails&#xA;SET QuantityReceived = ISNULL(Tags.c, 0),&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchaseItemDetails AS TPID&#xA;JOIN (SELECT COUNT(*) AS c, PurchaseItemDetailUID&#xA;FROM _ETL_Inventory&#xA;GROUP BY PurchaseItemDetailUID) AS Tags&#xA;ON TPID.PurchaseItemDetailUID = Tags.PurchaseItemDetailUID&#xA;WHERE TPID.QuantityReceived &lt; ISNULL(Tags.c, 0)&#xA;" SQLTask:CodePage="1252" SQLTask:ResultType="ResultSetType_None" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask"/></DTS:ObjectData></DTS:Executable>
 <DTS:Executable DTS:ExecutableType="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" DTS:ThreadHint="0">
 <DTS:Property DTS:Name="ExecutionLocation">0</DTS:Property>
 <DTS:Property DTS:Name="ExecutionAddress"></DTS:Property>
@@ -924,7 +924,7 @@
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PrecedenceConstraint>
 <DTS:Property DTS:Name="ObjectName">ABQ_Intg_TipWebImport</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9C649753-DC18-4008-AAA3-81D040D1F957}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{96B607AC-03A1-4040-8977-533668DB6E74}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName">SSIS.Package.2</DTS:Property>
 <DTS:Property DTS:Name="DisableEventHandlers">0</DTS:Property>
@@ -932,119 +932,105 @@
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{086ED23F-E074-44DB-B986-6A52CD12FD19}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{6D2C24C6-3C63-40B1-8061-FAF21322D655}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{809DAD57-93E7-4EAB-8423-0A2337059BD8}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{25333DB6-E4F5-41EC-9D3E-190E2CC07C5E}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9F99D181-88B6-45E9-8E53-912169008009}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{296DF3D6-AD91-4742-9FA6-1CDA099E98FC}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{3E4BF43C-2689-4D41-8B8E-8543DA71EED5}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{5A8DF0C5-7616-4075-A7AB-A0065B93DE92}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{6B781E01-A7D2-4BD1-BEF8-0E5D67E74D74}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{4174A57F-1C65-4E40-BFFA-15B6C10B1014}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{EB3219B2-4CE7-4780-8B42-B66C3D7BB33B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{542647E2-695D-4FAC-A4F5-2EFAF468CCAF}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{4B217D09-61B3-48A9-9A96-D95D3F6DDAC1}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{57EC6E7E-DCCA-4A7D-81EE-A2A975134167}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{061893E9-FDE9-43DE-995F-383EC3457BB1}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{58DE664B-836D-4D8D-B9FA-84076CCA4521}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{1C7E6A08-2F0B-4D4F-BA7B-DCCF3FCB8AA2}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{F66017FC-2AE5-49AE-A08E-4952DF1DBC1E}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{61A0FE49-165F-457C-85D8-3EE23C5C10E2}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{903E39B5-2C33-45E0-B30D-9C77F8A0B241}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{D12DEACA-8789-49A0-B94E-41DD91E15180}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{6454D22A-C600-4F31-B017-377818FF2534}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{1F83B7B5-3F3A-4A0B-ACFA-FDDF5FC74085}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{6DC2D621-06BF-49D6-AAD7-C958EE71FAEC}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{64F33529-36B1-4246-AE75-0C80B7FD7DFF}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9EE9EB07-E584-484E-B4EC-44AAD412F57B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{491C9BB8-39C2-4D9D-B67B-B0C4803ED690}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{663FE7D5-9D41-4886-A53D-BFF528836EC4}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{AF768A83-499B-4E03-A554-0112D306C53F}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{553EAC3D-064A-443B-AB28-10D9954D04F6}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{776893F0-4B62-43D4-A406-4DACA22388F0}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{30CF563C-9F9D-42B2-A1DC-C16C69C42C79}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{B7F1B6F0-9967-4D6C-BFCE-93FC0279644A}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{79A678F3-5580-4DD9-B553-75999417F655}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{A4FDA184-6948-4539-8F43-1B187097C761}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{993875EB-44BE-4AD5-AE3E-266D4D4C4A00}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{7FBF5953-2E3F-461F-A970-5C6FFE6A83BA}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{B1B1A2BD-AAD8-4F4B-ADAE-8FFAB3D2E52F}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{0603D1B1-7541-4F6C-B58C-D0635F5A0100}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{85D37BA1-CE78-4B9C-99DC-C91819AC0568}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{1A5EA0D5-F254-4AE6-9D23-219B8E712338}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{737048B4-E2BA-4AA1-9986-C4254FD83A81}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{90ACDF6C-C27C-468C-A699-25B907C5194C}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{685D5E25-4579-4A53-9C6D-C7DCACF29097}</DTS:Property>
-<DTS:Property DTS:Name="Description"></DTS:Property>
-<DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
-<DTS:PackageVariable>
-<DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
-<DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
-<DTS:Property DTS:Name="ObjectName">{96BCDB2F-31EC-461D-BD0E-090CABAB3EBB}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{35B0A68C-138D-4E85-B89D-735E595A7087}</DTS:Property>
-<DTS:Property DTS:Name="Description"></DTS:Property>
-<DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
-<DTS:PackageVariable>
-<DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
-<DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
-<DTS:Property DTS:Name="ObjectName">{99EC6424-D82B-472A-AF1D-2B6CEA4EB068}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{C2912879-46F3-4876-9DE2-631AFDBE2540}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{B9036E86-250E-4ADA-92A7-46D40FE9900D}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
@@ -1835,64 +1821,78 @@
   &lt;/ddscontrol&gt;
 &lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-1027&lt;/dwd:PersistedViewPortLeft&gt;&lt;dwd:PersistedViewPortTop&gt;-5362&lt;/dwd:PersistedViewPortTop&gt;&lt;/dwd:DtsControlFlowDiagram&gt;&lt;/Package&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
-<DTS:Property DTS:Name="ObjectName">{9C649753-DC18-4008-AAA3-81D040D1F957}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{38A490BA-854E-4400-9A5E-1ECC13B41B09}</DTS:Property>
+<DTS:Property DTS:Name="ObjectName">{96B607AC-03A1-4040-8977-533668DB6E74}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{4ACBE8C6-667B-4FE0-82A5-E57ECE23DADC}</DTS:Property>
+<DTS:Property DTS:Name="Description"></DTS:Property>
+<DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
+<DTS:PackageVariable>
+<DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
+<DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
+<DTS:Property DTS:Name="ObjectName">{96BCDB2F-31EC-461D-BD0E-090CABAB3EBB}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{5C6F7F20-D03A-4B95-8D95-D85D6776AE7E}</DTS:Property>
+<DTS:Property DTS:Name="Description"></DTS:Property>
+<DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
+<DTS:PackageVariable>
+<DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
+<DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
+<DTS:Property DTS:Name="ObjectName">{99EC6424-D82B-472A-AF1D-2B6CEA4EB068}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{97649E75-B118-44F2-A984-83294CCA7372}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{AE3AE31A-A640-4483-81CA-984B2FF3A1B6}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{7B99105A-FF49-452A-8C9C-2CACAB97276C}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{66868FC8-AE20-4D02-959B-5FFF258F6AD0}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{B7350116-962E-49E4-8E5A-ADB125FB560C}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{4AA412DD-785A-4E0E-8CBF-1AA5E11B6F98}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{0DEBEC70-7D01-4148-A398-D976B9860CEC}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{CDB7A048-8987-4325-AD54-8D1BE693FCD7}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{AB5D2DFA-0607-419B-A88E-45D48CCE1B86}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{F4D66BB3-1903-48BC-B162-65C650E79ECD}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{D2AB4AD6-1BB4-4436-B71D-55AE8FB4C8B2}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{47E491C1-C13A-4463-AC45-A2065375F698}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{57BE6B3B-4262-4612-9CAF-DFC8281894FA}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{D3A86A6E-7655-4DC4-97C9-1E9F916FF93E}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{BA2D53D1-9855-42FE-98DE-B883E8D1ADCA}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{1830B9C2-B7BA-4EF7-A3A6-AC0541B0AA12}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{FBC806AA-B13A-4741-BC04-6811321D5E93}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{E3AA43A5-514E-48D0-92AC-274BE8BF6ECE}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{F0292668-6162-433C-96D9-DA2A29DE53A2}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{FF687452-5C36-46D3-A923-3630874FBAB3}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{6A807754-411A-4DE5-904B-451DAF84A1D8}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{29890441-D696-4448-B510-1DBAA5A277B9}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{FFC40C9D-4C32-4EF2-B1FD-8EB3A8AF15EE}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{68C0A460-FEAE-48A9-8B1E-525B8C2E29F8}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{C37755D1-B187-42FB-AA5E-E8A24EA13414}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
@@ -2684,6 +2684,6 @@
 &lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-1027&lt;/dwd:PersistedViewPortLeft&gt;&lt;dwd:PersistedViewPortTop&gt;-5362&lt;/dwd:PersistedViewPortTop&gt;&lt;/dwd:DtsControlFlowDiagram&gt;&lt;/Package&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">package-diagram</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{0DB18E3E-7B3D-4CD4-92C4-9B38240BB8FB}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{ACDF24DF-C05E-4461-8B70-9C06E13EC034}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable></DTS:Executable>
