@@ -8,10 +8,17 @@ namespace IntegrationConsole
     {
         static int Main(string[] args)
         {
-            using (WebServiceSoapClient client = new WebServiceSoapClient())
+            try
             {
-                client.ExternalBulkUpdate("SAP", "SAP1234!");
-                return 0;
+                using (WebServiceSoapClient client = new WebServiceSoapClient())
+                {
+                    client.ExternalBulkUpdate("SAP", "SAP1234!");
+                    return 0;
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
     }
