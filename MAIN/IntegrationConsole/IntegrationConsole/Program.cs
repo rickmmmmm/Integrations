@@ -6,12 +6,19 @@ namespace IntegrationConsole
 {
     class Program
     {
-        static int Main(string[] args)
+        static void Main()
         {
-            using (WebServiceSoapClient client = new WebServiceSoapClient())
+            try
             {
-                client.ExternalBulkUpdate("SAP", "SAP1234!");
-                return 0;
+                using (WebServiceSoapClient client = new WebServiceSoapClient())
+                {
+                    client.ExternalBulkUpdate("SAP", "SAP1234!");
+                    return;
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
     }
