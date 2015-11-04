@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <Description />
+  <DataSet Name="missingLabel">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>DECLARE @typecount INT
+SET @typecount = 
+
+(
+	SELECT  COUNT(*)
+	--INTO #newcustomname
+	FROM 
+
+	(
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF1_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF2_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF3_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF4_Value IS NOT NULL 
+	)a
+
+	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
+)
+
+
+IF @typecount &gt;0
+BEGIN 
+  SELECT  ItemTypeName
+  FROM 
+
+	(
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF1_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF2_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF3_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF4_Value IS NOT NULL 
+	)a
+
+	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
+END
+ELSE
+BEGIN 
+  SELECT 'All product types are found in the custom fields worksheet.' AS ItemTypeName
+END</CommandText>
+      <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+    </Query>
+    <Fields>
+      <Field Name="ItemTypeName">
+        <DataField>ItemTypeName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

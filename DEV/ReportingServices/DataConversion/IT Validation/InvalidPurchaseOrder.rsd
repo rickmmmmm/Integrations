@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <DataSet Name="">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>DECLARE @rowCount INT
+SET           @rowCount =
+                      (SELECT     COUNT(*)
+                       FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     ISDATE(PurchaseDate) = 0
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                            PurchasePrice = '')) a) IF @rowCount &gt; 0 BEGIN
+                      SELECT DISTINCT *
+                      FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     ISDATE(PurchaseDate) = 0 AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                           PurchasePrice = '')) a END ELSE BEGIN
+                                            SELECT     '' AS tag, '' AS PONumber, '' AS ProductName, '' AS PurchaseDate, '' AS PurchasePrice, 'No invalid PO data.' AS comment END</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="tag">
+        <DataField>tag</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="ProductName">
+        <DataField>ProductName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="PONumber">
+        <DataField>PONumber</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="PurchaseDate">
+        <DataField>PurchaseDate</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="PurchasePrice">
+        <DataField>PurchasePrice</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="Comment">
+        <DataField>Comment</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

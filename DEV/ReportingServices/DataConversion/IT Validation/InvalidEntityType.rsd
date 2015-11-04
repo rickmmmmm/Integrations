@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <Description />
+  <DataSet Name="InvalidEntityType">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Invalid Entity Type' AS comment
+FROM            Clients_ETL
+WHERE        (EntityType NOT IN ('Student', 'Staff')) AND (EntityType IS NOT NULL)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Entity ID' AS comment
+FROM            Clients_ETL AS Clients_ETL_3
+WHERE        (EntityLastName IS NOT NULL) AND (EntityID IS NULL)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing First Name' AS comment
+FROM            Clients_ETL AS Clients_ETL_2
+WHERE        (EntityLastName IS NOT NULL) AND (EntityFirstName IS NULL) OR
+                         (EntityLastName IS NOT NULL) AND (LEN(EntityFirstName) = 0)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Last Name' AS comment
+FROM            Clients_ETL AS Clients_ETL_1
+WHERE        (EntityFirstName IS NOT NULL) AND (EntityLastName IS NULL) OR
+                         (EntityFirstName IS NOT NULL) AND (LEN(EntityLastName) = 0)
+UNION ALL 
+
+SELECT Tag, SiteID, EntityID, EntityFirstName, EntityLastName,  entityType, 'Missing Enitty Type'
+AS comment  
+FROM Clients_ETL
+WHERE EntityID IS NOT NULL  and (EntityType is null or Len(Entitytype)=0)</CommandText>
+      <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+    </Query>
+    <Fields>
+      <Field Name="Tag">
+        <DataField>Tag</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="SiteID">
+        <DataField>SiteID</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityID">
+        <DataField>EntityID</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityFirstName">
+        <DataField>EntityFirstName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityLastName">
+        <DataField>EntityLastName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityType">
+        <DataField>EntityType</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="comment">
+        <DataField>comment</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <Description />
+  <DataSet Name="MissingSiteID">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>declare @tagCount int                        
+SET @tagCount = (select       COUNT(tag)
+FROM            Clients_ETL
+WHERE        (SiteID IS NULL) OR
+                        LEN(siteID) =0)
+if @tagCount&gt;0 
+BEGIN 
+
+SELECT        Tag, SiteID, EntityLastName, EntityFirstName, EntityType
+FROM            Clients_ETL
+WHERE        (SiteID IS NULL) OR
+                        LEN(siteID) =0
+END
+ELSE 
+BEGIN 
+select @tagCount 
+END</CommandText>
+      <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+    </Query>
+    <Fields>
+      <Field Name="Tag">
+        <DataField>Tag</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="SiteID">
+        <DataField>SiteID</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityLastName">
+        <DataField>EntityLastName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityFirstName">
+        <DataField>EntityFirstName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="EntityType">
+        <DataField>EntityType</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

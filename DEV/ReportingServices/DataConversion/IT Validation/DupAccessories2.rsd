@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <Description />
+  <DataSet Name="DupAccessories2">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>DECLARE @rowCount INT
+SET @rowCount = (
+
+
+
+SELECT COUNT (*)
+--etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
+FROM  Clients_ETL AS etl 
+INNER JOIN
+         (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName2
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
+           )
+           
+           ---SELECT @rowCount
+           
+ IF @rowCount &gt;0
+ BEGIN 
+  SELECT  distinct etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
+  FROM  Clients_ETL AS etl 
+  INNER JOIN
+			 (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName2
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
+ END 
+ ELSE 
+ BEGIN 
+  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname2, null AS accessoryprice2, NULL AS accessoryquantity2, '' AS AccessoryConsumable2
+ END</CommandText>
+      <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+    </Query>
+    <Fields>
+      <Field Name="ProductName">
+        <DataField>ProductName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="AccessoryName2">
+        <DataField>AccessoryName2</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="AccessoryPrice2">
+        <DataField>AccessoryPrice2</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="AccessoryQuantity2">
+        <DataField>AccessoryQuantity2</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="AccessoryConsumable2">
+        <DataField>AccessoryConsumable2</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

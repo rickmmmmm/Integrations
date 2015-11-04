@@ -2,15 +2,6 @@
 <Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="Staging">
-      <ConnectionProperties>
-        <DataProvider>SQL</DataProvider>
-        <ConnectString>Data Source=HayesConversion;Initial Catalog=TIPWEB_Staging2</ConnectString>
-        <IntegratedSecurity>true</IntegratedSecurity>
-      </ConnectionProperties>
-      <rd:SecurityType>Integrated</rd:SecurityType>
-      <rd:DataSourceID>e22e5e73-7647-4729-a2f7-248eef7181c7</rd:DataSourceID>
-    </DataSource>
     <DataSource Name="DataSource1">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
@@ -20,88 +11,17 @@
       <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>0e4e3449-6d1d-43dc-b7e7-331aa258b62b</rd:DataSourceID>
     </DataSource>
-    <DataSource Name="ETLMain">
-      <ConnectionProperties>
-        <DataProvider>SQL</DataProvider>
-        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWEB_ETL2</ConnectString>
-        <IntegratedSecurity>true</IntegratedSecurity>
-      </ConnectionProperties>
-      <rd:SecurityType>Integrated</rd:SecurityType>
-      <rd:DataSourceID>5e40b135-50ee-45f5-b21b-d0073a78d4e9</rd:DataSourceID>
+    <DataSource Name="HayesConversion">
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>76a260fc-9c3c-4b64-996d-fdc41364a469</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="POdate">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-
-
-SET @rowCount  = (SELECT  COUNT(*)  
-FROM 
-(
-
-	SELECT tag,ProductName, PONumber, PurchaseDate, PurchasePrice , 'Invalid Purchase Date' AS Comment
-	FROM dbo.Clients_ETL
-	WHERE ISDATE(PurchaseDate) =0
-	 
-	 UNION ALL 
-	 
-	SELECT tag, ProductName, PONumber,PurchaseDate,PurchasePrice , 'Missing PO Number' AS Comment 
-	FROM dbo.Clients_ETL
-	WHERE (PONumber IS NULL OR LEN(PONumber)=0)
-	AND PurchaseDate IS NOT NULL  
-
-	UNION ALL 
-
-	SELECT tag, ProductName, PONumber,purchasedate, purchaseprice, 'Missing PO Number' AS comment
-	FROM dbo.Clients_ETL
-	WHERE (PONumber IS NULL OR LEN(PONumber)=0)
-	AND PurchaseDate IS NOT NULL  
-	AND (PurchasePrice IS NULL  OR PurchasePrice = '')
-	)a
-
-)
-
-IF @rowCount &gt;0
-
-BEGIN 
-
-
-SELECT DISTINCT * 
-FROM 
-(
-
-	SELECT tag,ProductName, PONumber, PurchaseDate, PurchasePrice , 'Invalid Purchase Date' AS Comment
-	FROM dbo.Clients_ETL
-	WHERE ISDATE(PurchaseDate) =0 AND PurchaseDate IS NOT NULL 
-	 
-	 UNION ALL 
-	 
-	SELECT tag, ProductName, PONumber,PurchaseDate,PurchasePrice , 'Missing PO Number' AS Comment 
-	FROM dbo.Clients_ETL
-	WHERE (PONumber IS NULL OR LEN(PONumber)=0)
-	AND PurchaseDate IS NOT NULL  
-
-	UNION ALL 
-
-	SELECT tag, ProductName, PONumber,purchasedate, purchaseprice, 'Missing PO Number' AS comment
-	FROM dbo.Clients_ETL
-	WHERE (PONumber IS NULL OR LEN(PONumber)=0)
-	AND PurchaseDate IS NOT NULL  
-	AND (PurchasePrice IS NULL  OR PurchasePrice = '')
-	
-
-)a
-
-
-END 
-ELSE 
-BEGIN 
-SELECT '' AS tag, '' AS PONumber, '' AS ProductName, '' AS PurchaseDate, '' AS PurchasePrice, 'No invliad PO data.' AS comment
-END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>POdate</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="tag">
           <DataField>tag</DataField>
@@ -130,27 +50,9 @@ END</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="MissingSiteID">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>declare @tagCount int                        
-SET @tagCount = (select       COUNT(tag)
-FROM            Clients_ETL
-WHERE        (SiteID IS NULL) OR
-                        LEN(siteID) =0)
-if @tagCount&gt;0 
-BEGIN 
-
-SELECT        Tag, SiteID, EntityLastName, EntityFirstName, EntityType
-FROM            Clients_ETL
-WHERE        (SiteID IS NULL) OR
-                        LEN(siteID) =0
-END
-ELSE 
-BEGIN 
-select @tagCount 
-END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>MissingSiteID</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -175,13 +77,9 @@ END</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="DupTag">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT        Tag, COUNT(Tag) AS dupTag
-FROM            Clients_ETL
-GROUP BY Tag
-HAVING        (COUNT(Tag) &gt; 1)</CommandText>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupTag</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -194,33 +92,9 @@ HAVING        (COUNT(Tag) &gt; 1)</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="InvalidEntityType">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Invalid Entity Type' AS comment
-FROM            Clients_ETL
-WHERE        (EntityType NOT IN ('Student', 'Staff')) AND (EntityType IS NOT NULL)
-UNION ALL
-SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Entity ID' AS comment
-FROM            Clients_ETL AS Clients_ETL_3
-WHERE        (EntityLastName IS NOT NULL) AND (EntityID IS NULL)
-UNION ALL
-SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing First Name' AS comment
-FROM            Clients_ETL AS Clients_ETL_2
-WHERE        (EntityLastName IS NOT NULL) AND (EntityFirstName IS NULL) OR
-                         (EntityLastName IS NOT NULL) AND (LEN(EntityFirstName) = 0)
-UNION ALL
-SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Last Name' AS comment
-FROM            Clients_ETL AS Clients_ETL_1
-WHERE        (EntityFirstName IS NOT NULL) AND (EntityLastName IS NULL) OR
-                         (EntityFirstName IS NOT NULL) AND (LEN(EntityLastName) = 0)
-UNION ALL 
-
-SELECT Tag, SiteID, EntityID, EntityFirstName, EntityLastName,  entityType, 'Missing Enitty Type'
-AS comment  
-FROM Clients_ETL
-WHERE EntityID IS NOT NULL  and (EntityType is null or Len(Entitytype)=0)</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>InvalidEntityType</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -253,45 +127,9 @@ WHERE EntityID IS NOT NULL  and (EntityType is null or Len(Entitytype)=0)</Comma
       </Fields>
     </DataSet>
     <DataSet Name="DupRoom">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT DISTINCT*
-FROM 
-(
-	SELECT DISTINCT etl.SiteID, etl.RoomNumber, RoomDesc ,  RoomType
-	FROM dbo.Clients_ETL etl
-	JOIN 
-	(
-
-	  SELECT SiteID, RoomNumber, COUNT(RoomNumber) AS dupRoom
-	  FROM 
-	  (
-	   SELECT DISTINCT SiteID, RoomNumber, RoomDesc
-		FROM Clients_ETL
-
-	  )a GROUP BY SiteID, a.RoomNumber HAVING COUNT(a.RoomNumber)&gt;1
-	)b  ON etl.SiteID =b.SiteID AND etl.RoomNumber = b.RoomNumber
-
-	UNION ALL 
-	 ---get Dup Room Numbers with different Room Type
-	SELECT DISTINCT etl.SiteID, etl.RoomNumber, etl.RoomDesc ,  RoomType
-	FROM dbo.Clients_ETL etl
-	JOIN 
-	(
-
-	  SELECT SiteID, RoomNumber, RoomDesc, COUNT(RoomNumber) AS dupRoom
-	  FROM 
-	  (
-	   SELECT DISTINCT SiteID, RoomNumber, RoomDesc, roomType
-		FROM Clients_ETL
-
-	  )a GROUP BY SiteID, a.RoomNumber , a.RoomDesc HAVING COUNT(a.RoomNumber)&gt;1
-	)b  ON etl.SiteID =b.SiteID AND etl.RoomNumber = b.RoomNumber AND etl.RoomDesc = b.RoomDesc
-)c
-
-order by SiteID, RoomNumber</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupRoom</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="SiteID">
           <DataField>SiteID</DataField>
@@ -312,33 +150,9 @@ order by SiteID, RoomNumber</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="DupProduct">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT MAX(id) maxid, ProductName
---INTO #dupProduct
-FROM 
-(
-	SELECT ROW_NUMBER () OVER(PARTITION BY productname ORDER BY Productname) id, *
-	FROM 
-	(
-		SELECT DISTINCT 
-		---DISTINCT ROW_NUMBER() OVER (PARTITION BY ast.product ORDER BY ast.Product)id,
-		ast.ProductName, ItemTypeName,ModelNumber, ManufacturerName
-		--,vendorname
-		FROM  Clients_ETL ast
-		JOIN 
-		(
-			SELECT DISTINCT ast.ProductName, COUNT(ast.ProductName) AS dupProduct
-			FROM  Clients_ETL ast
-			--WHERE Product = '1.86PROC.GHZ 4GBMEM. 120GB HD'
-			GROUP BY ast.ProductName HAVING count(ast.ProductName)&gt;1
-			
-		)a ON ast.ProductName = a.ProductName
-	)b
-)c GROUP BY ProductName HAVING  MAX(Id)&gt;1
-	ORDER BY ProductName</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupProduct</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="maxid">
           <DataField>maxid</DataField>
@@ -351,15 +165,9 @@ FROM
       </Fields>
     </DataSet>
     <DataSet Name="DupSerials">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT        Serial, COUNT(Serial) AS dupSerial
-FROM            Clients_ETL
-WHERE        (LEN(Serial) &gt; 0)
-GROUP BY Serial
-HAVING        (COUNT(Serial) &gt; 1)</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupSerials</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Serial">
           <DataField>Serial</DataField>
@@ -372,83 +180,9 @@ HAVING        (COUNT(Serial) &gt; 1)</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="missingLabel">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>DECLARE @typecount INT
-SET @typecount = 
-
-(
-	SELECT  COUNT(*)
-	--INTO #newcustomname
-	FROM 
-
-	(
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF1_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF2_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF3_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF4_Value IS NOT NULL 
-	)a
-
-	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
-)
-
-
-IF @typecount &gt;0
-BEGIN 
-  SELECT  ItemTypeName
-  FROM 
-
-	(
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF1_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF2_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF3_Value IS NOT NULL 
-
-		UNION ALL 
-
-		SELECT DISTINCT ItemTypeName
-		FROM dbo.Clients_ETL
-		WHERE CustomUDEF4_Value IS NOT NULL 
-	)a
-
-	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
-END
-ELSE
-BEGIN 
-  SELECT 'All product types are found in the custom fields worksheet.' AS ItemTypeName
-END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>missingLabel</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="ItemTypeName">
           <DataField>ItemTypeName</DataField>
@@ -457,45 +191,9 @@ END</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories1">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-SET @rowCount = (
-
-
-
-SELECT COUNT (*)
---etl.ProductName, etl.AccessoryName1, etl.AccessoryPrice1, etl.AccessoryQuantity1, etl.AccessoryConsumable1
-FROM  Clients_ETL AS etl 
-INNER JOIN
-         (SELECT  ProductName, AccessoryName1, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName1, AccessoryPrice1, AccessoryQuantity1, AccessoryConsumable1
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName1 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName1
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName1 = b.AccessoryName1
-           )
-           
-           ---SELECT @rowCount
-           
- IF @rowCount &gt;0
- BEGIN 
-  SELECT  distinct etl.ProductName, etl.AccessoryName1, etl.AccessoryPrice1, etl.AccessoryQuantity1, etl.AccessoryConsumable1
-  FROM  Clients_ETL AS etl 
-  INNER JOIN
-			 (SELECT  ProductName, AccessoryName1, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName1, AccessoryPrice1, AccessoryQuantity1, AccessoryConsumable1
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName1 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName1
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName1 = b.AccessoryName1
- END 
- ELSE 
- BEGIN 
-  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname1, null AS accessoryprice1, NULL AS accessoryquantity1, '' AS AccessoryConsumable1
- END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupAccessories1</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -520,45 +218,9 @@ INNER JOIN
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories2">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-SET @rowCount = (
-
-
-
-SELECT COUNT (*)
---etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
-FROM  Clients_ETL AS etl 
-INNER JOIN
-         (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName2
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
-           )
-           
-           ---SELECT @rowCount
-           
- IF @rowCount &gt;0
- BEGIN 
-  SELECT  distinct etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
-  FROM  Clients_ETL AS etl 
-  INNER JOIN
-			 (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName2
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
- END 
- ELSE 
- BEGIN 
-  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname2, null AS accessoryprice2, NULL AS accessoryquantity2, '' AS AccessoryConsumable2
- END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupAccessories2</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -583,45 +245,9 @@ INNER JOIN
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories3">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-SET @rowCount = (
-
-
-
-SELECT COUNT (*)
---etl.ProductName, etl.AccessoryName3, etl.AccessoryPrice3, etl.AccessoryQuantity3, etl.AccessoryConsumable3
-FROM  Clients_ETL AS etl 
-INNER JOIN
-         (SELECT  ProductName, AccessoryName3, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName3, AccessoryPrice3, AccessoryQuantity3, AccessoryConsumable3
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName3 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName3
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName3 = b.AccessoryName3
-           )
-           
-           ---SELECT @rowCount
-           
- IF @rowCount &gt;0
- BEGIN 
-  SELECT etl.ProductName, etl.AccessoryName3, etl.AccessoryPrice3, etl.AccessoryQuantity3, etl.AccessoryConsumable3
-  FROM  Clients_ETL AS etl 
-  INNER JOIN
-			 (SELECT  ProductName, AccessoryName3, COUNT(*) AS dupcount
-           FROM  (SELECT DISTINCT ProductName, AccessoryName3, AccessoryPrice3, AccessoryQuantity3, AccessoryConsumable3
-			 FROM   Clients_ETL
-			 WHERE  (AccessoryName3 IS NOT NULL)) AS a
-           GROUP BY ProductName, AccessoryName3
-           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName3 = b.AccessoryName3
- END 
- ELSE 
- BEGIN 
-  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname3, null AS accessoryprice3, NULL AS accessoryquantity3, '' AS AccessoryConsumable3
- END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>DupAccessories3</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -931,6 +557,17 @@ order by SiteID</CommandText>
       </SharedDataSet>
       <Fields>
         <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="StagingList">
+      <SharedDataSet>
+        <SharedDataSetReference>StagingList</SharedDataSetReference>
+      </SharedDataSet>
+      <Fields>
+        <Field Name="name">
           <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
@@ -6200,13 +5837,8 @@ order by SiteID</CommandText>
         </DataSetReference>
       </ValidValues>
     </ReportParameter>
-    <ReportParameter Name="ETLName">
+    <ReportParameter Name="InitialCatalog">
       <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>TIPWEB_ETL_2</Value>
-        </Values>
-      </DefaultValue>
       <Prompt>Select a Database</Prompt>
       <ValidValues>
         <DataSetReference>
@@ -6216,6 +5848,17 @@ order by SiteID</CommandText>
         </DataSetReference>
       </ValidValues>
       <UsedInQuery>True</UsedInQuery>
+    </ReportParameter>
+    <ReportParameter Name="StagingDB">
+      <DataType>String</DataType>
+      <Prompt>Select the Staging DB</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>StagingList</DataSetName>
+          <ValueField>name</ValueField>
+          <LabelField>name</LabelField>
+        </DataSetReference>
+      </ValidValues>
     </ReportParameter>
   </ReportParameters>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>

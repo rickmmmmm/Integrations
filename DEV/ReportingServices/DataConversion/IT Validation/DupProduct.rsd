@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <Description />
+  <DataSet Name="DupProduct">
+    <Query>
+      <DataSourceReference>HayesConversion</DataSourceReference>
+      <CommandText>SELECT MAX(id) maxid, ProductName
+--INTO #dupProduct
+FROM 
+(
+	SELECT ROW_NUMBER () OVER(PARTITION BY productname ORDER BY Productname) id, *
+	FROM 
+	(
+		SELECT DISTINCT 
+		---DISTINCT ROW_NUMBER() OVER (PARTITION BY ast.product ORDER BY ast.Product)id,
+		ast.ProductName, ItemTypeName,ModelNumber, ManufacturerName
+		--,vendorname
+		FROM  Clients_ETL ast
+		JOIN 
+		(
+			SELECT DISTINCT ast.ProductName, COUNT(ast.ProductName) AS dupProduct
+			FROM  Clients_ETL ast
+			--WHERE Product = '1.86PROC.GHZ 4GBMEM. 120GB HD'
+			GROUP BY ast.ProductName HAVING count(ast.ProductName)&gt;1
+			
+		)a ON ast.ProductName = a.ProductName
+	)b
+)c GROUP BY ProductName HAVING  MAX(Id)&gt;1
+	ORDER BY ProductName</CommandText>
+      <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+    </Query>
+    <Fields>
+      <Field Name="maxid">
+        <DataField>maxid</DataField>
+        <rd:TypeName>System.Int64</rd:TypeName>
+      </Field>
+      <Field Name="ProductName">
+        <DataField>ProductName</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>
