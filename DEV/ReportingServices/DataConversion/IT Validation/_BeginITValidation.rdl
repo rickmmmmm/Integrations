@@ -2,12 +2,13 @@
 <Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="HayesConversionDDS">
+    <DataSource Name="HayesConversion">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
-        <ConnectString>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</ConnectString>
+        <ConnectString>Data Source=HAYESCONVERSION;Initial Catalog=TIPWEB_ETL_Kyrene</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
-      <rd:SecurityType>None</rd:SecurityType>
+      <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>03a25612-e3ce-4256-917d-49abb8a6a171</rd:DataSourceID>
     </DataSource>
   </DataSources>
@@ -19,37 +20,6 @@
       <Fields>
         <Field Name="Name">
           <DataField>Name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
-    <DataSet Name="InvalidPurchaseOrder">
-      <SharedDataSet>
-        <SharedDataSetReference>InvalidPurchaseOrder</SharedDataSetReference>
-      </SharedDataSet>
-      <Fields>
-        <Field Name="tag">
-          <DataField>tag</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="ProductName">
-          <DataField>ProductName</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="PONumber">
-          <DataField>PONumber</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="PurchaseDate">
-          <DataField>PurchaseDate</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="PurchasePrice">
-          <DataField>PurchasePrice</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Comment">
-          <DataField>Comment</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -123,6 +93,71 @@
         </Field>
         <Field Name="comment">
           <DataField>comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="InvalidPurchaseOrder">
+      <Query>
+        <DataSourceName>HayesConversion</DataSourceName>
+        <CommandText>
+DECLARE @rowCount INT
+SET           @rowCount =
+                      (SELECT     COUNT(*)
+                       FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     ISDATE(PurchaseDate) = 0
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                            PurchasePrice = '')) a) IF @rowCount &gt; 0 BEGIN
+                      SELECT DISTINCT *
+                      FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     ISDATE(PurchaseDate) = 0 AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                           PurchasePrice = '')) a END ELSE BEGIN
+                                            SELECT     '' AS tag, '' AS PONumber, '' AS ProductName, '' AS PurchaseDate, '' AS PurchasePrice, 'No invalid PO data.' AS comment END</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="tag">
+          <DataField>tag</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductName">
+          <DataField>ProductName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PONumber">
+          <DataField>PONumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PurchaseDate">
+          <DataField>PurchaseDate</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PurchasePrice">
+          <DataField>PurchasePrice</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Comment">
+          <DataField>Comment</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>

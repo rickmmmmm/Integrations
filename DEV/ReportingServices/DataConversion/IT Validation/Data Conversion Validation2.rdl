@@ -2,26 +2,63 @@
 <Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="DataSource1">
+    <DataSource Name="HayesConversion_ETL">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
-        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWEB_ETL2</ConnectString>
+        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWEB_ETL_Kyrene</ConnectString>
         <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>0e4e3449-6d1d-43dc-b7e7-331aa258b62b</rd:DataSourceID>
     </DataSource>
-    <DataSource Name="HayesConversion">
-      <DataSourceReference>HayesConversion</DataSourceReference>
-      <rd:SecurityType>None</rd:SecurityType>
-      <rd:DataSourceID>76a260fc-9c3c-4b64-996d-fdc41364a469</rd:DataSourceID>
+    <DataSource Name="HayesConversion_Staging">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWeb_Staging_Kyrene</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>4a4126b0-040e-43e7-92c2-f89224045bec</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="POdate">
-      <SharedDataSet>
-        <SharedDataSetReference>POdate</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET           @rowCount =
+                      (SELECT     COUNT(*)
+                       FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     ISDATE(PurchaseDate) = 0
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                          UNION ALL
+                                          SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                          FROM        dbo.Clients_ETL
+                                          WHERE     (PONumber IS NULL OR
+                                                            LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                            PurchasePrice = '')) a) IF @rowCount &gt; 0 BEGIN
+                      SELECT DISTINCT *
+                      FROM        (SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Invalid Purchase Date' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     ISDATE(PurchaseDate) = 0 AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, PurchaseDate, PurchasePrice, 'Missing PO Number' AS Comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL
+                                         UNION ALL
+                                         SELECT     tag, ProductName, PONumber, purchasedate, purchaseprice, 'Missing PO Number' AS comment
+                                         FROM        dbo.Clients_ETL
+                                         WHERE     (PONumber IS NULL OR
+                                                           LEN(PONumber) = 0) AND PurchaseDate IS NOT NULL AND (PurchasePrice IS NULL OR
+                                                           PurchasePrice = '')) a END ELSE BEGIN
+                                            SELECT     '' AS tag, '' AS PONumber, '' AS ProductName, '' AS PurchaseDate, '' AS PurchasePrice, 'No invliad PO data.' AS comment END</CommandText>
+      </Query>
       <Fields>
         <Field Name="tag">
           <DataField>tag</DataField>
@@ -50,9 +87,26 @@
       </Fields>
     </DataSet>
     <DataSet Name="MissingSiteID">
-      <SharedDataSet>
-        <SharedDataSetReference>MissingSiteID</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>declare @tagCount int                        
+SET @tagCount = (select       COUNT(tag)
+FROM            Clients_ETL
+WHERE        (SiteID IS NULL) OR
+                        LEN(siteID) =0)
+if @tagCount&gt;0 
+BEGIN 
+
+SELECT        Tag, SiteID, EntityLastName, EntityFirstName, EntityType
+FROM            Clients_ETL
+WHERE        (SiteID IS NULL) OR
+                        LEN(siteID) =0
+END
+ELSE 
+BEGIN 
+select @tagCount 
+END</CommandText>
+      </Query>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -77,9 +131,13 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupTag">
-      <SharedDataSet>
-        <SharedDataSetReference>DupTag</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT        Tag, COUNT(Tag) AS dupTag
+FROM            Clients_ETL
+GROUP BY Tag
+HAVING        (COUNT(Tag) &gt; 1)</CommandText>
+      </Query>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -92,9 +150,32 @@
       </Fields>
     </DataSet>
     <DataSet Name="InvalidEntityType">
-      <SharedDataSet>
-        <SharedDataSetReference>InvalidEntityType</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Invalid Entity Type' AS comment
+FROM            Clients_ETL
+WHERE        (EntityType NOT IN ('Student', 'Staff')) AND (EntityType IS NOT NULL)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Entity ID' AS comment
+FROM            Clients_ETL AS Clients_ETL_3
+WHERE        (EntityLastName IS NOT NULL) AND (EntityID IS NULL)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing First Name' AS comment
+FROM            Clients_ETL AS Clients_ETL_2
+WHERE        (EntityLastName IS NOT NULL) AND (EntityFirstName IS NULL) OR
+                         (EntityLastName IS NOT NULL) AND (LEN(EntityFirstName) = 0)
+UNION ALL
+SELECT        Tag, SiteID, EntityID, EntityFirstName, EntityLastName, EntityType, 'Missing Last Name' AS comment
+FROM            Clients_ETL AS Clients_ETL_1
+WHERE        (EntityFirstName IS NOT NULL) AND (EntityLastName IS NULL) OR
+                         (EntityFirstName IS NOT NULL) AND (LEN(EntityLastName) = 0)
+UNION ALL 
+
+SELECT Tag, SiteID, EntityID, EntityFirstName, EntityLastName,  entityType, 'Missing Enitty Type'
+AS comment  
+FROM Clients_ETL
+WHERE EntityID IS NOT NULL  and (EntityType is null or Len(Entitytype)=0)</CommandText>
+      </Query>
       <Fields>
         <Field Name="Tag">
           <DataField>Tag</DataField>
@@ -127,9 +208,44 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupRoom">
-      <SharedDataSet>
-        <SharedDataSetReference>DupRoom</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT DISTINCT*
+FROM 
+(
+	SELECT DISTINCT etl.SiteID, etl.RoomNumber, RoomDesc ,  RoomType
+	FROM dbo.Clients_ETL etl
+	JOIN 
+	(
+
+	  SELECT SiteID, RoomNumber, COUNT(RoomNumber) AS dupRoom
+	  FROM 
+	  (
+	   SELECT DISTINCT SiteID, RoomNumber, RoomDesc
+		FROM Clients_ETL
+
+	  )a GROUP BY SiteID, a.RoomNumber HAVING COUNT(a.RoomNumber)&gt;1
+	)b  ON etl.SiteID =b.SiteID AND etl.RoomNumber = b.RoomNumber
+
+	UNION ALL 
+	 ---get Dup Room Numbers with different Room Type
+	SELECT DISTINCT etl.SiteID, etl.RoomNumber, etl.RoomDesc ,  RoomType
+	FROM dbo.Clients_ETL etl
+	JOIN 
+	(
+
+	  SELECT SiteID, RoomNumber, RoomDesc, COUNT(RoomNumber) AS dupRoom
+	  FROM 
+	  (
+	   SELECT DISTINCT SiteID, RoomNumber, RoomDesc, roomType
+		FROM Clients_ETL
+
+	  )a GROUP BY SiteID, a.RoomNumber , a.RoomDesc HAVING COUNT(a.RoomNumber)&gt;1
+	)b  ON etl.SiteID =b.SiteID AND etl.RoomNumber = b.RoomNumber AND etl.RoomDesc = b.RoomDesc
+)c
+
+order by SiteID, RoomNumber</CommandText>
+      </Query>
       <Fields>
         <Field Name="SiteID">
           <DataField>SiteID</DataField>
@@ -150,9 +266,32 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupProduct">
-      <SharedDataSet>
-        <SharedDataSetReference>DupProduct</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT MAX(id) maxid, ProductName
+--INTO #dupProduct
+FROM 
+(
+	SELECT ROW_NUMBER () OVER(PARTITION BY productname ORDER BY Productname) id, *
+	FROM 
+	(
+		SELECT DISTINCT 
+		---DISTINCT ROW_NUMBER() OVER (PARTITION BY ast.product ORDER BY ast.Product)id,
+		ast.ProductName, ItemTypeName,ModelNumber, ManufacturerName
+		--,vendorname
+		FROM  Clients_ETL ast
+		JOIN 
+		(
+			SELECT DISTINCT ast.ProductName, COUNT(ast.ProductName) AS dupProduct
+			FROM  Clients_ETL ast
+			--WHERE Product = '1.86PROC.GHZ 4GBMEM. 120GB HD'
+			GROUP BY ast.ProductName HAVING count(ast.ProductName)&gt;1
+			
+		)a ON ast.ProductName = a.ProductName
+	)b
+)c GROUP BY ProductName HAVING  MAX(Id)&gt;1
+	ORDER BY ProductName</CommandText>
+      </Query>
       <Fields>
         <Field Name="maxid">
           <DataField>maxid</DataField>
@@ -165,9 +304,14 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupSerials">
-      <SharedDataSet>
-        <SharedDataSetReference>DupSerials</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT        Serial, COUNT(Serial) AS dupSerial
+FROM            Clients_ETL
+WHERE        (LEN(Serial) &gt; 0)
+GROUP BY Serial
+HAVING        (COUNT(Serial) &gt; 1)</CommandText>
+      </Query>
       <Fields>
         <Field Name="Serial">
           <DataField>Serial</DataField>
@@ -180,9 +324,82 @@
       </Fields>
     </DataSet>
     <DataSet Name="missingLabel">
-      <SharedDataSet>
-        <SharedDataSetReference>missingLabel</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @typecount INT
+SET @typecount = 
+
+(
+	SELECT  COUNT(*)
+	--INTO #newcustomname
+	FROM 
+
+	(
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF1_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF2_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF3_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF4_Value IS NOT NULL 
+	)a
+
+	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
+)
+
+
+IF @typecount &gt;0
+BEGIN 
+  SELECT  ItemTypeName
+  FROM 
+
+	(
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF1_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF2_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF3_Value IS NOT NULL 
+
+		UNION ALL 
+
+		SELECT DISTINCT ItemTypeName
+		FROM dbo.Clients_ETL
+		WHERE CustomUDEF4_Value IS NOT NULL 
+	)a
+
+	WHERE ItemTypeName NOT IN (SELECT product_type FROM dbo.CustomFiledMeta_Pivot)
+END
+ELSE
+BEGIN 
+  SELECT 'All product types are found in the custom fields worksheet.' AS ItemTypeName
+END</CommandText>
+      </Query>
       <Fields>
         <Field Name="ItemTypeName">
           <DataField>ItemTypeName</DataField>
@@ -191,9 +408,44 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories1">
-      <SharedDataSet>
-        <SharedDataSetReference>DupAccessories1</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET @rowCount = (
+
+
+
+SELECT COUNT (*)
+--etl.ProductName, etl.AccessoryName1, etl.AccessoryPrice1, etl.AccessoryQuantity1, etl.AccessoryConsumable1
+FROM  Clients_ETL AS etl 
+INNER JOIN
+         (SELECT  ProductName, AccessoryName1, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName1, AccessoryPrice1, AccessoryQuantity1, AccessoryConsumable1
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName1 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName1
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName1 = b.AccessoryName1
+           )
+           
+           ---SELECT @rowCount
+           
+ IF @rowCount &gt;0
+ BEGIN 
+  SELECT  distinct etl.ProductName, etl.AccessoryName1, etl.AccessoryPrice1, etl.AccessoryQuantity1, etl.AccessoryConsumable1
+  FROM  Clients_ETL AS etl 
+  INNER JOIN
+			 (SELECT  ProductName, AccessoryName1, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName1, AccessoryPrice1, AccessoryQuantity1, AccessoryConsumable1
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName1 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName1
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName1 = b.AccessoryName1
+ END 
+ ELSE 
+ BEGIN 
+  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname1, null AS accessoryprice1, NULL AS accessoryquantity1, '' AS AccessoryConsumable1
+ END</CommandText>
+      </Query>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -218,9 +470,44 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories2">
-      <SharedDataSet>
-        <SharedDataSetReference>DupAccessories2</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET @rowCount = (
+
+
+
+SELECT COUNT (*)
+--etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
+FROM  Clients_ETL AS etl 
+INNER JOIN
+         (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName2
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
+           )
+           
+           ---SELECT @rowCount
+           
+ IF @rowCount &gt;0
+ BEGIN 
+  SELECT  distinct etl.ProductName, etl.AccessoryName2, etl.AccessoryPrice2, etl.AccessoryQuantity2, etl.AccessoryConsumable2
+  FROM  Clients_ETL AS etl 
+  INNER JOIN
+			 (SELECT  ProductName, AccessoryName2, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName2, AccessoryPrice2, AccessoryQuantity2, AccessoryConsumable2
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName2 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName2
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName2 = b.AccessoryName2
+ END 
+ ELSE 
+ BEGIN 
+  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname2, null AS accessoryprice2, NULL AS accessoryquantity2, '' AS AccessoryConsumable2
+ END</CommandText>
+      </Query>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -245,9 +532,44 @@
       </Fields>
     </DataSet>
     <DataSet Name="DupAccessories3">
-      <SharedDataSet>
-        <SharedDataSetReference>DupAccessories3</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET @rowCount = (
+
+
+
+SELECT COUNT (*)
+--etl.ProductName, etl.AccessoryName3, etl.AccessoryPrice3, etl.AccessoryQuantity3, etl.AccessoryConsumable3
+FROM  Clients_ETL AS etl 
+INNER JOIN
+         (SELECT  ProductName, AccessoryName3, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName3, AccessoryPrice3, AccessoryQuantity3, AccessoryConsumable3
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName3 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName3
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName3 = b.AccessoryName3
+           )
+           
+           ---SELECT @rowCount
+           
+ IF @rowCount &gt;0
+ BEGIN 
+  SELECT etl.ProductName, etl.AccessoryName3, etl.AccessoryPrice3, etl.AccessoryQuantity3, etl.AccessoryConsumable3
+  FROM  Clients_ETL AS etl 
+  INNER JOIN
+			 (SELECT  ProductName, AccessoryName3, COUNT(*) AS dupcount
+           FROM  (SELECT DISTINCT ProductName, AccessoryName3, AccessoryPrice3, AccessoryQuantity3, AccessoryConsumable3
+			 FROM   Clients_ETL
+			 WHERE  (AccessoryName3 IS NOT NULL)) AS a
+           GROUP BY ProductName, AccessoryName3
+           HAVING  (COUNT(*) &gt; 1)) AS b ON etl.ProductName = b.ProductName AND etl.AccessoryName3 = b.AccessoryName3
+ END 
+ ELSE 
+ BEGIN 
+  SELECT 'No duplciate accessories' AS productname, '' AS accesooryname3, null AS accessoryprice3, NULL AS accessoryquantity3, '' AS AccessoryConsumable3
+ END</CommandText>
+      </Query>
       <Fields>
         <Field Name="ProductName">
           <DataField>ProductName</DataField>
@@ -271,9 +593,9 @@
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="Staging">
+    <DataSet Name="ClientName">
       <Query>
-        <DataSourceName>Staging</DataSourceName>
+        <DataSourceName>HayesConversion_Staging</DataSourceName>
         <CommandText>SELECT        DistrictName
 FROM            tblSettings</CommandText>
       </Query>
@@ -286,7 +608,7 @@ FROM            tblSettings</CommandText>
     </DataSet>
     <DataSet Name="newTeachers">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>DECLARE @rowCount INT
 
 SET @rowCount = (
@@ -345,7 +667,7 @@ ENd</CommandText>
     </DataSet>
     <DataSet Name="DupTeachers">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>DECLARE @rowCount INT
 SET                @rowCount =
                              (SELECT        COUNT(*)
@@ -368,7 +690,7 @@ SET                @rowCount =
     </DataSet>
     <DataSet Name="DupTeacherID">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>DECLARE @rowCount INT
 SET @rowCount = (
 
@@ -407,7 +729,7 @@ END</CommandText>
     </DataSet>
     <DataSet Name="WS_teacher_multiIDs">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>DECLARE @dupcount INT
 SET @dupcount = 
 (
@@ -456,7 +778,7 @@ END</CommandText>
     </DataSet>
     <DataSet Name="WS_teacherID_diffteachres">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>DECLARE @dupCount INT
 SET                @dupCount =
 (SELECT        count(*) AS dupcount
@@ -494,7 +816,7 @@ HAVING         COUNT(*) &gt; 1 END ELSE BEGIN
     </DataSet>
     <DataSet Name="TeacherNotInTIPWEB">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>SELECT        SiteID, EntityLastName, EntityFirstName, entityID
 FROM            dbo.Clients_ETL
 WHERE        EntityID IS NOT NULL
@@ -536,9 +858,9 @@ FROM            (SELECT        SiteID, EntityLastName, EntityFirstName, entityID
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="Orphant_SiteID">
+    <DataSet Name="Orphan_SiteID">
       <Query>
-        <DataSourceName>DataSource1</DataSourceName>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
         <CommandText>select distinct siteID from dbo.Clients_ETL
 where SiteID not in (select CampusID from dbo.Campus_User)
 order by SiteID</CommandText>
@@ -552,9 +874,13 @@ order by SiteID</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="ETLList">
-      <SharedDataSet>
-        <SharedDataSetReference>ETLList</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT Name
+FROM sys.databases mp
+where PATINDEX('%ETL%', name) &gt; 0
+Order by Name</CommandText>
+      </Query>
       <Fields>
         <Field Name="Name">
           <DataField>Name</DataField>
@@ -563,12 +889,16 @@ order by SiteID</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="StagingList">
-      <SharedDataSet>
-        <SharedDataSetReference>StagingList</SharedDataSetReference>
-      </SharedDataSet>
+      <Query>
+        <DataSourceName>HayesConversion_Staging</DataSourceName>
+        <CommandText>SELECT     name
+FROM        sys.databases AS mp
+WHERE     (PATINDEX('%staging%', name) &gt; 0)
+ORDER BY name</CommandText>
+      </Query>
       <Fields>
         <Field Name="name">
-          <DataField>Name</DataField>
+          <DataField>name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -3291,7 +3621,7 @@ order by SiteID</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Missing Product Type nost listed in Custom Field worksheet</Value>
+                    <Value>Missing Product Type not listed in Custom Field worksheet</Value>
                     <Style>
                       <FontFamily>Calibri</FontFamily>
                       <FontSize>11pt</FontSize>
@@ -4853,6 +5183,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>Teachers Not In TIPWEB</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -4898,6 +5233,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>WS_TeacherID_MultiTeachers</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -4951,6 +5291,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>WS_TeacherID_MultiTeachers</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5321,7 +5666,7 @@ order by SiteID</CommandText>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>Orphant_SiteID</DataSetName>
+            <DataSetName>Orphan_SiteID</DataSetName>
             <Top>1.66542in</Top>
             <Left>0.16667in</Left>
             <Height>0.5in</Height>
@@ -5401,6 +5746,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>Students Not in TIPWEB</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5444,6 +5794,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>WS_StudentID_MultiStudents</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5487,6 +5842,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>WS_Teachers_MultiIDs</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5513,7 +5873,7 @@ order by SiteID</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Student with Multiple Sutdent IDs</Value>
+                    <Value>Student with Multiple Student IDs</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                       <TextDecoration>Underline</TextDecoration>
@@ -5530,6 +5890,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>WS_Students_MultiIDs</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5625,7 +5990,7 @@ order by SiteID</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Manufaturer List</Value>
+                    <Value>Manufacturer List</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                       <TextDecoration>Underline</TextDecoration>
@@ -5642,6 +6007,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>Manufacturer</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5669,7 +6039,7 @@ order by SiteID</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Fundcing Source List</Value>
+                    <Value>Funding Source List</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                       <TextDecoration>Underline</TextDecoration>
@@ -5685,7 +6055,12 @@ order by SiteID</CommandText>
               <Actions>
                 <Action>
                   <Drillthrough>
-                    <ReportName>FundinctSource</ReportName>
+                    <ReportName>FundingSource</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5739,6 +6114,11 @@ order by SiteID</CommandText>
                 <Action>
                   <Drillthrough>
                     <ReportName>Campus User Listing</ReportName>
+                    <Parameters>
+                      <Parameter Name="ConnectionString">
+                        <Value>=Parameters!ConnectionString.Value</Value>
+                      </Parameter>
+                    </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
@@ -5769,41 +6149,6 @@ order by SiteID</CommandText>
           <Height>0.53125in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
-          <ReportItems>
-            <Textbox Name="Textbox142">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>="Data Conversion Validation Report -  " + Parameters!ClientName.Value</Value>
-                      <Style>
-                        <FontStyle>Italic</FontStyle>
-                        <FontSize>11pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style />
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox142</rd:DefaultName>
-              <Top>0.03in</Top>
-              <Left>0.10167in</Left>
-              <Height>0.47347in</Height>
-              <Width>8.74208in</Width>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-          </ReportItems>
           <Style>
             <Border>
               <Style>None</Style>
@@ -5823,15 +6168,16 @@ order by SiteID</CommandText>
       <DataType>String</DataType>
       <DefaultValue>
         <DataSetReference>
-          <DataSetName>Staging</DataSetName>
+          <DataSetName>ClientName</DataSetName>
           <ValueField>DistrictName</ValueField>
         </DataSetReference>
       </DefaultValue>
       <AllowBlank>true</AllowBlank>
       <Prompt>Client Name</Prompt>
+      <Hidden>true</Hidden>
       <ValidValues>
         <DataSetReference>
-          <DataSetName>Staging</DataSetName>
+          <DataSetName>ClientName</DataSetName>
           <ValueField>DistrictName</ValueField>
           <LabelField>DistrictName</LabelField>
         </DataSetReference>
@@ -5858,6 +6204,21 @@ order by SiteID</CommandText>
           <ValueField>name</ValueField>
           <LabelField>name</LabelField>
         </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="ConnectionString">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>ConnectionString</Prompt>
+      <Hidden>true</Hidden>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</Value>
+            <Label>ConnectionString</Label>
+          </ParameterValue>
+        </ParameterValues>
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
