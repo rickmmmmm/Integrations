@@ -5,7 +5,7 @@
     <DataSource Name="HayesConversion_ETL">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
-        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWEB_ETL_Kyrene</ConnectString>
+        <ConnectString>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</ConnectString>
         <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
@@ -19,6 +19,11 @@
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>4a4126b0-040e-43e7-92c2-f89224045bec</rd:DataSourceID>
+    </DataSource>
+    <DataSource Name="MSDB">
+      <DataSourceReference>MSDB</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>e4560f5c-fbc9-4559-95ef-32365655f72d</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
@@ -606,127 +611,6 @@ FROM            tblSettings</CommandText>
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="newTeachers">
-      <Query>
-        <DataSourceName>HayesConversion_ETL</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-
-SET @rowCount = (
-
-	SELECT  COUNT (DISTINCT EntityID)
-	--DISTINCT EntityID, SiteID, EntityFirstName, EntityLastName
-	FROM 
-	(
-
-	SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
-	FROM TIPWEB_ETL..Clients_ETL
-	WHERE EntityType  ='Staff'
-	AND EntityID NOT IN (SELECT teacherID FROM TIPWEB_Staging..tblteachers)
-
-
-	  UNION all
-
-	SELECT EntityID, SiteID, EntityLastName, EntityFirstName
-	FROM 
-		(
-		SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
-		FROM TIPWEB_ETL..Clients_ETL etl
-		WHERE EntityType  ='Staff'
-
-		EXCEPT
-
-		SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
-		--, campusID
-		--, studentsUID
-		FROM TIPWEB_ETL..Clients_ETL etl
-		JOIN TIPWEB_Staging..tblteachers stg ON etl.EntityID = stg.teacherID 
-		 AND etl.SiteID = stg.CampusID
-		WHERE EntityType  ='Staff'
-		
-		)t 
-		
-	)a 
-)
-IF @rowCount &gt;0
-BEGIN 
-	SELECT 'There are '  + CONVERT(VARCHAR(50), @rowCount) + ' teachers IDs who were provided in the spreadsheet, but do not currently exist in the TIPWEB databse.  Please review the attached New Teacher ID List and confirm that the teacher IDs have to be imported into TIPWeb Database.' AS comment
-END 
-ELSE 
-BEGIN 
-    SELECT 'All Teachers IDs exist in the TIPWebDatabase.' AS comment
-    
-ENd</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
-      <Fields>
-        <Field Name="Comment">
-          <DataField>comment</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
-    <DataSet Name="DupTeachers">
-      <Query>
-        <DataSourceName>HayesConversion_ETL</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-SET                @rowCount =
-                             (SELECT        COUNT(*)
-                               FROM            (SELECT DISTINCT ns.*, s.teacherID, s.CampusID
-                                                         FROM            dbo.NewTeachers ns JOIN
-                                                                                   TIPWEB_Staging..tblTeachers s ON ns.EntityLastName = s.LastName AND ns.EntityFirstName = s.FirstName AND 
-                                                                                   ns.SiteID = s.CampusID AND ns.EntityID != s.teacherID) a) IF @rowCount &gt; 0 BEGIN
-                             SELECT        'There are ' + CONVERT(VARCHAR(50), @rowCount) 
-                                                       + ' teachers who were provided in the spreadsheet exist with different teacher IDs in the TIPWeb Database. Please review the attached Duplicate Teachers List and let us know which teacher IDs are correct.'
-                                                        AS comment END ELSE BEGIN
-                                                           SELECT        'N/A' END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
-      <Fields>
-        <Field Name="comment">
-          <DataField>comment</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
-    <DataSet Name="DupTeacherID">
-      <Query>
-        <DataSourceName>HayesConversion_ETL</DataSourceName>
-        <CommandText>DECLARE @rowCount INT
-SET @rowCount = (
-
-
-SELECT COUNT (*)
---tea.CampusID, tea.TeacherID, tea.lastname, tea.firstname
-FROM 
-(
-	SELECT TeacherID, CampusID, COUNT(* )dupCount
-	FROM tipweb_Staging.dbo.tblTeachers
-	GROUP BY CampusID, TeacherID
-	HAVING COUNT(* )&gt;1
-)a
-JOIN tipweb_Staging.dbo.tblTeachers tea ON a.CampusID = tea.CampusID
-AND a.TeacherID = tea.TeacherID
-JOIN TIPWEB_ETL.dbo.Clients_ETL etl ON a.CampusID = etl.SiteID AND a.TeacherID = etl.EntityID
-
-)
-
-IF @rowCount&gt;0
-BEGIN 
- SELECT 'There are '  + CONVERT(VARCHAR(50), @rowCount) + ' teachers IDs who were provided in the spreadsheet are used for other teachers in TIPWeb. Please review the attached Duplicate Teachers ID List and let us know which teacher ID is correct.' AS comment
-END
-ELSE 
-BEGIN 
- SELECT 'There are no duplicate Teacher IDs.' AS comment
-END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
-      <Fields>
-        <Field Name="comment">
-          <DataField>comment</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
     <DataSet Name="WS_teacher_multiIDs">
       <Query>
         <DataSourceName>HayesConversion_ETL</DataSourceName>
@@ -873,21 +757,6 @@ order by SiteID</CommandText>
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="ETLList">
-      <Query>
-        <DataSourceName>HayesConversion_ETL</DataSourceName>
-        <CommandText>SELECT Name
-FROM sys.databases mp
-where PATINDEX('%ETL%', name) &gt; 0
-Order by Name</CommandText>
-      </Query>
-      <Fields>
-        <Field Name="Name">
-          <DataField>Name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
     <DataSet Name="StagingList">
       <Query>
         <DataSourceName>HayesConversion_Staging</DataSourceName>
@@ -899,6 +768,17 @@ ORDER BY name</CommandText>
       <Fields>
         <Field Name="name">
           <DataField>name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ETLList">
+      <SharedDataSet>
+        <SharedDataSetReference>ETLList</SharedDataSetReference>
+      </SharedDataSet>
+      <Fields>
+        <Field Name="Name">
+          <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -5184,8 +5064,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>Teachers Not In TIPWEB</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5234,8 +5114,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>WS_TeacherID_MultiTeachers</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5292,8 +5172,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>WS_TeacherID_MultiTeachers</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5747,8 +5627,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>Students Not in TIPWEB</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5795,8 +5675,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>WS_StudentID_MultiStudents</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5843,8 +5723,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>WS_Teachers_MultiIDs</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -5891,8 +5771,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>WS_Students_MultiIDs</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -6008,8 +5888,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>Manufacturer</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -6057,8 +5937,8 @@ ORDER BY name</CommandText>
                   <Drillthrough>
                     <ReportName>FundingSource</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
@@ -6101,7 +5981,7 @@ ORDER BY name</CommandText>
                     </Style>
                   </TextRun>
                   <TextRun>
-                    <Value> to view the camus user list</Value>
+                    <Value> to view the campus user list</Value>
                     <Style />
                   </TextRun>
                 </TextRuns>
@@ -6113,18 +5993,18 @@ ORDER BY name</CommandText>
               <Actions>
                 <Action>
                   <Drillthrough>
-                    <ReportName>Campus User Listing</ReportName>
+                    <ReportName>01_CampusUserList</ReportName>
                     <Parameters>
-                      <Parameter Name="ConnectionString">
-                        <Value>=Parameters!ConnectionString.Value</Value>
+                      <Parameter Name="InitialCatalog">
+                        <Value>=Parameters!InitialCatalog.Value</Value>
                       </Parameter>
                     </Parameters>
                   </Drillthrough>
                 </Action>
               </Actions>
             </ActionInfo>
-            <Top>1.70708in</Top>
-            <Left>1.39458in</Left>
+            <Top>1.91542in</Top>
+            <Left>1.7175in</Left>
             <Height>0.25in</Height>
             <Width>2.96876in</Width>
             <ZIndex>36</ZIndex>
@@ -6185,7 +6065,7 @@ ORDER BY name</CommandText>
     </ReportParameter>
     <ReportParameter Name="InitialCatalog">
       <DataType>String</DataType>
-      <Prompt>Select a Database</Prompt>
+      <Prompt>Select the ETL Database</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>ETLList</DataSetName>
@@ -6204,21 +6084,6 @@ ORDER BY name</CommandText>
           <ValueField>name</ValueField>
           <LabelField>name</LabelField>
         </DataSetReference>
-      </ValidValues>
-    </ReportParameter>
-    <ReportParameter Name="ConnectionString">
-      <DataType>String</DataType>
-      <Nullable>true</Nullable>
-      <AllowBlank>true</AllowBlank>
-      <Prompt>ConnectionString</Prompt>
-      <Hidden>true</Hidden>
-      <ValidValues>
-        <ParameterValues>
-          <ParameterValue>
-            <Value>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</Value>
-            <Label>ConnectionString</Label>
-          </ParameterValue>
-        </ParameterValues>
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
