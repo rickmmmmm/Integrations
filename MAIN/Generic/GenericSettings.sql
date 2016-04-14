@@ -13,7 +13,7 @@ DECLARE @ProductField AS VARCHAR(50) = 'ProductName'--'ProductName' or 'ProductN
 --TIPWebProductNumbers
 DECLARE @TIPWebProductNumbers AS VARCHAR(50) = 'True'--'True' or 'False'
 --SiteField
-DECLARE @SiteField AS VARCHAR(50) = 'SiteName'--'SiteName' or 'SiteID'
+DECLARE @SiteField AS VARCHAR(50) = 'SiteID'--'SiteName' or 'SiteID'
 --RoomDefault
 DECLARE @RoomDefault AS VARCHAR(50) = 'Receiving'--'<Anything>' Default Room
 --StatusDefault
