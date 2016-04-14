@@ -15,7 +15,7 @@ DECLARE @TIPWebProductNumbers AS VARCHAR(50) = 'True'--'True' or 'False'
 --SiteField
 DECLARE @SiteField AS VARCHAR(50) = 'SiteID'--'SiteName' or 'SiteID'
 --RoomDefault
-DECLARE @RoomDefault AS VARCHAR(50) = 'Receiving'--'<Anything>' Default Room
+DECLARE @RoomDefault AS VARCHAR(50) = 'IntRm'--'<Anything>' Default Room
 --StatusDefault
 DECLARE @StatusDefault AS VARCHAR(50) = 'Available'--'Available' or 'In Use'
 --TagUpdate
@@ -35,15 +35,15 @@ DECLARE @CustomField4Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'B
 --TIPWebTags
 DECLARE @TIPWebTags AS VARCHAR(50) = 'False'--'True' or 'False'
 --ProductUpdate
-DECLARE @ProductUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
+DECLARE @ProductUpdate AS VARCHAR(50) = 'True'--'True' or 'False'
 --PurchaseDetailLineNumbers
 DECLARE @PurchaseDetailLineNumbers AS VARCHAR(50) = 'False'--'True' or 'False'
 --FundingUpdate
-DECLARE @FundingUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
+DECLARE @FundingUpdate AS VARCHAR(50) = 'True'--'True' or 'False'
 --Insert Products from Purchases
 DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'False'--'True' or 'False'
 --Insert Products from Inventory
-DECLARE @ProductsFromInventory AS VARCHAR(50) = 'False'--'True' or 'False'
+DECLARE @ProductsFromInventory AS VARCHAR(50) = 'True'--'True' or 'False'
 
 --ProductField
 --This determines if the Inventory and Purchases
