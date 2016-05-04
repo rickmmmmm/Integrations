@@ -8,42 +8,44 @@ Purpose:  Intgration settings configurations.
 	unless the customer makes a change
 
 ----------------------*/
---ProductField
+--ProductField: Which field is used to match asset to catalog
 DECLARE @ProductField AS VARCHAR(50) = 'ProductName'--'ProductName' or 'ProductNumber'
---TIPWebProductNumbers
+--TIPWebProductNumbers: True if we generate autoincremented TIPWeb-IT Product Numbers
 DECLARE @TIPWebProductNumbers AS VARCHAR(50) = 'True'--'True' or 'False'
---SiteField
+--SiteField: Which field is provided to determine site
 DECLARE @SiteField AS VARCHAR(50) = 'SiteID'--'SiteName' or 'SiteID'
---RoomDefault
+--RoomDefault: Default room to put assets without location information
 DECLARE @RoomDefault AS VARCHAR(50) = 'Receiving'--'<Anything>' Default Room
---StatusDefault
+--StatusDefault: Default status to put assets without status information
 DECLARE @StatusDefault AS VARCHAR(50) = 'Available'--'Available' or 'In Use'
---TagUpdate
+--TagUpdate: True if we update Tag field from their data
 DECLARE @TagUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
---Custom Field 1
+--Custom Field 1: Definition of Custom Field 1
 DECLARE @CustomField1Label AS VARCHAR(50) = ''--'' or '<Anything>'
 DECLARE @CustomField1Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
---Custom Field 2
+--Custom Field 2: Definition of Custom Field 2
 DECLARE @CustomField2Label AS VARCHAR(50) = ''--'' or '<Anything>'
 DECLARE @CustomField2Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
---Custom Field 3
+--Custom Field 3: Definition of Custom Field 3
 DECLARE @CustomField3Label AS VARCHAR(50) = ''--'' or '<Anything>'
 DECLARE @CustomField3Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
---Custom Field 4
+--Custom Field 4: Definition of Custom Field 4
 DECLARE @CustomField4Label AS VARCHAR(50) = ''--'' or '<Anything>'
 DECLARE @CustomField4Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
---TIPWebTags
+--TIPWebTags: True if assets can originate in TIPWeb-IT
 DECLARE @TIPWebTags AS VARCHAR(50) = 'False'--'True' or 'False'
---ProductUpdate
+--ProductUpdate: True if we update catalog information for an asset
 DECLARE @ProductUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
---PurchaseDetailLineNumbers
+--PurchaseDetailLineNumbers: True if line numbers are provided to match POs from their system to TIPWeb-IT
 DECLARE @PurchaseDetailLineNumbers AS VARCHAR(50) = 'False'--'True' or 'False'
---FundingUpdate
+--FundingUpdate: True if we update funding information of an asset
 DECLARE @FundingUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
---Insert Products from Purchases
+--Insert Products from Purchases: True if catalog information is included in a purchase integration
 DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'False'--'True' or 'False'
---Insert Products from Inventory
+--Insert Products from Inventory: True if catalog information is included in an asset integration
 DECLARE @ProductsFromInventory AS VARCHAR(50) = 'False'--'True' or 'False'
+--Insert Rooms: True if Room Numbers are created by the integration
+DECLARE @InsertRooms AS VARCHAR(50) = 'False'--'True' or 'False'
 
 --ProductField
 --This determines if the Inventory and Purchases
@@ -134,7 +136,7 @@ ELSE
 		WHERE ETLSettingUID = 6
 	END
 
---Custom Field 1 Label
+--CustomField1Label
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 7) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -147,7 +149,7 @@ ELSE
 		WHERE ETLSettingUID = 7
 	END
 
---Custom Field 1 Type
+--CustomField1Type
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 8) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -160,7 +162,7 @@ ELSE
 		WHERE ETLSettingUID = 8
 	END
 
---Custom Field 2 Label
+--CustomField2Label
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 9) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -173,7 +175,7 @@ ELSE
 		WHERE ETLSettingUID = 9
 	END
 
---Custom Field 2 Type
+--CustomField2Type
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 10) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -186,7 +188,7 @@ ELSE
 		WHERE ETLSettingUID = 10
 	END
 
---Custom Field 3 Label
+--CustomField3Label
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 11) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -199,7 +201,7 @@ ELSE
 		WHERE ETLSettingUID = 11
 	END
 
---Custom Field 3 Type
+--CustomField3Type
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 12) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -212,7 +214,7 @@ ELSE
 		WHERE ETLSettingUID = 12
 	END
 
---Custom Field 4 Label
+--CustomField4Label
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 13) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -225,7 +227,7 @@ ELSE
 		WHERE ETLSettingUID = 13
 	END
 
---Custom Field 4 Type
+--CustomField4Type
 IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 14) = 0
 	BEGIN
 		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
@@ -321,6 +323,20 @@ ELSE
 		UPDATE [dbo].[_ETL_Settings]
 		SET ETLSettingName = 'ProductsFromInventory', ETLSettingValue = @ProductsFromInventory
 		WHERE ETLSettingUID = 20
+	END
+
+--InsertRooms
+--This determines if we insert new rooms from the Inventory Import
+IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 21) = 0
+	BEGIN
+		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
+		VALUES (21, 'InsertRooms', @InsertRooms)
+	END
+ELSE
+	BEGIN
+		UPDATE [dbo].[_ETL_Settings]
+		SET ETLSettingName = 'InsertRooms', ETLSettingValue = @InsertRooms
+		WHERE ETLSettingUID = 21
 	END
 
 GO
