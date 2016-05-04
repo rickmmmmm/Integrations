@@ -44,6 +44,8 @@ DECLARE @FundingUpdate AS VARCHAR(50) = 'True'--'True' or 'False'
 DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'False'--'True' or 'False'
 --Insert Products from Inventory
 DECLARE @ProductsFromInventory AS VARCHAR(50) = 'True'--'True' or 'False'
+--Insert Rooms
+DECLARE @InsertRooms AS VARCHAR(50) = 'True'--'True' or 'False'
 
 --ProductField
 --This determines if the Inventory and Purchases
@@ -321,6 +323,20 @@ ELSE
 		UPDATE [dbo].[_ETL_Settings]
 		SET ETLSettingName = 'ProductsFromInventory', ETLSettingValue = @ProductsFromInventory
 		WHERE ETLSettingUID = 20
+	END
+
+--InsertRooms
+--This determines if we insert new rooms from the Inventory Import
+IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 21) = 0
+	BEGIN
+		INSERT INTO [dbo].[_ETL_Settings] ([ETLSettingUID], [ETLSettingName], [ETLSettingValue])
+		VALUES (21, 'InsertRooms', @InsertRooms)
+	END
+ELSE
+	BEGIN
+		UPDATE [dbo].[_ETL_Settings]
+		SET ETLSettingName = 'InsertRooms', ETLSettingValue = @InsertRooms
+		WHERE ETLSettingUID = 21
 	END
 
 GO
