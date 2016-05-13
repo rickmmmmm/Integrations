@@ -41,7 +41,7 @@ DECLARE @PurchaseDetailLineNumbers AS VARCHAR(50) = 'True'--'True' or 'False'
 --FundingUpdate: True if we update funding information of an asset
 DECLARE @FundingUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
 --Insert Products from Purchases: True if catalog information is included in a purchase integration
-DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'True'--'True' or 'False'
+DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'False'--'True' or 'False'
 --Insert Products from Inventory: True if catalog information is included in an asset integration
 DECLARE @ProductsFromInventory AS VARCHAR(50) = 'False'--'True' or 'False'
 --Insert Rooms: True if Room Numbers are created by the integration
