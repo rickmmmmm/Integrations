@@ -36,7 +36,7 @@ DECLARE @FundingUpdate AS VARCHAR(50) = 'True'--'True' or 'False'
 --Insert Products from Purchases
 DECLARE @ProductsFromPurchases AS VARCHAR(50) = 'True'--'True' or 'False'
 --Insert Products from Inventory
-DECLARE @ProductsFromInventory AS VARCHAR(50) = 'False'--'True' or 'False'
+DECLARE @ProductsFromInventory AS VARCHAR(50) = 'True'--'True' or 'False'
 
 --ProductField
 --This determines if the Inventory and Purchases
