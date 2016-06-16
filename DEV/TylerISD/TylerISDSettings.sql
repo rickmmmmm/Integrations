@@ -33,7 +33,7 @@ DECLARE @CustomField3Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'B
 DECLARE @CustomField4Label AS VARCHAR(50) = ''--'' or '<Anything>'
 DECLARE @CustomField4Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
 --TIPWebTags: True if assets can originate in TIPWeb-IT
-DECLARE @TIPWebTags AS VARCHAR(50) = 'False'--'True' or 'False'
+DECLARE @TIPWebTags AS VARCHAR(50) = 'True'--'True' or 'False'
 --ProductUpdate: True if we update catalog information for an asset
 DECLARE @ProductUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
 --PurchaseDetailLineNumbers: True if line numbers are provided to match POs from their system to TIPWeb-IT
