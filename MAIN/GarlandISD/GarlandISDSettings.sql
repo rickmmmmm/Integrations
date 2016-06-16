@@ -21,7 +21,7 @@ DECLARE @StatusDefault AS VARCHAR(50) = 'Available'--'Available' or 'In Use'
 --TagUpdate: True if we update Tag field from their data
 DECLARE @TagUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
 --Custom Field 1: Definition of Custom Field 1
-DECLARE @CustomField1Label AS VARCHAR(50) = ''--'' or '<Anything>'
+DECLARE @CustomField1Label AS VARCHAR(50) = 'Device Name'--'' or '<Anything>'
 DECLARE @CustomField1Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
 --Custom Field 2: Definition of Custom Field 2
 DECLARE @CustomField2Label AS VARCHAR(50) = ''--'' or '<Anything>'
