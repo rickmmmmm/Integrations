@@ -171,7 +171,7 @@ IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 9) = 0
 ELSE
 	BEGIN
 		UPDATE [dbo].[_ETL_Settings]
-		SET ETLSettingName = 'CustomField2Label', ETLSettingValue = @CustomField1Label
+		SET ETLSettingName = 'CustomField2Label', ETLSettingValue = @CustomField2Label
 		WHERE ETLSettingUID = 9
 	END
 
