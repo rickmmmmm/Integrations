@@ -10,8 +10,8 @@
 <DTS:Property DTS:Name="PackagePriorityClass">0</DTS:Property>
 <DTS:Property DTS:Name="VersionMajor">1</DTS:Property>
 <DTS:Property DTS:Name="VersionMinor">0</DTS:Property>
-<DTS:Property DTS:Name="VersionBuild">91</DTS:Property>
-<DTS:Property DTS:Name="VersionGUID">{92B3B087-8B81-4D51-8EDF-C3488FDDB0A4}</DTS:Property>
+<DTS:Property DTS:Name="VersionBuild">92</DTS:Property>
+<DTS:Property DTS:Name="VersionGUID">{5EC3B3AD-C61E-41CE-A41F-0F915609ED6D}</DTS:Property>
 <DTS:Property DTS:Name="EnableConfig">0</DTS:Property>
 <DTS:Property DTS:Name="CheckpointFileName"></DTS:Property>
 <DTS:Property DTS:Name="SaveCheckpoints">0</DTS:Property>
@@ -599,7 +599,7 @@ UseAccessories,UseCustomField
 <DTS:Property DTS:Name="DTSID">{8E6E805D-7E4D-462A-AE89-84D3FF62879C}</DTS:Property>
 <DTS:Property DTS:Name="Description">Execute SQL Task</DTS:Property>
 <DTS:Property DTS:Name="CreationName">Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</DTS:Property>
-<DTS:Property DTS:Name="DisableEventHandlers">0</DTS:Property><DTS:ObjectData><SQLTask:SqlTaskData SQLTask:Connection="{6375cd30-80d7-4a1b-b7d0-b0fbd9756daf}" SQLTask:TimeOut="0" SQLTask:IsStoredProc="False" SQLTask:BypassPrepare="True" SQLTask:SqlStmtSourceType="DirectInput" SQLTask:SqlStatementSource="&#xA;&#xA;/*&#xA;--type = tagged (1) or untagged (2)&#xA;--source = po (2) if PO otherwise initialized (1)&#xA;--EntityType 2 = Room, 3 = Staff, 4 = Student&#xA;&#xA;--------------------------------&#xA; StatusUID &#xA;--------------------------------&#xA;Students 30 (In Use)&#xA;Teacher 31 (In Use)&#xA;Room 26 (Available)  28 (In Use)&#xA;--------&gt;&gt; Be sure they want to use the &quot;Available&quot; status (26) for tags in rooms&#xA;*/&#xA;&#xA;&#xA;declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = N'''Hayes Data Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = &#xA;&#xA;N' Insert into ' + @StagingDB + '.dbo.tblTechInventory ' +&#xA;N' 	(InventoryTypeUID, InventorySourceUID,   ' +&#xA;N' 		ItemUID, SiteUID, EntityUID, EntityTypeUID,  ' +&#xA;N' 		StatusUID,  ' +&#xA;N' 		TechDepartmentUID, ' +&#xA;N' 		Tag, Serial,  FundingSourceUID, PurchasePrice, ' +&#xA;N'		PurchaseDate,  ' +&#xA;N' 		ExpirationDate,  ' +&#xA;N' 		InventoryNotes,  ' +&#xA;N' 		CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT 1 as InventoryTypeUID, (CASE WHEN PONumber IS NOT NULL and len(ltrim(rtrim(PONumber))) &gt; 0 THEN 2 ELSE 1 END)  AS inventorysourceuid,  ' +&#xA;N'		ItemUID, SiteUID, EntityUID, EntityTypeUID,  ' +&#xA;N' 	CASE WHEN EntityTypeUID = 4 THEN 30 WHEN EntityTypeUID = 3 THEN 31 WHEN EntityTypeUID = 2 then  26 END AS StatusUID,  ' +&#xA;N' 	0 AS TechDepartmentUID,  ' + --unless they have departments and that is part of the conversion&#xA;N' 	Tag, Serial, FundingSourceUID, PurchasePrice,  ' +&#xA;N' (CASE WHEN PurchaseDate IS NOT NULL and len(ltrim(rtrim(PurchaseDate))) &gt; 0 then cast(PurchaseDate  as datetime) else null end) as PurchaseDate,  ' +&#xA;N' 	CASE WHEN ProjectedLife IS NOT NULL and PONumber IS NOT NULL and len(ltrim(rtrim(PONumber))) &gt; 0  THEN DATEADD(year, CONVERT(INT, ProjectedLife), CONVERT(DATETIME, PurchaseDate)) end as ExpirationDate, ' +&#xA;N' 	(CASE WHEN TagNotes IS NOT NULL then TagNotes + ''; ''' + @notes + N''' ELSE ' + @notes  + N'''  END) AS inventorynotes, ' +&#xA;N' 	0, GETDATE(), 0, getdate() ' +&#xA;N' 	FROM  clients_etl_Final   etl  ' +&#xA;N' 	where import = 1 ' +&#xA;N' 	and Tag NOT IN (SELECT Tag FROM ' + @StagingDB + '.dbo.tblTechInventory) ' +&#xA;N' 	order by EntityUID '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;SELECT @SQL = &#xA;--Get the InventoryUID&#xA;--N' SELECT * ' +&#xA;N' update etl set InventoryUID = tw.InventoryUID ' +&#xA;N' FROM  clients_etl_Final  etl  ' +&#xA;N' join ' + @StagingDB + '.dbo.tblTechInventory tw ' +&#xA;N' 	on  etl.ItemUID = tw.ItemUID ' +&#xA;N' 	and etl.SiteUID = tw.Siteuid and etl.EntityUID = tw.EntityUID and etl.EntityTypeUID = tw.EntityTypeUID ' +&#xA;N' 	and etl.Tag = tw.Tag and etl.Serial = tw.Serial and etl.FundingSourceUID = tw.FundingSourceUID ' +&#xA;N' where etl.Import = 1  ' +&#xA;N' and tw.InventoryNotes like ''%Hayes Data Conversion%''  ' +&#xA;N' and tw.InventoryTypeUID = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL" SQLTask:CodePage="1252" SQLTask:ResultType="ResultSetType_None" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask"><SQLTask:ParameterBinding SQLTask:ParameterName="@StagingDB" SQLTask:DtsVariableName="User::_02StagingDB" SQLTask:ParameterDirection="Input" SQLTask:DataType="130" SQLTask:ParameterSize="-1"/></SQLTask:SqlTaskData></DTS:ObjectData></DTS:Executable>
+<DTS:Property DTS:Name="DisableEventHandlers">0</DTS:Property><DTS:ObjectData><SQLTask:SqlTaskData SQLTask:Connection="{6375cd30-80d7-4a1b-b7d0-b0fbd9756daf}" SQLTask:TimeOut="0" SQLTask:IsStoredProc="False" SQLTask:BypassPrepare="True" SQLTask:SqlStmtSourceType="DirectInput" SQLTask:SqlStatementSource="&#xA;&#xA;/*&#xA;--type = tagged (1) or untagged (2)&#xA;--source = po (2) if PO otherwise initialized (1)&#xA;--EntityType 2 = Room, 3 = Staff, 4 = Student&#xA;&#xA;--------------------------------&#xA; StatusUID &#xA;--------------------------------&#xA;Students 30 (In Use)&#xA;Teacher 31 (In Use)&#xA;Room 26 (Available)  28 (In Use)&#xA;--------&gt;&gt; Be sure they want to use the &quot;Available&quot; status (26) for tags in rooms&#xA;*/&#xA;&#xA;&#xA;declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = N'''Hayes Data Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = &#xA;&#xA;N' Insert into ' + @StagingDB + '.dbo.tblTechInventory ' +&#xA;N' 	(InventoryTypeUID, InventorySourceUID,   ' +&#xA;N' 		ItemUID, SiteUID, EntityUID, EntityTypeUID,  ' +&#xA;N' 		StatusUID,  ' +&#xA;N' 		TechDepartmentUID, ' +&#xA;N' 		Tag, Serial,  FundingSourceUID, PurchasePrice, ' +&#xA;N'		PurchaseDate,  ' +&#xA;N' 		ExpirationDate,  ' +&#xA;N' 		InventoryNotes,  ' +&#xA;N' 		CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT 1 as InventoryTypeUID, (CASE WHEN PONumber IS NOT NULL and len(ltrim(rtrim(PONumber))) &gt; 0 THEN 2 ELSE 1 END)  AS inventorysourceuid,  ' +&#xA;N'		ItemUID, SiteUID, EntityUID, EntityTypeUID,  ' +&#xA;N' 	CASE WHEN EntityTypeUID = 4 THEN 30 WHEN EntityTypeUID = 3 THEN 31 WHEN EntityTypeUID = 2 then  26 END AS StatusUID,  ' +&#xA;N' 	0 AS TechDepartmentUID,  ' + --unless they have departments and that is part of the conversion&#xA;N' 	Tag, Serial, FundingSourceUID, PurchasePrice,  ' +&#xA;N' (CASE WHEN PurchaseDate IS NOT NULL and len(ltrim(rtrim(PurchaseDate))) &gt; 0 then cast(PurchaseDate  as datetime) else null end) as PurchaseDate,  ' +&#xA;N' 	CASE WHEN ProjectedLife IS NOT NULL and PONumber IS NOT NULL and len(ltrim(rtrim(PONumber))) &gt; 0  THEN DATEADD(year, CONVERT(INT, ProjectedLife), CONVERT(DATETIME, PurchaseDate)) end as ExpirationDate, ' +&#xA;N' 	(CASE WHEN TagNotes IS NOT NULL then TagNotes + ''; ''' + @notes + N''' ELSE ' + @notes  + N'''  END) AS inventorynotes, ' +&#xA;N' 	0, GETDATE(), 0, getdate() ' +&#xA;N' 	FROM  clients_etl_Final   etl  ' +&#xA;N' 	where import = 1 ' +&#xA;N' 	and Tag NOT IN (SELECT Tag FROM ' + @StagingDB + '.dbo.tblTechInventory) ' +&#xA;N' 	order by EntityUID '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;SELECT @SQL = &#xA;--Get the InventoryUID&#xA;--N' SELECT * ' +&#xA;N' update etl set InventoryUID = tw.InventoryUID ' +&#xA;N' FROM  clients_etl_Final  etl  ' +&#xA;N' join ' + @StagingDB + '.dbo.tblTechInventory tw ' +&#xA;N' 	on  etl.ItemUID = tw.ItemUID ' +&#xA;N' 	and etl.SiteUID = tw.Siteuid and etl.EntityUID = tw.EntityUID and etl.EntityTypeUID = tw.EntityTypeUID ' +&#xA;N' 	and etl.Tag = tw.Tag and isNull(etl.Serial, '''') = isnull(tw.Serial, '''') and isnull(etl.FundingSourceUID, '''') = isnull(tw.FundingSourceUID, '''') ' +&#xA;N' where etl.Import = 1  ' +&#xA;N' and tw.InventoryNotes like ''%Hayes Data Conversion%''  ' +&#xA;N' and tw.InventoryTypeUID = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL" SQLTask:CodePage="1252" SQLTask:ResultType="ResultSetType_None" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask"><SQLTask:ParameterBinding SQLTask:ParameterName="@StagingDB" SQLTask:DtsVariableName="User::_02StagingDB" SQLTask:ParameterDirection="Input" SQLTask:DataType="130" SQLTask:ParameterSize="-1"/></SQLTask:SqlTaskData></DTS:ObjectData></DTS:Executable>
 <DTS:Executable DTS:ExecutableType="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" DTS:ThreadHint="0">
 <DTS:Property DTS:Name="ExecutionLocation">0</DTS:Property>
 <DTS:Property DTS:Name="ExecutionAddress"></DTS:Property>
@@ -1153,89 +1153,89 @@ UseAccessories,UseCustomField
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{0320C29A-D47E-472D-81CE-039CA0921A96}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{A8C03085-02EE-4F8D-BC6D-4AAC90EDB1D8}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{39CC15D0-7AC8-4061-B458-EF07854D3283}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{09903252-D355-4694-8A81-4D7598A28743}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{C6521BE5-AA47-4889-B660-B8FDC95303D5}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{F0AA0208-A259-49A2-99D6-FEE9A55C17D9}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{11A7D318-B1A2-402E-8A92-88F87B3AC714}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{AEE1E7DB-DBBF-4E50-B7F0-C1977E38D57B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{565D4A56-7AC7-4C6B-927E-6D2BB79C8AB4}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;ExpressionAndConstraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{23926306-E020-4899-A76B-4CAAE8D625F6}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{748B1551-6DD6-470A-B67A-EF2EA1F101EC}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{2F9D48D1-707D-4B4B-B352-D0BE69FB9703}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{28D2D242-931C-4144-BEB2-4B1849693553}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{56EC5819-BEA8-4186-AD9E-5F9947899C35}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{65A2CF95-E6A1-41F4-85AF-C80768C2BA0A}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{2BBDEF87-42E2-455D-97A5-5AA98A56B0EB}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{D2738C11-F5DE-4A7C-ABEE-C5D25CE0D73F}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{CC560BD8-05CD-44B6-92F3-F373123E3E9A}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{2DB5126C-D8DB-4314-8DC8-29B47D2AA117}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{FB92A475-0403-4EAF-ADF6-75D2DA34E7F8}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{0CEF644B-D627-4830-9A4E-F90734B0F67F}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{3497CCEA-C3BD-4277-99D1-D05C6CBAAFF2}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{A982DA99-697C-434A-BA49-A261556EFC75}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{F6A5A936-D52A-474C-8C43-9843828D6F9B}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{36DF1B33-07B9-4BCD-A289-831A12D54EB0}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{5283F7DD-7CA9-4909-A715-622B0EFCC69E}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{A899B95F-1FD7-4F12-99B1-8E69A4AA8297}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{37A49FFD-7583-44DC-AB75-9AFD321AD1D1}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9BA9DFE8-0618-47D7-AE2E-E8FE587C3EE5}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{7FE58446-5629-47DF-8E2E-101C9D270DF7}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{3F317BC2-8A62-47BD-86A7-92B7FEA9BF5A}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{B289DA44-B614-4224-A1C8-7AC5F987AEC7}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{AB5BA8C9-E898-40A4-8396-A3A14A6A2143}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;ExpressionAndConstraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{4DBC7CCF-044A-4B1D-8CCC-053D874FD5B0}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{579EDE28-7152-442E-BF93-2182E6005B6B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{345B94A8-DDF1-4666-881F-97DFD23BC9FC}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;Package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:DtsControlFlowDiagram&gt;&lt;dwd:BoundingLeft&gt;-23456&lt;/dwd:BoundingLeft&gt;&lt;dwd:BoundingTop&gt;-8578&lt;/dwd:BoundingTop&gt;&lt;dwd:Layout&gt;&lt;dds&gt;
-  &lt;diagram fontclsid="{0BE35203-8F91-11CE-9DE3-00AA004BB851}" mouseiconclsid="{0BE35204-8F91-11CE-9DE3-00AA004BB851}" defaultlayout="Microsoft.DataWarehouse.Layout.GraphLayout100" defaultlineroute="Microsoft.DataWarehouse.Layout.GraphLayout100" version="7" nextobject="116" scale="100" pagebreakanchorx="0" pagebreakanchory="0" pagebreaksizex="0" pagebreaksizey="0" scrollleft="-24456" scrolltop="-9578" gridx="150" gridy="150" marginx="1000" marginy="1000" zoom="100" x="39243" y="8361" backcolor="15334399" defaultpersistence="2" PrintPageNumbersMode="3" PrintMarginTop="0" PrintMarginBottom="635" PrintMarginLeft="0" PrintMarginRight="0" marqueeselectionmode="1" mousepointer="0" snaptogrid="0" autotypeannotation="1" showscrollbars="1" viewpagebreaks="0" donotforceconnectorsbehindshapes="1" backpictureclsid="{00000000-0000-0000-0000-000000000000}"&gt;
+  &lt;diagram fontclsid="{0BE35203-8F91-11CE-9DE3-00AA004BB851}" mouseiconclsid="{0BE35204-8F91-11CE-9DE3-00AA004BB851}" defaultlayout="Microsoft.DataWarehouse.Layout.GraphLayout100" defaultlineroute="Microsoft.DataWarehouse.Layout.GraphLayout100" version="7" nextobject="116" scale="100" pagebreakanchorx="0" pagebreakanchory="0" pagebreaksizex="0" pagebreaksizey="0" scrollleft="-24456" scrolltop="-9578" gridx="150" gridy="150" marginx="1000" marginy="1000" zoom="100" x="36010" y="17039" backcolor="15334399" defaultpersistence="2" PrintPageNumbersMode="3" PrintMarginTop="0" PrintMarginBottom="635" PrintMarginLeft="0" PrintMarginRight="0" marqueeselectionmode="1" mousepointer="0" snaptogrid="0" autotypeannotation="1" showscrollbars="1" viewpagebreaks="0" donotforceconnectorsbehindshapes="1" backpictureclsid="{00000000-0000-0000-0000-000000000000}"&gt;
     &lt;font&gt;
       &lt;ddsxmlobjectstreamwrapper binary="01010000900180380100065461686f6d61" /&gt;
     &lt;/font&gt;
@@ -1694,7 +1694,7 @@ UseAccessories,UseCustomField
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="0" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="78.5005711537305" controlid="56" width="339" height="339" side="0" behavior="2" himetric="13057" distfromline="175" startobj="0" x="-12392" y="4449" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="77.9955510130464" controlid="56" width="423" height="423" side="0" behavior="2" himetric="12973" distfromline="175" startobj="0" x="-12392" y="4365" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -1810,7 +1810,7 @@ UseAccessories,UseCustomField
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="1" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="0" controlid="57" width="339" height="339" side="0" behavior="2" himetric="0" distfromline="175" startobj="0" x="-7521" y="7949" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="0" controlid="57" width="423" height="423" side="0" behavior="2" himetric="0" distfromline="175" startobj="0" x="-7521" y="7949" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -1828,11 +1828,11 @@ UseAccessories,UseCustomField
       &lt;point x="-4534" y="9042" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="385" top="4306" logicalid="92" controlid="37" masterid="0" hint1="0" hint2="0" width="3136" height="2326" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="385" top="4306" logicalid="92" controlid="37" masterid="0" hint1="0" hint2="0" width="2036" height="2326" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="1" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="90.5154091392136" controlid="58" width="339" height="339" side="0" behavior="2" himetric="3407" distfromline="175" startobj="0" x="270" y="5261" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="73.1981981981982" controlid="58" width="423" height="423" side="0" behavior="2" himetric="1950" distfromline="175" startobj="0" x="186" y="4820" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -1843,10 +1843,10 @@ UseAccessories,UseCustomField
         &lt;property name="VisibleAP" value="0" vartype="3" /&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/layoutobject&gt;
-    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="26" destid="35" sourceattachpoint="11" destattachpoint="18" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
-      &lt;point x="3121" y="4705" /&gt;
-      &lt;point x="3121" y="5775" /&gt;
-      &lt;point x="784" y="5775" /&gt;
+    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="26" destid="35" sourceattachpoint="7" destattachpoint="18" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
+      &lt;point x="2021" y="4705" /&gt;
+      &lt;point x="2021" y="5418" /&gt;
+      &lt;point x="784" y="5418" /&gt;
       &lt;point x="784" y="6132" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
@@ -2008,7 +2008,7 @@ UseAccessories,UseCustomField
       &lt;point x="-3010" y="-7701" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="-8098" top="-7518" logicalid="103" controlid="48" masterid="0" hint1="0" hint2="0" width="7837" height="5394" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="-8098" top="-7518" logicalid="103" controlid="48" masterid="0" hint1="0" hint2="0" width="6737" height="5394" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="0" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1" /&gt;
@@ -2021,10 +2021,10 @@ UseAccessories,UseCustomField
         &lt;property name="VisibleAP" value="0" vartype="3" /&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/layoutobject&gt;
-    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="46" destid="2" sourceattachpoint="9" destattachpoint="56" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
-      &lt;point x="-661" y="-7119" /&gt;
-      &lt;point x="-661" y="-3747" /&gt;
-      &lt;point x="-7699" y="-3747" /&gt;
+    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="46" destid="2" sourceattachpoint="5" destattachpoint="56" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
+      &lt;point x="-1761" y="-7119" /&gt;
+      &lt;point x="-1761" y="-4871" /&gt;
+      &lt;point x="-7699" y="-4871" /&gt;
       &lt;point x="-7699" y="-2624" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
@@ -2092,9 +2092,9 @@ UseAccessories,UseCustomField
       &lt;point x="-5198" y="14812" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_17UseAccessories == 1" left="-12392" top="4449" logicalid="111" controlid="56" masterid="29" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_17UseAccessories == 1" left="-12392" top="4365" logicalid="111" controlid="56" masterid="29" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -2103,9 +2103,9 @@ UseAccessories,UseCustomField
     &lt;/layoutobject&gt;
     &lt;shape groupshapeid="0" groupnode="0" /&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1" left="-7521" top="7949" logicalid="112" controlid="57" masterid="36" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1" left="-7521" top="7949" logicalid="112" controlid="57" masterid="36" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -2114,9 +2114,9 @@ UseAccessories,UseCustomField
     &lt;/layoutobject&gt;
     &lt;shape groupshapeid="0" groupnode="0" /&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1 &amp;amp;&amp;amp; @_17UseAccessories != 1" left="270" top="5261" logicalid="113" controlid="58" masterid="37" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1 &amp;amp;&amp;amp; @_17UseAccessories != 1" left="186" top="4820" logicalid="113" controlid="58" masterid="37" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -2128,7 +2128,7 @@ UseAccessories,UseCustomField
 &lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-24456&lt;/dwd:PersistedViewPortLeft&gt;&lt;dwd:PersistedViewPortTop&gt;-9578&lt;/dwd:PersistedViewPortTop&gt;&lt;/dwd:DtsControlFlowDiagram&gt;&lt;/Package&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{5B6FBECA-087C-48F1-8D7B-B17E57FB0E24}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{EEE03108-674F-4D7E-A920-A8AFBABD9D8D}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{7EABCC64-041A-4BB5-9460-6D6151426675}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
@@ -2172,106 +2172,106 @@ UseAccessories,UseCustomField
       &lt;point x="5432" y="3757" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-&lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-8644&lt;/dwd:PersistedViewPortLeft&gt;&lt;/dwd:DtsDataFlowDiagram&gt;&lt;dwd:DtsComponentDesignerPropertiesList&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;144	TableInfoObjectType&lt;/dwd:key&gt;&lt;dwd:value xsi:type="xsd:string"&gt;Table&lt;/dwd:value&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;144	DataSourceViewID&lt;/dwd:key&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;333	DataSourceViewID&lt;/dwd:key&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;/dwd:DtsComponentDesignerPropertiesList&gt;&lt;/TaskHost&gt;</DTS:Property>
+&lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-8644&lt;/dwd:PersistedViewPortLeft&gt;&lt;/dwd:DtsDataFlowDiagram&gt;&lt;dwd:DtsComponentDesignerPropertiesList&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;144	TableInfoObjectType&lt;/dwd:key&gt;&lt;dwd:value xsi:type="xsd:string"&gt;Table&lt;/dwd:value&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;333	DataSourceViewID&lt;/dwd:key&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:DtsComponentDesignTimeProperty&gt;&lt;dwd:key xsi:type="xsd:string"&gt;144	DataSourceViewID&lt;/dwd:key&gt;&lt;/dwd:DtsComponentDesignTimeProperty&gt;&lt;/dwd:DtsComponentDesignerPropertiesList&gt;&lt;/TaskHost&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{70303854-a779-44a6-b78c-ee1eecefe48d}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9E07C5E7-EBF7-4148-B2D8-817B043DCC90}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{D196EE90-3AA2-4CE1-8D94-1DCA3D25E9F7}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PipelinePath xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:SourceName&gt;OLE DB Source Output&lt;/dwd:SourceName&gt;&lt;dwd:DestinationName&gt;Recordset Destination Input&lt;/dwd:DestinationName&gt;&lt;/PipelinePath&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{70303854-a779-44a6-b78c-ee1eecefe48d}-363</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{76B25FB0-D9FC-46A1-A78F-B19CA51BEC3B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{0D54B1A7-2B76-45CF-B344-1842C751ACB0}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{77D6E307-5666-4303-A8B5-14CF3255A9F5}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{535B539E-BA06-4DA0-A516-76D53A29AE4C}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{4678A5E1-10E8-4563-A8D9-8AE4A61B447F}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{78CEE8B1-8728-4364-8370-6DC52D48C532}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{9BF345BC-6BC9-40FD-A3DA-84E2F0CB0B46}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{EA0F717B-8D33-4151-BE51-BB820D5AE135}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{7EC4842B-A7EE-4464-B105-BB83327CA7C5}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{94A8A5B6-2EAB-487B-B900-83280AD60E10}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{6E25045A-0D58-451B-8340-245511AB95D0}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{88535EC7-F5F0-4DDB-B1CF-FF7B7BBA414E}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{BA4EFA53-AE5A-4BD1-9D7B-E804C1B82B9F}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{5C5AFE4F-CB6B-4B19-9194-A97A16C853E6}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{8EC111A8-E6DC-47E2-A8ED-AD228E697D8F}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{4D7A2E6B-C6F6-4BD7-AF2B-3759D9CC9E4F}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{D9D40BF4-A24D-4510-AD40-ABBC67DB76A2}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{A8DE39B6-46C8-4E68-AA04-62A2C3E29494}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{48D51C26-AE31-4228-9F1C-37846C93F913}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{CDE9339B-5F93-48DD-AD87-29749F4ACB1D}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{CE7F3A46-CD6B-463F-B755-69022C77A214}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{7C86F853-2E0A-451D-8943-BA79B0276920}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{5A08A242-6E13-45F9-A7D6-379F6D154017}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{D2B20982-5C28-440B-9C17-008AF6D60EDF}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{B2B19910-7974-4C39-92F6-1E8907BF8028}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{3D4B40BD-D326-40C8-92D6-EAA0C66DF127}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{D4E3525D-715E-46E0-B1C9-18978853E70A}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{3EB4E8EC-F65E-4177-B656-FE3A46147B79}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{BA3F4459-F828-45ED-9FE9-D9B18B10C77B}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;ExpressionAndConstraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{DE08BF1B-8A0B-491A-AC2C-5F0407C4B320}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{302AB0C9-4B22-4B81-AA93-2C6B9C21AA5B}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{4E102F69-4C9D-45F2-BF8B-19392CFA8527}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{E5D11816-6196-4A94-92A9-A5EB00642EC0}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{CCDBE965-6A0F-4A98-873C-C563AC8B05FF}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{D14873D5-A966-4670-A58B-B5B2BB371E8B}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;PrecedenceConstraint xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:EvalOp&gt;Constraint&lt;/dwd:EvalOp&gt;&lt;/PrecedenceConstraint&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">{F216EF7E-76BE-42DB-9616-AC91077364BC}</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{1D7CA9F2-7A82-4BE4-9E3A-DD200E22048C}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{6CB7DECA-76ED-49EB-A270-40996E98E4CE}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable>
 <DTS:PackageVariable>
 <DTS:Property DTS:Name="PackageVariableValue" DTS:DataType="8">&lt;Package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0"&gt;&lt;dwd:DtsControlFlowDiagram&gt;&lt;dwd:BoundingLeft&gt;-23456&lt;/dwd:BoundingLeft&gt;&lt;dwd:BoundingTop&gt;-8578&lt;/dwd:BoundingTop&gt;&lt;dwd:Layout&gt;&lt;dds&gt;
-  &lt;diagram fontclsid="{0BE35203-8F91-11CE-9DE3-00AA004BB851}" mouseiconclsid="{0BE35204-8F91-11CE-9DE3-00AA004BB851}" defaultlayout="Microsoft.DataWarehouse.Layout.GraphLayout100" defaultlineroute="Microsoft.DataWarehouse.Layout.GraphLayout100" version="7" nextobject="116" scale="100" pagebreakanchorx="0" pagebreakanchory="0" pagebreaksizex="0" pagebreaksizey="0" scrollleft="-24456" scrolltop="-9578" gridx="150" gridy="150" marginx="1000" marginy="1000" zoom="100" x="39243" y="8361" backcolor="15334399" defaultpersistence="2" PrintPageNumbersMode="3" PrintMarginTop="0" PrintMarginBottom="635" PrintMarginLeft="0" PrintMarginRight="0" marqueeselectionmode="1" mousepointer="0" snaptogrid="0" autotypeannotation="1" showscrollbars="1" viewpagebreaks="0" donotforceconnectorsbehindshapes="1" backpictureclsid="{00000000-0000-0000-0000-000000000000}"&gt;
+  &lt;diagram fontclsid="{0BE35203-8F91-11CE-9DE3-00AA004BB851}" mouseiconclsid="{0BE35204-8F91-11CE-9DE3-00AA004BB851}" defaultlayout="Microsoft.DataWarehouse.Layout.GraphLayout100" defaultlineroute="Microsoft.DataWarehouse.Layout.GraphLayout100" version="7" nextobject="116" scale="100" pagebreakanchorx="0" pagebreakanchory="0" pagebreaksizex="0" pagebreaksizey="0" scrollleft="-24456" scrolltop="-9578" gridx="150" gridy="150" marginx="1000" marginy="1000" zoom="100" x="36010" y="17039" backcolor="15334399" defaultpersistence="2" PrintPageNumbersMode="3" PrintMarginTop="0" PrintMarginBottom="635" PrintMarginLeft="0" PrintMarginRight="0" marqueeselectionmode="1" mousepointer="0" snaptogrid="0" autotypeannotation="1" showscrollbars="1" viewpagebreaks="0" donotforceconnectorsbehindshapes="1" backpictureclsid="{00000000-0000-0000-0000-000000000000}"&gt;
     &lt;font&gt;
       &lt;ddsxmlobjectstreamwrapper binary="01010000900180380100065461686f6d61" /&gt;
     &lt;/font&gt;
@@ -2730,7 +2730,7 @@ UseAccessories,UseCustomField
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="0" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="78.5005711537305" controlid="56" width="339" height="339" side="0" behavior="2" himetric="13057" distfromline="175" startobj="0" x="-12392" y="4449" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="77.9955510130464" controlid="56" width="423" height="423" side="0" behavior="2" himetric="12973" distfromline="175" startobj="0" x="-12392" y="4365" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -2846,7 +2846,7 @@ UseAccessories,UseCustomField
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="1" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="0" controlid="57" width="339" height="339" side="0" behavior="2" himetric="0" distfromline="175" startobj="0" x="-7521" y="7949" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="0" controlid="57" width="423" height="423" side="0" behavior="2" himetric="0" distfromline="175" startobj="0" x="-7521" y="7949" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -2864,11 +2864,11 @@ UseAccessories,UseCustomField
       &lt;point x="-4534" y="9042" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="385" top="4306" logicalid="92" controlid="37" masterid="0" hint1="0" hint2="0" width="3136" height="2326" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="385" top="4306" logicalid="92" controlid="37" masterid="0" hint1="0" hint2="0" width="2036" height="2326" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="1" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1"&gt;
-          &lt;adornment percentpos="90.5154091392136" controlid="58" width="339" height="339" side="0" behavior="2" himetric="3407" distfromline="175" startobj="0" x="270" y="5261" visible="1" allowoverlap="1" usepercent="1" /&gt;
+          &lt;adornment percentpos="73.1981981981982" controlid="58" width="423" height="423" side="0" behavior="2" himetric="1950" distfromline="175" startobj="0" x="186" y="4820" visible="1" allowoverlap="1" usepercent="1" /&gt;
         &lt;/polyline&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/control&gt;
@@ -2879,10 +2879,10 @@ UseAccessories,UseCustomField
         &lt;property name="VisibleAP" value="0" vartype="3" /&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/layoutobject&gt;
-    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="26" destid="35" sourceattachpoint="11" destattachpoint="18" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
-      &lt;point x="3121" y="4705" /&gt;
-      &lt;point x="3121" y="5775" /&gt;
-      &lt;point x="784" y="5775" /&gt;
+    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="26" destid="35" sourceattachpoint="7" destattachpoint="18" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
+      &lt;point x="2021" y="4705" /&gt;
+      &lt;point x="2021" y="5418" /&gt;
+      &lt;point x="784" y="5418" /&gt;
       &lt;point x="784" y="6132" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
@@ -3044,7 +3044,7 @@ UseAccessories,UseCustomField
       &lt;point x="-3010" y="-7701" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="-8098" top="-7518" logicalid="103" controlid="48" masterid="0" hint1="0" hint2="0" width="7837" height="5394" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="MSDDS.Polyline" left="-8098" top="-7518" logicalid="103" controlid="48" masterid="0" hint1="0" hint2="0" width="6737" height="5394" noresize="0" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="0" selectable="1" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="0" groupcollapsed="0" tabstop="1" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
       &lt;ddsxmlobj&gt;
         &lt;polyline endtypedst="3" endtypesrc="1" usercolor="32768" linestyle="0" linerender="2" customendtypedstid="0" customendtypesrcid="0" adornsvisible="1" /&gt;
@@ -3057,10 +3057,10 @@ UseAccessories,UseCustomField
         &lt;property name="VisibleAP" value="0" vartype="3" /&gt;
       &lt;/ddsxmlobj&gt;
     &lt;/layoutobject&gt;
-    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="46" destid="2" sourceattachpoint="9" destattachpoint="56" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
-      &lt;point x="-661" y="-7119" /&gt;
-      &lt;point x="-661" y="-3747" /&gt;
-      &lt;point x="-7699" y="-3747" /&gt;
+    &lt;connector lineroutestyle="Microsoft.DataWarehouse.Layout.GraphLayout100" sourceid="46" destid="2" sourceattachpoint="5" destattachpoint="56" segmenteditmode="0" bendpointeditmode="0" bendpointvisibility="2" relatedid="0" virtual="0"&gt;
+      &lt;point x="-1761" y="-7119" /&gt;
+      &lt;point x="-1761" y="-4871" /&gt;
+      &lt;point x="-7699" y="-4871" /&gt;
       &lt;point x="-7699" y="-2624" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
@@ -3128,9 +3128,9 @@ UseAccessories,UseCustomField
       &lt;point x="-5198" y="14812" /&gt;
     &lt;/connector&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_17UseAccessories == 1" left="-12392" top="4449" logicalid="111" controlid="56" masterid="29" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_17UseAccessories == 1" left="-12392" top="4365" logicalid="111" controlid="56" masterid="29" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -3139,9 +3139,9 @@ UseAccessories,UseCustomField
     &lt;/layoutobject&gt;
     &lt;shape groupshapeid="0" groupnode="0" /&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1" left="-7521" top="7949" logicalid="112" controlid="57" masterid="36" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1" left="-7521" top="7949" logicalid="112" controlid="57" masterid="36" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -3150,9 +3150,9 @@ UseAccessories,UseCustomField
     &lt;/layoutobject&gt;
     &lt;shape groupshapeid="0" groupnode="0" /&gt;
   &lt;/ddscontrol&gt;
-  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1 &amp;amp;&amp;amp; @_17UseAccessories != 1" left="270" top="5261" logicalid="113" controlid="58" masterid="37" hint1="0" hint2="0" width="339" height="339" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
+  &lt;ddscontrol controlprogid="DdsShapes.DdsObjectManagedBridge.2" tooltip="@_19UseCustomFields == 1 &amp;amp;&amp;amp; @_17UseAccessories != 1" left="186" top="4820" logicalid="113" controlid="58" masterid="37" hint1="0" hint2="0" width="423" height="423" noresize="1" nomove="0" nodefaultattachpoints="1" autodrag="0" usedefaultiddshape="1" selectable="0" showselectionhandles="0" allownudging="1" isannotation="0" dontautolayout="1" groupcollapsed="0" tabstop="0" visible="1" snaptogrid="0"&gt;
     &lt;control&gt;
-      &lt;ddsxmlobjectstreaminitwrapper binary="000800005301000053010000" /&gt;
+      &lt;ddsxmlobjectstreaminitwrapper binary="00080000a7010000a7010000" /&gt;
     &lt;/control&gt;
     &lt;layoutobject&gt;
       &lt;ddsxmlobj&gt;
@@ -3164,6 +3164,6 @@ UseAccessories,UseCustomField
 &lt;/dds&gt;&lt;/dwd:Layout&gt;&lt;dwd:PersistedViewPortLeft&gt;-24456&lt;/dwd:PersistedViewPortLeft&gt;&lt;dwd:PersistedViewPortTop&gt;-9578&lt;/dwd:PersistedViewPortTop&gt;&lt;/dwd:DtsControlFlowDiagram&gt;&lt;/Package&gt;</DTS:Property>
 <DTS:Property DTS:Name="Namespace">dts-designer-1.0</DTS:Property>
 <DTS:Property DTS:Name="ObjectName">package-diagram</DTS:Property>
-<DTS:Property DTS:Name="DTSID">{1E5025BF-2384-4360-AC6C-FCBFB4E5230D}</DTS:Property>
+<DTS:Property DTS:Name="DTSID">{6DEA07DB-E0A8-4BC7-8F53-BD6ECE5DDC0E}</DTS:Property>
 <DTS:Property DTS:Name="Description"></DTS:Property>
 <DTS:Property DTS:Name="CreationName"></DTS:Property></DTS:PackageVariable></DTS:Executable>
