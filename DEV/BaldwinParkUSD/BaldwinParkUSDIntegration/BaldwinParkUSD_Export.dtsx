@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="BaldwinParkUSD_Export"
   DTS:PackageType="5"
-  DTS:VersionBuild="163"
-  DTS:VersionGUID="{80747B34-4030-44C8-9F40-214B05EF13A1}">
+  DTS:VersionBuild="169"
+  DTS:VersionGUID="{2BD2F142-817E-4168-B98E-A4E7E95B97D2}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -219,7 +219,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFilePath">
       <DTS:VariableValue
-        DTS:DataType="8">E:\Integration\BaldwinParkUSD\Archived\Export\BaldwinParkUSDUpdateAssets_07192016.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\Integration\BaldwinParkUSD\Archived\Export\BaldwinParkUSDUpdateAssets_07202016.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -268,7 +268,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ClientExportZipFile">
       <DTS:VariableValue
-        DTS:DataType="8">E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets_07192016.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets_07202016.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -446,7 +446,7 @@
           <DTS:ObjectData>
             <ExecuteProcessData
               Executable="C:\Windows\System32\cmd.exe"
-              Arguments="C:\WINDOWS\system32\cmd.exe /c E:\Integration\7z.exe a &quot;E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets_07192016.zip&quot; &quot;E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets.tsv&quot;"
+              Arguments="C:\WINDOWS\system32\cmd.exe /c E:\Integration\7z.exe a &quot;E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets_07202016.zip&quot; &quot;E:\Integration\BaldwinParkUSD\ClientFile\Export\BaldwinParkUSDUpdateAssets.tsv&quot;"
               WorkingDirectory="E:\tipwebteamssync" />
           </DTS:ObjectData>
         </DTS:Executable>
@@ -1268,7 +1268,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{99615FE6-9ACE-4F0D-BE21-CD086645F00A}"
-              SQLTask:SqlStatementSource="INSERT INTO dbo._ETL_Export&#xA;(AssetID, SiteID, Location, Tag, Serial, ProductName, Manufacturer, Model, ProductType,&#xA;ReceivedDate, PurchaseOrder, PurchasePrice, AccountCode, RetiredStatus, RetiredDate)&#xA;SELECT ISNULL(TI.AssetID, '') AS AssetID, S.SiteID,&#xA;CASE WHEN R.RoomUID IS NOT NULL THEN R.RoomNumber ELSE '' END AS RoomNumber,&#xA;TI.Tag, ISNULL(TI.Serial, '') AS Serial, I.ItemName AS ProductName, M.ManufacturerName,&#xA;ISNULL(I.ModelNumber, '') AS ModelNumber, CC.Class AS ProductType,&#xA;CASE WHEN P.PurchaseDate IS NOT NULL THEN CONVERT(VARCHAR, P.PurchaseDate, 101)&#xA;ELSE ISNULL(CONVERT(VARCHAR, TI.PurchaseDate, 101), '') END AS PurchaseDate,&#xA;CASE WHEN P.PurchaseUID IS NOT NULL THEN P.OrderNumber ELSE '' END AS PurchaseOrder,&#xA;CASE WHEN TPID.PurchasePrice IS NOT NULL THEN CONVERT(VARCHAR, TPID.PurchasePrice)&#xA;ELSE ISNULL(CONVERT(VARCHAR, TI.PurchasePrice), '') END AS PurchasePrice,&#xA;CASE WHEN TPID.AccountCode IS NOT NULL THEN TPID.AccountCode ELSE '' END AS AccountCode,&#xA;'' AS RetiredStatus, '' AS RetiredDate&#xA;FROM tblTechInventory TI&#xA;JOIN tblTechSites S ON TI.SiteUID = S.SiteUID&#xA;LEFT JOIN tblUnvRooms R ON TI.EntityTypeUID = 2&#xA;AND TI.EntityUID = R.RoomUID AND TI.SiteUID = R.SiteUID&#xA;JOIN tblStatus ST ON TI.StatusUID = ST.statusID&#xA;JOIN tblTechItems I ON TI.ItemUID = I.ItemUID&#xA;JOIN tblTechItemTypes IT ON I.ItemTypeUID = IT.ItemTypeUID&#xA;JOIN _ESDCodes CC ON IT.ItemTypeName = CC.[Product Type]&#xA;JOIN tblUnvManufacturers M ON I.ManufacturerUID = M.ManufacturerUID&#xA;LEFT JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;LEFT JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;LEFT JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;LEFT JOIN tblTechPurchases P ON TPID.PurchaseUID = P.PurchaseUID&#xA;LEFT JOIN dbo._ETL_Export EF ON TI.Tag = EF.Tag&#xA;WHERE EF.ETLExportUID IS NULL&#xA;AND TI.InventoryUID &gt; 0&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="UPDATE tblTechInventory&#xA;SET AssetID = _ESDAssetID.AssetID&#xA;FROM tblTechInventory&#xA;JOIN _ESDAssetID ON tblTechInventory.Tag = _ESDAssetID.Tag&#xA;WHERE tblTechInventory.AssetID IS NULL&#xA;OR tblTechInventory.AssetID &lt;&gt; _ESDAssetID.AssetID&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE tblTechInventory&#xA;SET AssetID = '1' + RIGHT('00000000' + CONVERT(VARCHAR, InventoryUID), 9)&#xA;WHERE AssetID IS NULL&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO dbo._ETL_Export&#xA;(AssetID, SiteID, Location, Tag, Serial, ProductName, Manufacturer, Model, ProductType,&#xA;ReceivedDate, PurchaseOrder, PurchasePrice, AccountCode, RetiredStatus, RetiredDate)&#xA;SELECT ISNULL(TI.AssetID, '') AS AssetID, S.SiteID,&#xA;CASE WHEN R.RoomUID IS NOT NULL THEN R.RoomNumber ELSE '' END AS RoomNumber,&#xA;TI.Tag, ISNULL(TI.Serial, '') AS Serial, I.ItemName AS ProductName, M.ManufacturerName,&#xA;ISNULL(I.ModelNumber, '') AS ModelNumber, CC.Class AS ProductType,&#xA;CASE WHEN P.PurchaseDate IS NOT NULL THEN CONVERT(VARCHAR, P.PurchaseDate, 101)&#xA;ELSE ISNULL(CONVERT(VARCHAR, TI.PurchaseDate, 101), '') END AS PurchaseDate,&#xA;CASE WHEN P.PurchaseUID IS NOT NULL THEN P.OrderNumber ELSE '' END AS PurchaseOrder,&#xA;CASE WHEN TPID.PurchasePrice IS NOT NULL THEN CONVERT(VARCHAR, TPID.PurchasePrice)&#xA;ELSE ISNULL(CONVERT(VARCHAR, TI.PurchasePrice), '') END AS PurchasePrice,&#xA;CASE WHEN TPID.AccountCode IS NOT NULL THEN TPID.AccountCode ELSE '' END AS AccountCode,&#xA;CONVERT(VARCHAR, TI.StatusUID) AS RetiredStatus, CONVERT(VARCHAR, TI.InventoryUID) AS RetiredDate&#xA;FROM tblTechInventory TI&#xA;JOIN tblTechSites S ON TI.SiteUID = S.SiteUID&#xA;LEFT JOIN tblUnvRooms R ON TI.EntityTypeUID = 2&#xA;AND TI.EntityUID = R.RoomUID AND TI.SiteUID = R.SiteUID&#xA;JOIN tblStatus ST ON TI.StatusUID = ST.statusID&#xA;JOIN tblTechItems I ON TI.ItemUID = I.ItemUID&#xA;JOIN tblTechItemTypes IT ON I.ItemTypeUID = IT.ItemTypeUID&#xA;JOIN _ESDCodes CC ON IT.ItemTypeName = CC.[Product Type]&#xA;JOIN tblUnvManufacturers M ON I.ManufacturerUID = M.ManufacturerUID&#xA;LEFT JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;LEFT JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;LEFT JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;LEFT JOIN tblTechPurchases P ON TPID.PurchaseUID = P.PurchaseUID&#xA;LEFT JOIN dbo._ETL_Export EF ON TI.Tag = EF.Tag&#xA;WHERE EF.ETLExportUID IS NULL&#xA;AND TI.InventoryUID &gt; 0&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE _ETL_Export&#xA;SET RetiredStatus = ''&#xA;WHERE RetiredStatus NOT IN (&#xA;'59', '60', '61',&#xA;'63', '64', '65',&#xA;'77', '78', '79')&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE _ETL_Export&#xA;SET RetiredDate = ''&#xA;WHERE RetiredStatus = ''&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE _ETL_Export&#xA;SET RetiredDate = CONVERT(VARCHAR, IH.[Date], 101)&#xA;FROM _ETL_Export&#xA;JOIN (SELECT MAX(InventoryHistoryUID) AS [UID],&#xA;[Date], DJ.InventoryUID, DJ.StatusUID&#xA;FROM tblTechInventoryHistory UJ&#xA;JOIN (SELECT MAX(LastModifiedDate) AS [Date],&#xA;InventoryUID, StatusUID&#xA;FROM tblTechInventoryHistory&#xA;WHERE StatusUID IN (&#xA;'59', '60', '61',&#xA;'63', '64', '65',&#xA;'77', '78', '79')&#xA;GROUP BY InventoryUID, StatusUID) AS DJ&#xA;ON UJ.LastModifiedDate = DJ.[Date]&#xA;AND UJ.InventoryUID = DJ.InventoryUID&#xA;AND UJ.StatusUID = DJ.StatusUID&#xA;GROUP BY [Date], DJ.InventoryUID, DJ.StatusUID) AS IH&#xA;ON CONVERT(INT, _ETL_Export.RetiredDate) = IH.InventoryUID&#xA;AND CONVERT(INT, _ETL_Export.RetiredStatus) = IH.StatusUID&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE _ETL_Export&#xA;SET RetiredStatus =&#xA;CASE WHEN RetiredStatus IN ('59', '60', '61') THEN 'Disposed' ELSE&#xA;CASE WHEN RetiredStatus IN ('63', '64', '65') THEN 'Stolen' ELSE&#xA;CASE WHEN RetiredStatus IN ('77', '78', '79') THEN 'Sold' ELSE&#xA;'' END END END&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
@@ -1707,7 +1707,7 @@
     design-time-name="Package\Export\Export Data">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Export\Export Data\OLE DB Source"
@@ -1735,7 +1735,9 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
