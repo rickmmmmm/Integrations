@@ -5,7 +5,7 @@
     <DataSource Name="HayesConversion_ETL">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
-        <ConnectString>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</ConnectString>
+        <ConnectString>Data Source=hayesconversion;Initial Catalog=TIPWEB_ETL_Kyrene</ConnectString>
         <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
@@ -19,11 +19,6 @@
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
       <rd:DataSourceID>4a4126b0-040e-43e7-92c2-f89224045bec</rd:DataSourceID>
-    </DataSource>
-    <DataSource Name="MSDB">
-      <DataSourceReference>MSDB</DataSourceReference>
-      <rd:SecurityType>None</rd:SecurityType>
-      <rd:DataSourceID>e4560f5c-fbc9-4559-95ef-32365655f72d</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
@@ -611,6 +606,127 @@ FROM            tblSettings</CommandText>
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="newTeachers">
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+
+SET @rowCount = (
+
+	SELECT  COUNT (DISTINCT EntityID)
+	--DISTINCT EntityID, SiteID, EntityFirstName, EntityLastName
+	FROM 
+	(
+
+	SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
+	FROM TIPWEB_ETL..Clients_ETL
+	WHERE EntityType  ='Staff'
+	AND EntityID NOT IN (SELECT teacherID FROM TIPWEB_Staging..tblteachers)
+
+
+	  UNION all
+
+	SELECT EntityID, SiteID, EntityLastName, EntityFirstName
+	FROM 
+		(
+		SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
+		FROM TIPWEB_ETL..Clients_ETL etl
+		WHERE EntityType  ='Staff'
+
+		EXCEPT
+
+		SELECT DISTINCT EntityID, SiteID, EntityLastName, EntityFirstName
+		--, campusID
+		--, studentsUID
+		FROM TIPWEB_ETL..Clients_ETL etl
+		JOIN TIPWEB_Staging..tblteachers stg ON etl.EntityID = stg.teacherID 
+		 AND etl.SiteID = stg.CampusID
+		WHERE EntityType  ='Staff'
+		
+		)t 
+		
+	)a 
+)
+IF @rowCount &gt;0
+BEGIN 
+	SELECT 'There are '  + CONVERT(VARCHAR(50), @rowCount) + ' teachers IDs who were provided in the spreadsheet, but do not currently exist in the TIPWEB databse.  Please review the attached New Teacher ID List and confirm that the teacher IDs have to be imported into TIPWeb Database.' AS comment
+END 
+ELSE 
+BEGIN 
+    SELECT 'All Teachers IDs exist in the TIPWebDatabase.' AS comment
+    
+ENd</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="Comment">
+          <DataField>comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DupTeachers">
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET                @rowCount =
+                             (SELECT        COUNT(*)
+                               FROM            (SELECT DISTINCT ns.*, s.teacherID, s.CampusID
+                                                         FROM            dbo.NewTeachers ns JOIN
+                                                                                   TIPWEB_Staging..tblTeachers s ON ns.EntityLastName = s.LastName AND ns.EntityFirstName = s.FirstName AND 
+                                                                                   ns.SiteID = s.CampusID AND ns.EntityID != s.teacherID) a) IF @rowCount &gt; 0 BEGIN
+                             SELECT        'There are ' + CONVERT(VARCHAR(50), @rowCount) 
+                                                       + ' teachers who were provided in the spreadsheet exist with different teacher IDs in the TIPWeb Database. Please review the attached Duplicate Teachers List and let us know which teacher IDs are correct.'
+                                                        AS comment END ELSE BEGIN
+                                                           SELECT        'N/A' END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="comment">
+          <DataField>comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DupTeacherID">
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>DECLARE @rowCount INT
+SET @rowCount = (
+
+
+SELECT COUNT (*)
+--tea.CampusID, tea.TeacherID, tea.lastname, tea.firstname
+FROM 
+(
+	SELECT TeacherID, CampusID, COUNT(* )dupCount
+	FROM tipweb_Staging.dbo.tblTeachers
+	GROUP BY CampusID, TeacherID
+	HAVING COUNT(* )&gt;1
+)a
+JOIN tipweb_Staging.dbo.tblTeachers tea ON a.CampusID = tea.CampusID
+AND a.TeacherID = tea.TeacherID
+JOIN TIPWEB_ETL.dbo.Clients_ETL etl ON a.CampusID = etl.SiteID AND a.TeacherID = etl.EntityID
+
+)
+
+IF @rowCount&gt;0
+BEGIN 
+ SELECT 'There are '  + CONVERT(VARCHAR(50), @rowCount) + ' teachers IDs who were provided in the spreadsheet are used for other teachers in TIPWeb. Please review the attached Duplicate Teachers ID List and let us know which teacher ID is correct.' AS comment
+END
+ELSE 
+BEGIN 
+ SELECT 'There are no duplicate Teacher IDs.' AS comment
+END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="comment">
+          <DataField>comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
     <DataSet Name="WS_teacher_multiIDs">
       <Query>
         <DataSourceName>HayesConversion_ETL</DataSourceName>
@@ -757,6 +873,21 @@ order by SiteID</CommandText>
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="ETLList">
+      <Query>
+        <DataSourceName>HayesConversion_ETL</DataSourceName>
+        <CommandText>SELECT Name
+FROM sys.databases mp
+where PATINDEX('%ETL%', name) &gt; 0
+Order by Name</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
     <DataSet Name="StagingList">
       <Query>
         <DataSourceName>HayesConversion_Staging</DataSourceName>
@@ -768,17 +899,6 @@ ORDER BY name</CommandText>
       <Fields>
         <Field Name="name">
           <DataField>name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
-    <DataSet Name="ETLList">
-      <SharedDataSet>
-        <SharedDataSetReference>ETLList</SharedDataSetReference>
-      </SharedDataSet>
-      <Fields>
-        <Field Name="Name">
-          <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -5037,164 +5157,6 @@ ORDER BY name</CommandText>
               </Border>
             </Style>
           </Tablix>
-          <Textbox Name="Textbox3">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Staff  not in TIPWEB</Value>
-                    <Style>
-                      <FontFamily>Calibri</FontFamily>
-                      <FontSize>11pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox3</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>Teachers Not In TIPWEB</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>12.41889in</Top>
-            <Left>0.08084in</Left>
-            <Height>0.25in</Height>
-            <Width>3.45636in</Width>
-            <ZIndex>22</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox5">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Staff ID with multiple staff members in worksheet</Value>
-                    <Style>
-                      <FontFamily>Calibri</FontFamily>
-                      <FontSize>11pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox3</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>WS_TeacherID_MultiTeachers</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>12.72445in</Top>
-            <Left>0.09125in</Left>
-            <Height>0.27084in</Height>
-            <Width>4.42387in</Width>
-            <ZIndex>23</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox76">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Same Teacher ID used for different teachers. Please see the attached </Value>
-                    <Style>
-                      <FontFamily>Calibri</FontFamily>
-                      <FontSize>11pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                    </Style>
-                  </TextRun>
-                  <TextRun>
-                    <Value>WS_TeacherID_Mutli Teachers</Value>
-                    <Style>
-                      <FontFamily>Calibri</FontFamily>
-                      <FontSize>11pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox76</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>WS_TeacherID_MultiTeachers</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>13.39805in</Top>
-            <Left>0.08084in</Left>
-            <Height>0.25in</Height>
-            <Width>8.90625in</Width>
-            <ZIndex>24</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
           <Tablix Name="Tablix18">
             <TablixBody>
               <TablixColumns>
@@ -5441,7 +5403,7 @@ ORDER BY name</CommandText>
             <Left>0.08084in</Left>
             <Height>0.5in</Height>
             <Width>3in</Width>
-            <ZIndex>25</ZIndex>
+            <ZIndex>22</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -5551,7 +5513,7 @@ ORDER BY name</CommandText>
             <Left>0.16667in</Left>
             <Height>0.5in</Height>
             <Width>1in</Width>
-            <ZIndex>26</ZIndex>
+            <ZIndex>23</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -5590,200 +5552,8 @@ ORDER BY name</CommandText>
             <Left>0.16542in</Left>
             <Height>0.25in</Height>
             <Width>7.17834in</Width>
-            <ZIndex>27</ZIndex>
+            <ZIndex>24</ZIndex>
             <DocumentMapLabel>="Site ID that does not exist in Campus User Listing"</DocumentMapLabel>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox26">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Students not in TIPWeb</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox26</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>Students Not in TIPWEB</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>14.60354in</Top>
-            <Left>0.08084in</Left>
-            <Height>0.25in</Height>
-            <Width>3.43553in</Width>
-            <ZIndex>28</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox29">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Student ID with multiple students in worksheet</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox29</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>WS_StudentID_MultiStudents</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>14.86743in</Top>
-            <Left>0.08084in</Left>
-            <Height>0.25in</Height>
-            <Width>4.39261in</Width>
-            <ZIndex>29</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox31">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Staff with Mutiple Staff IDs</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox31</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>WS_Teachers_MultiIDs</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>13.01958in</Top>
-            <Left>0.09125in</Left>
-            <Height>0.25in</Height>
-            <Width>4.40304in</Width>
-            <ZIndex>30</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox37">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Student with Multiple Student IDs</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox37</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>WS_Students_MultiIDs</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>15.17298in</Top>
-            <Left>0.09125in</Left>
-            <Height>0.25in</Height>
-            <Width>4.36136in</Width>
-            <ZIndex>31</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -5816,7 +5586,7 @@ ORDER BY name</CommandText>
             <Left>0.08084in</Left>
             <Height>0.25in</Height>
             <Width>2.12007in</Width>
-            <ZIndex>32</ZIndex>
+            <ZIndex>25</ZIndex>
             <DocumentMapLabel>="Staff Validation"</DocumentMapLabel>
             <Style>
               <Border>
@@ -5850,169 +5620,13 @@ ORDER BY name</CommandText>
             <Left>0.08084in</Left>
             <Height>0.25in</Height>
             <Width>2.33333in</Width>
-            <ZIndex>33</ZIndex>
+            <ZIndex>26</ZIndex>
             <DocumentMapLabel>="Students Validation"</DocumentMapLabel>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
               <BackgroundColor>PaleTurquoise</BackgroundColor>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox43">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Manufacturer List</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox43</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>Manufacturer</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>15.56125in</Top>
-            <Left>0.10167in</Left>
-            <Height>0.25in</Height>
-            <Width>2.44792in</Width>
-            <ZIndex>34</ZIndex>
-            <DocumentMapLabel>="Manufacturer List"</DocumentMapLabel>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox44">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Funding Source List</Value>
-                    <Style>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox44</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>FundingSource</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>16.04042in</Top>
-            <Left>0.08208in</Left>
-            <Height>0.25in</Height>
-            <Width>2.4675in</Width>
-            <ZIndex>35</ZIndex>
-            <DocumentMapLabel>="Funding Source List"</DocumentMapLabel>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox50">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Click </Value>
-                    <Style />
-                  </TextRun>
-                  <TextRun>
-                    <Value>here</Value>
-                    <Style>
-                      <FontStyle>Italic</FontStyle>
-                      <FontWeight>Bold</FontWeight>
-                      <TextDecoration>Underline</TextDecoration>
-                      <Color>Blue</Color>
-                    </Style>
-                  </TextRun>
-                  <TextRun>
-                    <Value> to view the campus user list</Value>
-                    <Style />
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox50</rd:DefaultName>
-            <ActionInfo>
-              <Actions>
-                <Action>
-                  <Drillthrough>
-                    <ReportName>01_CampusUserList</ReportName>
-                    <Parameters>
-                      <Parameter Name="InitialCatalog">
-                        <Value>=Parameters!InitialCatalog.Value</Value>
-                      </Parameter>
-                    </Parameters>
-                  </Drillthrough>
-                </Action>
-              </Actions>
-            </ActionInfo>
-            <Top>1.91542in</Top>
-            <Left>1.7175in</Left>
-            <Height>0.25in</Height>
-            <Width>2.96876in</Width>
-            <ZIndex>36</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <BackgroundColor>Khaki</BackgroundColor>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
               <PaddingTop>2pt</PaddingTop>
@@ -6065,7 +5679,7 @@ ORDER BY name</CommandText>
     </ReportParameter>
     <ReportParameter Name="InitialCatalog">
       <DataType>String</DataType>
-      <Prompt>Select the ETL Database</Prompt>
+      <Prompt>Select a Database</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>ETLList</DataSetName>
@@ -6084,6 +5698,21 @@ ORDER BY name</CommandText>
           <ValueField>name</ValueField>
           <LabelField>name</LabelField>
         </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="ConnectionString">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>ConnectionString</Prompt>
+      <Hidden>true</Hidden>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>="Data Source=HAYESCONVERSION;Initial Catalog=" &amp;Parameters!InitialCatalog.Value</Value>
+            <Label>ConnectionString</Label>
+          </ParameterValue>
+        </ParameterValues>
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
