@@ -24,7 +24,7 @@ DECLARE @TagUpdate AS VARCHAR(50) = 'False'--'True' or 'False'
 DECLARE @CustomField1Label AS VARCHAR(50) = 'Device Name'--'' or '<Anything>'
 DECLARE @CustomField1Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
 --Custom Field 2: Definition of Custom Field 2
-DECLARE @CustomField2Label AS VARCHAR(50) = ''--'' or '<Anything>'
+DECLARE @CustomField2Label AS VARCHAR(50) = 'Device Type'--'' or '<Anything>'
 DECLARE @CustomField2Type AS VARCHAR(50) = 'String'--'String' or 'Integer' or 'Boolean' or 'DateTime' or 'Double' or 'Percent'
 --Custom Field 3: Definition of Custom Field 3
 DECLARE @CustomField3Label AS VARCHAR(50) = ''--'' or '<Anything>'
