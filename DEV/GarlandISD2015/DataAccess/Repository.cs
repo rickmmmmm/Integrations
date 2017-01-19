@@ -361,11 +361,51 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public string getModelNumberFromProductName(string productName)
+        {
+            string model = null;
+
+            string returnQuery = "SELECT ModelNumber FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                if (!reader.IsDBNull(0))
+                {
+                    model = (string) reader[0];
+                }       
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (model == null)
+            {
+                throw new Exception("The specified Item Model Number was not found.");
+            }
+            else
+            {
+                return model;
+            }
+        }
+
         public Item getItemFromName(string productName)
         {
             Item newItem = new Item();
 
             string returnQuery = "SELECT [ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU],[SerialRequired],[ProjectedLife],[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],[AllowUntagged] FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
+
+            Console.WriteLine(returnQuery);
+            Console.ReadLine();
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -492,5 +532,6 @@ namespace DataAccess
                 return purchaseUid;
             }
         }
+
     }
 }

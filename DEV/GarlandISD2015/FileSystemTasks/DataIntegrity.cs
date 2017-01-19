@@ -90,7 +90,7 @@ namespace SystemTasks
             {
                 string testItem = _rep.getItemFromName(item.ProductName).ModelNumber;
 
-                if (testItem != item.Model)
+                if (testItem.ToLower() != item.Model.ToLower())
                 {
                     throw new Exception();
                 }

@@ -21,6 +21,7 @@ namespace DataAccess
         int getContainerUID(string name);
         int getInventorySourceUID(string name);
         Item getItemFromName(string productName);
+        string getModelNumberFromProductName(string productName);
         int getItemUIDFromName(string name);
         void logError(string message, string processStep, DateTime errorDate);
         void logAction(string actionName, string actionDescription, DateTime actionDate);
