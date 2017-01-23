@@ -346,7 +346,7 @@ namespace DataAccess
                     {
                         headerQuery = "UPDATE tblTechPurchases ";
                         headerQuery += "SET PurchaseDate = '" + order.PurchaseDate.ToString() + "', ";
-                        headerQuery += "Notes = '" + order.Notes + "', ";
+                        headerQuery += "Notes = '" + order.Notes.Replace("'","") + "', ";
                         headerQuery += "VendorUID = " + order.VendorUID + ", ";
                         headerQuery += "SiteUID = " + order.SiteID +", ";
                         headerQuery += "StatusUID = 32,";
@@ -372,6 +372,7 @@ namespace DataAccess
                         _conn.Close();
                     }
 
+                    Console.WriteLine(headerQuery);
                     _conn.Open();
                     SqlCommand cmd = new SqlCommand(headerQuery, _conn);
 
@@ -440,6 +441,8 @@ namespace DataAccess
                 {
                     _conn.Open();
                 }
+
+                Console.WriteLine(detailQuery);
                 try
                 {
                     SqlCommand cmd = new SqlCommand(detailQuery, _conn);
@@ -640,7 +643,7 @@ namespace DataAccess
         {
             List<RejectedRecord> rejects = new List<RejectedRecord>();
 
-            string returnQuery = "SELECT Reference, RejectReason, RejectValue, ExceptionMessage FROM tblTechPurchases WHERE ImportCode = " + importId.ToString();
+            string returnQuery = "SELECT Reference, RejectReason, RejectValue, ExceptionMessage FROM tblTechPurchases WHERE ImportCode = " + _importCode.ToString();
 
             if (_conn.State == ConnectionState.Open)
             {

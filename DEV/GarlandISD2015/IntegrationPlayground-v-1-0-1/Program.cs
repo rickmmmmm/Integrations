@@ -190,6 +190,11 @@ namespace IntegrationPlayground_v_1_0_1
                         //Console.ReadLine();
 
                         _repo.addOrderHeaders(mappedItems);
+                        Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
+                        string rejectFile = Console.ReadLine();
+
+                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(1));
+
                         Console.ReadLine();
                     }
                     else

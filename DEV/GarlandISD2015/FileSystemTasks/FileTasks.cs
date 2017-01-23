@@ -50,6 +50,19 @@ namespace SystemTasks
             
         }
 
+        public void createRejectFile(string fileName, List<RejectedRecord> rejects)
+        {
+            using (StreamWriter writer = File.AppendText(fileName))
+            {
+                var csv = new CsvWriter(writer);
+                csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
+                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.QuoteAllFields = true;
+
+                csv.WriteRecords(rejects);
+            }
+        }
+
         public dynamic convertCsvFileToObject(string fileName, ImportType type)
         {
             switch (type)

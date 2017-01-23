@@ -225,7 +225,28 @@ namespace SystemTasks
             }
             else
             {
-                return false;
+                try
+                {
+                    _rep.getFundingSourceUIDFromName(item.FundingSource);
+                    return false;
+                }
+                catch(Exception e)
+                {
+                    ErrorEventArgs args = new ErrorEventArgs();
+                    args.message = "Record Rejected";
+                    args.actionName = "Data Integrity";
+                    args.type = Logging.ChangeType.RejectRecord;
+                    args.Data = new ErrorData
+                    {
+                        Reference = item.OrderNumber,
+                        Reason = "Missing Funding Source",
+                        ExceptionMessage = "",
+                        RejectedValue = item.FundingSource.ToString()
+                    };
+                    OnRejectRecord(args);
+                    return true;
+                }
+                
             }
         }
         //
