@@ -23,10 +23,10 @@ namespace SystemTasks
 
             if (type == ChangeType.Error)
             {
-                _repo.logError(message, actionName, DateTime.Now);
+                _repo.logError(message, actionName);
             }
 
-            _repo.logAction(actionName, message, DateTime.Now);
+            _repo.logAction(actionName, message);
         }
 
     }

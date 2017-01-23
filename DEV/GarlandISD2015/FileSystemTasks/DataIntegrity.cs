@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model;
 using DataAccess;
-using FileSystemTasks;
+using SystemTasks;
 
 namespace SystemTasks
 {
@@ -88,7 +88,7 @@ namespace SystemTasks
         {
             try
             {
-                string testItem = _rep.getItemFromName(item.ProductName).ModelNumber;
+                string testItem = _rep.getModelNumberFromProductName(item.ProductName);
 
                 if (testItem.ToLower() != item.Model.ToLower())
                 {
@@ -147,7 +147,7 @@ namespace SystemTasks
         //purchase date missing or invalid
         public bool purchaseDateMissingOrInvalid(PurchaseOrderFile item)
         {
-            if (string.IsNullOrEmpty(item.OrderDate) || !item.OrderDate.IsValidDateFromString())
+            if (!item.OrderDate.IsValidDateFromString())
             {
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";
@@ -162,12 +162,12 @@ namespace SystemTasks
                 };
                 OnRejectRecord(args);
 
-                return true;
+                return false;
             }
             
             else
             {
-                return false;
+                return true;
             }         
         }
 

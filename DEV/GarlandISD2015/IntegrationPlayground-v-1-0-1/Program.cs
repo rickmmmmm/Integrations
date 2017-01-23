@@ -18,7 +18,9 @@ namespace IntegrationPlayground_v_1_0_1
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
-            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management");
+            Console.WriteLine("Shall we play a game? (Y)es (N)o");
+            Console.ReadLine();
+            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (Q)uit");
 
             ReadOption();
 
@@ -43,6 +45,12 @@ namespace IntegrationPlayground_v_1_0_1
                     break;
                 case "m":
                     MobileDeviceManagementMenu();
+                    break;
+                case "q":
+                    Environment.Exit(0);
+                    break;
+                case "quit":
+                    Environment.Exit(0);
                     break;
                 default:
                     Console.WriteLine("Not a recognized option. Please select a valid option");
@@ -97,15 +105,18 @@ namespace IntegrationPlayground_v_1_0_1
             string file = Console.ReadLine();
             FileTasks ft = new FileTasks();
             Repository rep = new Repository();
+
             _repo = rep;
 
             DataIntegrity di = new DataIntegrity(_repo);
             Logging log = new Logging(_repo);
             PurchaseOrderMapping map = new PurchaseOrderMapping(_repo);
 
-            di.Action += OnAction;
             di.Reject += OnRejecting;
-            di.Error += OnError;
+            di.Action += OnDataIntegrityAction;
+
+            _repo.Action += OnAction;
+            _repo.Error += OnError;
 
             if (file == "quit")
             {
@@ -155,12 +166,12 @@ namespace IntegrationPlayground_v_1_0_1
                             continue;
                         }
 
-                        if (!di.invalidLineNumber(item))
+                        if (di.invalidLineNumber(item))
                         {
                             continue;
                         }
 
-                        if (!di.missingFundingSource(item))
+                        if (di.missingFundingSource(item))
                         {
                             continue;
                         }
@@ -172,17 +183,19 @@ namespace IntegrationPlayground_v_1_0_1
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
                         //rep.addOrderHeaders(mappedItems);
-                        foreach (var item in mappedItems)
-                        {
-                            Console.WriteLine(item.PurchaseOrderNumber);
-                        }
-                        Console.ReadLine();
+                        //foreach (var item in mappedItems)
+                        //{
+                        //    Console.WriteLine(item.PurchaseOrderNumber);
+                        //}
+                        //Console.ReadLine();
 
                         _repo.addOrderHeaders(mappedItems);
+                        Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
+                        Console.ReadLine();
                     }
                 }
 
@@ -190,17 +203,16 @@ namespace IntegrationPlayground_v_1_0_1
                 {
 
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
+                    Console.ReadLine();
                 }
             }
 
         }
 
 
-        static void OnAction(object sender, SystemTasks.ErrorEventArgs args)
+        static void OnAction(object sender, DbActivityEventArgs args)
         {
-            //Logging log = new Logging(_repo);
-            Console.WriteLine("Here.");
-            //log.log(args.message, args.actionName, Logging.ChangeType.Activity);
+            _repo.logAction(args.ActivityStep, args.ActivityMessage);
         }
         static void OnRejecting(object sender, SystemTasks.ErrorEventArgs args)
         {
@@ -210,11 +222,14 @@ namespace IntegrationPlayground_v_1_0_1
                                                         exceptionMessage = args.Data.ExceptionMessage });
         }
 
-        static void OnError(object sender, SystemTasks.ErrorEventArgs args)
+        static void OnError(object sender, DbErrorEventArgs args)
         {
-            Logging log = new Logging(_repo);
+            _repo.logError(args.InterfaceMessage, args.ExceptionMessage);
+        }
 
-            log.log(args.message, args.actionName, Logging.ChangeType.Error);
+        static void OnDataIntegrityAction(object sender, SystemTasks.ErrorEventArgs args)
+        {
+            _repo.logAction(args.actionName, args.message);
         }
     }
 }

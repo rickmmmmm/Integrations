@@ -42,9 +42,9 @@ namespace SystemTasks
                 csv.Configuration.RegisterClassMap<PurchaseOrderClassMap>();
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
 
-                var payload = csv.GetRecords<PurchaseOrderFile>();
+                var payload = csv.GetRecords<PurchaseOrderFile>().ToList();
 
-                return payload.ToList();
+                return payload;
             }
 
             

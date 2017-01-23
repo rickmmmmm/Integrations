@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Model;
 using DataAccess;
+using SystemTasks;
 
 namespace SystemTasks
 {
@@ -42,17 +43,18 @@ namespace SystemTasks
         {
             List<PurchaseOrderHeader> orders = new List<PurchaseOrderHeader>();
 
-            foreach (var item in payload.GroupBy(u => new { u.OrderNumber, u.OrderDate, u.Notes, u.VendorName }))
+            foreach (var item in payload.GroupBy(u => new { u.OrderNumber, u.OrderDate, u.Notes, u.VendorName, u.ShippedToSite }))
             {
                 PurchaseOrderHeader order = new PurchaseOrderHeader();
 
                 var details = payload.Where(p => p.OrderNumber == item.Key.OrderNumber).ToList();
 
                 order.PurchaseOrderNumber = item.Key.OrderNumber;
-                order.PurchaseDate = Convert.ToDateTime(item.Key.OrderDate);
+                order.PurchaseDate = item.Key.OrderDate.ToDateTimeFromString();
                 order.Notes = item.Key.Notes;
                 order.StatusUID = _repo.getStatusUID("open");
                 order.VendorUID = _repo.getVendorUIDFromName(item.Key.VendorName);
+                order.SiteID = _repo.getSiteUIDFromName(item.Key.ShippedToSite);
                 order.CreatedByUserId = 0;
                 order.CreatedDate = DateTime.Now;
                 order.LastModifiedByUserId = 0;
@@ -77,9 +79,9 @@ namespace SystemTasks
                         LastModifiedDate = DateTime.Now,
                         LineNumber = det.LineNumber
                     }
-                );
+                    );
                 }
-                
+                orders.Add(order);
             }
 
             return orders;

@@ -198,22 +198,80 @@ namespace DataAccess
 
         public int getVendorUIDFromName(string vendorName)
         {
-            throw new NotImplementedException();
+            int vendorId = -1;
+
+            string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower() + "'";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    vendorId = (int) reader[0];
+                }
+
+                catch
+                {
+                    vendorId = -1;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (vendorId == -1)
+            {
+                throw new Exception("The specified Item Type was not found.");
+            }
+            else
+            {
+                return vendorId;
+            }
         }
 
-        public void logAction(string actionName, string actionDescription, DateTime actionDate)
+        public void logAction(string actionName, string actionDescription)
         {
-            throw new NotImplementedException();
+            string query = "INSERT INTO _ETL_ActivityMonitor (ActivityStep, ActivityMessage, ImportDataID) VALUES ('" + actionName + "','" + actionDescription + "','" + _importCode.ToString() + "')";
+
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            cmd.ExecuteNonQuery();
+            _conn.Close();
         }
 
-        public void logError(string message, string processStep, DateTime errorDate)
+        public void logError(string message, string exceptionMessage)
         {
-            throw new NotImplementedException();
+            string query = "INSERT INTO _ETL_Errors (InterfaceMessage, ExceptionMessage, ImportDataID) VALUES ('" + message + "','" + exceptionMessage + "','" + _importCode.ToString() + "')";
+
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            cmd.ExecuteNonQuery();
+            _conn.Close();
         }
 
         public int getStatusUID(string status)
         {
-            throw new NotImplementedException();
+            return 32;
         }
 
         public int getItemUIDFromName(string name)
@@ -279,39 +337,63 @@ namespace DataAccess
 
             foreach (var order in orders)
             {
-                string headerQuery;
+                try
+                { 
+                    string headerQuery;
+                    string message;
 
-                if (checkOrderExists(order.PurchaseOrderNumber))
-                {
-                    headerQuery = "UPDATE tblTechPurchases ";
-                    headerQuery += "SET PurchaseDate = '" + order.PurchaseDate.ToString() +"', ";
-                    headerQuery += "Notes = '" + order.Notes + "', ";
-                    headerQuery += "LastModifiedByUserId = '0' ";
-                    headerQuery += "LastModifiedDate = '" + DateTime.Now.ToString() + "' ";
-                    headerQuery += "FROM tblTechPurchases WHERE OrderNumber = '" + order.PurchaseOrderNumber + "'";
-                }
+                    if (checkOrderExists(order.PurchaseOrderNumber))
+                    {
+                        headerQuery = "UPDATE tblTechPurchases ";
+                        headerQuery += "SET PurchaseDate = '" + order.PurchaseDate.ToString() + "', ";
+                        headerQuery += "Notes = '" + order.Notes + "', ";
+                        headerQuery += "VendorUID = " + order.VendorUID + ", ";
+                        headerQuery += "SiteUID = " + order.SiteID +", ";
+                        headerQuery += "StatusUID = 32,";
+                        headerQuery += "LastModifiedByUserId = '0', ";
+                        headerQuery += "LastModifiedDate = '" + DateTime.Now.ToString() + "' ";
+                        headerQuery += "FROM tblTechPurchases WHERE OrderNumber = '" + order.PurchaseOrderNumber + "'";
 
-                else
-                {
-                    headerQuery = "INSERT INTO [dbo].[tblTechPurchases] ([StatusUID],[VendorUID],[SiteUID],[OrderNumber],[PurchaseDate],[Notes],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
-                    headerQuery += "VALUES ('" + order.StatusUID.ToString() + "','" + order.VendorUID.ToString() + "','" + order.SiteID.ToString() + "','" + order.PurchaseOrderNumber + "','";
-                    headerQuery += order.PurchaseDate.ToString() + "','" + order.Notes.Replace("'", "") + "','" + order.CreatedByUserId.ToString() + "','" + order.CreatedDate.ToString() + "','";
-                    headerQuery += order.LastModifiedByUserId.ToString() + "','" + order.LastModifiedDate.ToString() + "')";
-                }
+                        message = "Order already exists. Updated header for order number " + order.PurchaseOrderNumber;
+                    }
 
-                if (_conn.State == ConnectionState.Open)
-                {
+                    else
+                    {
+                        headerQuery = "INSERT INTO [dbo].[tblTechPurchases] ([StatusUID],[VendorUID],[SiteUID],[OrderNumber],[PurchaseDate],[Notes],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
+                        headerQuery += "VALUES ('" + order.StatusUID.ToString() + "','" + order.VendorUID.ToString() + "','" + order.SiteID.ToString() + "','" + order.PurchaseOrderNumber + "','";
+                        headerQuery += order.PurchaseDate.ToString() + "','" + order.Notes.Replace("'", "") + "','" + order.CreatedByUserId.ToString() + "','" + order.CreatedDate.ToString() + "','";
+                        headerQuery += order.LastModifiedByUserId.ToString() + "','" + order.LastModifiedDate.ToString() + "')";
+
+                        message = "Successfully added header for order number " + order.PurchaseOrderNumber;
+                    }
+
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+
+                    _conn.Open();
+                    SqlCommand cmd = new SqlCommand(headerQuery, _conn);
+
+                    cmd.ExecuteNonQuery();
+
+                    DbActivityEventArgs args = new DbActivityEventArgs();
+                    args.ActivityStep = "Add Header and Detail Data";
+                    args.ActivityMessage = message;
+                    OnAction(args);
+
+                    addOrderDetails(order.PurchaseOrderDetails.ToList());
+
                     _conn.Close();
                 }
-
-                _conn.Open();
-                SqlCommand cmd = new SqlCommand(headerQuery, _conn);
-
-                cmd.ExecuteNonQuery();
-
-                addOrderDetails(order.PurchaseOrderDetails.ToList());
-
-                _conn.Close();
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "Error adding product headers or details for order number " + order.PurchaseOrderNumber;
+                    args.ExceptionMessage = e.Message;
+                    OnError(args);
+                    continue;
+                }
             }
         }
 
@@ -321,19 +403,27 @@ namespace DataAccess
 
             foreach (var detail in details)
             {
+                string message;
+
                 if (checkOrderDetailExists(detail.ParentPurchase.PurchaseOrderNumber,detail.LineNumber))
                 {
                     detailQuery = "UPDATE tblTechPurchaseItemDetails ";
                     detailQuery += "SET QuantityOrdered = " + detail.QuantityOrdered.ToString() + ", ";
+                    detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
                     detailQuery += "PurchasePrice = " + detail.PurchasePrice + ", ";
-                    detailQuery += "AccountCode = " + detail.AccountCode + ", ";
+                    detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
+                    detailQuery += "StatusUID = 32,";
+                    detailQuery += "LastModifiedByUserID = 0,";
+                    detailQuery += "LastModifiedDate = '" + detail.LastModifiedDate.ToString() + "'";
                     detailQuery += "FROM tblTechPurchaseItemDetails p JOIN tblTechPurchases p2 ";
                     detailQuery += "ON p.PurchaseUID = p2.PurchaseUID";
                     detailQuery += " WHERE p2.OrderNumber = '" + detail.ParentPurchase.PurchaseOrderNumber + "' AND p.LineNumber = " + detail.LineNumber.ToString();
+
+                    message = "Detail record already exists. Updated detail record for order number " + detail.ParentPurchase.PurchaseOrderNumber + " and Line Number " + detail.LineNumber.ToString();
                 }
                 else
                 {
-                    detailQuery = "INSERT INTO[dbo].[tblTechPurchaseItemDetails](";
+                    detailQuery = "INSERT INTO [dbo].[tblTechPurchaseItemDetails](";
                     detailQuery += "[PurchaseUID],[ItemUID],[FundingSourceUID],[StatusUID],[SiteAddedSiteUID],";
                     detailQuery += "[QuantityOrdered],[QuantityReceived],[PurchasePrice],[AccountCode],";
                     detailQuery += "[TechDepartmentUID],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],";
@@ -341,16 +431,32 @@ namespace DataAccess
                     detailQuery += "VALUES ('"+ getPurchaseUIDFromOrderNumber(detail.ParentPurchase.PurchaseOrderNumber).ToString() + "','" + detail.ItemUID.ToString() + "','";
                     detailQuery += detail.FundingSourceUID.ToString() + "','" + detail.StatusUID + "','" + detail.SiteAddedSiteUID.ToString() + "','" + detail.QuantityOrdered.ToString();
                     detailQuery += "','" + detail.QuantityReceived.ToString() + "','" + detail.PurchasePrice + "','" + detail.AccountCode + "','" + detail.TechDepartmentUID.ToString();
-                    detailQuery += "','" + detail.CreatedByUserID.ToString() + "','" + detail.CreatedDate.ToString() + "','" + detail.LastModifiedByUserID + "','" + detail.LastModifiedDate.ToString() + "')";
+                    detailQuery += "','" + detail.CreatedByUserID.ToString() + "','" + detail.CreatedDate.ToString() + "','" + detail.LastModifiedByUserID + "','" + detail.LastModifiedDate.ToString() + "','" + detail.LineNumber.ToString() + "')";
+
+                    message = "Successfully added detail for order number " + detail.ParentPurchase.PurchaseOrderNumber + " and Line Number " + detail.LineNumber.ToString();
                 }
 
                 if(_conn.State == ConnectionState.Closed)
                 {
                     _conn.Open();
                 }
+                try
+                {
+                    SqlCommand cmd = new SqlCommand(detailQuery, _conn);
+                    cmd.ExecuteNonQuery();
 
-                SqlCommand cmd = new SqlCommand(detailQuery, _conn);
-                cmd.ExecuteNonQuery();
+                    DbActivityEventArgs args = new DbActivityEventArgs();
+                    args.ActivityStep = "Add Header and Detail Data";
+                    args.ActivityMessage = message;
+                    OnAction(args);
+                }
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "ERROR adding detail for Order Number " + detail.ParentPurchase.PurchaseOrderNumber + " and Line Number " + detail.LineNumber.ToString();
+                    args.ExceptionMessage = e.Message;
+                    continue;
+                }
 
             }
             
@@ -403,9 +509,6 @@ namespace DataAccess
             Item newItem = new Item();
 
             string returnQuery = "SELECT [ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU],[SerialRequired],[ProjectedLife],[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],[AllowUntagged] FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
-
-            Console.WriteLine(returnQuery);
-            Console.ReadLine();
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -533,5 +636,81 @@ namespace DataAccess
             }
         }
 
+        public List<RejectedRecord> getRejectionsFromLastImport(int importId)
+        {
+            List<RejectedRecord> rejects = new List<RejectedRecord>();
+
+            string returnQuery = "SELECT Reference, RejectReason, RejectValue, ExceptionMessage FROM tblTechPurchases WHERE ImportCode = " + importId.ToString();
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    rejects.Add(new RejectedRecord
+                    {
+                        orderNumber = (string) reader[0],
+                        rejectReason = (string) reader[1],
+                        rejectValue = (string) reader[2],
+                        exceptionMessage = (string) reader[3]
+                    });
+                }
+
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "Unable To get list of rejected records.";
+                    args.ExceptionMessage = e.Message;
+                    OnError(args);
+                    break;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            return rejects;
+        }
+
+        public event EventHandler<DbErrorEventArgs> Error;
+        public event EventHandler<DbActivityEventArgs> Action;
+
+        protected virtual void OnError(DbErrorEventArgs e)
+        {
+            EventHandler<DbErrorEventArgs> handler = Error;
+
+            handler(this, e);
+        }
+
+        protected virtual void OnAction(DbActivityEventArgs e)
+        {
+            EventHandler<DbActivityEventArgs> handler = Action;
+
+            handler(this, e);
+        }
+
+
+    }
+
+    public class DbErrorEventArgs : EventArgs
+    {
+        public string InterfaceMessage { get; set; }
+        public string ExceptionMessage { get; set; }
+    }
+
+    public class DbActivityEventArgs : EventArgs
+    {
+        public string ActivityStep { get; set; }
+        public string ActivityMessage { get; set; }
     }
 }

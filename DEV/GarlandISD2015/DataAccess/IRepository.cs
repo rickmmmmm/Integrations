@@ -23,8 +23,8 @@ namespace DataAccess
         Item getItemFromName(string productName);
         string getModelNumberFromProductName(string productName);
         int getItemUIDFromName(string name);
-        void logError(string message, string processStep, DateTime errorDate);
-        void logAction(string actionName, string actionDescription, DateTime actionDate);
+        void logError(string message, string exceptionMessage);
+        void logAction(string actionName, string actionDescription);
         void logRejectRecord(RejectedRecord rejection);
         void logRejectRecord(List<RejectedRecord> rejections);
         int getNewImportCode();   
@@ -33,6 +33,9 @@ namespace DataAccess
         void addItems(List<Item> items);
         bool checkOrderExists(string orderNumber);
         bool checkOrderDetailExists(string orderNumber, int lineNumber);
+        List<RejectedRecord> getRejectionsFromLastImport(int importId);
+        event EventHandler<DbErrorEventArgs> Error;
+        event EventHandler<DbActivityEventArgs> Action;
 
     }
 }
