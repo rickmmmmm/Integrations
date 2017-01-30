@@ -310,8 +310,8 @@ namespace DataAccess
 
         public void logRejectRecord(RejectedRecord rejection)
         {
-            string query = "INSERT INTO _ETL_Rejects (ImportCode, Reference, RejectReason, RejectedValue, ExceptionMessage)";
-            query += " VALUES (" + _importCode.ToString() + ",'" + rejection.orderNumber + "','" + rejection.rejectReason + "','" + rejection.rejectValue.Replace("'", "") + "','" + rejection.exceptionMessage.Replace("'","") + "')";
+            string query = "INSERT INTO _ETL_Rejects (ImportCode, Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber)";
+            query += " VALUES (" + _importCode.ToString() + ",'" + rejection.orderNumber + "','" + rejection.rejectReason + "','" + rejection.rejectValue.Replace("'", "") + "','" + rejection.exceptionMessage.Replace("'","") + "'," + rejection.LineNumber.ToString() + ")";
             SqlCommand cmd = new SqlCommand(query, _conn);
 
             if (_conn.State == ConnectionState.Open)

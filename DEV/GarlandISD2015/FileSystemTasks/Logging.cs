@@ -45,5 +45,6 @@ namespace SystemTasks
         public string Reason { get; set; }
         public string ExceptionMessage { get; set; }
         public string RejectedValue { get; set; }
+        public int LineNumber { get; set; }
     }
 }

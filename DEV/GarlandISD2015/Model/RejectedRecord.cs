@@ -12,5 +12,6 @@ namespace Model
         public string rejectReason { get; set; }
         public string rejectValue { get; set; }
         public string exceptionMessage { get; set; }
+        public int LineNumber { get; set; }
     }
 }

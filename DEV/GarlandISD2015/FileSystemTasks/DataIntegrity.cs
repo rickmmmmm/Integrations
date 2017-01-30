@@ -48,7 +48,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Site not found.",
                     ExceptionMessage = e.Message,
-                    RejectedValue = item.ShippedToSite.ToString()
+                    RejectedValue = item.ShippedToSite.ToString(),
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
 
@@ -76,7 +77,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Product not found in TIPWeb-IT catalog",
                     ExceptionMessage = e.Message,
-                    RejectedValue = item.ProductName
+                    RejectedValue = item.ProductName,
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
                 return false;
@@ -109,7 +111,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Model does not match existing product in TIPWeb-IT catalog",
                     ExceptionMessage = e.Message,
-                    RejectedValue = item.Model
+                    RejectedValue = item.Model,
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
                 return false;
@@ -137,7 +140,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Vendor not found in TIPWeb-IT.",
                     ExceptionMessage = e.Message,
-                    RejectedValue = item.VendorName
+                    RejectedValue = item.VendorName,
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
                 return false;
@@ -158,7 +162,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Purchase Date missing or invalid.",
                     ExceptionMessage = "",
-                    RejectedValue = item.OrderDate
+                    RejectedValue = item.OrderDate,
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
 
@@ -191,7 +196,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Invalid Line Number",
                     ExceptionMessage = "",
-                    RejectedValue = item.LineNumber.ToString()
+                    RejectedValue = item.LineNumber.ToString(),
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
 
@@ -217,7 +223,8 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Missing Funding Source",
                     ExceptionMessage = "",
-                    RejectedValue = item.FundingSource.ToString()
+                    RejectedValue = item.FundingSource.ToString(),
+                    LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
 
@@ -241,7 +248,8 @@ namespace SystemTasks
                         Reference = item.OrderNumber,
                         Reason = "Missing Funding Source",
                         ExceptionMessage = "",
-                        RejectedValue = item.FundingSource.ToString()
+                        RejectedValue = item.FundingSource.ToString(),
+                        LineNumber = item.LineNumber
                     };
                     OnRejectRecord(args);
                     return true;

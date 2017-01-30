@@ -14,7 +14,7 @@ namespace IntegrationPlayground_v_1_0_1
     {
 
         private static IRepository _repo;
-        private List<RejectedRecord> _rejections;
+        //private List<PurchaseOrderFile> _returnFile;
         static void Main(string[] args)
         {
             if (args.Length > 0)
@@ -216,7 +216,7 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
-                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport());
+                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(), outData);
                         _repo.completeIntegration();
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
@@ -251,7 +251,8 @@ namespace IntegrationPlayground_v_1_0_1
             _repo.logRejectRecord(new RejectedRecord { orderNumber = args.Data.Reference,
                                                         rejectReason = args.Data.Reason,
                                                         rejectValue = args.Data.RejectedValue,
-                                                        exceptionMessage = args.Data.ExceptionMessage });
+                                                        exceptionMessage = args.Data.ExceptionMessage,
+                                                        LineNumber = args.Data.LineNumber });
         }
 
         static void OnError(object sender, DbErrorEventArgs args)
