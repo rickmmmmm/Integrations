@@ -33,8 +33,11 @@ namespace DataAccess
         void addItems(List<Item> items);
         bool checkOrderExists(string orderNumber);
         bool checkOrderDetailExists(string orderNumber, int lineNumber);
-        List<RejectedRecord> getRejectionsFromLastImport(int importId);
+        List<RejectedRecord> getRejectionsFromLastImport();
+        void completeIntegration();
+
         event EventHandler<DbErrorEventArgs> Error;
+
         event EventHandler<DbActivityEventArgs> Action;
 
     }

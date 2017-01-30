@@ -17,9 +17,21 @@ namespace IntegrationPlayground_v_1_0_1
         private List<RejectedRecord> _rejections;
         static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                ReadOption(args);
+                Environment.Exit(0);
+            }
+
             Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
             Console.WriteLine("Shall we play a game? (Y)es (N)o");
-            Console.ReadLine();
+            string gameplay = Console.ReadLine().ToLower();
+
+            if (gameplay == "n")
+            {
+                Environment.Exit(0);
+            }
+
             Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (Q)uit");
 
             ReadOption();
@@ -33,6 +45,24 @@ namespace IntegrationPlayground_v_1_0_1
             //Dispose of remaining objects
         }
 
+        private static void ReadOption(string[] args)
+        {
+            string choice = args[0];
+
+            switch (choice)
+            {
+                case "-p":
+                    PurchaseOrderMenu(args);
+                    break;
+                case "-m":
+                    Console.WriteLine("Mobile Device Management not implemented yet.");
+                    Console.ReadLine();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public static void ReadOption()
         {
             string choice = Console.ReadLine().ToLower();
@@ -40,7 +70,7 @@ namespace IntegrationPlayground_v_1_0_1
             switch (choice)
             {
                 case "p":
-                    List<string> options = GetOptions();
+                    string[] options = GetOptions();
                     PurchaseOrderMenu(options);
                     break;
                 case "m":
@@ -59,9 +89,9 @@ namespace IntegrationPlayground_v_1_0_1
             }
         }
 
-        public static List<string> GetOptions()
+        public static string[] GetOptions()
         {
-            List<string> options = new List<string>();
+            string[] options = new string[10];
 
             Console.WriteLine("Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
             string response = Console.ReadLine().ToLower();
@@ -69,7 +99,6 @@ namespace IntegrationPlayground_v_1_0_1
             switch(response)
             {
                 case "y":
-                    options.Add("AddItems");
                     break;
                 case "n":
                     break;
@@ -83,7 +112,7 @@ namespace IntegrationPlayground_v_1_0_1
             switch (response)
             {
                 case "y":
-                    options.Add("AddVendors");
+                    //options.Add("AddVendors");
                     break;
                 case "n":
                     break;
@@ -99,10 +128,10 @@ namespace IntegrationPlayground_v_1_0_1
             throw new NotImplementedException();
         }
 
-        public static void PurchaseOrderMenu(List<string> options)
+        public static void PurchaseOrderMenu(string[] options)
         {
             Console.WriteLine("Paste Import File Name below:");
-            string file = Console.ReadLine();
+            string file = string.IsNullOrEmpty(options[1]) ? Console.ReadLine() : options[1] ;
             FileTasks ft = new FileTasks();
             Repository rep = new Repository();
 
@@ -182,24 +211,21 @@ namespace IntegrationPlayground_v_1_0_1
                     if (outData.Count > 0)
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
-                        //rep.addOrderHeaders(mappedItems);
-                        //foreach (var item in mappedItems)
-                        //{
-                        //    Console.WriteLine(item.PurchaseOrderNumber);
-                        //}
-                        //Console.ReadLine();
 
                         _repo.addOrderHeaders(mappedItems);
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
-                        string rejectFile = Console.ReadLine();
+                        string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
-                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(1));
+                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport());
+                        _repo.completeIntegration();
+                        _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
                         Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
+                        Console.WriteLine("Press Any Key To Continue...");
                         Console.ReadLine();
                     }
                 }
@@ -208,6 +234,7 @@ namespace IntegrationPlayground_v_1_0_1
                 {
 
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
+                    Console.WriteLine("Press Any Key To Continue...");
                     Console.ReadLine();
                 }
             }

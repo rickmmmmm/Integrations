@@ -372,7 +372,6 @@ namespace DataAccess
                         _conn.Close();
                     }
 
-                    Console.WriteLine(headerQuery);
                     _conn.Open();
                     SqlCommand cmd = new SqlCommand(headerQuery, _conn);
 
@@ -442,7 +441,6 @@ namespace DataAccess
                     _conn.Open();
                 }
 
-                Console.WriteLine(detailQuery);
                 try
                 {
                     SqlCommand cmd = new SqlCommand(detailQuery, _conn);
@@ -639,11 +637,11 @@ namespace DataAccess
             }
         }
 
-        public List<RejectedRecord> getRejectionsFromLastImport(int importId)
+        public List<RejectedRecord> getRejectionsFromLastImport()
         {
             List<RejectedRecord> rejects = new List<RejectedRecord>();
 
-            string returnQuery = "SELECT Reference, RejectReason, RejectValue, ExceptionMessage FROM tblTechPurchases WHERE ImportCode = " + _importCode.ToString();
+            string returnQuery = "SELECT Reference, RejectReason, RejectedValue, ExceptionMessage FROM _ETL_Rejects WHERE ImportCode = " + _importCode.ToString();
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -672,7 +670,7 @@ namespace DataAccess
                 catch (Exception e)
                 {
                     DbErrorEventArgs args = new DbErrorEventArgs();
-                    args.InterfaceMessage = "Unable To get list of rejected records.";
+                    args.InterfaceMessage = "Unable to get list of rejected records.";
                     args.ExceptionMessage = e.Message;
                     OnError(args);
                     break;
@@ -702,7 +700,22 @@ namespace DataAccess
             handler(this, e);
         }
 
+        public void completeIntegration()
+        {
+            string query = "UPDATE _ETL_ImportData SET ImportCompleted = 'True' WHERE ImportCode = " + _importCode.ToString();
 
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            cmd.ExecuteNonQuery();
+
+            _conn.Close();
+        }
     }
 
     public class DbErrorEventArgs : EventArgs

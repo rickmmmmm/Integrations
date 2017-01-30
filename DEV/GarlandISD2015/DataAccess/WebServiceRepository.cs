@@ -37,6 +37,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public void completeIntegration()
+        {
+            throw new NotImplementedException();
+        }
+
         public int getAreaUIDFromName(string areaName)
         {
             throw new NotImplementedException();
@@ -83,6 +88,11 @@ namespace DataAccess
         }
 
         public int getNewImportCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<RejectedRecord> getRejectionsFromLastImport()
         {
             throw new NotImplementedException();
         }
