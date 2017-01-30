@@ -24,7 +24,7 @@ namespace Model
         public string ShippedToSite { get; set; }
         public int QuantityShipped { get; set; }
         public string Notes { get; set; }
-        public bool? Accepted { get; set; }
+        public string Accepted { get; set; }
         public string Reason { get; set; }
     }
 }

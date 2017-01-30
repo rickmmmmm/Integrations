@@ -409,7 +409,7 @@ namespace DataAccess
                 {
                     detailQuery = "UPDATE tblTechPurchaseItemDetails ";
                     detailQuery += "SET QuantityOrdered = " + detail.QuantityOrdered.ToString() + ", ";
-                    detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
+                    //detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
                     detailQuery += "PurchasePrice = " + detail.PurchasePrice + ", ";
                     detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
                     detailQuery += "StatusUID = 32,";
@@ -641,7 +641,7 @@ namespace DataAccess
         {
             List<RejectedRecord> rejects = new List<RejectedRecord>();
 
-            string returnQuery = "SELECT Reference, RejectReason, RejectedValue, ExceptionMessage FROM _ETL_Rejects WHERE ImportCode = " + _importCode.ToString();
+            string returnQuery = "SELECT Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber FROM _ETL_Rejects WHERE ImportCode = " + _importCode.ToString();
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -663,7 +663,8 @@ namespace DataAccess
                         orderNumber = (string) reader[0],
                         rejectReason = (string) reader[1],
                         rejectValue = (string) reader[2],
-                        exceptionMessage = (string) reader[3]
+                        exceptionMessage = (string) reader[3],
+                        LineNumber = (int) reader[4]
                     });
                 }
 

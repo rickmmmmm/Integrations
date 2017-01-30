@@ -216,7 +216,7 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
-                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(), outData);
+                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(), fileData);
                         _repo.completeIntegration();
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 

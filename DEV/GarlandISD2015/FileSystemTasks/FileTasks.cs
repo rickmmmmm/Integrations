@@ -70,8 +70,13 @@ namespace SystemTasks
                 if (rejects.Contains(rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault()))
                 {
 
-                    record.Accepted = false;
+                    record.Accepted = "Rejected";
                     record.Reason = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectReason;
+                }
+
+                else
+                {
+                    record.Accepted = "Accepted";
                 }
             }
 
@@ -79,7 +84,7 @@ namespace SystemTasks
             {
                 var csv = new CsvWriter(writer);
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
                 csv.Configuration.QuoteAllFields = true;
 
                 csv.WriteRecords(payload);
