@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SystemTasks;
 using Model;
 using DataAccess;
+using Services;
+using System.Configuration;
 
 namespace IntegrationPlayground_v_1_0_1
 {
@@ -216,9 +218,26 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
-                        ft.createRejectFile(rejectFile, _repo.getRejectionsFromLastImport(), fileData);
+                        var rejects = _repo.getRejectionsFromLastImport();
+
+                        ft.createRejectFile(rejectFile, rejects, fileData);
                         _repo.completeIntegration();
+
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
+
+                        string body = string.Format("<h1>Hayes Software</h1><h4>Automatic Notifications</h4><br /> <p>Integration process successful.<br /> {0} Records uploaded from file.<br />{1} Records accepted.<br />{2} Records rejected.",fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
+
+                        ISender mailer = new ElasticMailService();
+                        IMessage notification = new EmailMessage
+                                                                {
+                                                                    Body = body,
+                                                                    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                                                                    Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                                                                    Subject = "Automatic Notification from Hayes Software Systems",
+                                                                    SentDate = DateTime.Now
+                                                                };
+
+
 
                         Console.ReadLine();
                     }
