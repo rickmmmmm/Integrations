@@ -237,8 +237,9 @@ namespace IntegrationPlayground_v_1_0_1
                                                                     SentDate = DateTime.Now
                                                                 };
 
+                        mailer.send(notification);
 
-
+                        Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
                         Console.ReadLine();
                     }
                     else
