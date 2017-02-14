@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportStaff"
   DTS:PackageType="5"
-  DTS:VersionBuild="274"
-  DTS:VersionGUID="{B3420AE1-0AA8-43E1-AC3F-C8340B1BEA46}">
+  DTS:VersionBuild="276"
+  DTS:VersionGUID="{F9F61338-EA32-4069-947C-C3DA0F7C9E28}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -22,9 +22,9 @@
       DTS:DTSID="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
       DTS:ObjectName="ClientTipWeb">
       <DTS:PropertyExpression
-        DTS:Name="InitialCatalog">@[User::ClientInitCatalog]</DTS:PropertyExpression>
+        DTS:Name="InitialCatalog">@[$Package::InitCatalogClient]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectionString="Data Source=.\SQL2014;Initial Catalog=;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
@@ -60,7 +60,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_02102017.csv">
+          DTS:ConnectionString="\Reject\_02142017.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -271,7 +271,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_02102017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_02142017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -370,7 +370,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_02102017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_02142017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1858,7 +1858,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Staff ims&#xA;join tblTeachers tch on ims.StaffID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;GO&#xA;&#xA;update ims set new = 1&#xA;from _IMS_Staff ims&#xA;where ims.Import = 1&#xA;and TeachersUID is null&#xA;GO&#xA;&#xA;--select * &#xA;update ims set RoomUID = rm.RoomUID&#xA;from _IMS_Staff ims&#xA;join tblUnvRooms rm on ltrim(rtrim(ims.Location)) = ltrim(rtrim(rm.RoomNumber)) &#xA;where ims.Import = 1&#xA;GO&#xA;&#xA;--select *&#xA;update ims set StaffTypeUID = st.StaffTypeUID&#xA;from _IMS_Staff ims&#xA;join tblUnvStaffTypes st on ims.StaffType = ltrim(rtrim(st.StaffTypeName))&#xA;where ims.Import = 1&#xA;and len(isNull(ims.StaffType, '')) &gt; 0&#xA;and len(isNull(st.StaffTypeName, '')) &gt; 0" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Staff ims&#xA;join tblTeachers tch on ims.StaffID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;GO&#xA;&#xA;update ims set new = 1&#xA;from _IMS_Staff ims&#xA;where ims.Import = 1&#xA;and TeachersUID is null&#xA;GO&#xA;&#xA;update ims set RoomUID = rm.RoomUID&#xA;--select ims.campusid, tts.siteid, tts.siteuid, rm.siteuid, * &#xA;from _IMS_Staff ims&#xA;join tblTechSites tts on ltrim(rtrim(ims.Campusid)) = ltrim(rtrim(tts.SiteID))&#xA;join tblUnvRooms rm on tts.SiteUID = rm.SiteUID&#xA;&#x9;and ltrim(rtrim(ims.Location)) = ltrim(rtrim(rm.RoomNumber)) &#xA;where ims.Import = 1&#xA;and len(ltrim(rtrim(ims.Location)) ) &gt; 0&#xA;GO&#xA;&#xA;--select *&#xA;update ims set StaffTypeUID = st.StaffTypeUID&#xA;from _IMS_Staff ims&#xA;join tblUnvStaffTypes st on ims.StaffType = ltrim(rtrim(st.StaffTypeName))&#xA;where ims.Import = 1&#xA;and len(isNull(ims.StaffType, '')) &gt; 0&#xA;and len(isNull(st.StaffTypeName, '')) &gt; 0" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -2360,7 +2360,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="&#xA;declare @Update int, @Insert int&#xA;&#xA;--select * &#xA;update tr set RoomUID = ims.RoomUID, LastModifiedBy = 0, LastModifiedDate = getdate()&#xA;from tblTechStaffRooms tr&#xA;join _IMS_Staff ims on tr.TeacherUID = ims.TeachersUID&#xA;where ims.Import = 1 &#xA;and ims.RoomUID is not null&#xA;&#xA;set @Update = @@RowCount ;&#xA;&#xA;&#xA;Insert tblTechStaffRooms&#xA;(TeacherUID, RoomUID, CreatedBy, CreatedDate, LastModifiedBy, LastModifiedDate)&#xA;select ims.TeachersUID, ims.RoomUID, 0, getdate(), 0, getdate()&#xA;from _IMS_Staff ims&#xA;where ims.Import = 1 &#xA;and ims.RoomUID is not null&#xA;and ims.TeachersUID not in (select TeacherUID from tblTechStaffRooms) &#xA;&#xA;set @Insert = @@RowCount ;&#xA;&#xA;&#xA;select @Insert as nIns, @Update as nUpd&#xA;"
+              SQLTask:SqlStatementSource="&#xA;declare @Update int, @Insert int&#xA;&#xA;--select * &#xA;update tr set RoomUID = ims.RoomUID, LastModifiedBy = 0, LastModifiedDate = getdate()&#xA;from tblTechStaffRooms tr&#xA;join _IMS_Staff ims on tr.TeacherUID = ims.TeachersUID&#xA;where ims.Import = 1 &#xA;and ims.RoomUID is not null&#xA;and ims.RoomUID &lt;&gt; tr.RoomUID&#xA;&#xA;set @Update = @@RowCount ;&#xA;&#xA;&#xA;Insert tblTechStaffRooms&#xA;(TeacherUID, RoomUID, CreatedBy, CreatedDate, LastModifiedBy, LastModifiedDate)&#xA;select ims.TeachersUID, ims.RoomUID, 0, getdate(), 0, getdate()&#xA;from _IMS_Staff ims&#xA;where ims.Import = 1 &#xA;and ims.RoomUID is not null&#xA;and ims.TeachersUID not in (select TeacherUID from tblTechStaffRooms) &#xA;&#xA;set @Insert = @@RowCount ;&#xA;&#xA;&#xA;select @Insert as nIns, @Update as nUpd&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="nIns"
