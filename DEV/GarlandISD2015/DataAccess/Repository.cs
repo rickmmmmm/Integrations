@@ -413,6 +413,7 @@ namespace DataAccess
                     detailQuery += "PurchasePrice = " + detail.PurchasePrice + ", ";
                     detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
                     detailQuery += "StatusUID = 32,";
+                    detailQuery += "SiteAddedSiteUID = '" + detail.SiteAddedSiteUID + "',";
                     detailQuery += "LastModifiedByUserID = 0,";
                     detailQuery += "LastModifiedDate = '" + detail.LastModifiedDate.ToString() + "'";
                     detailQuery += "FROM tblTechPurchaseItemDetails p JOIN tblTechPurchases p2 ";
