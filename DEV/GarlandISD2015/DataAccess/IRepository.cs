@@ -9,6 +9,7 @@ namespace DataAccess
 {
     public interface IRepository
     {
+        void addShipmentInfo();
         int getUserIdFromName(string userName);
         int getStatusUID(string status);
         int getVendorUIDFromName(string vendorName);

@@ -464,6 +464,45 @@ namespace DataAccess
             
         }
 
+        public void addShipmentInfo()
+        {
+            string query = "INSERT INTO [dbo].[tblTechPurchaseItemShipments]";
+            query += "([PurchaseItemDetailUID] ";
+            query += ",[ShippedToSiteUID] ";
+            query += ",[TicketNumber] ";
+            query += ",[QuantityShipped] ";
+            query += ",[TicketedByUserID] ";
+            query += ",[TicketedDate] ";
+            query += ",[StatusUID] ";
+            query += ",[CreatedByUserID] ";
+            query += ",[CreatedDate] ";
+            query += ",[LastModifiedByUserID] ";
+            query += ",[LastModifiedDate]) ";
+            query += "SELECT ttpid.[PurchaseItemDetailUID], ttpid.[SiteAddedSiteUID], NULL, ttpid.QuantityOrdered, NULL, NULL, ttpid.StatusUID, 0, getdate(), 0, getdate() ";
+            query += "FROM tblTechPurchaseItemShipments ttpis ";
+            query += "RIGHT JOIN tblTechPurchaseItemDetails ttpid on ttpis.[PurchaseItemDetailUID] = ttpid.[PurchaseItemDetailUID] ";
+            query += "WHERE ttpis.PurchaseItemDetailUID is null";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(query, _conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                DbErrorEventArgs args = new DbErrorEventArgs();
+                args.InterfaceMessage = "ERROR adding shipment information.";
+                args.ExceptionMessage = e.Message;
+            }
+
+
+        }
+
         public void addItems(List<Item> items)
         {
             throw new NotImplementedException();

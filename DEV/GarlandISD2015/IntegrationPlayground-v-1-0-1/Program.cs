@@ -215,6 +215,7 @@ namespace IntegrationPlayground_v_1_0_1
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
                         _repo.addOrderHeaders(mappedItems);
+                        _repo.addShipmentInfo();
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
