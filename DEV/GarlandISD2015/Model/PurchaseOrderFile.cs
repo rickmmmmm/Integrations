@@ -16,13 +16,13 @@ namespace Model
         public string ProductType { get; set; }
         public string Model { get; set; }
         public string Manufacturer { get; set; }
-        public int Quantity { get; set; }
+        public string Quantity { get; set; }
         public decimal PurchasePrice { get; set; }
         public string FundingSource { get; set; }
         public string AccountCode { get; set; }
         public int LineNumber { get; set; }
         public string ShippedToSite { get; set; }
-        public int QuantityShipped { get; set; }
+        public string QuantityShipped { get; set; }
         public string Notes { get; set; }
         public string Accepted { get; set; }
         public string Reason { get; set; }

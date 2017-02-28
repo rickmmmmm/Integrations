@@ -70,7 +70,7 @@ namespace SystemTasks
                         FundingSourceUID = _repo.getFundingSourceUIDFromName(det.FundingSource),
                         StatusUID = _repo.getStatusUID("open"),
                         SiteAddedSiteUID = _repo.getSiteUIDFromName(det.ShippedToSite),
-                        QuantityOrdered = det.Quantity,
+                        QuantityOrdered = Convert.ToInt32(det.Quantity),
                         PurchasePrice = det.PurchasePrice,
                         AccountCode = det.AccountCode,
                         CreatedByUserID = 0,

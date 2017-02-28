@@ -757,6 +757,23 @@ namespace DataAccess
 
             _conn.Close();
         }
+
+        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body)
+        {
+            string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + ProfileName + "', @recipients='" + Recipients + "', @subject='" + Subject + "', @body='" + Body + "', @body_format='HTML'";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            cmd.ExecuteNonQuery();
+
+            _conn.Close();
+
+        }
     }
 
     public class DbErrorEventArgs : EventArgs

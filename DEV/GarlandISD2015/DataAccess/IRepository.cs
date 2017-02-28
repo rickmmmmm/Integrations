@@ -37,6 +37,8 @@ namespace DataAccess
         List<RejectedRecord> getRejectionsFromLastImport();
         void completeIntegration();
 
+        void sendEmail(string ProfileName, string Recipients, string Subject, string Body);
+
         event EventHandler<DbErrorEventArgs> Error;
 
         event EventHandler<DbActivityEventArgs> Action;

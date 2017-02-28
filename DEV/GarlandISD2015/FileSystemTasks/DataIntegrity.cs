@@ -14,6 +14,7 @@ namespace SystemTasks
         {
             _rep = rep;
         }
+
         public List<PurchaseOrderFile> removeBadElements(List<PurchaseOrderFile> payload)
         {
 
@@ -26,6 +27,33 @@ namespace SystemTasks
             OnAction(args);
 
             return payload.Where(items => items.OrderNumber.Trim() != "" && items.OrderNumber != null).ToList();
+        }
+
+        public bool badQuantity(PurchaseOrderFile item)
+        {
+            try
+            {
+                int testItem = Convert.ToInt32(item.Quantity);
+                return true;
+            }
+            catch (Exception e)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = item.OrderNumber,
+                    Reason = "Bad quantity amount.",
+                    ExceptionMessage = e.Message,
+                    RejectedValue = item.ShippedToSite.ToString(),
+                    LineNumber = item.LineNumber
+                };
+                OnRejectRecord(args);
+
+                return false;
+            }
         }
 
         //site not found

@@ -41,6 +41,7 @@ namespace SystemTasks
 
                 csv.Configuration.RegisterClassMap<PurchaseOrderClassMap>();
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
+                csv.Configuration.IgnoreQuotes = true;
 
                 var payload = csv.GetRecords<PurchaseOrderFile>().ToList();
 
@@ -48,6 +49,15 @@ namespace SystemTasks
             }
 
             
+        }
+
+        public void archiveFile(string fileName)
+        {
+            string f = new Guid().ToString();
+
+            string newFile = fileName.Replace(".tsv", "_processed_" + f + ".txt");
+
+            File.Move(fileName, newFile);
         }
 
         public void createRejectFile(string fileName, List<RejectedRecord> rejects)
@@ -84,7 +94,8 @@ namespace SystemTasks
             {
                 var csv = new CsvWriter(writer);
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
-                //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.IgnoreQuotes = true;
+                csv.Configuration.Quote = '|';
                 csv.Configuration.QuoteAllFields = true;
 
                 csv.WriteRecords(payload);
