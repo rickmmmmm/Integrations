@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <ReportItems>
+      <Subreport Name="Subreport1">
+        <ReportName>EVA_CourseList</ReportName>
+        <Parameters>
+          <Parameter Name="SwitchDB">
+            <Value>=Parameters!SwitchDB.Value</Value>
+          </Parameter>
+          <Parameter Name="client">
+            <Value>=Parameters!client.Value</Value>
+          </Parameter>
+          <Parameter Name="Sort">
+            <Value>=Parameters!Sort.Value</Value>
+          </Parameter>
+          <Parameter Name="SortOrder">
+            <Value>=Parameters!SortOrder.Value</Value>
+          </Parameter>
+        </Parameters>
+        <Left>0.00917in</Left>
+        <Height>0.14458in</Height>
+        <Width>6.49083in</Width>
+        <DocumentMapLabel>EVA_Course_List</DocumentMapLabel>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Subreport>
+      <Rectangle Name="Rectangle2">
+        <PageBreak>
+          <BreakLocation>End</BreakLocation>
+        </PageBreak>
+        <KeepTogether>true</KeepTogether>
+        <Top>0.15847in</Top>
+        <Left>0.00918in</Left>
+        <Height>0.14236in</Height>
+        <Width>6.49083in</Width>
+        <ZIndex>1</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Rectangle>
+      <Subreport Name="DuplicateTeacherList">
+        <ReportName>EVA_Duplicate_Teachers_List</ReportName>
+        <Parameters>
+          <Parameter Name="SwitchDB">
+            <Value>=Parameters!SwitchDB.Value</Value>
+          </Parameter>
+          <Parameter Name="Sort1">
+            <Value>=Parameters!Sort1.Value</Value>
+          </Parameter>
+          <Parameter Name="SortOrder2">
+            <Value>=Parameters!SortOrder2.Value</Value>
+          </Parameter>
+          <Parameter Name="Sort2">
+            <Value>=Parameters!Sort2.Value</Value>
+          </Parameter>
+          <Parameter Name="client">
+            <Value>=Parameters!client.Value</Value>
+          </Parameter>
+        </Parameters>
+        <Top>0.31125in</Top>
+        <Left>0.00917in</Left>
+        <Height>0.125in</Height>
+        <Width>6.49084in</Width>
+        <ZIndex>2</ZIndex>
+        <DocumentMapLabel>Duplicate Teahser List</DocumentMapLabel>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Subreport>
+    </ReportItems>
+    <Height>0.47792in</Height>
+    <Style />
+  </Body>
+  <Width>6.50001in</Width>
+  <Page>
+    <LeftMargin>1in</LeftMargin>
+    <RightMargin>1in</RightMargin>
+    <TopMargin>1in</TopMargin>
+    <BottomMargin>1in</BottomMargin>
+    <Style />
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="sysdata">
+      <DataSourceReference>sysdata</DataSourceReference>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>41743708-c22f-4fd7-97dc-251ec9360720</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="databasename">
+      <Query>
+        <DataSourceName>sysdata</DataSourceName>
+        <CommandText>SELECT        name
+FROM            sys.databases
+WHERE        (name LIKE '%TipWeb%')
+ORDER BY name</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="name">
+          <DataField>name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Sort2_ParameterList">
+      <Query>
+        <DataSourceName>sysdata</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Sort1">
+            <Value>=Parameters!Sort1.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>IF @Sort1 = 'TeacherID' 
+BEGIN
+                             SELECT        'FullName' AS fields
+UNION ALL
+SELECT        'ID_OFCampus_Listed' AS fileds END IF @Sort1 = 'FullName' BEGIN
+                             SELECT        'TeacherID' AS fields
+UNION ALL
+SELECT        'ID_OFCampus_Listed' AS fields END IF @Sort1 = 'ID_OFCampus_Listed' BEGIN
+                             SELECT        'TeacherID' AS fields
+UNION ALL
+SELECT        'FullName' AS fields END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="fields">
+          <DataField>fields</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportParameters>
+    <ReportParameter Name="SwitchDB">
+      <DataType>String</DataType>
+      <Prompt>Select Database</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>databasename</DataSetName>
+          <ValueField>name</ValueField>
+          <LabelField>name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="client">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=""</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Enter Client's Name (optional)</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Sort">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CourseName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Sort -- Course List</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>CourseID</Value>
+            <Label>Course ID</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>CourseName</Value>
+            <Label>Course Name</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="SortOrder">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Asc</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Sort Order  -- Course List</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>Asc</Value>
+            <Label>Ascending</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Desc</Value>
+            <Label>Descending</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Sort1">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>TeacherID</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Sort 1 - Duplicate Teachers List</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>TeacherID</Value>
+            <Label>Teacher ID</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>FullName</Value>
+            <Label>Teacher Name</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>ID_OFCampus_Listed</Value>
+            <Label># Campus Listed</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Sort2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>FullName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Sort 2 -- Duplicate Tacher List</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Sort2_ParameterList</DataSetName>
+          <ValueField>fields</ValueField>
+          <LabelField>fields</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="SortOrder2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Asc</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Sort Order -- Duplicate Teacher List</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>Asc</Value>
+            <Label>Ascending </Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Desc</Value>
+            <Label>Descending </Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>5cfee0ce-daf7-4c8d-9447-fa1b4a23eaf8</rd:ReportID>
+</Report>
