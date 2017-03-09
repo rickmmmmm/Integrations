@@ -33,6 +33,21 @@ namespace SystemTasks
             }
         }
 
+        public static bool IsValidDateFromString(this string dateString, bool preFormatted)
+        {
+            try
+            {
+                DateTime outDate = Convert.ToDateTime(dateString);
+
+                return true;
+            }
+
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Calls string.isNullOrEmpty() to see if the mapping value is not an empty string. This ensures that the parser will not try to read non-existent columns.
         /// </summary>

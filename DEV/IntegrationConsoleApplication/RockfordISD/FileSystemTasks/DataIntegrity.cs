@@ -177,7 +177,7 @@ namespace SystemTasks
         //purchase date missing or invalid
         public bool purchaseDateMissingOrInvalid(PurchaseOrderFile item)
         {
-            if (!item.OrderDate.IsValidDateFromString())
+            if (!item.OrderDate.IsValidDateFromString(true))
             {
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";

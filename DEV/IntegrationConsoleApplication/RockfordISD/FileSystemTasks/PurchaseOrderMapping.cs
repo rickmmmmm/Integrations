@@ -50,7 +50,7 @@ namespace SystemTasks
                 var details = payload.Where(p => p.OrderNumber == item.Key.OrderNumber).ToList();
 
                 order.PurchaseOrderNumber = item.Key.OrderNumber;
-                order.PurchaseDate = item.Key.OrderDate.ToDateTimeFromString();
+                order.PurchaseDate = Convert.ToDateTime(item.Key.OrderDate);
                 order.Notes = item.Key.Notes;
                 order.StatusUID = _repo.getStatusUID("open");
                 order.VendorUID = _repo.getVendorUIDFromName(item.Key.VendorName);

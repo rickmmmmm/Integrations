@@ -193,30 +193,31 @@ namespace IntegrationPlayground_v_1_0_1
                         {
                             if (di.vendorNotFound(item.Key))
                             {
-                                _repo.addVendor(item.Key);
+                                _repo.addVendor(item.Key.Replace("'","''"));
                             }
                         }
                     }
 
                     if (options[2] == "--add-items")
                     {
+                        var rand = new Random(1897);
+
                         foreach (var item in fileData)
                         {
                             if (di.productNotFound(item.ProductName))
                             {
-                                var rand = new Random(1897);
 
                                 Item itemToAdd = new Item
                                 {
                                     ItemNumber = "H" + rand.Next().ToString(),
-                                    ItemName = item.ProductName,
-                                    ItemDescription = item.Description.Replace("'",""),
+                                    ItemName = item.ProductName.Replace("'", "''"),
+                                    ItemDescription = item.Description.Replace("'","''"),
                                     ItemType = 1,
-                                    ModelNumber = "",
-                                    ManufacturerUID = _repo.getManufacturerUIDFromName(item.Manufacturer),
+                                    ModelNumber = "None",
+                                    ManufacturerUID = 0,
                                     ItemSuggestedPrice = item.PurchasePrice,
                                     AreaUID = 0,
-                                    ItemNotes = item.Description.Replace("'",""),
+                                    ItemNotes = item.Description.Replace("'","''"),
                                     SKU = "",
                                     SerialRequired = false,
                                     ProjectedLife = 0,
@@ -295,7 +296,7 @@ namespace IntegrationPlayground_v_1_0_1
                         _repo.addOrderHeaders(mappedItems);
                         _repo.addShipmentInfo();
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
-                        string rejectFile = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
+                        string rejectFile = string.IsNullOrEmpty(options[6]) ? Console.ReadLine() : options[6];
 
                         var rejects = _repo.getRejectionsFromLastImport();
 
@@ -317,6 +318,15 @@ namespace IntegrationPlayground_v_1_0_1
                                                                 };
 
                         mailer.send(notification);
+
+                        try
+                        {
+                            ft.archiveFile(file);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error cleaning up data file info. Exception Message: " + e.Message);
+                        }
 
                         Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
                         Console.ReadLine();

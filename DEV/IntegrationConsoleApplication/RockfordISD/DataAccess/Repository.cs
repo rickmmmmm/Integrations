@@ -199,7 +199,7 @@ namespace DataAccess
         {
             int vendorId = -1;
 
-            string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower() + "'";
+            string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower().Replace("'","''") + "'";
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -502,14 +502,14 @@ namespace DataAccess
 
         }
 
-        public void addItem(Item item)
+        public void addItems(Item item)
         {
 
             string query = "INSERT INTO tblTechItems ([ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU] ";
-            query += ",[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
+            query += ",[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],SerialRequired,AllowUntagged,ProjectedLife) ";
             query += "VALUES ('" + item.ItemNumber +"','" + item.ItemName + "','" + item.ItemDescription + "','" + item.ItemType + "','" + item.ModelNumber + "','";
             query += item.ManufacturerUID + "','" + item.ItemSuggestedPrice + "','" + item.AreaUID + "','" + item.ItemNotes + "','" + item.SKU + "','" + item.Active + "','";
-            query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "')";
+            query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "','" + item.LastModifiedDate.ToString() + "','FALSE',0,0)";
 
             if (_conn.State == ConnectionState.Closed)
             {
@@ -526,6 +526,7 @@ namespace DataAccess
                 DbErrorEventArgs args = new DbErrorEventArgs();
                 args.InterfaceMessage = "ERROR adding new item information.";
                 args.ExceptionMessage = e.Message;
+                OnError(args);
             }
         }
 
@@ -533,7 +534,7 @@ namespace DataAccess
         {
             string model = null;
 
-            string returnQuery = "SELECT ModelNumber FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
+            string returnQuery = "SELECT ModelNumber FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower().Replace("'","''") + "'";
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -781,23 +782,32 @@ namespace DataAccess
 
         public void addVendor(string vendorName)
         {
-            string query = "INSERT INTO tblVendor (VendorName, Active, UserID) VALUES ('" + vendorName + "',1,0)";
+            string query = "INSERT INTO tblVendor (VendorName, Active, UserID, ApplicationUID, ModifiedDate) VALUES ('" + vendorName + "',1,0,2,getdate())";
 
             if (_conn.State == ConnectionState.Closed)
             {
                 _conn.Open();
             }
 
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            try
+            {
+                SqlCommand cmd = new SqlCommand(query, _conn);
 
-            cmd.ExecuteNonQuery();
-
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                DbErrorEventArgs args = new DbErrorEventArgs();
+                args.InterfaceMessage = "ERROR adding new vendor information.";
+                args.ExceptionMessage = e.Message;
+                OnError(args);
+            }
             _conn.Close();
         }
 
         public void addFundingSource(string source)
         {
-            string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUID) VALUES ('" + vendorName + "',1,0,2)";
+            string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUID) VALUES ('" + source + "',1,0,2)";
 
             if (_conn.State == ConnectionState.Closed)
             {
