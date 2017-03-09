@@ -79,7 +79,7 @@ namespace SystemTasks
                         FundingSource = ConfigurationManager.AppSettings["FundingSource"].IsValidMap() ? csv.GetField(ConfigurationManager.AppSettings["FundingSource"]) : null,
                         AccountCode = ConfigurationManager.AppSettings["AccountCode"].IsValidMap() ? csv.GetField(ConfigurationManager.AppSettings["AccountCode"]) : null,
                         LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["LineNumber"]) : 0,
-                        ShippedToSite = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? csv.GetField(ConfigurationManager.AppSettings["ProductName"]) : null,
+                        ShippedToSite = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? csv.GetField(ConfigurationManager.AppSettings["ShippedToSite"]) : "625",
                         QuantityShipped = ConfigurationManager.AppSettings["QuantityShipped"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["QuantityShipped"]) : 0,
                         Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? csv.GetField(ConfigurationManager.AppSettings["Notes"]) : null
                     };
