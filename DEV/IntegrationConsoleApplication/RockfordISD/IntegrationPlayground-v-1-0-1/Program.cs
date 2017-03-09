@@ -101,8 +101,10 @@ namespace IntegrationPlayground_v_1_0_1
             switch(response)
             {
                 case "y":
+                    options[2] = "--add-items";
                     break;
                 case "n":
+                    options[2] = "";
                     break;
                 default:
                     break;
@@ -114,9 +116,24 @@ namespace IntegrationPlayground_v_1_0_1
             switch (response)
             {
                 case "y":
-                    //options.Add("AddVendors");
+                    options[3] = "--add-vendors";
                     break;
                 case "n":
+                    break;
+                default:
+                    break;
+            }
+
+            Console.WriteLine("Would you like to add funding sources to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
+            response = Console.ReadLine().ToLower();
+
+            switch (response)
+            {
+                case "y":
+                    options[4] = "--add-funding";
+                    break;
+                case "n":
+                    options[4] = "";
                     break;
                 default:
                     break;
@@ -164,9 +181,70 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 try
                 {
-                    var fileData = ft.convertCsvFileToObject(file, FileTasks.ImportType.PurchaseOrder);
+                    var fileData = ft.convertCsvFileToObject(file);
 
                     fileData = di.removeBadElements(fileData);
+
+                    if (options[3] == "--add-vendors")
+                    {
+                        var vendors = fileData.GroupBy(u => u.VendorName);
+
+                        foreach (var item in vendors)
+                        {
+                            if (di.vendorNotFound(item.Key))
+                            {
+                                _repo.addVendor(item.Key);
+                            }
+                        }
+                    }
+
+                    if (options[2] == "--add-items")
+                    {
+                        foreach (var item in fileData)
+                        {
+                            if (di.productNotFound(item.ProductName))
+                            {
+                                var rand = new Random(1897);
+
+                                Item itemToAdd = new Item
+                                {
+                                    ItemNumber = "H" + rand.Next().ToString(),
+                                    ItemName = item.ProductName,
+                                    ItemDescription = item.Description.Replace("'",""),
+                                    ItemType = 1,
+                                    ModelNumber = "",
+                                    ManufacturerUID = _repo.getManufacturerUIDFromName(item.Manufacturer),
+                                    ItemSuggestedPrice = item.PurchasePrice,
+                                    AreaUID = 0,
+                                    ItemNotes = item.Description.Replace("'",""),
+                                    SKU = "",
+                                    SerialRequired = false,
+                                    ProjectedLife = 0,
+                                    Active = true,
+                                    CreatedByUserId = 0,
+                                    CreatedDate = DateTime.Now,
+                                    LastModifiedByUserID = 0,
+                                    LastModifiedDate = DateTime.Now,
+                                    AllowUntagged = true
+                                };
+
+                                _repo.addItems(itemToAdd);
+                            }
+                        }
+                    }
+
+                    if (options[4] == "--add-funding")
+                    {
+                        var fundingSources = fileData.GroupBy(u => u.FundingSource);
+
+                        foreach (var source in fundingSources)
+                        {
+                            if (di.missingFundingSource(source.Key))
+                            {
+                                _repo.addFundingSource(source.Key);
+                            }
+                        }
+                    }
 
                     var outData = new List<PurchaseOrderFile>();
 

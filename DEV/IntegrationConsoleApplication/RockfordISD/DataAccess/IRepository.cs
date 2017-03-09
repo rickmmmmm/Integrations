@@ -31,8 +31,10 @@ namespace DataAccess
         int getNewImportCode();   
         void addOrderHeaders(List<PurchaseOrderHeader> orders);
         void addOrderDetails(List<PurchaseOrderDetail> details);
-        void addItems(List<Item> items);
+        void addItems(Item item);
         bool checkOrderExists(string orderNumber);
+        void addFundingSource(string source);
+        void addVendor(string vendorName);
         bool checkOrderDetailExists(string orderNumber, int lineNumber);
         List<RejectedRecord> getRejectionsFromLastImport();
         void completeIntegration();

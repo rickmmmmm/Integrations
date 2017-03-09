@@ -99,7 +99,6 @@ namespace DataAccess
             }    
         }
 
-        //TODO
         public int getInventorySourceUID(string name)
         {
             throw new NotImplementedException();
@@ -503,9 +502,31 @@ namespace DataAccess
 
         }
 
-        public void addItems(List<Item> items)
+        public void addItem(Item item)
         {
-            throw new NotImplementedException();
+
+            string query = "INSERT INTO tblTechItems ([ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU] ";
+            query += ",[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
+            query += "VALUES ('" + item.ItemNumber +"','" + item.ItemName + "','" + item.ItemDescription + "','" + item.ItemType + "','" + item.ModelNumber + "','";
+            query += item.ManufacturerUID + "','" + item.ItemSuggestedPrice + "','" + item.AreaUID + "','" + item.ItemNotes + "','" + item.SKU + "','" + item.Active + "','";
+            query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "')";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(query, _conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                DbErrorEventArgs args = new DbErrorEventArgs();
+                args.InterfaceMessage = "ERROR adding new item information.";
+                args.ExceptionMessage = e.Message;
+            }
         }
 
         public string getModelNumberFromProductName(string productName)
@@ -751,6 +772,38 @@ namespace DataAccess
             }
 
             _conn.Open();
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            cmd.ExecuteNonQuery();
+
+            _conn.Close();
+        }
+
+        public void addVendor(string vendorName)
+        {
+            string query = "INSERT INTO tblVendor (VendorName, Active, UserID) VALUES ('" + vendorName + "',1,0)";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            cmd.ExecuteNonQuery();
+
+            _conn.Close();
+        }
+
+        public void addFundingSource(string source)
+        {
+            string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUID) VALUES ('" + vendorName + "',1,0,2)";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
             SqlCommand cmd = new SqlCommand(query, _conn);
 
             cmd.ExecuteNonQuery();

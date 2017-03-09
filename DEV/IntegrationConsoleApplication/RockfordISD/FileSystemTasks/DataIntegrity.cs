@@ -57,6 +57,19 @@ namespace SystemTasks
             }
         }
 
+        public bool productNotFound(string productName)
+        {
+            try
+            {
+                int testItem = _rep.getItemUIDFromName(productName);
+                return false;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         //product not found in catalog
         public bool productNotFound(PurchaseOrderFile item)
         {
@@ -116,6 +129,19 @@ namespace SystemTasks
                 };
                 OnRejectRecord(args);
                 return false;
+            }
+        }
+
+        public bool vendorNotFound(string vendorName)
+        {
+            try
+            {
+                int testItem = _rep.getVendorUIDFromName(vendorName);
+                return false;
+            }
+            catch
+            {
+                return true;
             }
         }
 
@@ -209,6 +235,19 @@ namespace SystemTasks
             }
         }
 
+
+        public bool missingFundingSource(string fundingSource)
+        {
+            try
+            {
+                _rep.getFundingSourceUIDFromName(fundingSource);
+                return false;
+            }
+            catch
+            {
+                return true;
+            }
+        }
         //no funding source
         public bool missingFundingSource(PurchaseOrderFile item)
         {
