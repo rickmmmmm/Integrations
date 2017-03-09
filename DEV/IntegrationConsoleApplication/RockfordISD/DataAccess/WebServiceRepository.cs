@@ -12,6 +12,16 @@ namespace DataAccess
         public event EventHandler<DbActivityEventArgs> Action;
         public event EventHandler<DbErrorEventArgs> Error;
 
+        public void addFundingSource(string source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addItems(Item item)
+        {
+            throw new NotImplementedException();
+        }
+
         public void addItems(List<Item> items)
         {
             throw new NotImplementedException();
@@ -23,6 +33,16 @@ namespace DataAccess
         }
 
         public void addOrderHeaders(List<PurchaseOrderHeader> orders)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addShipmentInfo()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addVendor(string vendorName)
         {
             throw new NotImplementedException();
         }
