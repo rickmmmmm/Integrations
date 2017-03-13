@@ -15,6 +15,7 @@ namespace DataAccess
         int getVendorUIDFromName(string vendorName);
         int getSiteUIDFromName(string siteName);
         int getItemTypeUIDFromName(string itemType);
+        void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null);
         int getManufacturerUIDFromName(string manufacturerName);
         int getAreaUIDFromName(string areaName);
         int getTechDepartmentUIDFromName(string name);

@@ -166,5 +166,10 @@ namespace DataAccess
         {
             throw new NotImplementedException();
         }
+
+        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

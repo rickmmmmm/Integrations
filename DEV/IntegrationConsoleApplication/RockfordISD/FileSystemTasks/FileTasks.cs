@@ -60,14 +60,15 @@ namespace SystemTasks
 
                 csv.Configuration.RegisterClassMap<PurchaseOrderClassMap>();
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.IgnoreQuotes = true;
+                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                //csv.Configuration.IgnoreQuotes = true;
 
                 while (csv.Read())
                 {
 
                     PurchaseOrderFile newLine = new PurchaseOrderFile
                     {
-                        OrderNumber = csv.GetField<string>(ConfigurationManager.AppSettings["OrderNumber"]).Trim() + "-" + csv.GetField<string>(ConfigurationManager.AppSettings["OrderReference"]),
+                        OrderNumber = csv.GetField<string>(ConfigurationManager.AppSettings["OrderNumber"]).Trim(),
                         OrderDate = ConfigurationManager.AppSettings["OrderDate"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["OrderDate"]) : null,
                         VendorName = ConfigurationManager.AppSettings["VendorName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["VendorName"]) : null,
                         ProductName = ConfigurationManager.AppSettings["ProductName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ProductName"]).Truncate(100) : null,

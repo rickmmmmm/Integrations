@@ -305,16 +305,19 @@ namespace IntegrationPlayground_v_1_0_1
 
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
-                        string body = string.Format("<h1>Hayes Software</h1><h4>Automatic Notifications</h4><br /> <p>Integration process successful.<br /> {0} Records uploaded from file.<br />{1} Records accepted.<br />{2} Records rejected.",fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
+                        string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
-                        ISender mailer = new ElasticMailService();
-                        IMessage notification = new EmailMessage
+                        string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
+
+                        ISender mailer = new SqlDbMailService(_repo);
+                        EmailMessage notification = new EmailMessage
                                                                 {
                                                                     Body = body,
                                                                     Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                                                                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
                                                                     Subject = "Automatic Notification from Hayes Software Systems",
-                                                                    SentDate = DateTime.Now
+                                                                    SentDate = DateTime.Now,
+                                                                    FileAttachment = rejectFile
                                                                 };
 
                         mailer.send(notification);
