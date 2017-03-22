@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportTeacher"
   DTS:PackageType="5"
-  DTS:VersionBuild="306"
-  DTS:VersionGUID="{B4426999-D829-4CB7-8567-63AA3B985643}">
+  DTS:VersionBuild="308"
+  DTS:VersionGUID="{AF3BBD4A-F056-446F-B801-C78C987E08FB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -60,7 +60,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_03142017.csv">
+          DTS:ConnectionString="\Reject\_03212017.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -271,7 +271,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_03142017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_03212017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -370,7 +370,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_03142017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_03212017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -2165,7 +2165,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource=" &#xA;declare @cnt int ;&#xA;&#xA; INSERT INTO dbo.tblTeachers &#xA;&#x9;(TeacherID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;FullName, &#xA;&#x9;Phone, &#xA;&#x9;Email, Grade, HomeRoom,&#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct TeacherID, CampusID, FirstName, MiddleName, LastName,  &#xA;&#x9;(case when len(ltrim(rtrim(MiddleName))) = 0 then   &#xA;&#x9;(FirstName  + space(1) +  LastName)  &#xA;&#x9;else (FirstName  + space(1) +  MiddleName  + space(1) + LastName) end),&#xA;&#x9;(case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;     Email, Grade, HomeRoom,&#xA;    [Address], Address2, City, [State], Zip, &#xA;    0, getdate(), 1, 1&#xA;  FROM dbo._IMS_Teachers st &#xA;  where Import = 1 &#xA;  and New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblTeachers tt&#xA;&#x9;where st.TeacherID = tt.TeacherID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID)  ;&#xA; &#xA; set @cnt = @@RowCount ;&#xA;&#xA;update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Teachers ims&#xA;join tblTeachers tch on ims.TeacherID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;and ims.TeachersUID is null ;&#xA;&#xA;select @cnt as cnt;&#xA;&#x9;&#x9;"
+              SQLTask:SqlStatementSource=" &#xA;declare @cnt int ;&#xA;&#xA; INSERT INTO dbo.tblTeachers &#xA;&#x9;(TeacherID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;FullName, &#xA;&#x9;Phone, &#xA;&#x9;Email, Grade, HomeRoom,&#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct TeacherID, CampusID, FirstName, MiddleName, LastName,  &#xA;&#x9;(case when len(ltrim(rtrim(isNull(MiddleName,'')))) = 0 then   &#xA;&#x9;(FirstName  + space(1) +  LastName)  &#xA;&#x9;else (FirstName  + space(1) +  MiddleName  + space(1) + LastName) end),&#xA;&#x9;(case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;     Email, Grade, HomeRoom,&#xA;    [Address], Address2, City, &#xA;(case when ltrim(rtrim(st.[State])) = '' then null else st.State end), &#xA;Zip, &#xA;    0, getdate(), 1, 1&#xA;  FROM dbo._IMS_Teachers st &#xA;  where Import = 1 &#xA;  and New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblTeachers tt&#xA;&#x9;where st.TeacherID = tt.TeacherID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID)  ;&#xA; &#xA; set @cnt = @@RowCount ;&#xA;&#xA;update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Teachers ims&#xA;join tblTeachers tch on ims.TeacherID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;and ims.TeachersUID is null ;&#xA;&#xA;select @cnt as cnt;&#xA;&#x9;&#x9;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
@@ -2361,7 +2361,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int ;&#xA;&#xA;UPDATE dbo.tblTeachers  &#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(st.MiddleName))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + space(1) +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + space(1) +  st.MiddleName  + space(1) + st.LastName) end), &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = st.[State],  &#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;Grade = (case when len(isNull(tt.Grade,''))&gt;0 and len(isNull(st.Grade,''))=0 then tt.Grade else st.Grade end),&#xA;&#x9;email = (case when len(isNull(tt.Email,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.Email else st.Email end),&#xA;&#x9;HomeRoom = (case when len(isNull(tt.HomeRoom,''))&gt;0 and len(isNull(st.HomeRoom,''))=0 then tt.HomeRoom else st.HomeRoom end),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 1,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Teachers st&#xA; join dbo.tblTeachers tt &#xA;&#x9;on st.TeachersUID = tt.TeachersUID&#xA; where import = 1 &#xA; and new = 0&#xA;and Deactivate = 0;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
+              SQLTask:SqlStatementSource="declare @cnt int ;&#xA;&#xA;UPDATE dbo.tblTeachers  &#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(isNull(st.MiddleName,'')))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + space(1) +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + space(1) +  st.MiddleName  + space(1) + st.LastName) end), &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = (case when ltrim(rtrim(st.[State])) = '' then null else st.[State] end),&#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;Grade = (case when len(isNull(tt.Grade,''))&gt;0 and len(isNull(st.Grade,''))=0 then tt.Grade else st.Grade end),&#xA;&#x9;email = (case when len(isNull(tt.Email,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.Email else st.Email end),&#xA;&#x9;HomeRoom = (case when len(isNull(tt.HomeRoom,''))&gt;0 and len(isNull(st.HomeRoom,''))=0 then tt.HomeRoom else st.HomeRoom end),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 1,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Teachers st&#xA; join dbo.tblTeachers tt &#xA;&#x9;on st.TeachersUID = tt.TeachersUID&#xA; where import = 1 &#xA; and new = 0&#xA;and Deactivate = 0;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
