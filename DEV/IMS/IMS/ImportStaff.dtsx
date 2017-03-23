@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportStaff"
   DTS:PackageType="5"
-  DTS:VersionBuild="283"
-  DTS:VersionGUID="{51A12262-73AA-468D-BDA8-E6B6A8E7C028}">
+  DTS:VersionBuild="285"
+  DTS:VersionGUID="{DF44A1F9-7D07-4355-81B2-88438DD4B772}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -60,7 +60,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_03212017.csv">
+          DTS:ConnectionString="\Reject\_03232017.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -271,7 +271,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_03212017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_03232017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -370,7 +370,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_03212017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_03232017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -2165,11 +2165,17 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int ;&#xA; &#xA; INSERT INTO dbo.tblTeachers &#xA;&#x9;(TeacherID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;FullName, &#xA;&#x9;Phone, Email, StaffTypeUID,&#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct StaffID, CampusID, FirstName, MiddleName, LastName,  &#xA;&#x9;(case when len(ltrim(rtrim(isNull(MiddleName, '')))) = 0 then   &#xA;&#x9;(FirstName  + space(1) +  LastName)  &#xA;&#x9;else (FirstName  + space(1) +  MiddleName  + space(1) + LastName) end),&#xA; (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;&#x9;Email, isNull(StaffTypeUID, 0), &#xA;    [Address], Address2, City, &#xA;(case when ltrim(rtrim(st.[State])) = '' then null else st.State end),&#xA;Zip, &#xA;    0, getdate(), 0, 1&#xA;  FROM dbo._IMS_Staff st &#xA;  where Import = 1 &#xA;  and New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblTeachers tt&#xA;&#x9;where st.StaffID = tt.TeacherID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID) ;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Staff ims&#xA;join tblTeachers tch on ims.StaffID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;and ims.TeachersUID is null ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
+              SQLTask:SqlStatementSource="declare @cnt int, @defState char(2), @CustUID int ;&#xA;&#xA;set @CustUID = ?&#xA;&#xA;select @defState = DefaultState from ImportManagementSystem.dbo.CustomerList where CustomersUID = @CustUID&#xA; &#xA; INSERT INTO dbo.tblTeachers &#xA;&#x9;(TeacherID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;FullName, &#xA;&#x9;Phone, Email, StaffTypeUID,&#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct StaffID, CampusID, FirstName, MiddleName, LastName,  &#xA;&#x9;(case when len(ltrim(rtrim(isNull(MiddleName, '')))) = 0 then   &#xA;&#x9;(FirstName  + space(1) +  LastName)  &#xA;&#x9;else (FirstName  + space(1) +  MiddleName  + space(1) + LastName) end),&#xA; (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;&#x9;Email, isNull(StaffTypeUID, 0), &#xA;    [Address], Address2, City, &#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;Zip, &#xA;    0, getdate(), 0, 1&#xA;  FROM dbo._IMS_Staff st &#xA;  where Import = 1 &#xA;  and New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblTeachers tt&#xA;&#x9;where st.StaffID = tt.TeacherID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID) ;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;update ims set TeachersUID = tch.TeachersUID&#xA;from _IMS_Staff ims&#xA;join tblTeachers tch on ims.StaffID = tch.TeacherID &#xA;&#x9;and ims.CampusID = tch.CampusID&#xA;where ims.Import = 1&#xA;and ims.TeachersUID is null ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
                 SQLTask:DtsVariableName="User::cnt" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@CustUID"
+                SQLTask:DtsVariableName="$Package::CustomerUID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -2359,11 +2365,17 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int ;&#xA;&#xA;UPDATE dbo.tblTeachers  &#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(isNull(st.MiddleName, '')))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + space(1) +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + space(1) +  st.MiddleName  + space(1) + st.LastName) end), &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = (case when ltrim(rtrim(st.[State])) = '' then null else st.State end),&#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;email = (case when len(isNull(tt.Email,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.Email else st.Email end),&#xA;&#x9;StaffTypeUID = isNull(st.StaffTypeUID, 0),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 0,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Staff st&#xA; join dbo.tblTeachers tt &#xA;&#x9;on st.TeachersUID = tt.TeachersUID&#xA; where import = 1 &#xA; and new = 0&#xA;and Deactivate = 0 ;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
+              SQLTask:SqlStatementSource="declare @cnt int, @defState char(2), @CustUID int ;&#xA;&#xA;set @CustUID = ?&#xA;&#xA;select @defState = DefaultState from ImportManagementSystem.dbo.CustomerList where CustomersUID = @CustUID&#xA;&#xA;UPDATE dbo.tblTeachers  &#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(isNull(st.MiddleName, '')))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + ' ' +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + ' ' +  st.MiddleName  + ' ' + st.LastName) end), &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;email = (case when len(isNull(tt.Email,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.Email else st.Email end),&#xA;&#x9;StaffTypeUID = isNull(st.StaffTypeUID, 0),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 0,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Staff st&#xA; join dbo.tblTeachers tt &#xA;&#x9;on st.TeachersUID = tt.TeachersUID&#xA; where import = 1 &#xA; and new = 0&#xA;and Deactivate = 0 ;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
                 SQLTask:DtsVariableName="User::cnt" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@CustUID"
+                SQLTask:DtsVariableName="$Package::CustomerUID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -3556,7 +3568,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Create Reject Report">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Create Reject Report\OLE DB Source"
@@ -3570,7 +3582,7 @@ and cep.Active = 1</property>
           TopLeft="261,78">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="16,83"
               Start="0,0"
               End="16,75.5">
@@ -3608,7 +3620,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Find Pre Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
           Id="Package\Find Pre Processing\Recordset Destination"
@@ -3622,12 +3634,12 @@ and cep.Active = 1</property>
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
               Start="0,0"
               End="0,0">
               <mssgle:Curve.Segments>
-                <x:Null />
+                <assembly:Null />
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
@@ -3644,7 +3656,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Prepare Data\Find Post Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
           Id="Package\Prepare Data\Find Post Processing\Recordset Destination"
@@ -3658,12 +3670,12 @@ and cep.Active = 1</property>
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
               Start="0,0"
               End="0,0">
               <mssgle:Curve.Segments>
-                <x:Null />
+                <assembly:Null />
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
