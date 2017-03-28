@@ -408,7 +408,7 @@ namespace DataAccess
                 {
                     detailQuery = "UPDATE tblTechPurchaseItemDetails ";
                     detailQuery += "SET QuantityOrdered = " + detail.QuantityOrdered.ToString() + ", ";
-                    //detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
+                    detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
                     detailQuery += "PurchasePrice = " + detail.PurchasePrice + ", ";
                     detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
                     detailQuery += "StatusUID = 32,";
@@ -825,7 +825,7 @@ namespace DataAccess
         {
             string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + ProfileName + "', @recipients='" + Recipients + "', @subject='" + Subject + "', @body='" + Body + "', @body_format='HTML'";
 
-            if (string.IsNullOrEmpty(Attachment))
+            if (!string.IsNullOrEmpty(Attachment))
             {
                 query += " , @file_attachments = '" + Attachment + "'";
             }

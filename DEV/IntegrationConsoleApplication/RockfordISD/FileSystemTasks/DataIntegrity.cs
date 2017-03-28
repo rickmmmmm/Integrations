@@ -145,6 +145,91 @@ namespace SystemTasks
             }
         }
 
+        public bool rejectLongRecord(PurchaseOrderFile record, bool vendorCheck = false, bool productCheck = false, bool fundingSourceCheck = false)
+        {
+            if (record.OrderNumber.Length >= 50)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = record.OrderNumber,
+                    Reason = "Order Number Exceeds 50 ASCII Characters",
+                    ExceptionMessage = "No Exception Message",
+                    RejectedValue = record.VendorName,
+                    LineNumber = record.LineNumber
+                };
+
+                OnRejectRecord(args);
+                return true;
+            }
+
+            else if (vendorCheck && record.VendorName.Length >= 100)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = record.OrderNumber,
+                    Reason = "Vendor Name Exceeds 100 ASCII Characters",
+                    ExceptionMessage = "No Exception Message",
+                    RejectedValue = record.VendorName,
+                    LineNumber = record.LineNumber
+                };
+
+                OnRejectRecord(args);
+                return true;
+            }
+
+            else if (productCheck && record.ProductName.Length >= 100)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = record.OrderNumber,
+                    Reason = "Product Name Exceeds 100 ASCII Characters.",
+                    ExceptionMessage = "No Exception Message",
+                    RejectedValue = record.VendorName,
+                    LineNumber = record.LineNumber
+                };
+
+                OnRejectRecord(args);
+                return true;
+            }
+
+            else if (fundingSourceCheck && record.FundingSource.Length >= 50)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = record.OrderNumber,
+                    Reason = "Funding Source Name Exceeds 50 ASCII Characters.",
+                    ExceptionMessage = "No Exception Message",
+                    RejectedValue = record.VendorName,
+                    LineNumber = record.LineNumber
+                };
+
+                OnRejectRecord(args);
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
+            
+        }
+
         //vendor not found
         public bool vendorNotFound(PurchaseOrderFile item)
         {
@@ -193,6 +278,24 @@ namespace SystemTasks
                 };
                 OnRejectRecord(args);
 
+                return false;
+            }
+
+            else if (Convert.ToDateTime(item.OrderDate).Year <= 1960)
+            {
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Rejected";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = item.OrderNumber,
+                    Reason = "Purchase Date year less than 1960.",
+                    ExceptionMessage = "",
+                    RejectedValue = item.OrderDate,
+                    LineNumber = item.LineNumber
+                };
+                OnRejectRecord(args);
                 return false;
             }
             

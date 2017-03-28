@@ -193,23 +193,31 @@ namespace IntegrationPlayground_v_1_0_1
                         {
                             if (di.vendorNotFound(item.Key))
                             {
-                                _repo.addVendor(item.Key.Replace("'","''"));
+                                if (item.Key.Length <= 100)
+                                {
+                                    _repo.addVendor(item.Key.Replace("'", "''"));
+                                }
+                                else
+                                {
+
+                                }
                             }
                         }
                     }
 
                     if (options[2] == "--add-items")
                     {
-                        var rand = new Random(1897);
+                        var rand = new Random();
 
                         foreach (var item in fileData)
                         {
                             if (di.productNotFound(item.ProductName))
                             {
+                                var itemNumber = "H" + rand.Next().ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
 
                                 Item itemToAdd = new Item
                                 {
-                                    ItemNumber = "H" + rand.Next().ToString(),
+                                    ItemNumber = itemNumber,
                                     ItemName = item.ProductName.Replace("'", "''"),
                                     ItemDescription = item.Description.Replace("'","''"),
                                     ItemType = 1,
@@ -251,6 +259,11 @@ namespace IntegrationPlayground_v_1_0_1
 
                     foreach (var item in fileData)
                     {
+                        if (di.rejectLongRecord(item, true, true, true))
+                        {
+                            continue;
+                        }
+
                         if (!di.siteNotFound(item))
                         {
                             continue;
@@ -309,7 +322,7 @@ namespace IntegrationPlayground_v_1_0_1
 
                         string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
 
-                        ISender mailer = new SqlDbMailService(_repo);
+                        SqlDbMailService mailer = new SqlDbMailService(_repo);
                         EmailMessage notification = new EmailMessage
                                                                 {
                                                                     Body = body,
@@ -325,6 +338,7 @@ namespace IntegrationPlayground_v_1_0_1
                         try
                         {
                             ft.archiveFile(file);
+                            ft.archiveFile(rejectFile);
                         }
                         catch (Exception e)
                         {
@@ -332,13 +346,13 @@ namespace IntegrationPlayground_v_1_0_1
                         }
 
                         Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
-                        Console.ReadLine();
+                        //Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
                         Console.WriteLine("Press Any Key To Continue...");
-                        Console.ReadLine();
+                        //Console.ReadLine();
                     }
                 }
 
@@ -347,7 +361,7 @@ namespace IntegrationPlayground_v_1_0_1
 
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
                     Console.WriteLine("Press Any Key To Continue...");
-                    Console.ReadLine();
+                    //Console.ReadLine();
                 }
             }
 
