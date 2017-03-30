@@ -40,6 +40,7 @@ namespace SystemTasks
                 var csv = new CsvReader(reader);
 
                 csv.Configuration.RegisterClassMap<PurchaseOrderClassMap>();
+                csv.Configuration.HasHeaderRecord = false;
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
                 csv.Configuration.IgnoreQuotes = true;
 

@@ -18,7 +18,7 @@ namespace Services
         }
         public void send(IMessage message)
         {
-            _repo.sendEmail(ConfigurationManager.AppSettings["SqlServerDbMailProfileName"], message.Receivers.First(), message.Subject, message.Body);
+            _repo.sendEmail(ConfigurationManager.AppSettings["SqlServerDbMailProfileName"], message.Receivers.First(), message.Subject, message.Body, message.fileAttachment);
         }
 
         public void sendAsync(IMessage message)

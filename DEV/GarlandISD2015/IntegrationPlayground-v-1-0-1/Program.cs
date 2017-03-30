@@ -158,6 +158,15 @@ namespace IntegrationPlayground_v_1_0_1
             else if(!ft.checkFile(file))
             {
                 Console.WriteLine("File does not exist. Please provide a valid file url.");
+
+                if (options[9] == "-b")
+                {
+
+                    _repo.logAction("Initial File Check", "No file found. Process is stopping.");
+
+                    Environment.Exit(0);
+                }
+
                 PurchaseOrderMenu(options);
             }
             else
@@ -220,6 +229,7 @@ namespace IntegrationPlayground_v_1_0_1
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
+                        _repo.removeExistingBadDetailRecordsByPurchaseOrderNumber(mappedItems);
                         _repo.addOrderHeaders(mappedItems);
                         _repo.addShipmentInfo();
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
@@ -244,7 +254,8 @@ namespace IntegrationPlayground_v_1_0_1
                                                                     Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                                                                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
                                                                     Subject = "Automatic Notification from Hayes Software Systems",
-                                                                    SentDate = DateTime.Now
+                                                                    SentDate = DateTime.Now,
+                                                                    fileAttachment = rejectFile
                                                                 };
 
                         mailer.send(notification);

@@ -12,6 +12,8 @@ namespace Model
 
         public string Body { get; set; }
 
+        public string fileAttachment { get; set; }
+
         public List<string> Receivers { get; set; }
 
         public string Sender { get; set; }

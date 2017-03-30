@@ -27,6 +27,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public void addShipmentInfo()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool checkOrderDetailExists(string orderNumber, int lineNumber)
         {
             throw new NotImplementedException();
@@ -147,7 +152,17 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public void removeExistingBadDetailRecordsByPurchaseOrderNumber(List<PurchaseOrderHeader> orders)
+        {
+            throw new NotImplementedException();
+        }
+
         public void sendEmail(string ProfileName, string Recipients, string Subject, string Body)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
         {
             throw new NotImplementedException();
         }

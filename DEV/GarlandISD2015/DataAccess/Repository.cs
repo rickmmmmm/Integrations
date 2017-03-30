@@ -741,6 +741,32 @@ namespace DataAccess
             handler(this, e);
         }
 
+        public void removeExistingBadDetailRecordsByPurchaseOrderNumber(List<PurchaseOrderHeader> orders)
+        {
+            var orderList = orders.GroupBy(u => u.PurchaseOrderNumber).ToList();
+
+            string orderValues = string.Join("','", orderList);
+
+            string finalOrderValues = "'" + orderValues + "'";
+
+            string query = string.Format("DELETE FROM tblTechPurchaseOrderDetails WHERE LineNumber = 0 AND purchaseUID IN (SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber IN ({0}))", finalOrderValues);
+
+            Console.WriteLine(query);
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+
+            SqlCommand cmd = new SqlCommand(query, _conn);
+
+            cmd.ExecuteNonQuery();
+
+            _conn.Close();
+
+        }
+
         public void completeIntegration()
         {
             string query = "UPDATE _ETL_ImportData SET ImportCompleted = 'True' WHERE ImportCode = " + _importCode.ToString();
@@ -758,9 +784,14 @@ namespace DataAccess
             _conn.Close();
         }
 
-        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body)
+        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
         {
             string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + ProfileName + "', @recipients='" + Recipients + "', @subject='" + Subject + "', @body='" + Body + "', @body_format='HTML'";
+
+            if (!string.IsNullOrEmpty(Attachment))
+            {
+                query += " , @file_attachments = '" + Attachment + "'";
+            }
 
             if (_conn.State == ConnectionState.Closed)
             {

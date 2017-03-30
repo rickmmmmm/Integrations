@@ -37,7 +37,9 @@ namespace DataAccess
         List<RejectedRecord> getRejectionsFromLastImport();
         void completeIntegration();
 
-        void sendEmail(string ProfileName, string Recipients, string Subject, string Body);
+        void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null);
+
+        void removeExistingBadDetailRecordsByPurchaseOrderNumber(List<PurchaseOrderHeader> orders);
 
         event EventHandler<DbErrorEventArgs> Error;
 

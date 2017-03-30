@@ -13,5 +13,6 @@ namespace Model
         List<string> BlindReceivers { get; set; }
         string Subject { get; set; }
         string Body { get; set; }
+        string fileAttachment { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace Model
         public List<string> Receivers { get; set; }
         public string Sender { get; set; }
         public string Subject { get; set; }
-        public string FileAttachment { get; set; }
+        public string fileAttachment { get; set; }
         public DateTime SentDate { get; set; }
     }
 }
