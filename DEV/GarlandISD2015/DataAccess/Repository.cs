@@ -843,16 +843,22 @@ namespace DataAccess
                 try
                 {
                     lines.Add((int) reader[0]);
-                    return true;
                 }
 
                 catch
                 {
                     return false;
                 }
-            }
+            }  
 
-            return true;       
+            if (lines.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }     
         }
 
         public string getItemIfHasTags(string orderNumber, int lineNumber)

@@ -54,7 +54,7 @@ namespace SystemTasks
 
         public void archiveFile(string fileName)
         {
-            string f = new Guid().ToString();
+            string f = System.Guid.NewGuid().ToString();
 
             string newFile = fileName.Replace(".tsv", "_processed_" + f + ".txt");
 

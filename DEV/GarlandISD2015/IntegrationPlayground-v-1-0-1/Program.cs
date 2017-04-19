@@ -226,11 +226,13 @@ namespace IntegrationPlayground_v_1_0_1
                         //Check to see if order number has existing detail lines with a 0 line number value.
                         if (di.zeroLineNumber(item))
                         {
+                            Console.WriteLine("Has Zero line Item " + item.OrderNumber);
                             continue;
                         }
                         //Check to see if line has existing tags. Return itemUID from that detail and populate value as that.
                         if (di.hasTags(item))
                         {
+                            Console.WriteLine("Has Tags already... removing Product Name update...");
                             item.ProductName = _repo.getItemIfHasTags(item.OrderNumber, item.LineNumber);
                         }
 
@@ -241,7 +243,6 @@ namespace IntegrationPlayground_v_1_0_1
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
-                        _repo.removeExistingBadDetailRecordsByPurchaseOrderNumber(mappedItems);
                         _repo.addOrderHeaders(mappedItems);
                         _repo.addShipmentInfo();
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
@@ -275,6 +276,7 @@ namespace IntegrationPlayground_v_1_0_1
                         try
                         {
                             ft.archiveFile(file);
+                            ft.archiveFile(rejectFile);
                         }
                         catch (Exception e)
                         {
