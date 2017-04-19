@@ -45,5 +45,7 @@ namespace DataAccess
 
         event EventHandler<DbActivityEventArgs> Action;
 
+        bool getDetailLinesWithZeroLineNumber(string orderNumber);
+        string getItemIfHasTags(string orderNumber, int lineNumber);
     }
 }

@@ -57,6 +57,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public bool getDetailLinesWithZeroLineNumber(string orderNumber)
+        {
+            throw new NotImplementedException();
+        }
+
         public int getFundingSourceUIDFromName(string sourceName)
         {
             throw new NotImplementedException();
@@ -68,6 +73,11 @@ namespace DataAccess
         }
 
         public Item getItemFromName(string productName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getItemIfHasTags(string orderNumber, int lineNumber)
         {
             throw new NotImplementedException();
         }

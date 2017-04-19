@@ -741,15 +741,27 @@ namespace DataAccess
             handler(this, e);
         }
 
+        /// <summary>
+        /// DEPRECATED: This is not currently used for anything.
+        /// </summary>
+        /// <param name="orders"></param>
         public void removeExistingBadDetailRecordsByPurchaseOrderNumber(List<PurchaseOrderHeader> orders)
         {
             var orderList = orders.GroupBy(u => u.PurchaseOrderNumber).ToList();
 
-            string orderValues = string.Join("','", orderList);
+            List<string> orderVals = new List<string>();
+
+            foreach (var val in orderList)
+            {
+                orderVals.Add(val.Key);
+            }
+
+            string orderValues = string.Join("','", orderVals);
 
             string finalOrderValues = "'" + orderValues + "'";
 
-            string query = string.Format("DELETE FROM tblTechPurchaseOrderDetails WHERE LineNumber = 0 AND purchaseUID IN (SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber IN ({0}))", finalOrderValues);
+            string query = string.Format("DELETE FROM tblTechPurchaseItemDetails WHERE LineNumber = 0 AND purchaseUID IN (SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber IN ({0}))", finalOrderValues);
+            string queryShipments = string.Format("DELETE FROM tblTechPurchaseItemShipments WHERE PurchaseItemDetailUID in (SELECT purchaseItemDetailUID FROM tblTechPurchaseItemDetails WHERE PurchaseUID IN (SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber IN ({0})))", finalOrderValues);
 
             Console.WriteLine(query);
 
@@ -759,8 +771,11 @@ namespace DataAccess
             }
 
 
+            SqlCommand cmdShipments = new SqlCommand(queryShipments, _conn);
+
             SqlCommand cmd = new SqlCommand(query, _conn);
 
+            cmdShipments.ExecuteNonQuery();
             cmd.ExecuteNonQuery();
 
             _conn.Close();
@@ -804,6 +819,90 @@ namespace DataAccess
 
             _conn.Close();
 
+        }
+
+        public bool getDetailLinesWithZeroLineNumber(string orderNumber)
+        {
+            List<int> lines = new List<int>();
+
+            string returnQuery = "SELECT PurchaseItemDetailUID FROM tblTechPurchaseItemDetails det JOIN tblTechPurchases p on det.PurchaseUID = p.PurchaseUID WHERE det.LineNumber = 0 and p.OrderNumber = '" + orderNumber + "'";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    lines.Add((int) reader[0]);
+                    return true;
+                }
+
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return true;       
+        }
+
+        public string getItemIfHasTags(string orderNumber, int lineNumber)
+        {
+           string itemName = "";
+
+            string returnQuery = "SELECT items.ItemName ";
+            returnQuery += "FROM tblTechPurchases p ";
+            returnQuery += "JOIN tblTechPurchaseItemDetails det on p.PurchaseUID = det.PurchaseUID ";
+            returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemDetailUID = det.PurchaseItemDetailUID ";
+            returnQuery += "JOIN tblTechPurchaseInventory i on i.PurchaseItemShipmentUID = ship.PurchaseItemShipmentUID ";
+            returnQuery += "JOIN tblTechInventory inv on inv.InventoryUID = i.InventoryUID ";
+            returnQuery += "JOIN tblTechItems items on det.ItemUID = items.ItemUID ";
+            returnQuery += "WHERE p.OrderNumber = '" + orderNumber + "' AND det.LineNumber = " + lineNumber;
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    itemName = (string) reader[0];
+                }
+
+                catch
+                {
+                    throw;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (itemName != "")
+            {
+                return itemName;
+            }
+            else
+            {
+                throw new KeyNotFoundException();
+            }
         }
     }
 

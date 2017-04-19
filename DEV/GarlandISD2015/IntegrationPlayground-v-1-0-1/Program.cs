@@ -159,7 +159,7 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 Console.WriteLine("File does not exist. Please provide a valid file url.");
 
-                if (options[9] == "-b")
+                if (options[3] == "--batch")
                 {
 
                     _repo.logAction("Initial File Check", "No file found. Process is stopping.");
@@ -222,6 +222,18 @@ namespace IntegrationPlayground_v_1_0_1
                             continue;
                         }
 
+                        //2 more checks
+                        //Check to see if order number has existing detail lines with a 0 line number value.
+                        if (di.zeroLineNumber(item))
+                        {
+                            continue;
+                        }
+                        //Check to see if line has existing tags. Return itemUID from that detail and populate value as that.
+                        if (di.hasTags(item))
+                        {
+                            item.ProductName = _repo.getItemIfHasTags(item.OrderNumber, item.LineNumber);
+                        }
+
                         outData.Add(item);
                     }
 
@@ -270,12 +282,20 @@ namespace IntegrationPlayground_v_1_0_1
                         }
 
                         Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
+                        if (options[3] == "--batch")
+                        {
+                            Environment.Exit(0);
+                        }
                         Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
                         Console.WriteLine("Press Any Key To Continue...");
+                        if (options[3] == "--batch")
+                        {
+                            Environment.Exit(0);
+                        }
                         Console.ReadLine();
                     }
                 }
@@ -285,6 +305,12 @@ namespace IntegrationPlayground_v_1_0_1
 
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
                     Console.WriteLine("Press Any Key To Continue...");
+
+                    if(options[3]=="--batch")
+                    {
+                        Environment.Exit(0);
+                    }
+
                     Console.ReadLine();
                 }
             }

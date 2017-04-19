@@ -204,10 +204,35 @@ namespace SystemTasks
             }         
         }
 
+        public bool zeroLineNumber(dynamic item)
+        {
+                if (_rep.getDetailLinesWithZeroLineNumber(item.OrderNumber))
+                {
+                    ErrorEventArgs args = new ErrorEventArgs();
+                    args.message = "Record Rejected";
+                    args.actionName = "Data Integrity";
+                    args.type = Logging.ChangeType.RejectRecord;
+                    args.Data = new ErrorData
+                    {
+                        Reference = item.OrderNumber,
+                        Reason = "Purchase order detail record exists with line number 0. Requires manual fix.",
+                        ExceptionMessage = "This is not a technical exception.",
+                        RejectedValue = item.VendorName,
+                        LineNumber = item.LineNumber
+                    };
+                    OnRejectRecord(args);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+        }
+
         //invalid quantity
 
         //invalid quantity shipped
-        
+
         //invalid purchase price
 
         //invalid line number
@@ -235,6 +260,36 @@ namespace SystemTasks
             {
                 return false;
             }
+        }
+
+        public bool hasTags(dynamic item)
+        {
+            try
+            {
+                int itemData = _rep.getItemIfHasTags(item.OrderNumber, item.LineNumber);
+
+                ErrorEventArgs args = new ErrorEventArgs();
+                args.message = "Record Modified";
+                args.actionName = "Data Integrity";
+                args.type = Logging.ChangeType.RejectRecord;
+                args.Data = new ErrorData
+                {
+                    Reference = item.OrderNumber,
+                    Reason = "Item already has associated tags. Product Name will not be updated. THIS IS NOT A REJECTION.",
+                    ExceptionMessage = "",
+                    RejectedValue = item.FundingSource.ToString(),
+                    LineNumber = item.LineNumber
+                };
+                OnRejectRecord(args);
+
+                return true;
+            }
+
+            catch
+            {
+                return false;
+            }
+            
         }
 
         //no funding source
