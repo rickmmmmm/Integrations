@@ -502,6 +502,92 @@ namespace DataAccess
 
         }
 
+        public List<ReceivedTagsExportFile> exportReceivedTags()
+        {
+            List<ReceivedTagsExportFile> export = new List<ReceivedTagsExportFile>();
+
+            string returnQuery = "SELECT DISTINCT p.ordernumber, '0' as AmountAccepted, p.PurchaseDate, p.PurchaseDate as PDate, ItemNumber, det.QuantityOrdered, '0' as AmountDamaged, det.LineNumber, inv.AssetID, 'R' as TypeOfR ";
+            returnQuery += "FROM tblTechInventory inv ";
+            returnQuery += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
+            returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
+            returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUID = pinv.PurchaseItemShipmentUID ";
+            returnQuery += "JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUID = ship.PurchaseItemDetailUID ";
+            returnQuery += "JOIN tblTechPurchases p on p.PurchaseUID = det.PurchaseUID";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    export.Add(new ReceivedTagsExportFile
+                    {
+                        POR_REF_NO = (string) reader[0], //OrderNumber
+                        POR_AMOUNT = (string) reader[1], //0
+                        POR_DT = (string) reader[2], //PurchaseDate
+                        POR_ENTRY_DT = (string) reader[3], //PurchaseDate
+                        POR_ITEM = (string) reader[4], //ItemCode
+                        POR_QTY = (string) reader[5], //Quantity
+                        POR_QTY_DAM = (string) reader[6], //0
+                        POR_SEQ = (string) reader[7], //LineNumber
+                        POR_TAG = (string) reader[8], //AssetID or blank
+                        POR_TYPE = (string) reader[9] //R
+                    });
+                }
+
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "Unable to export received tags.";
+                    args.ExceptionMessage = e.Message;
+                    OnError(args);
+                    break;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            return export;
+
+        }
+        public void updateFixedAssetIds()
+        {
+            string query = "UPDATE tblTechInventory ";
+            query += "SET AssetID = 'FA' + Convert(varchar(50), InventoryUID) ";
+            query += "FROM tblTechInventory inv ";
+            query += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
+            query += "WHERE item.ItemSuggestedPrice >= 5000 AND AssetID IS NULL";
+
+            if (_conn.State == ConnectionState.Closed)
+            {
+                _conn.Open();
+            }
+
+            try
+            {
+                SqlCommand cmd = new SqlCommand(query, _conn);
+                cmd.ExecuteNonQuery();
+                _conn.Close();
+            }
+            catch (Exception e)
+            {
+                DbErrorEventArgs args = new DbErrorEventArgs();
+                args.InterfaceMessage = "ERROR updating fixed asset information.";
+                args.ExceptionMessage = e.Message;
+                OnError(args);
+            }
+        }
+
         public void addItems(Item item)
         {
 

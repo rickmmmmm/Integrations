@@ -78,6 +78,10 @@ namespace IntegrationPlayground_v_1_0_1
                 case "m":
                     MobileDeviceManagementMenu();
                     break;
+                case "e":
+                    string[] expOptions = GetExportOptions();
+                    ExportFileOptions(expOptions);
+                    break;
                 case "q":
                     Environment.Exit(0);
                     break;
@@ -89,6 +93,49 @@ namespace IntegrationPlayground_v_1_0_1
                     ReadOption();
                     break;
             }
+        }
+
+        public static string[] GetExportOptions()
+        {
+            var options = new string[10];
+            return options;
+        }
+
+        public static void ExportFileOptions(string[] options)
+        {
+            Console.WriteLine("Which export option would you like to do? (R)eceived Tags");
+            string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
+
+            switch(response)
+            {
+                case "r":
+                    ProcessReceivedTagsExport(options);
+                    break;
+                case "q":
+                    Environment.Exit(0);
+                    break;
+            }
+        }
+
+        private static void ProcessReceivedTagsExport(string[] options)
+        {
+            Console.WriteLine("Paste Export File Name below:");
+            string file = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
+            FileTasks ft = new FileTasks();
+            Repository rep = new Repository();
+
+            _repo = rep;
+
+            _repo.updateFixedAssetIds();
+            List<ReceivedTagsExportFile> results = _repo.exportReceivedTags();
+            if (results.Count > 0)
+            {
+                ft.createExportFile(results, file);
+            }
+
+            Console.WriteLine("Completed...");
+            Environment.Exit(0);
+
         }
 
         public static string[] GetOptions()
@@ -175,6 +222,12 @@ namespace IntegrationPlayground_v_1_0_1
             else if(!ft.checkFile(file))
             {
                 Console.WriteLine("File does not exist. Please provide a valid file url.");
+
+                if (options[5] == "--batch")
+                {
+                    Environment.Exit(0);
+                }
+
                 PurchaseOrderMenu(options);
             }
             else
@@ -220,7 +273,7 @@ namespace IntegrationPlayground_v_1_0_1
                                     ItemNumber = itemNumber,
                                     ItemName = item.ProductName.Replace("'", "''"),
                                     ItemDescription = item.Description.Replace("'","''"),
-                                    ItemType = 1,
+                                    ItemType = 0,
                                     ModelNumber = "None",
                                     ManufacturerUID = 0,
                                     ItemSuggestedPrice = item.PurchasePrice,
@@ -307,9 +360,14 @@ namespace IntegrationPlayground_v_1_0_1
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
                         _repo.addOrderHeaders(mappedItems);
-                        _repo.addShipmentInfo();
+
+                        if (options[6] == "--add-shipments")
+                        {
+                            _repo.addShipmentInfo();
+                        }
+
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
-                        string rejectFile = string.IsNullOrEmpty(options[6]) ? Console.ReadLine() : options[6];
+                        string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
                         var rejects = _repo.getRejectionsFromLastImport();
 
@@ -346,13 +404,23 @@ namespace IntegrationPlayground_v_1_0_1
                         }
 
                         Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
-                        //Console.ReadLine();
+
+                        if (options[5] == "--batch")
+                        {
+                            Environment.Exit(0);
+                        }
+
+                        Console.ReadLine();
                     }
                     else
                     {
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
                         Console.WriteLine("Press Any Key To Continue...");
-                        //Console.ReadLine();
+                        if (options[5] == "--batch")
+                        {
+                            Environment.Exit(0);
+                        }
+                        Console.ReadLine();
                     }
                 }
 
@@ -361,7 +429,13 @@ namespace IntegrationPlayground_v_1_0_1
 
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
                     Console.WriteLine("Press Any Key To Continue...");
-                    //Console.ReadLine();
+
+                    if (options[5] == "--batch")
+                    {
+                        Environment.Exit(0);
+                    }
+
+                    Console.ReadLine();
                 }
             }
 

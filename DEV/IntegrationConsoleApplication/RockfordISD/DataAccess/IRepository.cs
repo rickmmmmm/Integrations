@@ -44,5 +44,7 @@ namespace DataAccess
 
         event EventHandler<DbActivityEventArgs> Action;
 
+        List<ReceivedTagsExportFile> exportReceivedTags();
+        void updateFixedAssetIds();
     }
 }

@@ -96,6 +96,19 @@ namespace SystemTasks
 
         }
 
+        public void createExportFile(List<ReceivedTagsExportFile> results, string fileName)
+        {
+            using (StreamWriter writer = File.AppendText(fileName))
+            {
+                var csv = new CsvWriter(writer);
+                csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
+                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.QuoteAllFields = true;
+
+                csv.WriteRecords(results);
+            }
+        }
+
         public void createRejectFile(string fileName, List<RejectedRecord> rejects)
         {
             using (StreamWriter writer = File.AppendText(fileName))
