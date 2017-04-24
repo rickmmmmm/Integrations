@@ -34,7 +34,7 @@ namespace IntegrationPlayground_v_1_0_1
                 Environment.Exit(0);
             }
 
-            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (Q)uit");
+            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (Q)uit");
 
             ReadOption();
 
@@ -55,6 +55,9 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 case "-p":
                     PurchaseOrderMenu(args);
+                    break;
+                case "-e":
+                    ExportFileOptions(args);
                     break;
                 case "-m":
                     Console.WriteLine("Mobile Device Management not implemented yet.");

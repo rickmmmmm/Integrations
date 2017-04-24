@@ -62,6 +62,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public List<ReceivedTagsExportFile> exportReceivedTags()
+        {
+            throw new NotImplementedException();
+        }
+
         public int getAreaUIDFromName(string areaName)
         {
             throw new NotImplementedException();
@@ -168,6 +173,11 @@ namespace DataAccess
         }
 
         public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void updateFixedAssetIds()
         {
             throw new NotImplementedException();
         }
