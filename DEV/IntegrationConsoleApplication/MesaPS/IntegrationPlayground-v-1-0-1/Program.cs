@@ -34,7 +34,7 @@ namespace IntegrationPlayground_v_1_0_1
                 Environment.Exit(0);
             }
 
-            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (Q)uit");
+            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
 
             ReadOption();
 
@@ -59,6 +59,9 @@ namespace IntegrationPlayground_v_1_0_1
                 case "-e":
                     ExportFileOptions(args);
                     break;
+                case "-c":
+                    ChargesMenu(args);
+                    break;
                 case "-m":
                     Console.WriteLine("Mobile Device Management not implemented yet.");
                     Console.ReadLine();
@@ -68,22 +71,100 @@ namespace IntegrationPlayground_v_1_0_1
             }
         }
 
+        private static void ChargesMenu(string[] args)
+        {
+            //Is this an import or export?
+            Console.WriteLine("Are you wanting to (i)mport payments or (e)xport charge data?");
+            string choice = string.IsNullOrEmpty(args[1]) ? Console.ReadLine().ToLower() : args[1];
+
+            FileTasks ft = new FileTasks();
+            Repository rep = new Repository();
+
+            _repo = rep;
+
+            DataIntegrity di = new DataIntegrity(_repo);
+            Logging log = new Logging(_repo);
+
+            di.Reject += OnRejecting;
+            di.Action += OnDataIntegrityAction;
+
+            _repo.Action += OnAction;
+            _repo.Error += OnError;
+
+
+            if (choice == "i")
+            {
+                Console.WriteLine("Paste import filename below:");
+            }
+
+            else if (choice == "e")
+            {
+                Console.WriteLine("Paste export filename below:");
+                string exportFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
+                var outData = _repo.exportChargesToInTouch();
+                ft.createExportFile(outData, exportFileName);
+
+                string body = ""; //TODO: add body for email notification of export
+
+                SqlDbMailService mailer = new SqlDbMailService(_repo);
+                EmailMessage notification = new EmailMessage
+                {
+                    Body = body,
+                    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                    Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                    Subject = "Automatic Notification from Hayes Software Systems",
+                    SentDate = DateTime.Now,
+                    FileAttachment = rejectFile
+                };
+
+                mailer.send(notification);
+
+            }
+
+            else if (args[2] == "--batch")
+            {
+                Environment.Exit(0);
+            }
+            else
+            {
+                Console.WriteLine(choice + " is not a valid choice. Please make a valid selection from the menu...");
+            }
+
+            //If Import what is file name to import?
+
+
+            //map incoming file to file model
+            //run import data integrity
+            //map file model to data model
+            //send email confirming import and showing rejects
+
+            //if export, what is file name to export?
+            //run query which automatically maps to output type
+            //save file with data   
+        }
+
         public static void ReadOption()
         {
             string choice = Console.ReadLine().ToLower();
 
+            string[] options;
+
             switch (choice)
             {
                 case "p":
-                    string[] options = GetOptions();
+                    options = GetOptions();
                     PurchaseOrderMenu(options);
                     break;
                 case "m":
                     MobileDeviceManagementMenu();
                     break;
                 case "e":
-                    string[] expOptions = GetExportOptions();
-                    ExportFileOptions(expOptions);
+                    options = GetExportOptions();
+                    ExportFileOptions(options);
+                    break;
+                case "c":
+                    options = new string[10];
+                    ChargesMenu(options);
                     break;
                 case "q":
                     Environment.Exit(0);

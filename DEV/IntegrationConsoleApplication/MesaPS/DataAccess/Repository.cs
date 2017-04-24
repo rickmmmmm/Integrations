@@ -21,6 +21,7 @@ namespace DataAccess
             _importCode = getNewImportCode();
         }
 
+        #region Purchase Orders
         public int getAreaUIDFromName(string areaName)
         {
             throw new NotImplementedException();
@@ -927,6 +928,104 @@ namespace DataAccess
 
             _conn.Close();
         }
+
+        #endregion
+
+        #region Charges
+
+        public List<ChargeExportFile> exportChargesToInTouch()
+        {
+            List<ChargeExportFile> charges = new List<ChargeExportFile>();
+
+            string returnQuery = "SELECT DISTINCT chg.ChargeUID, sd.EntityID, items.ItemName, '' as ItemBarCode, 'Library' as ItemCollection, '' as FineLocationCode, chg.[Description], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as ChargeAmount ";
+            returnQuery += "FROM tblUnvCharges chg ";
+            returnQuery += "JOIN iv_StudentData sd on chg.EntityUID = sd.EntityUID ";
+            returnQuery += "JOIN tblTechItems items on items.ItemUID = chg.ItemUID ";
+            //returnQuery += "JOIN tblTechInventory inv on inv.ItemUID = items.ItemUID ";
+            returnQuery += "WHERE chg.entitytypeuid = 4 AND chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) > 0";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    ChargeExportFile cef = new ChargeExportFile
+                    {
+                        FineId = (int) reader[0],
+                        StudentId = (int) reader[1],
+                        ItemTitle = (string) reader[2],
+                        ItemBarcode = (string) reader[3],
+                        ItemCollection = (string) reader[4],
+                        FineLocationCode = (string) reader[5],
+                        FineDescription = (string) reader[6],
+                        FineCreatedDate = Convert.ToDateTime(reader[7]),
+                        FineAmount = (decimal) reader[7]
+                    };
+
+                    charges.Add(cef);
+                       
+                }
+
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "ERROR getting charge export data for fine " + (string) reader[0];
+                    args.ExceptionMessage = e.Message;
+                    continue;
+
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            return charges;
+        }
+
+        public void voidCharges(List<Charge> voidedCharges)
+        {
+
+        }
+
+        public void insertPaymentDetails(List<ChargePayments> imports)
+        {
+            foreach (var import in imports)
+            {
+                insertPaymentDetail(import);
+            }
+        }
+
+        public void insertPaymentDetail(ChargePayments import)
+        {
+
+            string query = "INSERT INTO tblUnvChargePayments (ApplicationUID, ChargeUID, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";
+            query += "VALUES ({0}, {1}, {2}, '{3}', {4}, '{5}', {6})";
+
+            SqlCommand cmd = new SqlCommand(string.Format(query, 1, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            cmd.ExecuteNonQuery();
+            _conn.Close();
+        }
+
+        #endregion
+
+        #region Fixed Asset
+        #endregion
     }
 
     public class DbErrorEventArgs : EventArgs

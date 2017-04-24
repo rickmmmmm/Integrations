@@ -46,5 +46,10 @@ namespace DataAccess
 
         List<ReceivedTagsExportFile> exportReceivedTags();
         void updateFixedAssetIds();
+
+        List<ChargeExportFile> exportChargesToInTouch();
+        void voidCharges();
+        void insertPaymentDetails(List<ChargePayments> import);
+        void insertPaymentDetail(ChargePayments import);
     }
 }
