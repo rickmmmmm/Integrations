@@ -47,6 +47,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public bool chargeExists(int chargeId)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool checkOrderDetailExists(string orderNumber, int lineNumber)
         {
             throw new NotImplementedException();
@@ -73,6 +78,11 @@ namespace DataAccess
         }
 
         public int getAreaUIDFromName(string areaName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Charge getChargeAmountByChargeId(int chargeId)
         {
             throw new NotImplementedException();
         }

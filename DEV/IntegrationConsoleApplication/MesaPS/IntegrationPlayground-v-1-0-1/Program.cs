@@ -139,6 +139,9 @@ namespace IntegrationPlayground_v_1_0_1
                         };
 
                         mailer.send(notification);
+
+                        ft.archiveFile(importFileName);
+                        Environment.Exit(0);
                     }
                     catch (Exception e)
                     {
@@ -165,6 +168,12 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 Console.WriteLine("Paste export filename below:");
                 string exportFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
+
+                if (ft.checkFile(exportFileName))
+                {
+                    ft.archiveFile(exportFileName);
+                }
+
                 var outData = _repo.exportChargesToInTouch();
                 ft.createExportFile(outData, exportFileName);
 
@@ -185,9 +194,14 @@ namespace IntegrationPlayground_v_1_0_1
 
                 mailer.send(notification);
 
+                if (args[3]=="--batch")
+                {
+                    Environment.Exit(0);
+                }
+
             }
 
-            else if (args[2] == "--batch")
+            else if (args[3] == "--batch")
             {
                 Environment.Exit(0);
             }

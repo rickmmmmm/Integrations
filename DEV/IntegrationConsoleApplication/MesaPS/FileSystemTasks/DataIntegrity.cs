@@ -418,15 +418,6 @@ namespace SystemTasks
 
         #region Charges
 
-        public bool missingChargeId(int chargeId)
-        {
-
-        }
-
-        public bool paymentAmountTooLarge(int chargeId, decimal chargeAmount)
-        {
-
-        }
 
         #endregion
 
