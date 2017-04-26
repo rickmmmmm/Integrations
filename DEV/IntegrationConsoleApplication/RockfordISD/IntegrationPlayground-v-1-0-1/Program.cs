@@ -136,6 +136,23 @@ namespace IntegrationPlayground_v_1_0_1
                 ft.createExportFile(results, file);
             }
 
+            string readBody = "<!DOCTYPE html><html><body><div><h1>Hayes Software Systems</h1><h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4></div><div style=\"margin-left:5%;\"><p>Data integration successful!</p><ul style=\"list-style:none;\"><li>Records Processed: {0}</li></ul></div><div style=\"margin-left:3%;\"><p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p><p> Have a wonderful day,</p><p> The Hayes Software Team </p> </div> </body> </html> ";
+
+            string body = string.Format(readBody, results.Count.ToString());
+
+            SqlDbMailService mailer = new SqlDbMailService(_repo);
+            EmailMessage notification = new EmailMessage
+            {
+                Body = body,
+                Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                Subject = "Automatic Notification from Hayes Software Systems",
+                SentDate = DateTime.Now,
+                FileAttachment = file
+            };
+
+            mailer.send(notification);
+
             Console.WriteLine("Completed...");
             Environment.Exit(0);
 
