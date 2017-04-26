@@ -937,7 +937,7 @@ namespace DataAccess
         {
             List<ChargeExportFile> charges = new List<ChargeExportFile>();
 
-            string returnQuery = "SELECT DISTINCT chg.ChargeUID, sd.EntityID, items.ItemName, '' as ItemBarCode, 'Library' as ItemCollection, '' as FineLocationCode, chg.[Description], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as ChargeAmount ";
+            string returnQuery = "SELECT chg.ChargeUID, sd.EntityID, items.ItemName, '' as ItemBarCode, 'Library' as ItemCollection, '' as FineLocationCode, chg.[Description], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as ChargeAmount ";
             returnQuery += "FROM tblUnvCharges chg ";
             returnQuery += "JOIN iv_StudentData sd on chg.EntityUID = sd.EntityUID ";
             returnQuery += "JOIN tblTechItems items on items.ItemUID = chg.ItemUID ";
@@ -958,18 +958,29 @@ namespace DataAccess
             {
                 try
                 {
-                    ChargeExportFile cef = new ChargeExportFile
-                    {
-                        FineId = (int) reader[0],
-                        StudentId = (int) reader[1],
-                        ItemTitle = (string) reader[2],
-                        ItemBarcode = (string) reader[3],
-                        ItemCollection = (string) reader[4],
-                        FineLocationCode = (string) reader[5],
-                        FineDescription = (string) reader[6],
-                        FineCreatedDate = Convert.ToDateTime(reader[7]),
-                        FineAmount = (decimal) reader[7]
-                    };
+                    //ChargeExportFile cef = new ChargeExportFile
+                    //{
+                    //    FineId = (int) reader[0],
+                    //    StudentId = (int) reader[1],
+                    //    ItemTitle = (string) reader[2],
+                    //    ItemBarcode = (string) reader[3],
+                    //    ItemCollection = (string) reader[4],
+                    //    FineLocationCode = (string) reader[5],
+                    //    FineDescription = (string) reader[6],
+                    //    FineCreatedDate = Convert.ToDateTime((string) reader[7]),
+                    //    FineAmount = Convert.ToDecimal((string) reader[7])
+                    //};
+                    ChargeExportFile cef = new ChargeExportFile();
+
+                    cef.FineId = (int) reader[0];
+                    cef.StudentId = (string) reader[1];
+                    cef.ItemTitle = (string) reader[2];
+                    cef.ItemBarcode = (string) reader[3];
+                    cef.ItemCollection = (string) reader[4];
+                    cef.FineLocationCode = (string) reader[5];
+                    cef.FineDescription = (string) reader[6];
+                    cef.FineCreatedDate = (DateTime) reader[7];
+                    cef.FineAmount = (decimal) reader[8];
 
                     charges.Add(cef);
                        
@@ -991,9 +1002,34 @@ namespace DataAccess
             return charges;
         }
 
-        public void voidCharges(List<Charge> voidedCharges)
+        public void voidCharges(List<ChargePayments> voidedCharges)
         {
+            string query = "UPDATE tblUnvCharges ";
+            query += "SET Void = 1 ";
+            query += "WHERE ChargeUID = {0}";
 
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+            _conn.Open();
+
+            foreach (var charge in voidedCharges)
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand(string.Format(query, charge.ParentCharge.ChargeUID.ToString()), _conn);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    DbErrorEventArgs args = new DbErrorEventArgs();
+                    args.InterfaceMessage = "ERROR updating data for fine " + charge.ParentCharge.ChargeUID.ToString();
+                    args.ExceptionMessage = e.Message;
+                    continue;
+                }
+            }
+            _conn.Close();
         }
 
         public void insertPaymentDetails(List<ChargePayments> imports)
@@ -1020,6 +1056,91 @@ namespace DataAccess
             _conn.Open();
             cmd.ExecuteNonQuery();
             _conn.Close();
+        }
+
+        public bool chargeExists(int chargeId)
+        {
+            int outputValue = 0;
+
+            string query = "SELECT count(ChargeUID) FROM tblUnvCharges WHERE ChargeUID = " + chargeId.ToString();
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(query, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                    outputValue = (int) reader[0];   
+            }
+
+            if (outputValue == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        public Charge getChargeAmountByChargeId(int chargeId)
+        {
+            Charge returnCharge = new Charge();
+
+            string query = "SELECT chg.ChargeAmount, ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as PaidAmount FROM tblUnvCharges chg WHERE ChargeUID = " + chargeId.ToString();
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(query, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                returnCharge.ChargeUID = chargeId;
+                returnCharge.ChargeAmount = (decimal) reader[0];
+                returnCharge.Payments = getPaymentsByChargeId(chargeId);
+            }
+
+            return returnCharge;
+        }
+
+        private List<ChargePayments> getPaymentsByChargeId(int chargeId)
+        {
+            var payments = new List<ChargePayments>();
+
+            string query = " WHERE ChargeUID = " + chargeId.ToString();
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(query, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var payment = new ChargePayments();
+
+                payment.ParentCharge.ChargeUID = chargeId;
+                payment.ChargeAmount = (decimal) reader[1];
+                payment.PaymentDate = (DateTime) reader[2];
+            }
+
+            return payments;
         }
 
         #endregion

@@ -9,6 +9,7 @@ namespace Model
     public class Charge
     {
         public int ChargeUID { get; set; }
+        public decimal? ChargeAmount { get; set; }
         public ICollection<ChargePayments> Payments { get; set; }
     }
 }

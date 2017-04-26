@@ -62,6 +62,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public List<ChargeExportFile> exportChargesToInTouch()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<ReceivedTagsExportFile> exportReceivedTags()
         {
             throw new NotImplementedException();
@@ -152,6 +157,16 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public void insertPaymentDetail(ChargePayments import)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void insertPaymentDetails(List<ChargePayments> import)
+        {
+            throw new NotImplementedException();
+        }
+
         public void logAction(string actionName, string actionDescription)
         {
             throw new NotImplementedException();
@@ -178,6 +193,11 @@ namespace DataAccess
         }
 
         public void updateFixedAssetIds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void voidCharges(List<ChargePayments> voidedCharges)
         {
             throw new NotImplementedException();
         }

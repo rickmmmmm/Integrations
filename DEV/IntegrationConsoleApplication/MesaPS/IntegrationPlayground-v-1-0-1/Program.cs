@@ -9,6 +9,7 @@ using Model;
 using DataAccess;
 using Services;
 using System.Configuration;
+using FileSystemTasks;
 
 namespace IntegrationPlayground_v_1_0_1
 {
@@ -74,7 +75,7 @@ namespace IntegrationPlayground_v_1_0_1
         private static void ChargesMenu(string[] args)
         {
             //Is this an import or export?
-            Console.WriteLine("Are you wanting to (i)mport payments or (e)xport charge data?");
+            Console.WriteLine("Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
             string choice = string.IsNullOrEmpty(args[1]) ? Console.ReadLine().ToLower() : args[1];
 
             FileTasks ft = new FileTasks();
@@ -83,7 +84,8 @@ namespace IntegrationPlayground_v_1_0_1
             _repo = rep;
 
             DataIntegrity di = new DataIntegrity(_repo);
-            Logging log = new Logging(_repo);
+            ChargesMapping map = new ChargesMapping(_repo);
+
 
             di.Reject += OnRejecting;
             di.Action += OnDataIntegrityAction;
@@ -95,6 +97,68 @@ namespace IntegrationPlayground_v_1_0_1
             if (choice == "i")
             {
                 Console.WriteLine("Paste import filename below:");
+                string importFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
+
+                if (!ft.checkFile(importFileName))
+                {
+                    Console.WriteLine("File not valid.");
+
+                    if (args[3] == "--batch")
+                    {
+                        Environment.Exit(0);
+                    }
+
+                    ChargesMenu(args);
+                }
+
+                else
+                {
+                    try { 
+                        var paymentsFileData = ft.serializeChargePaymentsFile(importFileName);
+
+                        var paymentData = map.mapPaymentDetails(paymentsFileData);
+
+                        var paymentsToProcess = paymentData.Where(u => !u.Void).ToList();
+                        var chargesToVoid = paymentData.Where(u => u.Void).ToList();
+
+                        _repo.voidCharges(chargesToVoid);
+                        _repo.insertPaymentDetails(paymentsToProcess);
+
+                        string bodyMovement = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data import successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>       </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
+
+                        string body = string.Format(bodyMovement, paymentData.Count);
+
+                        SqlDbMailService mailer = new SqlDbMailService(_repo);
+                        EmailMessage notification = new EmailMessage
+                        {
+                            Body = body,
+                            Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                            Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                            Subject = "Automatic Notification from Hayes Software Systems",
+                            SentDate = DateTime.Now
+                        };
+
+                        mailer.send(notification);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("There was an error processing the import. Exception: ");
+                        Console.WriteLine(e.Message);
+                        _repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
+
+                        if (args[3] == "--batch")
+                        {
+                            Environment.Exit(0);
+                        }
+                        Console.ReadLine();
+                    }
+
+                }
+
+                //map incoming file to file model
+                //run import data integrity
+                //map file model to data model
+                //send email confirming import and showing rejects
             }
 
             else if (choice == "e")
@@ -104,7 +168,9 @@ namespace IntegrationPlayground_v_1_0_1
                 var outData = _repo.exportChargesToInTouch();
                 ft.createExportFile(outData, exportFileName);
 
-                string body = ""; //TODO: add body for email notification of export
+                string bodyMovement = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data export successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>       </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
+
+                string body = string.Format(bodyMovement, outData.Count);
 
                 SqlDbMailService mailer = new SqlDbMailService(_repo);
                 EmailMessage notification = new EmailMessage
@@ -114,7 +180,7 @@ namespace IntegrationPlayground_v_1_0_1
                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
                     Subject = "Automatic Notification from Hayes Software Systems",
                     SentDate = DateTime.Now,
-                    FileAttachment = rejectFile
+                    FileAttachment = exportFileName
                 };
 
                 mailer.send(notification);
@@ -133,10 +199,7 @@ namespace IntegrationPlayground_v_1_0_1
             //If Import what is file name to import?
 
 
-            //map incoming file to file model
-            //run import data integrity
-            //map file model to data model
-            //send email confirming import and showing rejects
+            
 
             //if export, what is file name to export?
             //run query which automatically maps to output type

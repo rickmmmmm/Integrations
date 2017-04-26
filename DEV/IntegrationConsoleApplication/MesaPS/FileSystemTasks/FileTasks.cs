@@ -14,7 +14,7 @@ namespace SystemTasks
     public class FileTasks
     {
         //Class implements all functionality for file tasks on csv files.
-        public enum ImportType { PurchaseOrder, MobileDeviceManagement }
+        public enum ImportType { PurchaseOrder, MobileDeviceManagement, InTouchPayments }
 
         public bool checkFile(string fileName)
         {
@@ -31,6 +31,35 @@ namespace SystemTasks
                 return false;
             }
 
+        }
+
+        public List<PaymentImportFile> serializeChargePaymentsFile(string fileName)
+        {
+            using (StreamReader reader = File.OpenText(fileName))
+            {
+                var payload = new List<PaymentImportFile>();
+                var csv = new CsvReader(reader);
+
+                csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
+                //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.IgnoreQuotes = true;
+
+                while (csv.Read())
+                {
+
+                    PaymentImportFile newLine = new PaymentImportFile
+                    {
+                        FineId = csv.GetField<int>(ConfigurationManager.AppSettings["FineId"]),
+                        Amount = csv.GetField<decimal>(ConfigurationManager.AppSettings["PaymentAmount"]),
+                        Type = csv.GetField<string>(ConfigurationManager.AppSettings["PaymentType"]),
+                        Date = csv.GetField<DateTime>(ConfigurationManager.AppSettings["PaymentDate"])
+                    };
+
+                    payload.Add(newLine);
+                }
+
+                return payload;
+            }
         }
 
         private List<PurchaseOrderFile> serializePurchaseOrderFile(string fileName)

@@ -9,7 +9,7 @@ namespace Model
     public class ChargeExportFile
     {
         public int FineId { get; set; }
-        public int StudentId { get; set; }
+        public string StudentId { get; set; }
         public string ItemTitle { get; set; }
         public string ItemBarcode { get; set; }
         public string ItemCollection { get; set; }

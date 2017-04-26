@@ -48,8 +48,11 @@ namespace DataAccess
         void updateFixedAssetIds();
 
         List<ChargeExportFile> exportChargesToInTouch();
-        void voidCharges();
+        void voidCharges(List<ChargePayments> voidedCharges);
         void insertPaymentDetails(List<ChargePayments> import);
         void insertPaymentDetail(ChargePayments import);
+
+        bool chargeExists(int chargeId);
+        Charge getChargeAmountByChargeId(int chargeId);
     }
 }
