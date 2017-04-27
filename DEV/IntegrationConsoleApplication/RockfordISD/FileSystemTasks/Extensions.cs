@@ -74,5 +74,28 @@ namespace SystemTasks
         {
             return value.Length <= maxChars ? value : value.Substring(0, maxChars - 1);
         }
+        /// <summary>
+        /// Extension method to convert string value to value with leading zeroes.
+        /// </summary>
+        /// <param name="value">Initial non-leading zeroes string</param>
+        /// <param name="length">Total length for leading zeroes.</param>
+        /// <returns>String with length of length and leading zeroes filled in.</returns>
+        public static string WithLeadingZeroes(this string value, int length)
+        {
+            string outString = value;
+
+            while (outString.Length < length)
+            {
+                outString += "0";
+            }
+
+            var charSet = outString.ToCharArray();
+
+            var newCharSet = charSet.Reverse().ToArray();
+
+            string outValue = new string(newCharSet);
+
+            return outValue;
+        }
     }
 }

@@ -254,7 +254,7 @@ namespace DataAccess
 
         public void logError(string message, string exceptionMessage)
         {
-            string query = "INSERT INTO _ETL_Errors (InterfaceMessage, ExceptionMessage, ImportDataID) VALUES ('" + message + "','" + exceptionMessage + "','" + _importCode.ToString() + "')";
+            string query = "INSERT INTO _ETL_Errors (InterfaceMessage, ExceptionMessage, ImportDataID) VALUES ('" + message + "','" + exceptionMessage.Replace("'","''") + "','" + _importCode.ToString() + "')";
 
             SqlCommand cmd = new SqlCommand(query, _conn);
 
@@ -506,7 +506,7 @@ namespace DataAccess
         {
             List<ReceivedTagsExportFile> export = new List<ReceivedTagsExportFile>();
 
-            string returnQuery = "SELECT DISTINCT p.ordernumber, '0' as AmountAccepted, p.PurchaseDate, p.PurchaseDate as PDate, ItemNumber, det.QuantityOrdered, '0' as AmountDamaged, det.LineNumber, inv.AssetID, 'R' as TypeOfR ";
+            string returnQuery = "SELECT DISTINCT SUBSTRING(p.orderNumber, 10,7) as ordernumber, '0' as AmountAccepted, CONVERT(varchar(50),p.PurchaseDate,101) as PurchaseDate, CONVERT(varchar(50),p.PurchaseDate,101) as PDate, det.LineNumber, det.QuantityOrdered, '0' as AmountDamaged, '0000', CASE WHEN inv.AssetID IS NULL THEN '' ELSE inv.Tag END as AssetId, 'R' as TypeOfR ";
             returnQuery += "FROM tblTechInventory inv ";
             returnQuery += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
             returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
@@ -535,10 +535,10 @@ namespace DataAccess
                         POR_AMOUNT = (string) reader[1], //0
                         POR_DT = (string) reader[2], //PurchaseDate
                         POR_ENTRY_DT = (string) reader[3], //PurchaseDate
-                        POR_ITEM = (string) reader[4], //ItemCode
-                        POR_QTY = (string) reader[5], //Quantity
+                        POR_ITEM = Convert.ToString((int) reader[4]), //LineNumber
+                        POR_QTY = Convert.ToString((int) reader[5]), //Quantity
                         POR_QTY_DAM = (string) reader[6], //0
-                        POR_SEQ = (string) reader[7], //LineNumber
+                        POR_SEQ = (string) reader[7], //0
                         POR_TAG = (string) reader[8], //AssetID or blank
                         POR_TYPE = (string) reader[9] //R
                     });

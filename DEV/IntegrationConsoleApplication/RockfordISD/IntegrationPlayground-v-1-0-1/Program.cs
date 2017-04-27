@@ -124,13 +124,28 @@ namespace IntegrationPlayground_v_1_0_1
         {
             Console.WriteLine("Paste Export File Name below:");
             string file = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
+
             FileTasks ft = new FileTasks();
             Repository rep = new Repository();
 
             _repo = rep;
 
+            _repo.Action += OnAction;
+            _repo.Error += OnError;
+
+            if(ft.checkFile(file))
+            {
+                ft.archiveFile(file);
+            }
+
             _repo.updateFixedAssetIds();
             List<ReceivedTagsExportFile> results = _repo.exportReceivedTags();
+
+            foreach (var result in results)
+            {
+                result.POR_ITEM = result.POR_ITEM.WithLeadingZeroes(4);
+            }
+
             if (results.Count > 0)
             {
                 ft.createExportFile(results, file);

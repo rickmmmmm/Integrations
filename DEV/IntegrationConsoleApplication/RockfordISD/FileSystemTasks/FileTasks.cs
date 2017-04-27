@@ -101,9 +101,10 @@ namespace SystemTasks
             using (StreamWriter writer = File.AppendText(fileName))
             {
                 var csv = new CsvWriter(writer);
-                csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
-                csv.Configuration.QuoteAllFields = true;
+                csv.Configuration.Delimiter = ",";
+                csv.Configuration.IgnoreQuotes = true;
+                //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                //csv.Configuration.QuoteAllFields = true;
 
                 csv.WriteRecords(results);
             }
