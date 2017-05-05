@@ -266,7 +266,7 @@ namespace SystemTasks
         {
             try
             {
-                int itemData = _rep.getItemIfHasTags(item.OrderNumber, item.LineNumber);
+                string itemData = _rep.getItemIfHasTags(item.OrderNumber, item.LineNumber);
 
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Modified";
@@ -277,7 +277,7 @@ namespace SystemTasks
                     Reference = item.OrderNumber,
                     Reason = "Item already has associated tags. Product Name will not be updated. THIS IS NOT A REJECTION.",
                     ExceptionMessage = "",
-                    RejectedValue = item.FundingSource.ToString(),
+                    RejectedValue = "Warning",
                     LineNumber = item.LineNumber
                 };
                 OnRejectRecord(args);
@@ -285,8 +285,10 @@ namespace SystemTasks
                 return true;
             }
 
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
+
                 return false;
             }
             

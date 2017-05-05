@@ -74,6 +74,40 @@ namespace SystemTasks
             }
         }
 
+        public List<PurchaseOrderFile> getRejectionRecords(List<RejectedRecord> rejects, List<PurchaseOrderFile> payload)
+        {
+
+            foreach (var record in payload)
+            {
+                if (rejects.Contains(rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault()))
+                {
+
+                    var warning = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectValue;
+                    Console.WriteLine(warning);
+
+                    if (warning == "Warning")
+                    {
+                        record.Accepted = "Warning";
+                    }
+                    else
+                    {
+                        record.Accepted = "Rejected";
+                    }
+
+                    record.Reason = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectReason;
+
+                }
+
+                else
+                {
+                    record.Accepted = "Accepted";
+                }
+            }
+
+            return payload;
+
+        }
+
         public void createRejectFile(string fileName, List<RejectedRecord> rejects, List<PurchaseOrderFile> payload)
         {
             foreach(var record in payload)
@@ -81,8 +115,20 @@ namespace SystemTasks
                 if (rejects.Contains(rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault()))
                 {
 
-                    record.Accepted = "Rejected";
+                    var warning = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectValue;
+                    Console.WriteLine(warning);
+
+                    if (warning == "Warning")
+                    {
+                        record.Accepted = "Warning";
+                    }
+                    else
+                    {
+                        record.Accepted = "Rejected";
+                    }
+
                     record.Reason = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectReason;
+
                 }
 
                 else

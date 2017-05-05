@@ -872,7 +872,7 @@ namespace DataAccess
             returnQuery += "JOIN tblTechPurchaseInventory i on i.PurchaseItemShipmentUID = ship.PurchaseItemShipmentUID ";
             returnQuery += "JOIN tblTechInventory inv on inv.InventoryUID = i.InventoryUID ";
             returnQuery += "JOIN tblTechItems items on det.ItemUID = items.ItemUID ";
-            returnQuery += "WHERE p.OrderNumber = '" + orderNumber + "' AND det.LineNumber = " + lineNumber;
+            returnQuery += "WHERE p.OrderNumber = '" + orderNumber + "' AND det.LineNumber = " + lineNumber.ToString();
 
             if (_conn.State == ConnectionState.Open)
             {
