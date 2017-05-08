@@ -83,7 +83,6 @@ namespace SystemTasks
                 {
 
                     var warning = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectValue;
-                    Console.WriteLine(warning);
 
                     if (warning == "Warning")
                     {

@@ -259,8 +259,8 @@ namespace IntegrationPlayground_v_1_0_1
                         string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>    <li>Records with Warnings: {3}</li>         <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
                         var recordsProcessed = fileData.Count.ToString();
-                        var recordsAccepted = outData.Count.ToString();
-                        var recordsRejected = finalRejections.Where(u => u.Accepted != "Warning").ToList().Count.ToString();
+                        var recordsAccepted = finalRejections.Where(u => u.Accepted == "Accepted").ToList().Count.ToString();
+                        var recordsRejected = finalRejections.Where(u => u.Accepted != "Warning" && u.Accepted != "Accepted").ToList().Count.ToString();
                         var recordsWarned = finalRejections.Where(u => u.Accepted == "Warning").ToList().Count.ToString();
 
                         string body = string.Format(readBody, recordsProcessed, recordsAccepted, recordsRejected, recordsWarned);
