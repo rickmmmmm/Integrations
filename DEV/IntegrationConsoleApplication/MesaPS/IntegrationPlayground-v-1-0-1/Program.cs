@@ -141,6 +141,7 @@ namespace IntegrationPlayground_v_1_0_1
                         mailer.send(notification);
 
                         ft.archiveFile(importFileName);
+                        _repo.completeIntegration();
                         Environment.Exit(0);
                     }
                     catch (Exception e)
@@ -193,6 +194,7 @@ namespace IntegrationPlayground_v_1_0_1
                 };
 
                 mailer.send(notification);
+                _repo.completeIntegration();
 
                 if (args[3]=="--batch")
                 {

@@ -1046,7 +1046,7 @@ namespace DataAccess
             string query = "INSERT INTO tblUnvChargePayments (ApplicationUID, ChargeUID, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";
             query += "VALUES ({0}, {1}, {2}, '{3}', {4}, '{5}', {6})";
 
-            SqlCommand cmd = new SqlCommand(string.Format(query, 1, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
+            SqlCommand cmd = new SqlCommand(string.Format(query, 2, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
 
             if (_conn.State == ConnectionState.Open)
             {
