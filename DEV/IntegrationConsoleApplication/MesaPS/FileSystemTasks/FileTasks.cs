@@ -50,7 +50,7 @@ namespace SystemTasks
                     PaymentImportFile newLine = new PaymentImportFile
                     {
                         FineId = csv.GetField<int>(ConfigurationManager.AppSettings["FineId"]),
-                        Amount = csv.GetField<decimal>(ConfigurationManager.AppSettings["PaymentAmount"]),
+                        Amount = csv.GetField<string>(ConfigurationManager.AppSettings["PaymentAmount"]),
                         Type = csv.GetField<string>(ConfigurationManager.AppSettings["PaymentType"]),
                         Date = csv.GetField<DateTime>(ConfigurationManager.AppSettings["PaymentDate"])
                     };

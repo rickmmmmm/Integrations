@@ -74,5 +74,21 @@ namespace SystemTasks
         {
             return value.Length <= maxChars ? value : value.Substring(0, maxChars - 1);
         }
+
+        /// <summary>
+        /// Mesa-specific extension method to correctly parse decimal values from their file.
+        /// </summary>
+        /// <param name="chargeAmount"></param>
+        /// <param name="decimalLength"></param>
+        /// <returns></returns>
+        public static decimal MesaConvertChargeAmount(this string chargeAmount, int decimalLength)
+        {
+            string decimalPortion = chargeAmount.Substring(chargeAmount.Length - (decimalLength + 1), decimalLength);
+            string nonDecimalPortion = chargeAmount.Substring(0, chargeAmount.Length - decimalLength);
+
+            decimal outputValue = Convert.ToDecimal(nonDecimalPortion + "." + decimalPortion);
+
+            return outputValue;
+        }
     }
 }

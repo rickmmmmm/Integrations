@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemTasks;
 
 namespace FileSystemTasks
 {
@@ -26,7 +27,7 @@ namespace FileSystemTasks
                     ChargePayments payment = new ChargePayments
                     {
                         ParentCharge = new Charge { ChargeUID = import.FineId },
-                        ChargeAmount = import.Amount,
+                        ChargeAmount = import.Amount.MesaConvertChargeAmount(2),
                         PaymentDate = import.Date,
                         Void = import.Type.ToLower() == "adjustment" ? true : false
                     };

@@ -27,6 +27,7 @@ namespace IntegrationPlayground_v_1_0_1
             }
 
             Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
+
             Console.WriteLine("Shall we play a game? (Y)es (N)o");
             string gameplay = Console.ReadLine().ToLower();
 
