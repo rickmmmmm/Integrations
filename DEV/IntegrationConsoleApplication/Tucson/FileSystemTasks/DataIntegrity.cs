@@ -14,6 +14,8 @@ namespace SystemTasks
         {
             _rep = rep;
         }
+
+        #region Purchase Orders
         public List<PurchaseOrderFile> removeBadElements(List<PurchaseOrderFile> payload)
         {
 
@@ -412,7 +414,12 @@ namespace SystemTasks
                 return false;
             }
         }
+        #endregion
 
+        #region Charges
+
+
+        #endregion
 
 
         public event EventHandler<ErrorEventArgs> Error;

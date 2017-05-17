@@ -47,6 +47,11 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public bool chargeExists(int chargeId)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool checkOrderDetailExists(string orderNumber, int lineNumber)
         {
             throw new NotImplementedException();
@@ -62,7 +67,22 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public List<ChargeExportFile> exportChargesToInTouch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ReceivedTagsExportFile> exportReceivedTags()
+        {
+            throw new NotImplementedException();
+        }
+
         public int getAreaUIDFromName(string areaName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Charge getChargeAmountByChargeId(int chargeId)
         {
             throw new NotImplementedException();
         }
@@ -147,6 +167,16 @@ namespace DataAccess
             throw new NotImplementedException();
         }
 
+        public void insertPaymentDetail(ChargePayments import)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void insertPaymentDetails(List<ChargePayments> import)
+        {
+            throw new NotImplementedException();
+        }
+
         public void logAction(string actionName, string actionDescription)
         {
             throw new NotImplementedException();
@@ -168,6 +198,16 @@ namespace DataAccess
         }
 
         public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void updateFixedAssetIds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void voidCharges(List<ChargePayments> voidedCharges)
         {
             throw new NotImplementedException();
         }

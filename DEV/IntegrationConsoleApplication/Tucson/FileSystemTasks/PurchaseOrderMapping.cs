@@ -71,7 +71,7 @@ namespace SystemTasks
                         StatusUID = _repo.getStatusUID("open"),
                         SiteAddedSiteUID = _repo.getSiteUIDFromName(det.ShippedToSite),
                         QuantityOrdered = det.Quantity,
-                        QuantityReceived = det.Quantity,
+                        QuantityReceived = 0,
                         PurchasePrice = det.PurchasePrice,
                         AccountCode = det.AccountCode,
                         CreatedByUserID = 0,

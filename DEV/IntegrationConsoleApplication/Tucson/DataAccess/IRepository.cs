@@ -44,5 +44,15 @@ namespace DataAccess
 
         event EventHandler<DbActivityEventArgs> Action;
 
+        List<ReceivedTagsExportFile> exportReceivedTags();
+        void updateFixedAssetIds();
+
+        List<ChargeExportFile> exportChargesToInTouch();
+        void voidCharges(List<ChargePayments> voidedCharges);
+        void insertPaymentDetails(List<ChargePayments> import);
+        void insertPaymentDetail(ChargePayments import);
+
+        bool chargeExists(int chargeId);
+        Charge getChargeAmountByChargeId(int chargeId);
     }
 }
