@@ -940,7 +940,7 @@ namespace DataAccess
             string returnQuery = "SELECT chg.ChargeUID, sd.StudentID, items.ItemName, '' as ItemBarCode, chgt.Name  as ItemCollection, camp.CampusName as FineLocationCode, chg.[Description], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as ChargeAmount ";
             returnQuery += "FROM tblUnvCharges chg ";
             returnQuery += "JOIN tblUnvChargeTypes chgt ON chgt.ChargeTypeUID = chg.[ChargeTypeUID] ";
-            returnQuery += "JOIN tblStudents sd on chg.EntityUID = sd.StudentID and chg.entitytypeuid = 4 ";
+            returnQuery += "JOIN tblStudents sd on chg.EntityUID = sd.StudentsUID and chg.entitytypeuid = 4 ";
             returnQuery += "JOIN tblCampuses camp on camp.CampusID = sd.CampusID ";
             returnQuery += "JOIN tblTechItems items on items.ItemUID = chg.ItemUID ";
             //returnQuery += "JOIN tblTechInventory inv on inv.ItemUID = items.ItemUID ";

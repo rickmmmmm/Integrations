@@ -145,6 +145,7 @@ namespace SystemTasks
                 var csv = new CsvWriter(writer);
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
                 csv.Configuration.IgnoreQuotes = true;
+                csv.Configuration.HasHeaderRecord = false;
                 //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
                 //csv.Configuration.QuoteAllFields = true;
 
