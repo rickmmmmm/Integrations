@@ -49,10 +49,10 @@ namespace SystemTasks
 
                     PaymentImportFile newLine = new PaymentImportFile
                     {
-                        FineId = csv.GetField<int>(ConfigurationManager.AppSettings["FineId"]),
-                        Amount = csv.GetField<string>(ConfigurationManager.AppSettings["PaymentAmount"]),
-                        Type = csv.GetField<string>(ConfigurationManager.AppSettings["PaymentType"]),
-                        Date = csv.GetField<DateTime>(ConfigurationManager.AppSettings["PaymentDate"])
+                        FineId = csv.GetField<int>(Convert.ToInt32(ConfigurationManager.AppSettings["FineId"])),
+                        Amount = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentAmount"])),
+                        Type = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentType"])),
+                        Date = csv.GetField<DateTime>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentDate"]))
                     };
 
                     payload.Add(newLine);

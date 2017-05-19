@@ -27,7 +27,7 @@ namespace FileSystemTasks
                     ChargePayments payment = new ChargePayments
                     {
                         ParentCharge = new Charge { ChargeUID = import.FineId },
-                        ChargeAmount = import.Amount.MesaConvertChargeAmount(2),
+                        ChargeAmount = Convert.ToDecimal(import.Amount),
                         PaymentDate = import.Date,
                         Void = import.Type.ToLower() == "adjustment" ? true : false
                     };
