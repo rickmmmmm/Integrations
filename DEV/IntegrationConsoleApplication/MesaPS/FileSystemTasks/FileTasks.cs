@@ -41,6 +41,7 @@ namespace SystemTasks
                 var csv = new CsvReader(reader);
 
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
+                csv.Configuration.HasHeaderRecord = false;
                 //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
                 csv.Configuration.IgnoreQuotes = true;
 
