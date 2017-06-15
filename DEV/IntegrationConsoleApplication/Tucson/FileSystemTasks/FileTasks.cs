@@ -8,6 +8,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Model;
 using System.Configuration;
+using Newtonsoft.Json;
 
 namespace SystemTasks
 {
@@ -122,6 +123,53 @@ namespace SystemTasks
                 return payload;
             }
 
+
+        }
+
+        public List<PurchaseOrderFile> serializeJsonFile(string filename)
+        {
+
+            using (StreamReader r = new StreamReader(filename))
+            {
+                string json = r.ReadToEnd().Replace("\r\n","");
+                dynamic array = JsonConvert.DeserializeObject(json);
+                Console.WriteLine("checking");
+
+                List<PurchaseOrderFile> orders = new List<PurchaseOrderFile>();
+
+                foreach (var item in array)
+                {
+                    PurchaseOrderFile order = new PurchaseOrderFile();
+
+                    string accountCode = item.Account;
+                    string desc = item.LineDescription;
+
+                    order.OrderNumber = item.PONumber;
+                    order.OrderDate = item.PODate;
+                    order.VendorName = item.OrderName;
+                    order.ProductName = desc.Substring(0,99);
+                    order.Description = item.LineDescription;
+                    order.ProductType = "Unassigned";
+                    order.Model = "None";
+                    order.Manufacturer = "None";
+                    order.Quantity = item.Quantity;
+                    order.PurchasePrice = item.UnitPrice;
+                    order.FundingSource = accountCode.Substring(0,3);
+                    order.AccountCode = accountCode;
+                    order.LineNumber = item.LineNo;
+                    order.ShippedToSite = "";
+                    order.QuantityShipped = item.Quantity;
+                    order.Notes = "";
+                    order.Accepted = null;
+                    order.Reason = "";
+
+                    orders.Add(order);
+
+                }
+
+
+                return orders;
+            }
 
         }
 

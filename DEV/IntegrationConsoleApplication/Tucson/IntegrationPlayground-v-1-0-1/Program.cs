@@ -38,14 +38,6 @@ namespace IntegrationPlayground_v_1_0_1
             Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
 
             ReadOption();
-
-            //Remove "bad" data
-            //log actions to console
-            //Map file import objects to model objects
-            //Submit changes to db
-                //upsert to Db
-            //Send notifications
-            //Dispose of remaining objects
         }
 
         private static void ReadOption(string[] args)
@@ -65,7 +57,7 @@ namespace IntegrationPlayground_v_1_0_1
                     break;
                 case "-m":
                     Console.WriteLine("Mobile Device Management not implemented yet.");
-                    Console.ReadLine();
+                    Environment.Exit(0);
                     break;
                 default:
                     break;
@@ -157,11 +149,6 @@ namespace IntegrationPlayground_v_1_0_1
                     }
 
                 }
-
-                //map incoming file to file model
-                //run import data integrity
-                //map file model to data model
-                //send email confirming import and showing rejects
             }
 
             else if (choice == "e")
@@ -395,7 +382,7 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 try
                 {
-                    var fileData = ft.convertCsvFileToObject(file);
+                    var fileData = ft.serializeJsonFile(file);
 
                     fileData = di.removeBadElements(fileData);
 
