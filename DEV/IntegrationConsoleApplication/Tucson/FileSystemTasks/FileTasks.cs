@@ -147,7 +147,7 @@ namespace SystemTasks
                     order.OrderNumber = item.PONumber;
                     order.OrderDate = item.PODate;
                     order.VendorName = item.OrderName;
-                    order.ProductName = desc.Substring(0,99);
+                    order.ProductName = desc.Length >= 100 ? desc.Substring(0,99) : desc;
                     order.Description = item.LineDescription;
                     order.ProductType = "Unassigned";
                     order.Model = "None";
