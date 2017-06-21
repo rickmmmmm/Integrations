@@ -4130,23 +4130,23 @@ SELECT j.name, j.DESCRIPTION,
 SUBSTRING(CONVERT(VARCHAR(10), js.next_run_date), 5, 2)+ '/'+
 CONVERT(VARCHAR(2), right(js.next_run_date, 2)) + '/'+ CONVERT(VARCHAR(4), left(js.next_run_date, 4))  AS next_run_date2,
 CASE WHEN LEN(next_run_time)  = 5 THEN LEFT(CONVERT(VARCHAR(50), next_run_time), 1) 
-			WHEN LEN(next_run_time)  = 6 THEN LEFT(CONVERT(VARCHAR(50), next_run_time), 2) END + ':' + 
-			CASE WHEN LEN(next_run_time)  = 5 THEN substring(CONVERT(VARCHAR(50), next_run_time), 2, 2) 
-			WHEN LEN(next_run_time)  = 6 THEN SUBSTRING (CONVERT(VARCHAR(50), next_run_time), 3, 2) END + ':' + 
-			RIGHT(CONVERT(VARCHAR (50), next_run_time), 2)AS next_run_time2,
+                                                WHEN LEN(next_run_time)  = 6 THEN LEFT(CONVERT(VARCHAR(50), next_run_time), 2) END + ':' + 
+                                                CASE WHEN LEN(next_run_time)  = 5 THEN substring(CONVERT(VARCHAR(50), next_run_time), 2, 2) 
+                                                WHEN LEN(next_run_time)  = 6 THEN SUBSTRING (CONVERT(VARCHAR(50), next_run_time), 3, 2) END + ':' + 
+                                                RIGHT(CONVERT(VARCHAR (50), next_run_time), 2)AS next_run_time2,
 --next_run_time, 
 SUBSTRING(CONVERT(VARCHAR(10), jh.run_date), 5, 2)+ '/'+
 CONVERT(VARCHAR(2), right(jh.run_date, 2)) + '/'+ CONVERT(VARCHAR(4), left(jh.run_date, 4)) AS lastrundate2, 
 --jh.run_date AS [Last Run Date], 
 
 CASE WHEN LEN(jh.run_time)  = 5 THEN LEFT(CONVERT(VARCHAR(50), jh.run_time), 1) 
-			WHEN LEN(jh.run_time)  = 6 THEN LEFT(CONVERT(VARCHAR(50), jh.run_time), 2) END + ':' + 
-			CASE WHEN LEN(jh.run_time)  = 5 THEN substring(CONVERT(VARCHAR(50), jh.run_time), 2, 2) 
-			WHEN LEN(jh.run_time)  = 6 THEN SUBSTRING (CONVERT(VARCHAR(50), jh.run_time), 3, 2) END + ':' + 
-			RIGHT(CONVERT(VARCHAR (50), jh.run_time), 2)AS lastruntime2,
+                                                WHEN LEN(jh.run_time)  = 6 THEN LEFT(CONVERT(VARCHAR(50), jh.run_time), 2) END + ':' + 
+                                                CASE WHEN LEN(jh.run_time)  = 5 THEN substring(CONVERT(VARCHAR(50), jh.run_time), 2, 2) 
+                                                WHEN LEN(jh.run_time)  = 6 THEN SUBSTRING (CONVERT(VARCHAR(50), jh.run_time), 3, 2) END + ':' + 
+                                                RIGHT(CONVERT(VARCHAR (50), jh.run_time), 2)AS lastruntime2,
 
-jh.run_status,	
- LEFT(RIGHT('000000' + CONVERT(VARCHAR(20), jh.run_duration), 6) ,2) + ':' + 
+jh.run_status,   
+LEFT(RIGHT('000000' + CONVERT(VARCHAR(20), jh.run_duration), 6) ,2) + ':' + 
  SUBSTRING(RIGHT('000000' + CONVERT(VARCHAR(20), jh.run_duration), 6), 3, 2) + ':'
 + RIGHT( RIGHT('000000' + CONVERT(VARCHAR(20), jh.run_duration), 6), 2) AS [Run_Duration (HHMMSS) ],
 --jh.run_time AS [Last Run Time], 
@@ -4160,25 +4160,25 @@ JOIN dbo.sysjobs j ON js.job_id = j.job_id
 JOIN 
  (
    
-	SELECT  j.NAME, MAX(jh.instance_id) AS jobhis_last_id, jh.job_id
-	FROM dbo.sysjobhistory jh
-	JOIN dbo.sysjobs j ON jh.job_id = j.job_id
-	WHERE step_name = '(Job outcome)'
-	GROUP BY j.name, jh.job_id
- )tjh ON j.job_id = tjh.job_id
- JOIN dbo.sysjobhistory jh ON tjh.jobhis_last_id = jh.instance_id
- WHERE j.enabled  = 1 and  j.name like 'Intg%'
-
- UNION 
-SELECT 'INTG_Garland_PO' as name, 'Oracle PO including line items and shipping' as [description], Dateadd(dd, 1, ImportDateTime), Dateadd(dd, 1, ImportDateTime), ImportDateTime, ImportDateTime, ImportCompleted as run_status, NULL,  CASE WHEN ImportCompleted = 1 THEN 'Success' ELSE 'Failed' END
+                SELECT  j.NAME, MAX(jh.instance_id) AS jobhis_last_id, jh.job_id
+                FROM dbo.sysjobhistory jh
+                JOIN dbo.sysjobs j ON jh.job_id = j.job_id
+                WHERE step_name = '(Job outcome)'
+                GROUP BY j.name, jh.job_id
+)tjh ON j.job_id = tjh.job_id
+JOIN dbo.sysjobhistory jh ON tjh.jobhis_last_id = jh.instance_id
+WHERE j.enabled  = 1 and  j.name like 'Intg%'
+UNION 
+SELECT 'Garland Integration' as name, '' as [description], Dateadd(dd, 1, ImportDateTime), Dateadd(dd, 1, ImportDateTime), ImportDateTime, ImportDateTime, ImportCompleted as run_status, NULL,  CASE WHEN ImportCompleted = 1 THEN 'Success' ELSE 'Failed' END
 FROM TipwebhostedgarlandISD.._ETL_ImportData
 WHERE ImportCode = (SELECT MAX(ImportCode) FROM TipwebhostedgarlandISD.._ETL_ImportData)
 UNION 
-SELECT 'INTG_MesaPS_Charges' as name, 'InTouch export charges/import payments' as [description], Dateadd(dd, 1, ImportDateTime), Dateadd(dd, 1, ImportDateTime), ImportDateTime, ImportDateTime, ImportCompleted as run_status, NULL,  CASE WHEN ImportCompleted = 1 THEN 'Success' ELSE 'Failed' END
+SELECT 'Mesa Integration' as name, '' as [description], Dateadd(dd, 1, ImportDateTime), Dateadd(dd, 1, ImportDateTime), ImportDateTime, ImportDateTime, ImportCompleted as run_status, NULL,  CASE WHEN ImportCompleted = 1 THEN 'Success' ELSE 'Failed' END
 FROM Tipwebhostedmesaps.._ETL_ImportData
-WHERE ImportCode = (SELECT MAX(ImportCode) FROM TipwebhostedMesaPS.._ETL_ImportData)
+WHERE ImportCode = (SELECT MAX(ImportCode) FROM TipwebhostedgarlandISD.._ETL_ImportData)
 ORDER BY j.name, jh.run_status, next_run_date2, next_run_time2
- </CommandText>
+
+</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -4186,13 +4186,13 @@ ORDER BY j.name, jh.run_status, next_run_date2, next_run_time2
           <DataField>name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="next_run_date2">
-          <DataField>next_run_date2</DataField>
-          <rd:TypeName>System.DateTime</rd:TypeName>
-        </Field>
         <Field Name="DESCRIPTION">
           <DataField>DESCRIPTION</DataField>
           <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="next_run_date2">
+          <DataField>next_run_date2</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
         <Field Name="next_run_time2">
           <DataField>next_run_time2</DataField>
@@ -4210,12 +4210,12 @@ ORDER BY j.name, jh.run_status, next_run_date2, next_run_time2
           <DataField>run_status</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
-        <Field Name="Run_Status2">
-          <DataField>Run_Status2</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="Run_Duration__HHMMSS__">
           <DataField>Run_Duration (HHMMSS) </DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Run_Status2">
+          <DataField>Run_Status2</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -4329,6 +4329,55 @@ and fx.job_name = a.Job_Name
 --and fx.filename = a.filename
 and fx.check_time = a.Check_Time
 where a.Check_Time&gt;DATEADD(HH,18,  DATEADD(d, 0, CONVERT(VARCHAR(10), DATEADD(d, -1, GETDATE()), 101)))
+UNION
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+select ImportCode, Client, Job_Name, filecheck, sfilename, filesize, file_recvd_date, check_time, category, filecheck2
+from (
+
+	select top 1  lastrun.[ImportCode], 'Garland ISD' as client, 
+	'INTG_Garland_PO' as job_name, 
+	case when [ActivityMessage] like '%no file%' then 0 else 1 end as filecheck,
+	'E:\Integration\GarlandISD\ClientFile\Purchasing\gisd_tipwebit_po.tsv' as sfilename,
+	 -1 as filesize,
+	[ImportDateTime] as file_recvd_date,
+	[ImportDateTime] as check_time, 
+	'PurchaseOrder' as category,
+	case when [ActivityMessage] like '%no file%' then 'NO' 
+		when ActivityMonitorID is null then 'Unknown' else 'YES' end as filecheck2
+	 from (
+			SELECT TOP 1 [ImportCode],[ImportDateTime],[ImportUserId],[ImportCompleted]
+			FROM [TipWebHostedGarlandISD].[dbo].[_ETL_ImportData] 
+	 		order by importcode desc
+		) lastrun
+		left outer join [TipWebHostedGarlandISD].[dbo].[_ETL_ActivityMonitor] am on lastrun.ImportCode = am.ImportDataID
+		order by [ActivityMonitorID] desc
+) a
+UNION
+
+select ImportCode, Client, Job_Name, filecheck, sfilename, filesize, file_recvd_date, check_time, category, filecheck2
+from (
+	select top 1  lastrun.[ImportCode], 'Mesa PS' as client, 
+	'INTG_MesaPS_Charges' as job_name, 
+	case when [ActivityMessage] like '%no file%' then 0 else 1 end as filecheck,
+	'E:\EZImportFiles\MesaPS_SFTP_User\Integration\Data\Imports\finepayments.txt' as sfilename,
+	 -1 as filesize,
+	[ImportDateTime] as file_recvd_date,
+	[ImportDateTime] as check_time, 
+	'Payments' as category,
+	case when [ActivityMessage] like '%no file%' then 'NO' 
+	when ActivityMonitorID is null then 'Unknown' else 'YES' end as filecheck2
+	 from (
+
+		SELECT TOP 1 [ImportCode] ,[ImportDateTime],[ImportUserId],[ImportCompleted]
+		FROM TipWebHostedMesaPS.[dbo].[_ETL_ImportData] 
+	 	order by importcode desc
+		)  lastrun
+	left outer join TipWebHostedMesaPS.[dbo].[_ETL_ActivityMonitor] am on lastrun.ImportCode = am.ImportDataID
+
+	order by [ActivityMonitorID] desc
+) b
+
 Order by Client</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
@@ -4347,7 +4396,7 @@ Order by Client</CommandText>
         </Field>
         <Field Name="filecheck">
           <DataField>filecheck</DataField>
-          <rd:TypeName>System.Boolean</rd:TypeName>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="filename">
           <DataField>filename</DataField>
