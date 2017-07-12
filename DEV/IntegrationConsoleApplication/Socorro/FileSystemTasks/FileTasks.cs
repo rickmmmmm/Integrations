@@ -84,18 +84,35 @@ namespace SystemTasks
         private List<PurchaseOrderFile> serializePurchaseOrderFile(string fileName, bool isManualMap)
         {
 
+
             using (StreamReader reader = File.OpenText(fileName))
             {
                 var payload = new List<PurchaseOrderFile>();
+
+                int i = 0;
+
+                while(i<3)
+                {
+                    reader.ReadLine();
+                    i++;
+                }
+
                 var csv = new CsvReader(reader);
 
                 csv.Configuration.RegisterClassMap<PurchaseOrderClassMap>();
                 csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
                 csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.TrimFields = true;
                 //csv.Configuration.IgnoreQuotes = true;
-
+                var currRec = new StringBuilder();
                 while (csv.Read())
                 {
+                    currRec.Clear();
+                    foreach (var rec in csv.CurrentRecord)
+                    {
+                        currRec.Append(rec.ToString() + " | ");
+                    }
+                    Console.WriteLine("Line " + currRec.ToString());
 
                     PurchaseOrderFile newLine = new PurchaseOrderFile
                     {
@@ -116,6 +133,11 @@ namespace SystemTasks
                         QuantityShipped = ConfigurationManager.AppSettings["QuantityShipped"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["QuantityShipped"]) : 0,
                         Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Notes"]) : null
                     };
+
+                    if (string.IsNullOrEmpty(newLine.Model))
+                    {
+                        newLine.Model = "None";
+                    }
 
                     payload.Add(newLine);
                 }
