@@ -506,9 +506,8 @@ namespace DataAccess
         {
             List<ReceivedTagsExportFile> export = new List<ReceivedTagsExportFile>();
 
-            string returnQuery = "SELECT DISTINCT SUBSTRING(p.orderNumber, 10,7) as ordernumber, '0' as AmountAccepted, CONVERT(varchar(50),p.PurchaseDate,101) as PurchaseDate, CONVERT(varchar(50),p.PurchaseDate,101) as PDate, det.LineNumber, det.QuantityOrdered, '0' as AmountDamaged, '0000', CASE WHEN inv.AssetID IS NULL THEN '' ELSE inv.Tag END as AssetId, 'R' as TypeOfR ";
+            string returnQuery = "SELECT DISTINCT SUBSTRING(p.orderNumber, 10,8) as ordernumber, '0' as AmountAccepted, CONVERT(varchar(50),p.PurchaseDate,101) as PurchaseDate, CONVERT(varchar(50),p.PurchaseDate,101) as PDate, det.LineNumber, det.QuantityOrdered, '0' as AmountDamaged, '0000', CASE WHEN inv.AssetID IS NULL THEN '' ELSE inv.Tag END as AssetId, 'R' as TypeOfR ";
             returnQuery += "FROM tblTechInventory inv ";
-            returnQuery += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
             returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
             returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUID = pinv.PurchaseItemShipmentUID ";
             returnQuery += "JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUID = ship.PurchaseItemDetailUID ";

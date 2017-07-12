@@ -31,7 +31,13 @@ namespace IntegrationPlayground_v_1_0_1
 
             if (gameplay == "n")
             {
-                Environment.Exit(0);
+                Console.WriteLine("Filename?");
+                FileTasks ft = new FileTasks();
+                string fileName = Console.ReadLine();
+                dynamic data = ft.serializeCsv(fileName);
+                Console.WriteLine("Got data");
+                Console.ReadLine();
+                //Environment.Exit(0);
             }
 
             Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (Q)uit");
@@ -133,10 +139,10 @@ namespace IntegrationPlayground_v_1_0_1
             _repo.Action += OnAction;
             _repo.Error += OnError;
 
-            if(ft.checkFile(file))
-            {
-                ft.archiveFile(file);
-            }
+            //if(ft.checkFile(file))
+            //{
+            //    ft.archiveFile(file);
+            //}
 
             _repo.updateFixedAssetIds();
             List<ReceivedTagsExportFile> results = _repo.exportReceivedTags();

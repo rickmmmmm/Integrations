@@ -51,6 +51,22 @@ namespace SystemTasks
             
         }
 
+        public dynamic serializeCsv(string filename)
+        {
+
+            using (StreamReader reader = File.OpenText(filename))
+            {
+                dynamic payload;
+                var csv = new CsvReader(reader);
+                csv.Configuration.Delimiter = ",";
+
+                payload = csv.GetRecords<string>();
+
+                return payload;
+            }
+            
+        }
+
         private List<PurchaseOrderFile> serializePurchaseOrderFile(string fileName, bool isManualMap)
         {
 
