@@ -97,25 +97,26 @@ namespace SystemTasks
                 while (csv.Read())
                 {
 
-                    PurchaseOrderFile newLine = new PurchaseOrderFile
-                    {
-                        OrderNumber = csv.GetField<string>(ConfigurationManager.AppSettings["OrderNumber"]).Trim(),
-                        OrderDate = ConfigurationManager.AppSettings["OrderDate"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["OrderDate"]) : null,
-                        VendorName = ConfigurationManager.AppSettings["VendorName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["VendorName"]) : null,
-                        ProductName = ConfigurationManager.AppSettings["ProductName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ProductName"]).Truncate(100) : null,
-                        Description = ConfigurationManager.AppSettings["Description"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Description"]) : null,
-                        ProductType = ConfigurationManager.AppSettings["ProductType"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ProductType"]) : ConfigurationManager.AppSettings["ProductTypeDefault"],
-                        Model = ConfigurationManager.AppSettings["Model"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Model"]) : ConfigurationManager.AppSettings["ModelDefault"],
-                        Manufacturer = ConfigurationManager.AppSettings["Manufacturer"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Manufacturer"]) : ConfigurationManager.AppSettings["ManufacturerDefault"],
-                        Quantity = ConfigurationManager.AppSettings["Quantity"].IsValidMap() ? Convert.ToInt32(csv.GetField<decimal>(ConfigurationManager.AppSettings["Quantity"])) : 0,
-                        PurchasePrice = ConfigurationManager.AppSettings["PurchasePrice"].IsValidMap() ? csv.GetField<decimal>(ConfigurationManager.AppSettings["PurchasePrice"]) : 0,
-                        FundingSource = ConfigurationManager.AppSettings["FundingSource"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["FundingSource"]) : null,
-                        AccountCode = ConfigurationManager.AppSettings["AccountCode"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["AccountCode"]) : null,
-                        LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["LineNumber"]) : 0,
-                        ShippedToSite = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ShippedToSite"]) : ConfigurationManager.AppSettings["ShippedToSiteDefault"],
-                        QuantityShipped = ConfigurationManager.AppSettings["QuantityShipped"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["QuantityShipped"]) : 0,
-                        Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Notes"]) : null
-                    };
+                    PurchaseOrderFile newLine = new PurchaseOrderFile();
+
+                    newLine.OrderNumber = csv.GetField<string>(ConfigurationManager.AppSettings["OrderNumber"]).Trim();
+                    newLine.OrderDate = ConfigurationManager.AppSettings["OrderDate"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["OrderDate"]) : null;
+                    newLine.VendorName = ConfigurationManager.AppSettings["VendorName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["VendorName"]) : null;
+                    newLine.ProductName = ConfigurationManager.AppSettings["ProductName"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ProductName"]).Truncate(100) : null;
+                    newLine.Description = ConfigurationManager.AppSettings["Description"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Description"]) : null;
+                    newLine.ProductType = ConfigurationManager.AppSettings["ProductType"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ProductType"]) : ConfigurationManager.AppSettings["ProductTypeDefault"];
+                    newLine.Model = ConfigurationManager.AppSettings["Model"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Model"]) : ConfigurationManager.AppSettings["ModelDefault"];
+                    newLine.Manufacturer = ConfigurationManager.AppSettings["Manufacturer"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Manufacturer"]) : ConfigurationManager.AppSettings["ManufacturerDefault"];
+                    newLine.Quantity = ConfigurationManager.AppSettings["Quantity"].IsValidMap() ? Convert.ToInt32(csv.GetField<decimal>(ConfigurationManager.AppSettings["Quantity"])) : 0;
+                    newLine.PurchasePrice = ConfigurationManager.AppSettings["PurchasePrice"].IsValidMap() ? Convert.ToDecimal(csv.GetField<string>(ConfigurationManager.AppSettings["PurchasePrice"]).Replace("$","")) : 0;
+                    newLine.FundingSource = ConfigurationManager.AppSettings["FundingSource"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["FundingSource"]) : null;
+                    newLine.AccountCode = ConfigurationManager.AppSettings["AccountCode"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["AccountCode"]) : null;
+                    newLine.LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["LineNumber"]) : 0;
+                    newLine.ShippedToSite = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["ShippedToSite"]) : ConfigurationManager.AppSettings["ShippedToSiteDefault"];
+                    newLine.QuantityShipped = ConfigurationManager.AppSettings["QuantityShipped"].IsValidMap() ? csv.GetField<int>(ConfigurationManager.AppSettings["QuantityShipped"]) : 0;
+                    newLine.Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? csv.GetField<string>(ConfigurationManager.AppSettings["Notes"]) : null;
+
+                    newLine.PurchasePrice = newLine.PurchasePrice / newLine.Quantity;
 
                     payload.Add(newLine);
                 }
