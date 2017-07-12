@@ -143,13 +143,14 @@ namespace SystemTasks
 
                     string accountCode = item.Account;
                     string desc = item.LineDescription;
+                    string location = item.RemoteLoc;
 
                     order.OrderNumber = item.PONumber;
                     order.OrderDate = item.PODate;
                     order.VendorName = item.OrderName;
                     order.ProductName = desc.Length >= 100 ? desc.Substring(0,99) : desc;
                     order.Description = item.LineDescription;
-                    order.ProductType = "Unassigned";
+                    order.ProductType = "Unspecified";
                     order.Model = "None";
                     order.Manufacturer = "None";
                     order.Quantity = item.Quantity;
@@ -157,7 +158,7 @@ namespace SystemTasks
                     order.FundingSource = accountCode.Substring(0,3);
                     order.AccountCode = accountCode;
                     order.LineNumber = item.LineNo;
-                    order.ShippedToSite = "";
+                    order.ShippedToSite = location.TrimEnd().Substring(location.Length - 4, 4);
                     order.QuantityShipped = item.Quantity;
                     order.Notes = "";
                     order.Accepted = null;
