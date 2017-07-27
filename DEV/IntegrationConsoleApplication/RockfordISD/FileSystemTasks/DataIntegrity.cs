@@ -185,7 +185,7 @@ namespace SystemTasks
                 return true;
             }
 
-            else if (productCheck && record.ProductName.Length >= 100)
+            else if (productCheck && record.ProductName.Length > 100)
             {
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";

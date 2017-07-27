@@ -141,6 +141,8 @@ namespace SystemTasks
 
         public void createRejectFile(string fileName, List<RejectedRecord> rejects, List<PurchaseOrderFile> payload)
         {
+            List<PurchaseOrderFile> returnList = new List<PurchaseOrderFile>();
+
             foreach(var record in payload)
             {
                 if (rejects.Contains(rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault()))
@@ -148,11 +150,13 @@ namespace SystemTasks
 
                     record.Accepted = "Rejected";
                     record.Reason = rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault().rejectReason;
+
+                    returnList.Add(record);
                 }
 
                 else
                 {
-                    record.Accepted = "Accepted";
+                   continue;
                 }
             }
 
@@ -163,7 +167,7 @@ namespace SystemTasks
                 //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
                 csv.Configuration.QuoteAllFields = true;
 
-                csv.WriteRecords(payload);
+                csv.WriteRecords(returnList);
             }
         }
 
