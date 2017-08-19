@@ -162,8 +162,7 @@ namespace IntegrationPlayground_v_1_0_1
                 Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                 Sender = ConfigurationManager.AppSettings["notificationFrom"],
                 Subject = "Automatic Notification from Hayes Software Systems",
-                SentDate = DateTime.Now,
-                FileAttachment = file
+                SentDate = DateTime.Now
             };
 
             mailer.send(notification);

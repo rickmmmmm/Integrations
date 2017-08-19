@@ -412,8 +412,6 @@ namespace DataAccess
                     detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
                     detailQuery += "StatusUID = 32,";
                     detailQuery += "SiteAddedSiteUID = '" + detail.SiteAddedSiteUID + "',";
-                    detailQuery += "LastModifiedByUserID = 0,";
-                    detailQuery += "LastModifiedDate = '" + detail.LastModifiedDate.ToString() + "'";
                     detailQuery += "FROM tblTechPurchaseItemDetails p JOIN tblTechPurchases p2 ";
                     detailQuery += "ON p.PurchaseUID = p2.PurchaseUID";
                     detailQuery += " WHERE p2.OrderNumber = '" + detail.ParentPurchase.PurchaseOrderNumber + "' AND p.LineNumber = " + detail.LineNumber.ToString();
@@ -505,13 +503,13 @@ namespace DataAccess
         {
             List<ReceivedTagsExportFile> export = new List<ReceivedTagsExportFile>();
 
-            string returnQuery = "SELECT DISTINCT SUBSTRING(p.orderNumber, 10,8) as ordernumber, '0' as AmountAccepted, CONVERT(varchar(50),p.PurchaseDate,101) as PurchaseDate, CONVERT(varchar(50),p.PurchaseDate,101) as PDate, det.LineNumber, det.QuantityOrdered, '0' as AmountDamaged, '0000', CASE WHEN inv.AssetID IS NULL THEN '' ELSE inv.Tag END as AssetId, 'R' as TypeOfR ";
+            string returnQuery = "SELECT DISTINCT SUBSTRING(p.orderNumber, 10,8) as ordernumber, '0' as AmountAccepted, CONVERT(varchar(50),p.LastModifiedDate,101) as PurchaseDate, CONVERT(varchar(50),p.LastModifiedDate,101) as PDate, det.LineNumber, det.QuantityOrdered, '0' as AmountDamaged, '0000', CASE WHEN inv.AssetID IS NULL THEN '' ELSE inv.Tag END as AssetId, 'R' as TypeOfR ";
             returnQuery += "FROM tblTechInventory inv ";
-            returnQuery += "RIGHT JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
-            returnQuery += "RIGHT JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUID = pinv.PurchaseItemShipmentUID ";
+            returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
+            returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUID = pinv.PurchaseItemShipmentUID ";
             returnQuery += "RIGHT JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUID = ship.PurchaseItemDetailUID ";
-            returnQuery += "JOIN tblTechPurchases p on p.PurchaseUID = det.PurchaseUID";
-            returnQuery += " WHERE det.QuantityReceived > 0";
+            returnQuery += "JOIN tblTechPurchases p on p.PurchaseUID = det.PurchaseUID ";
+            returnQuery += "WHERE det.QuantityReceived > 0 and p.LastModifiedDate >= DATEADD(dd,-3,p.LastModifiedDate)";
 
             if (_conn.State == ConnectionState.Open)
             {

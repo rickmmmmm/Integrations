@@ -86,16 +86,10 @@ namespace SystemTasks
 
             while (outString.Length < length)
             {
-                outString += "0";
+                outString = string.Format("0"+"{0}",outString);
             }
 
-            var charSet = outString.ToCharArray();
-
-            var newCharSet = charSet.Reverse().ToArray();
-
-            string outValue = new string(newCharSet);
-
-            return outValue;
+            return outString;
         }
     }
 }

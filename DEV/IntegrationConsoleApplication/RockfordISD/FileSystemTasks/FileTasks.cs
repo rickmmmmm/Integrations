@@ -114,7 +114,7 @@ namespace SystemTasks
 
         public void createExportFile(List<ReceivedTagsExportFile> results, string fileName)
         {
-            using (StreamWriter writer = File.AppendText(fileName))
+            using (StreamWriter writer = File.CreateText(fileName))
             {
                 var csv = new CsvWriter(writer);
                 csv.Configuration.Delimiter = ",";
