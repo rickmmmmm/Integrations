@@ -437,7 +437,7 @@ namespace IntegrationPlayground_v_1_0_1
                                     ItemNumber = itemNumber,
                                     ItemName = item.ProductName.Replace("'", "''"),
                                     ItemDescription = item.Description.Replace("'","''"),
-                                    ItemType = 0,
+                                    ItemType = 1,
                                     ModelNumber = "None",
                                     ManufacturerUID = 0,
                                     ItemSuggestedPrice = item.PurchasePrice,
