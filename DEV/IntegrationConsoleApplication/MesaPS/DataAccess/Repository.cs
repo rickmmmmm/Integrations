@@ -7,6 +7,7 @@ using Model;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace DataAccess
 {
@@ -944,7 +945,7 @@ namespace DataAccess
             returnQuery += "JOIN tblCampuses camp on camp.CampusID = sd.CampusID ";
             returnQuery += "JOIN tblTechItems items on items.ItemUID = chg.ItemUID ";
             //returnQuery += "JOIN tblTechInventory inv on inv.ItemUID = items.ItemUID ";
-            returnQuery += "WHERE chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) > 0 ";
+            returnQuery += "WHERE chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) > 0 AND chg.Void = 'False' ";
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -980,9 +981,11 @@ namespace DataAccess
                     cef.ItemBarcode = (string) reader[3];
                     cef.ItemCollection = (string) reader[4];
                     cef.FineLocationCode = (string) reader[5];
-                    cef.FineDescription = (string) reader[6];
+                    cef.FineDescription = reader[6].ToString();
                     cef.FineCreatedDate = (DateTime) reader[7];
                     cef.FineAmount = (decimal) reader[8];
+
+                    cef.FineDescription = Regex.Replace(cef.FineDescription, @"[\u000A\u000B\u000C\u000D\u2028\u2029\u0085]+",string.Empty);
 
                     charges.Add(cef);
                        
