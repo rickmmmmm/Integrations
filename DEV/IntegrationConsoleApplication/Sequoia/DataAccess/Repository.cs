@@ -314,7 +314,7 @@ namespace DataAccess
         {
             int itemId = -1;
 
-            string returnQuery = "SELECT ItemUID FROM tblTechItems WHERE LOWER(ItemName) = '" + name.ToLower() + "'";
+            string returnQuery = "SELECT ItemUID FROM tblTechItems WHERE LOWER(ItemName) = '" + name.Replace("'","''").ToLower() + "' AND Active = 1";
 
             if (_conn.State == ConnectionState.Open)
             {
