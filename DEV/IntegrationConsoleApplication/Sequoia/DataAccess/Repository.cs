@@ -142,7 +142,43 @@ namespace DataAccess
 
         public int getManufacturerUIDFromName(string manufacturerName)
         {
-            throw new NotImplementedException();
+            int manId = -1;
+
+            string returnQuery = "SELECT ManufacturerUID FROM tblUnvManufacturers WHERE LOWER(ManufacturerName) = '" + manufacturerName.ToLower() + "'";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+            _conn.Open();
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    manId = (int) reader[0];
+                }
+
+                catch
+                {
+                    manId = -1;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (manId == -1)
+            {
+                throw new Exception("The specified Manufacturer was not found.");
+            }
+            else
+            {
+                return manId;
+            }
         }
 
         public int getSiteUIDFromName(string siteName)

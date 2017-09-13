@@ -8,6 +8,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Model;
 using System.Configuration;
+using Newtonsoft.Json;
 
 namespace SystemTasks
 {
@@ -221,6 +222,56 @@ namespace SystemTasks
             }
 
             return true;
+        }
+
+        public List<PurchaseOrderFile> serializeJsonFile(string filename)
+        {
+
+            using (StreamReader r = new StreamReader(filename))
+            {
+                string json = r.ReadToEnd().Replace("\r\n", "");
+                dynamic array = JsonConvert.DeserializeObject(json);
+                Console.WriteLine("checking");
+
+                List<PurchaseOrderFile> orders = new List<PurchaseOrderFile>();
+
+                foreach (var item in array)
+                {
+                    PurchaseOrderFile order = new PurchaseOrderFile();
+
+                    string val = item[ConfigurationManager.AppSettings["Quantity"]].ToString().Trim() == "" ? "0.0" : item[ConfigurationManager.AppSettings["Quantity"]];
+                    string price = item[ConfigurationManager.AppSettings["PurchasePrice"]].ToString().Trim() == "" ? "0.0" : item[ConfigurationManager.AppSettings["PurchasePrice"]];
+                    string accountCode = ConfigurationManager.AppSettings["AccountCode"].IsValidMap() ? item[ConfigurationManager.AppSettings["AccountCode"]] : null;
+                    string desc = ConfigurationManager.AppSettings["ProductName"].IsValidMap() ? item[ConfigurationManager.AppSettings["ProductName"]] : null;
+                    string location = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? item[ConfigurationManager.AppSettings["ShippedToSite"]] : ConfigurationManager.AppSettings["ShippedToSiteDefault"];
+
+                    order.OrderNumber = item[ConfigurationManager.AppSettings["OrderNumber"]];
+                    order.OrderDate = ConfigurationManager.AppSettings["OrderDate"].IsValidMap() ? item[ConfigurationManager.AppSettings["OrderDate"]] : null;
+                    order.VendorName = ConfigurationManager.AppSettings["VendorName"].IsValidMap() ? item[ConfigurationManager.AppSettings["VendorName"]] : null;
+                    order.ProductName = desc.Length > 100 ? desc.Substring(0,99) : desc;
+                    order.Description = ConfigurationManager.AppSettings["Description"].IsValidMap() ? item[ConfigurationManager.AppSettings["Description"]] : null;
+                    order.ProductType = ConfigurationManager.AppSettings["ProductType"].IsValidMap() ? item[ConfigurationManager.AppSettings["ProductType"]] : ConfigurationManager.AppSettings["ProductTypeDefault"];
+                    order.Model = ConfigurationManager.AppSettings["Model"].IsValidMap() ? item[ConfigurationManager.AppSettings["Model"]] : ConfigurationManager.AppSettings["ModelDefault"];
+                    order.Manufacturer = ConfigurationManager.AppSettings["Manufacturer"].IsValidMap() ? item[ConfigurationManager.AppSettings["Manufacturer"]] : ConfigurationManager.AppSettings["ManufacturerDefault"];
+                    order.Quantity = ConfigurationManager.AppSettings["Quantity"].IsValidMap() ? Convert.ToInt32(Convert.ToDecimal(val)) : 0;
+                    order.PurchasePrice = ConfigurationManager.AppSettings["PurchasePrice"].IsValidMap() ? Convert.ToDecimal(price) : 0;
+                    order.FundingSource = ConfigurationManager.AppSettings["FundingSource"].IsValidMap() ? item[ConfigurationManager.AppSettings["FundingSource"]] : ConfigurationManager.AppSettings["FundingSourceDefault"];
+                    order.AccountCode = accountCode;
+                    order.LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() && item[ConfigurationManager.AppSettings["LineNumber"]].ToString().Trim() != "" ? item[ConfigurationManager.AppSettings["LineNumber"]] : 0;
+                    order.ShippedToSite = location;
+                    order.QuantityShipped = order.Quantity;
+                    order.Notes = "";
+                    order.Accepted = null;
+                    order.Reason = "";
+
+                    orders.Add(order);
+
+                }
+
+
+                return orders;
+            }
+
         }
 
 

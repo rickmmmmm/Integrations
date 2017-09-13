@@ -398,7 +398,7 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 try
                 {
-                    var fileData = ft.convertCsvFileToObject(file);
+                    var fileData = ft.serializeJsonFile(file);
 
                     fileData = di.removeBadElements(fileData);
 
@@ -424,37 +424,44 @@ namespace IntegrationPlayground_v_1_0_1
 
                     if (options[2] == "--add-items")
                     {
-                        var rand = new Random();
 
                         foreach (var item in fileData)
                         {
                             if (di.productNotFound(item.ProductName))
                             {
-                                var itemNumber = "H" + rand.Next().ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
-
-                                Item itemToAdd = new Item
+                                try
                                 {
-                                    ItemNumber = itemNumber,
-                                    ItemName = item.ProductName.Replace("'", "''"),
-                                    ItemDescription = item.Description.Replace("'","''"),
-                                    ItemType = 1,
-                                    ModelNumber = "None",
-                                    ManufacturerUID = 0,
-                                    ItemSuggestedPrice = item.PurchasePrice,
-                                    AreaUID = 0,
-                                    ItemNotes = item.Description.Replace("'","''"),
-                                    SKU = "",
-                                    SerialRequired = false,
-                                    ProjectedLife = 0,
-                                    Active = true,
-                                    CreatedByUserId = 0,
-                                    CreatedDate = DateTime.Now,
-                                    LastModifiedByUserID = 0,
-                                    LastModifiedDate = DateTime.Now,
-                                    AllowUntagged = true
-                                };
+                                    var itemNumber = "H" + DateTime.Now.Year.ToString() + DateTime.Now.DayOfYear.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
+                                    var uid = _repo.getManufacturerUIDFromName(item.Manufacturer);
 
-                                _repo.addItems(itemToAdd);
+                                    Item itemToAdd = new Item
+                                    {
+                                        ItemNumber = itemNumber,
+                                        ItemName = item.ProductName.Replace("'", "''"),
+                                        ItemDescription = item.Description.Replace("'", "''"),
+                                        ItemType = 1,
+                                        ModelNumber = item.Model,
+                                        ManufacturerUID = _repo.getManufacturerUIDFromName(item.Manufacturer),
+                                        ItemSuggestedPrice = item.PurchasePrice,
+                                        AreaUID = 0,
+                                        ItemNotes = item.Description.Replace("'", "''"),
+                                        SKU = "",
+                                        SerialRequired = false,
+                                        ProjectedLife = 0,
+                                        Active = true,
+                                        CreatedByUserId = 0,
+                                        CreatedDate = DateTime.Now,
+                                        LastModifiedByUserID = 0,
+                                        LastModifiedDate = DateTime.Now,
+                                        AllowUntagged = true
+                                    };
+
+                                    _repo.addItems(itemToAdd);
+                                }
+                                catch (Exception e)
+                                {
+                                    continue;
+                                }
                             }
                         }
                     }
