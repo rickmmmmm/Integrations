@@ -1,0 +1,68 @@
+<style>
+    .previous {
+        cursor: pointer;
+    }
+    .next {
+        cursor: pointer;
+    }
+</style>
+<div>
+    <div class="row">
+        <form class="">
+            <div class="col-sm-4">
+                <label for="dateFilter" class="control-label">Select Date:</label>
+                <input type="date" class="form-control" id="dateFilter" name="dateFilter" (change)="getTheData()" [(ngModel)]="intgDate" />
+            </div>
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <label for="filterVal" class="control-label">Filter Results:</label>
+                <input title="Add text to filter results" type="text" class="form-control" id="filterVal" name="filterVal" />
+            </div>
+        </form>
+    </div>
+    <div *ngIf="errorsData.length === 0" class="row">
+        <h3>No records found for that date.</h3>
+    </div>
+    <div *ngIf="errorsData.length > 0" class="row">
+        <h3>Data Integrations Errors for {{intgDate}}</h3>
+        <ul class="pager">
+            <li *ngIf="pageNum > 1" class="previous" title="Previous 100"><a (click)="getTheData(0)">Previous</a></li>
+            <li title="+/- number of results returned">
+                <select (change)="this.pageNum=1; getTheData();" [(ngModel)]="numResults">
+                    <option>10</option>
+                    <option selected="selected">100</option>
+                    <option>500</option>
+                    <option>1000</option>
+                    <option>5000</option>
+                </select>
+            </li>
+            <li class="next" title="Next 100"><a (click)="getTheData(1)">Next</a></li>
+          </ul>
+        <hr />
+        <div>
+            <div class="panel panel-primary" *ngFor="let err of errorsData">
+                <div class="panel-heading">
+                    <b>Order:</b> {{err.ErrorNumber}} &#8212; {{err.ErrorName}}
+                </div>
+                <div class="panel-body">
+                    <span *ngIf="err.ErrorObject.error">
+                        <b>Error:</b> {{err.ErrorObject.error}}
+                    </span>
+                    <span *ngIf="err.ErrorObject.errorDescription">
+                        <b>Errors:</b><ul class="list-unstyled"><li *ngFor="let item of err.ErrorObject.errorDescription">{{item}}</li></ul>
+                    </span>
+                    <span title="View record details" data-toggle="collapse" [attr.data-target]="'#' + err.DataIntegrationsErrorsID" class="btn btn-link">details</span>
+                    <br />
+                    <div id="{{err.DataIntegrationsErrorsID}}" class="collapse">
+                        <div *ngIf="err.ErrorObject.errorData">
+                            <pre>{{err.ErrorObject.errorData | json}}</pre>
+                        </div>
+                        <div *ngIf="!err.ErrorObject.errorData">
+                            <pre>{{err.ErrorObject | json}}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
