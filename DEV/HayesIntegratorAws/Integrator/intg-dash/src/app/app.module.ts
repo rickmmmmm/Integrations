@@ -7,11 +7,15 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 
 import { ClientViewComponent } from './components/client-viewer/client-viewer.component';
+import { RollupComponent } from "./components/rollup/rollup.component";
+import { ErrorRollupComponent } from "./components/error-rollup/error-rollup.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    ClientViewComponent
+    ClientViewComponent,
+    RollupComponent,
+    ErrorRollupComponent
   ],
   imports: [
     BrowserModule,

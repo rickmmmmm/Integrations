@@ -5,6 +5,9 @@
     .next {
         cursor: pointer;
     }
+    .row {
+    margin-top: 2em;
+    }
 </style>
 <div>
     <div class="row">
@@ -20,11 +23,25 @@
             </div>
         </form>
     </div>
-    <div *ngIf="errorsData.length === 0" class="row">
-        <h3>No records found for that date.</h3>
+    <div class="row">
+        <rollup [aggData]="aggData" (errClicked)="getFilteredData($event)"></rollup>
+    </div>
+    <div *ngIf="aggData && errorsData.length === 0" class="row">
+        <h3>Select a tile to see Error Records.</h3>
+    </div>
+    <div *ngIf="searchingErrors">
+        <i class="fa fa-spinner fa-spin"></i>
     </div>
     <div *ngIf="errorsData.length > 0" class="row">
-        <h3>Data Integrations Errors for {{intgDate}}</h3>
+        <h3>{{filterValue ? filterValue : 'Results' }}&nbsp;for&nbsp;{{intgDate | date:'fullDate'}}</h3>
+        <hr />
+        <div *ngIf="searchingAnalysis">
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div *ngIf="errorsAnalysisData">
+            <error-rollup [aggData]="errorsAnalysisData"></error-rollup>
+        </div>
+        <hr />
         <ul class="pager">
             <li *ngIf="pageNum > 1" class="previous" title="Previous 100"><a (click)="getTheData(0)">Previous</a></li>
             <li title="+/- number of results returned">
