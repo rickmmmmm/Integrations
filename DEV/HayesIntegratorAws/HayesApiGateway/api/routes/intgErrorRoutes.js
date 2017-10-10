@@ -14,5 +14,11 @@ module.exports = (app) => {
     
     app.route('/api/test')
         .get(intgError.testResponse);
+    
+    app.route('/api/aggregates/errors')
+        .get(intgError.getAggregateErrorsByDate);
+    
+    app.route('/api/aggregates/errors/analysis')
+        .get(intgError.analyzeErrors);
 
 }

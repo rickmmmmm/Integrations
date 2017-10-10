@@ -47,11 +47,23 @@ DataIntegrationsMappingsModel = {
     MappingsObject: sequelize.STRING(10000),
 };
 
+DataIntegrationsAggregatesModel = {
+    AggregatesID: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    Client: { type: sequelize.STRING },
+    IntegrationType: { type: sequelize.STRING },
+    DateRun: { type: sequelize.STRING },
+    DataType: { type: sequelize.STRING },
+    ReferenceVal: { type: sequelize.STRING },
+    TotalCount: { type: sequelize.INTEGER },
+    ReferenceDescription: sequelize.STRING
+}
+
 module.exports = {
 
     DataIntegrations: seq.define('DataIntegrations', DataIntegrationsModel),
     DataIntegrationsErrors: seq.define('DataIntegrationsErrors', DataIntegrationsErrorsModel),
     DataIntegrationsMappings: seq.define('DataIntegrationsMappings', DataIntegrationsMappingsModel),
+    DataIntegrationsAggregates: seq.define('DataIntegrationsAggregates', DataIntegrationsAggregatesModel),
 
     selectIntegrationsById(id, options) {
 
@@ -105,7 +117,7 @@ module.exports = {
             foreignKey: {
                 name: 'DataIntegrationsID'
             }
-        })
+        });
 
         return new Promise(
             (resolve, reject) => {
@@ -114,9 +126,10 @@ module.exports = {
                         model: this.DataIntegrations,
                         where: { IntegrationDate: date, Client: options.client }
                     }],
-                    //where : {  },
+                    where : options.errtype ? { ErrorName: options.errtype } : {},
                     limit: parseInt(options.pagecount),
-                    offset: parseInt(options.pagenum - 1) * parseInt(options.pagecount)
+                    offset: parseInt(options.pagenum - 1) * parseInt(options.pagecount),
+                    order: [options.random ? [sequelize.fn('RAND', '')] : 'DataIntegrationsErrorsID']
                 }).then(
                     data => {
                         resolve(data);
@@ -146,6 +159,26 @@ module.exports = {
                 );
             }
         );
-    }
+    },
+
+    selectAggregatesByDate(date, options) {
+        
+                return new Promise(
+                    (resolve, reject) => {
+                        this.DataIntegrationsAggregates.findAll({
+                            where: { DateRun: date, Client: options.client },
+                            limit: parseInt(options.pagecount),
+                            offset: parseInt(options.pagenum - 1) * parseInt(options.pagecount)
+                        }).then(
+                            data => {
+                                resolve(data);
+                            },
+                            err => {
+                                reject(err);
+                            }
+                        );
+                    }
+                );
+            }
 
 }
