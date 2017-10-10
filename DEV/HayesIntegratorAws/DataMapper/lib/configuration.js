@@ -1,7 +1,6 @@
 module.exports = {
     config: {
         "apiUrl":"https://www.tipwebintegrationtest.com/TIPWEBAPI/api",
-        //"apiUrl":"http://localhost:55556/Tipweb_API/api",
         "dbConnectionString":"Server=chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com;Database=TipWebHostedStagingChicaog_ETL;User ID=Tipweb;Password=Bookmaster;",
         "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
         "database":"TipWebHostedStagingChicago_ETL",
@@ -9,10 +8,16 @@ module.exports = {
         "dbType":"mssql",
         "sourceFile":"/home/",
         "sourceType":"csv",
-        "docStorageDirectory":"/home/ec2-user/etc/jsonfiles/processing/json/arrays/",
         "mapType":"purchases",
         "client":"Chicago Test",
-        "typeDesc":"Purchase Order Integration for Chicago Public Schools sourced from Oracle Purchasing"
+        "typeDesc":"Purchase Order Integration for Chicago Public Schools sourced from Oracle Purchasing",
+        "linksFolder":"/home/ec2-user/etc/model/linktables/",
+        "links": [
+            { "type":"Sites", "filename":"sites.json" }
+        ],
+        "customTasks":[
+            { "type":"repository", "fn":"runProcz_custom_stpro_CPS_RemoveBadSites" }
+        ]
     },
     secrets: {
         "secretkey":"7a228e0d-1665-404d-904f-0d5934d804b8",

@@ -2,6 +2,7 @@ const request = require('request');
 var configuration = require('./configuration.js');
 const repository = require('./repository.js');
 var Promise = require('bluebird');
+var fs = require('fs');
 
 module.exports = {
 
@@ -215,9 +216,7 @@ module.exports = {
                     { body: JSON.stringify(body),
                         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
                 (err, resp, body) => {
-                    console.log(body);
-                    console.log(resp.statusCode);
-
+                              
                     if (err && resp) {
                         let errorObj = { statusCode: resp.statusCode, statusMessage: err, response: resp }
                         reject(errorObj);

@@ -12,8 +12,6 @@ module.exports = {
             
             fs.readFile(fileName,'utf-8', (error, data) => {
 
-                console.log(data);
-
                 if (error) {
                     reject(error);
                 }
