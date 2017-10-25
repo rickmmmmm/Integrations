@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportCampusCourse"
   DTS:PackageType="5"
-  DTS:VersionBuild="314"
-  DTS:VersionGUID="{D9347DBD-BAA9-4D93-9F4B-76AEDE04EDF3}">
+  DTS:VersionBuild="317"
+  DTS:VersionGUID="{B6090C8D-4BC2-4E09-889D-B578585D4E58}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -60,7 +60,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_04182017.csv">
+          DTS:ConnectionString="\Reject\_10252017.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -154,7 +154,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_04182017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_10252017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -254,7 +254,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_04182017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_10252017.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1316,7 +1316,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="&#xA;update ims set MasterCourseUID = mc.MasterCourseUID&#xA;from _IMS_CampusCourse ims&#xA;join tblMasterCourse mc on ims.CourseID = mc.CourseID &#xA;where ims.Import = 1&#xA;GO&#xA;&#xA;update ims set CampusUID = mc.CampusUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampuses mc on ims.CampusID = mc.CampusID &#xA;where ims.Import = 1&#xA;and len(ltrim(rtrim(isNull(ims.CampusID,'')))) &gt; 0&#xA;GO &#xA;&#xA;update ims set CampusCoursesAssignedUID = mc.CampusCoursesAssignedUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;GO&#xA;&#xA;&#xA;update ims set new = 1&#xA;from _IMS_CampusCourse ims&#xA;where ims.Import = 1&#xA;and CampusCoursesAssignedUID is null&#xA;GO&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="&#xA;update ims set MasterCourseUID = mc.MasterCourseUID&#xA;from _IMS_CampusCourse ims&#xA;join tblMasterCourse mc on ims.CourseID = mc.CourseID &#xA;where ims.Import = 1 and mc.Import = 1&#xA;GO&#xA;&#xA;update ims set CampusUID = mc.CampusUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampuses mc on ims.CampusID = mc.CampusID &#xA;where ims.Import = 1&#xA;and len(ltrim(rtrim(isNull(ims.CampusID,'')))) &gt; 0&#xA;GO &#xA;&#xA;update ims set CampusCoursesAssignedUID = mc.CampusCoursesAssignedUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;GO&#xA;&#xA;&#xA;update ims set new = 1&#xA;from _IMS_CampusCourse ims&#xA;where ims.Import = 1&#xA;and CampusCoursesAssignedUID is null&#xA;GO&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -1521,7 +1521,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int &#xA;&#xA; &#xA; INSERT INTO dbo.tblCampusCoursesAssigned&#xA;&#x9;(CampusUID, MasterCourseUID)   &#xA;&#xA;Select &#x9;ims.CampusUID, ims.MasterCourseUID&#x9;&#x9;&#x9;  &#xA;from _IMS_CampusCourse ims&#xA;left outer join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and mc.CampusUID is Null&#xA;and mc.MasterCourseUID is null&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;&#x9;&#x9;&#x9;&#xA; set @cnt = @@RowCount ;&#xA; &#xA;&#xA;update ims set CampusCoursesAssignedUID = mc.CampusCoursesAssignedUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;&#xA;select @cnt as cnt&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;&#xA;"
+              SQLTask:SqlStatementSource="declare @cnt int &#xA;&#xA; &#xA; INSERT INTO dbo.tblCampusCoursesAssigned&#xA;&#x9;(CampusUID, MasterCourseUID)   &#xA;&#xA;Select  distinct ims.CampusUID, ims.MasterCourseUID&#x9;&#x9;&#x9;  &#xA;from _IMS_CampusCourse ims&#xA;left outer join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and mc.CampusUID is Null&#xA;and mc.MasterCourseUID is null&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;&#x9;&#x9;&#x9;&#xA; set @cnt = @@RowCount ;&#xA; &#xA;&#xA;update ims set CampusCoursesAssignedUID = mc.CampusCoursesAssignedUID&#xA;from _IMS_CampusCourse ims&#xA;join tblCampusCoursesAssigned mc on ims.MasterCourseUID = mc.MasterCourseUID &#xA;and  ims.CampusUID = mc.CampusUID &#xA;where ims.Import = 1&#xA;and ims.CampusUID is not null&#xA;and ims.MasterCourseUID is not null&#xA;&#xA;select @cnt as cnt&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
