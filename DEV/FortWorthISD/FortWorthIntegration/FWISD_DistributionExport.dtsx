@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="FWISD_DistributionExport"
   DTS:PackageType="5"
-  DTS:VersionBuild="113"
-  DTS:VersionGUID="{3E70C2B5-2124-45FC-89FD-E2C29D286231}">
+  DTS:VersionBuild="117"
+  DTS:VersionGUID="{29593973-F707-44EF-8A2D-E0EB56DAABD4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -24,10 +24,10 @@
       <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[User::DatabaseName]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">@[User::DatabaseServer]</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TIPWebHostedFortWorthISD;Provider=SQLNCLI11;Integrated Security=SSPI;Application Name=SSIS-KISD_FineExport-{99615FE6-9ACE-4F0D-BE21-CD086645F00A}LocalHost.TIPWebHostedKellerISD;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=NBLAKELY-HPLT\SQL2014;Initial Catalog=TIPWebHostedFortWorthISD;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_FineExport-{99615FE6-9ACE-4F0D-BE21-CD086645F00A}LocalHost.TIPWebHostedKellerISD;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -151,21 +151,14 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
-      DTS:DTSID="{245FADBB-5E4C-451D-A1B6-B68C9B332F72}"
-      DTS:IncludeInDebugDump="2345"
-      DTS:Namespace="User"
-      DTS:ObjectName="BCCEMail">
-      <DTS:VariableValue
-        DTS:DataType="8">jjohnston@hayessoft.com</DTS:VariableValue>
-    </DTS:Variable>
-    <DTS:Variable
-      DTS:CreationName=""
       DTS:DTSID="{3F259FA8-6798-41B0-ADA6-C1E1A3CE0579}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::SendEmailCC]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="CCEMail">
       <DTS:VariableValue
-        DTS:DataType="8">support@hayessoft.com</DTS:VariableValue>
+        DTS:DataType="8">nblakely@hayessoft.com</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -208,11 +201,13 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{7AED9E02-15EE-4078-AFCD-CFC79FB284CE}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::Server]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="DatabaseServer">
       <DTS:VariableValue
-        DTS:DataType="8">.</DTS:VariableValue>
+        DTS:DataType="8">NBLAKELY-HPLT\SQL2014</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -226,11 +221,13 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{D79CA6B0-BC06-47B5-9AB2-593C53635483}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::SendEmail]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="EMail">
       <DTS:VariableValue
-        DTS:DataType="8">aaron.stone@fwisd.org</DTS:VariableValue>
+        DTS:DataType="8">nblakely@hayessoft.com</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -525,7 +522,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
@@ -895,7 +892,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{99615FE6-9ACE-4F0D-BE21-CD086645F00A}"
-              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@bodyHTML NVARCHAR(MAX),&#xA;&#x9;@title NVARCHAR(150),&#xA;&#x9;@email NVARCHAR(1000),&#xA;&#x9;@ccemail NVARCHAR(1000),&#xA;&#x9;@bccemail NVARCHAR(1000),&#xA;&#x9;@mailProfile NVARCHAR(MAX),&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@totcount NVARCHAR(20),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@attachment NVARCHAR(1000),&#xA;&#x9;@attachments NVARCHAR(MAX)&#xA;&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @email = ?&#xA;SET @ccemail = ?&#xA;SET @bccemail = ?&#xA;SET @attachment = ?&#xA;&#xA;SET @mailProfile = (SELECT name FROM msdb.dbo.sysmail_profile WHERE last_mod_user = 'TIPWeb')&#xA;&#xA;SET @totcount =  CAST((SELECT ISNULL(totalcount, '0') FROM&#xA;(SELECT  COUNT(*) AS totalcount&#xA;FROM _ETL_ExportDistributions) a) AS VARCHAR(20))&#xA;&#xA;SET @attachments = @attachment&#xA;&#xA;SET @title = @jobname + ' Integration Status - '+  CONVERT(VARCHAR(10), GETDATE(), 101)&#xA;&#xA;SET @bodyHTML = &#xA;N'&lt;html&gt;&lt;body&gt;The Distribution file has been generated&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Exported: '+ @totcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'If you have any questions, please contact us at 1-800-495-5993&lt;br&gt;&lt;br&gt;'+&#xA;N'Thank you,&lt;br&gt;&lt;br&gt;'+&#xA;N'Hayes Software Systems&lt;br&gt;'+&#xA;N'www.hayessoft.com'+&#xA;N'&lt;/body&gt;&lt;/html&gt;'&#xA;&#xA;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;@profile_name = @mailProfile,&#xA;&#x9;@recipients = @email,&#xA;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;@blind_copy_recipients = @bccemail,&#xA;&#x9;@body_format = 'HTML',&#xA;&#x9;@body = @bodyHTML, &#xA;&#x9;@subject = @title,&#xA;&#x9;@file_attachments = @attachments;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@bodyHTML NVARCHAR(MAX),&#xA;&#x9;@title NVARCHAR(150),&#xA;&#x9;@email NVARCHAR(1000),&#xA;&#x9;@ccemail NVARCHAR(1000),&#xA;&#x9;@mailServer NVARCHAR(100),&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@totcount NVARCHAR(20),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@attachment NVARCHAR(1000),&#xA;&#x9;@attachments NVARCHAR(MAX)&#xA;&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @email = ?&#xA;SET @ccemail = ?&#xA;SET @attachment = ?&#xA;SET @mailServer = ?&#xA;&#xA;&#xA;SET @totcount =  CAST((SELECT ISNULL(totalcount, '0') FROM&#xA;(SELECT  COUNT(*) AS totalcount&#xA;FROM _ETL_ExportDistributions) a) AS VARCHAR(20))&#xA;&#xA;SET @attachments = @attachment&#xA;&#xA;SET @title = @jobname + ' Integration Status - '+  CONVERT(VARCHAR(10), GETDATE(), 101)&#xA;&#xA;SET @bodyHTML = &#xA;N'&lt;html&gt;&lt;body&gt;The Distribution file has been generated&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Exported: '+ @totcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'If you have any questions, please contact us at 1-800-495-5993&lt;br&gt;&lt;br&gt;'+&#xA;N'Thank you,&lt;br&gt;&lt;br&gt;'+&#xA;N'Hayes Software Systems&lt;br&gt;'+&#xA;N'www.hayessoft.com'+&#xA;N'&lt;/body&gt;&lt;/html&gt;'&#xA;&#xA;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;@profile_name = @mailServer,&#xA;&#x9;@recipients = @email,&#xA;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;@body_format = 'HTML',&#xA;&#x9;@body = @bodyHTML, &#xA;&#x9;@subject = @title,&#xA;&#x9;@file_attachments = @attachments;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@clientname"
                 SQLTask:DtsVariableName="User::ClientName"
@@ -921,17 +918,17 @@
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
               <SQLTask:ParameterBinding
-                SQLTask:ParameterName="@bccemail"
-                SQLTask:DtsVariableName="User::BCCEMail"
-                SQLTask:ParameterDirection="Input"
-                SQLTask:DataType="130"
-                SQLTask:ParameterSize="1000" />
-              <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@attachment"
                 SQLTask:DtsVariableName="User::ClientFineFilePath"
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@mailServer"
+                SQLTask:DtsVariableName="$Project::EmailProfile"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -939,6 +936,7 @@
           DTS:refId="Package\Wrap up\Update Dashboard"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
+          DTS:Disabled="True"
           DTS:DTSID="{0EE4F138-4E9C-4F34-A60E-DE62635CD88C}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
@@ -1023,7 +1021,7 @@
 <!--If you manually edit this section and make a mistake, you can delete it. -->
 <!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
 <Objects
-  Version="8">
+  Version="sql12">
   <!--Each node below will contain properties that do not affect runtime behavior.-->
   <Package
     design-time-name="Package">
@@ -1245,5 +1243,41 @@
       </GraphLayout>
     </LayoutInfo>
   </Package>
+  <TaskHost
+    design-time-name="Package\Export Fines, Archive File\Export Fine File">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\Export Fines, Archive File\Export Fine File\Flat File Destination"
+          TopLeft="NaN,NaN" />
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\Export Fines, Archive File\Export Fine File\OLE DB Source"
+          TopLeft="NaN,NaN" />
+        <EdgeLayout
+          Id="Package\Export Fines, Archive File\Export Fine File.Paths[OLE DB Source Output]"
+          TopLeft="NaN,NaN">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
+              Start="0,0"
+              End="0,0">
+              <mssgle:Curve.Segments>
+                <assembly:Null />
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
