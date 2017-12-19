@@ -7,12 +7,12 @@
   DTS:CreatorName="DB\Nblakely"
   DTS:DTSID="{3E4539BB-743B-4B68-AA93-D4F68C3E7A6C}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LastModifiedProductVersion="14.0.0800.90"
   DTS:LocaleID="1033"
   DTS:ObjectName="CatalogExport"
   DTS:PackageType="5"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{2183F1C9-4221-4A33-B6E5-D1A2FD0FA69F}">
+  DTS:VersionBuild="6"
+  DTS:VersionGUID="{A1067DB0-54F5-467A-BF11-B7114EA94F7C}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -110,7 +110,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=DB;Initial Catalog=TipWebHostedSequoiaUHSD;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Sequoia_1219;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -124,8 +124,50 @@
       <DTS:VariableValue
         DTS:DataType="8">Catalog.txt</DTS:VariableValue>
     </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{18057B3C-B192-42FA-9914-FEF8674ABFB8}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::ReportPath]+&quot;\\Output.txt&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="IntgOutputDestination">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\EZImportFiles\SequoiaUHSD_SFTP_User\Reports\Output.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{AEC920FF-BF2E-4390-8585-ABC26E3B09D9}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::IntgErrorPath]+&quot;\\Output.txt&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="IntgOutputSource">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\EZImportFiles\SequoiaUHSD_SFTP_User\Integration\Data\Errors\Output.txt</DTS:VariableValue>
+    </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Copy Integration Output"
+      DTS:CreationName="Microsoft.FileSystemTask"
+      DTS:Description="File System Task"
+      DTS:DTSID="{CB6159C5-2821-48C6-A15F-69BC5573BBA1}"
+      DTS:ExecutableType="Microsoft.FileSystemTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Copy Integration Output"
+      DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2016; © 2015 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <FileSystemData
+          TaskOverwriteDestFile="True"
+          TaskSourcePath="User::IntgOutputSource"
+          TaskIsSourceVariable="True"
+          TaskDestinationPath="User::IntgOutputDestination"
+          TaskIsDestinationVariable="True" />
+      </DTS:ObjectData>
+    </DTS:Executable>
     <DTS:Executable
       DTS:refId="Package\Data Flow Task"
       DTS:CreationName="Microsoft.Pipeline"
@@ -293,7 +335,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select ItemNUmber, ItemName, ItemTYpeName, ModelNumber, ManufacturerName, ItemSuggestedPrice, ProjectedLife
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ItemNUmber, ItemName, ItemTYpeName, ModelNumber, ManufacturerName, ItemSuggestedPrice, ProjectedLife
 
 from tblTechItems ttm
 join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID
@@ -529,6 +571,16 @@ where ItemUID &lt;&gt; 0</property>
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{50BF72A3-4F5D-4FA9-AEF0-A85E757CD002}"
+      DTS:From="Package\Data Flow Task"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Copy Integration Output" />
+  </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
 <!--If you manually edit this section and make a mistake, you can delete it. -->
@@ -540,11 +592,49 @@ where ItemUID &lt;&gt; 0</property>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="194,42"
+          Id="Package\Copy Integration Output"
+          TopLeft="484,188" />
         <NodeLayout
           Size="151,42"
           Id="Package\Data Flow Task"
           TopLeft="469,90" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="544.5,132">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="18.5,56"
+              Start="0,0"
+              End="18.5,48.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,24" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,24"
+                    Point2="0,28"
+                    Point3="4,28" />
+                  <mssgle:LineSegment
+                    End="14.5,28" />
+                  <mssgle:CubicBezierSegment
+                    Point1="14.5,28"
+                    Point2="18.5,28"
+                    Point3="18.5,32" />
+                  <mssgle:LineSegment
+                    End="18.5,48.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
