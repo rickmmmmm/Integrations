@@ -11,10 +11,26 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{E81248DC-FE72-43AE-A1D5-87576C833126}">
+  DTS:VersionBuild="9"
+  DTS:VersionGUID="{5BAC8D67-F65C-44FA-82D4-CC8EBE043677}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[ClientDB]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+      DTS:ObjectName="ClientDB">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[$Project::DBName]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_1221;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
   <DTS:PackageParameters>
     <DTS:PackageParameter
       DTS:CreationName=""
@@ -35,8 +51,227 @@
         DTS:Name="ParameterValue">DB</DTS:Property>
     </DTS:PackageParameter>
   </DTS:PackageParameters>
-  <DTS:Variables />
-  <DTS:Executables />
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{3B7ABD34-A06D-4374-92B5-AAF28027C928}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="TranserUID">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{D1EB4B22-2B2B-470F-8C13-CD332491EA7C}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="TransferList">
+      <DTS:VariableValue
+        DTS:DataSubType="ManagedSerializable"
+        DTS:DataType="13">
+        <SOAP-ENV:Envelope xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+          <SOAP-ENV:Body>
+            <xsd:anyType
+              id="ref-1"></xsd:anyType>
+          </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+      </DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Get List of Approved Transfers"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{50145225-FF8C-42D7-8ED1-E43AC54BA6AA}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Get List of Approved Transfers"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 93  --submitted"
+          SQLTask:ResultType="ResultSetType_Rowset" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::TransferList" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="@DestinationSite"
+            SQLTask:DtsVariableName="$Project::DestinationSite"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="3"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\List of In Transit Transfers"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
+      DTS:DTSID="{F216E7F9-F961-499C-8872-26402DD1E999}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="List of In Transit Transfers"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 24  --In Transit"
+          SQLTask:ResultType="ResultSetType_Rowset" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="0"
+            SQLTask:DtsVariableName="User::TransferList" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="@DestinationSite "
+            SQLTask:DtsVariableName="$Project::DestinationSite"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="3"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Process Approved Transfers"
+      DTS:CreationName="STOCK:FOREACHLOOP"
+      DTS:Description="Foreach Loop Container"
+      DTS:DTSID="{FF74F656-E7E9-4B95-A0E6-EF2D32BB3DAD}"
+      DTS:ExecutableType="STOCK:FOREACHLOOP"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Process Approved Transfers">
+      <DTS:ForEachEnumerator
+        DTS:CreationName="Microsoft.ForEachADOEnumerator"
+        DTS:DTSID="{944D2633-F295-4F54-8B4F-99BF9DC7167F}"
+        DTS:ObjectName="{944D2633-F295-4F54-8B4F-99BF9DC7167F}">
+        <DTS:ObjectData>
+          <FEEADO
+            EnumType="EnumerateRowsInFirstTable"
+            VarName="User::TransferList" />
+        </DTS:ObjectData>
+      </DTS:ForEachEnumerator>
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Process Approved Transfers\Process Approved Transfers"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{33DB2F2E-BCEF-41C1-B312-B73BF9486246}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Process Approved Transfers"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+              SQLTask:SqlStatementSource="declare @TransferUID int, @StatusUID int&#xA;&#xA;set @TransferUID = ?&#xA;&#xA;select @StatusUID = (select statusid from tblStatus where statustypeuid = 6 and statusdesc = 'In Transit')&#xA;--print cast(@@StatusUID as varchar(10))&#xA;&#xA;&#xA;--INSERT INTO tblTechTransferHistory&#xA;--(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;--CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @StatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;--Update t &#xA;--set StatusUID = @StatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@TransferUID"
+                SQLTask:DtsVariableName="User::TranserUID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:ForEachVariableMappings>
+        <DTS:ForEachVariableMapping
+          DTS:CreationName=""
+          DTS:DTSID="{01B48F6B-C5C3-4D9E-9C09-208AFE4562F2}"
+          DTS:ObjectName="{01B48F6B-C5C3-4D9E-9C09-208AFE4562F2}"
+          DTS:ValueIndex="0"
+          DTS:VariableName="User::TranserUID" />
+      </DTS:ForEachVariableMappings>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Process In Transit Transfers"
+      DTS:CreationName="STOCK:FOREACHLOOP"
+      DTS:Description="Foreach Loop Container"
+      DTS:Disabled="True"
+      DTS:DTSID="{43AB1263-D3F8-4FDB-9CEF-369204E9B87F}"
+      DTS:ExecutableType="STOCK:FOREACHLOOP"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Process In Transit Transfers">
+      <DTS:ForEachEnumerator
+        DTS:CreationName="Microsoft.ForEachADOEnumerator"
+        DTS:DTSID="{28D9B1DF-338D-4780-8A8A-0748D082591B}"
+        DTS:ObjectName="{28D9B1DF-338D-4780-8A8A-0748D082591B}">
+        <DTS:ObjectData>
+          <FEEADO
+            EnumType="EnumerateRowsInFirstTable"
+            VarName="User::TransferList" />
+        </DTS:ObjectData>
+      </DTS:ForEachEnumerator>
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Process In Transit Transfers\Process In transit Transfers INCOMPLETE"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{7B082A96-B9CB-40E3-9C5B-FBE687087EA4}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Process In transit Transfers INCOMPLETE"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+              SQLTask:SqlStatementSource="declare @RecycleSite int, @TransferUID int, @RecyledStatusUID int&#xA;&#xA;set @RecycleSite = ?&#xA;set @TransferUID = ?&#xA;&#xA;select @RecyledStatusUID = (select statusid from tblStatus where statustypeuid = 6 and statusdesc = 'Recycled')&#xA;--print cast(@RecyledStatusUID as varchar(10))&#xA;&#xA;&#xA;INSERT INTO tblUnvRooms (RoomNumber, RoomDescription, RoomTypeUID, RoomNotes, SiteUID, Active,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT 'Recycled Tag Room', 'Recycled Tag Room', 16, 'Room for Recycled Tags',&#xA;Sites.SiteUID, 1, 0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechSites AS Sites&#xA;LEFT JOIN tblUnvRooms AS Rooms ON Sites.SiteUID = Rooms.SiteUID&#xA;AND Rooms.RoomNumber = 'Recycled Tag Room'&#xA;WHERE sites.Siteuid = @RecycleSite&#xA;and Rooms.RoomUID IS NULL&#xA;&#xA;&#xA;--INSERT INTO tblTechInventoryHistory&#xA;--(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;--StatusUID,&#xA;--OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, InventoryHistoryNotes,&#xA;--CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;--ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT I.InventoryUID, I.InventoryTypeUID, T.DestinationSiteUID, R.RoomUID, 2, &#xA;@RecyledStatusUID,&#xA;I.SiteUID, I.StatusUID, I.EntityUID, I.EntityTypeUID, 'Transfer Received via Automation',&#xA;0, GETDATE(), 0, GETDATE(), &#xA;I.ParentInventoryUID, I.ParentInventoryUID, 0, I.InventorySourceUID, I.ContainerUID, I.ContainerUID&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID &#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;where ti.transferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;--UPDATE I&#xA;--SET SiteUID = T.DestinationSiteUID, EntityUID = R.RoomUID, EntityTypeUID = 2,&#xA;--StatusUID = @RecyledStatusUID, LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;select *&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID&#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;JOIN tblTechTransfers tr ON TI.TransferUID = tr.TransferUID &#xA;WHERE TI.InventoryUID &gt; 0&#xA;and ti.transferUID = @TransferUID&#xA;&#xA;--NEED TO ADD Transfer History and complete transfer" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@RecycleSite"
+                SQLTask:DtsVariableName="$Project::DestinationSite"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@TransferUID"
+                SQLTask:DtsVariableName="User::TranserUID"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:ForEachVariableMappings>
+        <DTS:ForEachVariableMapping
+          DTS:CreationName=""
+          DTS:DTSID="{93C50AA1-B450-4B2E-9AC1-E1565CAAC157}"
+          DTS:ObjectName="{93C50AA1-B450-4B2E-9AC1-E1565CAAC157}"
+          DTS:ValueIndex="0"
+          DTS:VariableName="User::TranserUID" />
+      </DTS:ForEachVariableMappings>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{2B56FFBE-DA41-4E90-BE56-7D53A8DFD880}"
+      DTS:From="Package\Get List of Approved Transfers"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Process Approved Transfers" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{F0793638-D61E-45F9-9847-21BECD014481}"
+      DTS:From="Package\List of In Transit Transfers"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Process In Transit Transfers" />
+  </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
 <!--If you manually edit this section and make a mistake, you can delete it. -->
@@ -44,5 +279,111 @@
 <Objects
   Version="8">
   <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="225,42"
+          Id="Package\Get List of Approved Transfers"
+          TopLeft="233,45" />
+        <NodeLayout
+          Size="212,42"
+          Id="Package\Process Approved Transfers\Process Approved Transfers"
+          TopLeft="59,29" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="351,138"
+          Size="351,181"
+          Id="Package\Process Approved Transfers"
+          TopLeft="136,173" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="345.5,87">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-34,86"
+              Start="0,0"
+              End="-34,78.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,39" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,39"
+                    Point2="0,43"
+                    Point3="-4,43" />
+                  <mssgle:LineSegment
+                    End="-30,43" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-30,43"
+                    Point2="-34,43"
+                    Point3="-34,47" />
+                  <mssgle:LineSegment
+                    End="-34,78.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="165,42"
+          Id="Package\List of In Transit Transfers"
+          TopLeft="918,64" />
+        <NodeLayout
+          Size="165,65"
+          Id="Package\Process In Transit Transfers\Process In transit Transfers INCOMPLETE"
+          TopLeft="53,22" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="263,142"
+          Size="263,185"
+          Id="Package\Process In Transit Transfers"
+          TopLeft="882,175" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="1000.5,106">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="13,69"
+              Start="0,0"
+              End="13,61.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,30.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,30.5"
+                    Point2="0,34.5"
+                    Point3="4,34.5" />
+                  <mssgle:LineSegment
+                    End="9,34.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="9,34.5"
+                    Point2="13,34.5"
+                    Point3="13,38.5" />
+                  <mssgle:LineSegment
+                    End="13,61.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
