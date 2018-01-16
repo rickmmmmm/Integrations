@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportStudentSchedule"
   DTS:PackageType="5"
-  DTS:VersionBuild="340"
-  DTS:VersionGUID="{CDBB9468-B112-4050-9F9C-E01D882FF278}">
+  DTS:VersionBuild="341"
+  DTS:VersionGUID="{9D324E76-3918-4B62-831E-FAC4056EF7DB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.\SQL2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -42,7 +42,7 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.\SQL2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -61,7 +61,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\studsched_01032018.csv">
+          DTS:ConnectionString="\Reject\studsched_01162018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -182,7 +182,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\studsched_01032018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\studsched_01162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -254,7 +254,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\studsched_01032018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\studsched_01162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -373,7 +373,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">.\SQL2014</DTS:VariableValue>
+        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1422,7 +1422,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="&#xA;declare @SourceOrigin varchar(50)&#xA;&#xA;set @SourceOrigin = ?&#xA;&#xA;&#xA;&#xA;if @SourceOrigin = 'EZ1'&#xA;&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--deleting duplicates here for performance&#xA;&#x9;delete _IMS_StudentSchedule&#xA;&#xA;&#x9;WHERE IMS_StudentScheduleID IN (&#xA;&#x9;&#x9;SELECT IMS_StudentScheduleID&#xA;&#x9;&#x9;FROM (&#xA;&#x9;&#x9;&#x9;SELECT ROW_NUMBER() OVER&#xA;&#x9;&#x9;&#x9;(&#xA;&#x9;&#x9;&#x9;&#x9;PARTITION BY StudentID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;&#x9;ORDER BY IMS_StudentScheduleID&#xA;&#x9;&#x9;&#x9;) AS rownum, IMS_StudentScheduleID, StudentID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;FROM _IMS_StudentSchedule&#xA;&#x9;&#x9;&#x9;WHERE import = 1&#xA;&#x9;&#x9;) a&#xA;&#x9;&#x9;WHERE rownum &lt;&gt; 1&#xA;&#x9;)&#xA;&#xA;&#xA;&#x9;insert _IMS_Classes (courseID, CampusID, ClassID, ClassName, period, section, MasterCourseUID, CampusUID)&#xA;&#x9;&#xA;&#x9;select distinct ts.courseID, t.CampusID, ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '') as ClassID, mc.CourseName as ClassName, ts.period, ts.section, &#xA;&#x9;mc.MasterCourseUID, c.CampusUID&#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join (select CourseID, CampusID from _IMS_CampusCourse where Import = 1) cc on cc.CourseID = ts.courseID &#xA;&#x9;join (select CourseID, CourseName,  MasterCourseUID from _IMS_masterCourse where import = 1) mc on cc.courseID = mc.CourseID &#xA;&#x9;join (select StudentID, campusid from _IMS_Students where import = 1) t on t.StudentID = ts.StudentID and t.CampusID = cc.campusID &#xA;&#x9;join tblCampuses c on c.CampusID = t.CampusID&#xA;&#x9;left outer join _IMS_Classes cl on cl.CampusID = t.CampusID and cl.ClassID = (ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '')) &#xA;&#x9;where ts.Import = 1&#xA;&#x9;and IMS_ClassID is null&#xA;&#xA;&#xA;&#x9;&#xA;&#x9;--select * &#xA;&#x9;update ss set CampusID = c.CampusID, StudentsUID = s.StudentsUID, MasterCourseUID = c.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ss&#xA;&#x9;join (select StudentID, CampusID, StudentsUID from _IMS_Students) s on s.StudentID = ss.StudentID&#xA;&#x9;join (select CampusID, courseID, Section, Period, MasterCourseUID from _IMS_Classes where import = 1) c&#xA;&#x9;&#x9; on c.CampusID = s.CampusID and ss.CourseID = c.CourseID and ss.Section = c.Section and ss.Period = c.Period&#xA;&#x9;END&#xA;&#xA;else if @SourceOrigin = 'AST'&#xA;&#xA;&#x9;BEGIN &#xA;&#x9;&#xA;&#x9;--select *&#xA;&#x9;update ts set CourseID = a.CourseID, Section = a.Section, Period = a.Period  --, StudentsUID = t.StudentsUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join (&#xA;&#x9;&#x9;select classID, campusid, courseID, section, period&#xA;&#x9;&#x9;from _IMS_Classes c&#xA;&#x9;&#x9;where c.import = 0 ) a&#xA;&#x9;&#x9;on a.ClassID = ts.ClassID and a.CampusID = ts.CampusID&#xA;&#x9;where ts.Import = 1&#xA;&#x9;&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set StudentsUID = t.StudentsUID&#xA;&#x9;from _IMS_StudentSchedule ts &#xA;&#x9;join _IMS_Students t on t.StudentID = ts.studentID and t.CampusID = ts.CampusID &#xA;&#x9;where t.Import = 1&#xA;&#x9;&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ts set MasterCourseUID = mc.MasterCourseUID&#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join _IMS_masterCourse mc on ts.CourseID = mc.CourseID&#xA;&#x9;where mc.Import = 1&#xA;&#x9;&#xA;&#x9;&#xA;&#x9;insert _IMS_CampusCourse (CampusID, CourseID, MasterCourseUID, campusUID, Import )&#xA;&#x9;select distinct ss.CampusID, ss.CourseID, ss.MasterCourseUID, c.CampusUID, 1  &#xA;&#x9;from _IMS_StudentSchedule ss&#xA;&#x9;join tblCampuses c on ss.CampusID = c.CampusID&#xA;&#x9;left outer join _IMS_CampusCourse cc&#xA;&#x9;&#x9;on cc.campusid = ss.campusid and cc.courseID = ss.CourseID&#xA;&#x9;where IMS_CampusCourseID is null&#xA;&#x9;and ltrim(rtrim(isNull(ss.CampusID, ''))) &lt;&gt; '' and ltrim(rtrim(isNull(ss.CourseID, ''))) &lt;&gt; '';&#xA;&#x9;&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ims set CampusCoursesAssignedUID = cca.CampusCoursesAssignedUID&#xA;&#x9;from _IMS_CampusCourse ims&#xA;&#x9;join tblCampusCoursesAssigned cca on ims.MasterCourseUID = cca.MasterCourseUID&#xA;&#x9;&#x9;and ims.CampusUID = cca.CampusUID&#xA;&#xA;&#x9;&#xA;&#x9;&#xA;&#x9;END&#xA;&#xA;&#xA;else if @SourceOrigin = 'UFA'&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, CampusID = c.CampusID, StudentsUID = t.StudentsUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Students t on t.StudentID = ts.StudentID and t.CampusID = c.campusID&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="&#xA;declare @SourceOrigin varchar(50)&#xA;&#xA;set @SourceOrigin = ?&#xA;&#xA;&#xA;&#xA;if @SourceOrigin = 'EZ1'&#xA;&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--deleting duplicates here for performance&#xA;&#x9;delete _IMS_StudentSchedule&#xA;&#xA;&#x9;WHERE IMS_StudentScheduleID IN (&#xA;&#x9;&#x9;SELECT IMS_StudentScheduleID&#xA;&#x9;&#x9;FROM (&#xA;&#x9;&#x9;&#x9;SELECT ROW_NUMBER() OVER&#xA;&#x9;&#x9;&#x9;(&#xA;&#x9;&#x9;&#x9;&#x9;PARTITION BY StudentID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;&#x9;ORDER BY IMS_StudentScheduleID&#xA;&#x9;&#x9;&#x9;) AS rownum, IMS_StudentScheduleID, StudentID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;FROM _IMS_StudentSchedule&#xA;&#x9;&#x9;&#x9;WHERE import = 1&#xA;&#x9;&#x9;) a&#xA;&#x9;&#x9;WHERE rownum &lt;&gt; 1&#xA;&#x9;)&#xA;&#xA;&#xA;&#x9;insert _IMS_Classes (courseID, CampusID, ClassID, ClassName, period, section, MasterCourseUID, CampusUID)&#xA;&#x9;&#xA;&#x9;select distinct ts.courseID, t.CampusID, ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '') as ClassID, mc.CourseName as ClassName, ts.period, ts.section, &#xA;&#x9;mc.MasterCourseUID, c.CampusUID&#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join (select CourseID, CampusID from _IMS_CampusCourse where Import = 1) cc on cc.CourseID = ts.courseID &#xA;&#x9;join (select CourseID, CourseName,  MasterCourseUID from _IMS_masterCourse where import = 1) mc on cc.courseID = mc.CourseID &#xA;&#x9;join (select StudentID, campusid from _IMS_Students where import = 1) t on t.StudentID = ts.StudentID and t.CampusID = cc.campusID &#xA;&#x9;join tblCampuses c on c.CampusID = t.CampusID&#xA;&#x9;left outer join _IMS_Classes cl on cl.CampusID = t.CampusID and cl.ClassID = (ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '')) &#xA;&#x9;where ts.Import = 1&#xA;&#x9;and IMS_ClassID is null&#xA;&#xA;&#xA;&#x9;&#xA;&#x9;--select * &#xA;&#x9;update ss set CampusID = c.CampusID, StudentsUID = s.StudentsUID, MasterCourseUID = c.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ss&#xA;&#x9;join (select StudentID, CampusID, StudentsUID from _IMS_Students) s on s.StudentID = ss.StudentID&#xA;&#x9;join (select CampusID, courseID, Section, Period, MasterCourseUID from _IMS_Classes where import = 1) c&#xA;&#x9;&#x9; on c.CampusID = s.CampusID and ss.CourseID = c.CourseID and ss.Section = c.Section and ss.Period = c.Period&#xA;&#x9;END&#xA;&#xA;else if @SourceOrigin = 'AST'&#xA;&#xA;&#x9;BEGIN &#xA;&#x9;&#xA;&#x9;--select *&#xA;&#x9;update ts set CourseID = a.CourseID, Section = a.Section, Period = a.Period  --, StudentsUID = t.StudentsUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join (&#xA;&#x9;&#x9;select classID, campusid, courseID, section, period&#xA;&#x9;&#x9;from _IMS_Classes c&#xA;&#x9;&#x9;where c.import = 1 ) a&#xA;&#x9;&#x9;on a.ClassID = ts.ClassID and a.CampusID = ts.CampusID&#xA;&#x9;where ts.Import = 1&#xA;&#x9;&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set StudentsUID = t.StudentsUID&#xA;&#x9;from _IMS_StudentSchedule ts &#xA;&#x9;join _IMS_Students t on t.StudentID = ts.studentID and t.CampusID = ts.CampusID &#xA;&#x9;where t.Import = 1&#xA;&#x9;&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ts set MasterCourseUID = mc.MasterCourseUID&#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join _IMS_masterCourse mc on ts.CourseID = mc.CourseID&#xA;&#x9;where mc.Import = 1&#xA;&#x9;&#xA;&#x9;&#xA;&#x9;insert _IMS_CampusCourse (CampusID, CourseID, MasterCourseUID, campusUID, Import )&#xA;&#x9;select distinct ss.CampusID, ss.CourseID, ss.MasterCourseUID, c.CampusUID, 1  &#xA;&#x9;from _IMS_StudentSchedule ss&#xA;&#x9;join tblCampuses c on ss.CampusID = c.CampusID&#xA;&#x9;left outer join _IMS_CampusCourse cc&#xA;&#x9;&#x9;on cc.campusid = ss.campusid and cc.courseID = ss.CourseID&#xA;&#x9;where IMS_CampusCourseID is null&#xA;&#x9;and ltrim(rtrim(isNull(ss.CampusID, ''))) &lt;&gt; '' and ltrim(rtrim(isNull(ss.CourseID, ''))) &lt;&gt; '';&#xA;&#x9;&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ims set CampusCoursesAssignedUID = cca.CampusCoursesAssignedUID&#xA;&#x9;from _IMS_CampusCourse ims&#xA;&#x9;join tblCampusCoursesAssigned cca on ims.MasterCourseUID = cca.MasterCourseUID&#xA;&#x9;&#x9;and ims.CampusUID = cca.CampusUID&#xA;&#xA;&#x9;&#xA;&#x9;&#xA;&#x9;END&#xA;&#xA;&#xA;else if @SourceOrigin = 'UFA'&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, CampusID = c.CampusID, StudentsUID = t.StudentsUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_StudentSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Students t on t.StudentID = ts.StudentID and t.CampusID = c.campusID&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@SourceOrigin"
                 SQLTask:DtsVariableName="User::SourceOrigin"
@@ -3158,7 +3158,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Create Reject Report">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Create Reject Report\OLE DB Source"
@@ -3172,7 +3172,7 @@ and cep.Active = 1</property>
           TopLeft="362,140">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-9,114"
               Start="0,0"
               End="-9,106.5">
@@ -3210,7 +3210,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Find Pre Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="184,42"
           Id="Package\Find Pre Processing\Recordset Destination"
@@ -3224,7 +3224,7 @@ and cep.Active = 1</property>
           TopLeft="145.5,226">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -3250,7 +3250,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Prepare Data\Find Post Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
           Id="Package\Prepare Data\Find Post Processing\Recordset Destination"
@@ -3264,12 +3264,12 @@ and cep.Active = 1</property>
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
+              EndConnector="{assembly:Null}"
               Start="0,0"
               End="0,0">
               <mssgle:Curve.Segments>
-                <x:Null />
+                <assembly:Null />
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
