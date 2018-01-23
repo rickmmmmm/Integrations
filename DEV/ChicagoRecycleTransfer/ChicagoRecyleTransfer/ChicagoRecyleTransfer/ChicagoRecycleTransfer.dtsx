@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="11"
-  DTS:VersionGUID="{FEC26A12-EDB5-46CF-9B70-4FC4BE80D095}">
+  DTS:VersionBuild="17"
+  DTS:VersionGUID="{C6894594-7C38-470A-9AF5-89409F027481}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_1221;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_0118;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -95,7 +95,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 93  --submitted"
+          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;set @DestinationSite = ?&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 93  --submitted"
           SQLTask:ResultType="ResultSetType_Rowset" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="0"
@@ -113,24 +113,23 @@
       DTS:refId="Package\List of In Transit Transfers"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
-      DTS:Disabled="True"
       DTS:DTSID="{F216E7F9-F961-499C-8872-26402DD1E999}"
       DTS:ExecutableType="Microsoft.ExecuteSQLTask"
       DTS:LocaleID="-1"
       DTS:ObjectName="List of In Transit Transfers"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 24  --In Transit"
+          SQLTask:SqlStatementSource="declare @DestinationSite int&#xA;&#xA;set @DestinationSite = ?&#xA;&#xA;select transferUID&#xA; from tblTechTransfers &#xA;where TransferTypeUID = 1&#xA;and DestinationSiteUID = @DestinationSite &#xA; and StatusUID = 24  --In Transit"
           SQLTask:ResultType="ResultSetType_Rowset" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="0"
             SQLTask:DtsVariableName="User::TransferList" />
           <SQLTask:ParameterBinding
-            SQLTask:ParameterName="@DestinationSite "
+            SQLTask:ParameterName="@DestinationSite"
             SQLTask:DtsVariableName="$Project::DestinationSite"
             SQLTask:ParameterDirection="Input"
             SQLTask:DataType="3"
@@ -172,7 +171,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-              SQLTask:SqlStatementSource="declare @TransferUID int, @StatusUID int&#xA;&#xA;set @TransferUID = ?&#xA;&#xA;select @StatusUID = (select statusid from tblStatus where statustypeuid = 6 and statusdesc = 'In Transit')&#xA;--print cast(@@StatusUID as varchar(10))&#xA;&#xA;&#xA;--INSERT INTO tblTechTransferHistory&#xA;--(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;--CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @StatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;--Update t &#xA;--set StatusUID = @StatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource=" /*&#xA; SSIS takes the list of transfers and iterates through them...&#xA; Inserting into history and changing status&#xA; */&#xA;&#xA; declare @TransferUID int, @StatusUID int&#xA;&#xA;set @TransferUID = ?&#xA;&#xA;select @StatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'In Transit')&#xA;--print cast(@@StatusUID as varchar(10))&#xA;&#xA;&#xA;INSERT INTO tblTechTransferHistory&#xA;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @StatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;Update t &#xA;set StatusUID = @StatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;--select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;INSERT INTO tblTechInventoryHistory&#xA;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;StatusUID,&#xA;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, &#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT tti.InventoryUID, tti.InventoryTypeUID, tti.SiteUID, tts.TransferUID, 6, &#xA;@StatusUID, &#xA;tti.SiteUID, tti.StatusUID, tti.EntityUID, tti.EntityTypeUID, &#xA;0, GETDATE(), 0, GETDATE(), &#xA;tti.ParentInventoryUID, tti.ParentInventoryUID, 0, tti.InventorySourceUID, tti.ContainerUID, tti.ContainerUID&#xA;FROM tblTechInventory tti&#xA;JOIN tblTechTransferInventory ttr ON tti.InventoryUID = ttr.InventoryUID&#xA;JOIN tblTechTransfers tts ON tts.TransferUID = ttr.TransferUID &#xA;where tts.transferUID = @TransferUID&#xA;and ttr.InventoryUID &lt;&gt; 0&#xA;&#xA;&#xA;&#xA;--select *&#xA;update tti set EntityUID = ttr.TransferUID, EntityTypeUID = 6, StatusUID = @StatusUID&#xA;from tblTechInventory tti&#xA;join tblTechTransferInventory ttr on tti.InventoryUID = ttr.InventoryUID&#xA;join tblTechTransfers tts on tts.TransferUID = ttr.TransferUID&#xA;where tts.transferUID = @TransferUID&#xA;and ttr.InventoryUID &lt;&gt; 0&#xA; &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@TransferUID"
                 SQLTask:DtsVariableName="User::TranserUID"
@@ -196,7 +195,6 @@
       DTS:refId="Package\Process In Transit Transfers"
       DTS:CreationName="STOCK:FOREACHLOOP"
       DTS:Description="Foreach Loop Container"
-      DTS:Disabled="True"
       DTS:DTSID="{43AB1263-D3F8-4FDB-9CEF-369204E9B87F}"
       DTS:ExecutableType="STOCK:FOREACHLOOP"
       DTS:LocaleID="-1"
@@ -214,20 +212,20 @@
       <DTS:Variables />
       <DTS:Executables>
         <DTS:Executable
-          DTS:refId="Package\Process In Transit Transfers\Process In transit Transfers INCOMPLETE"
+          DTS:refId="Package\Process In Transit Transfers\Process In transit Transfers"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
           DTS:DTSID="{7B082A96-B9CB-40E3-9C5B-FBE687087EA4}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
-          DTS:ObjectName="Process In transit Transfers INCOMPLETE"
+          DTS:ObjectName="Process In transit Transfers"
           DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2017 RC1; © 2017 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-              SQLTask:SqlStatementSource="declare @RecycleSite int, @TransferUID int, @RecyledStatusUID int&#xA;&#xA;set @RecycleSite = ?&#xA;set @TransferUID = ?&#xA;&#xA;select @RecyledStatusUID = (select statusid from tblStatus where statustypeuid = 6 and statusdesc = 'Recycled')&#xA;--print cast(@RecyledStatusUID as varchar(10))&#xA;&#xA;&#xA;INSERT INTO tblUnvRooms (RoomNumber, RoomDescription, RoomTypeUID, RoomNotes, SiteUID, Active,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT 'Recycled Tag Room', 'Recycled Tag Room', 16, 'Room for Recycled Tags',&#xA;Sites.SiteUID, 1, 0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechSites AS Sites&#xA;LEFT JOIN tblUnvRooms AS Rooms ON Sites.SiteUID = Rooms.SiteUID&#xA;AND Rooms.RoomNumber = 'Recycled Tag Room'&#xA;WHERE sites.Siteuid = @RecycleSite&#xA;and Rooms.RoomUID IS NULL&#xA;&#xA;&#xA;--INSERT INTO tblTechInventoryHistory&#xA;--(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;--StatusUID,&#xA;--OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, InventoryHistoryNotes,&#xA;--CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;--ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT I.InventoryUID, I.InventoryTypeUID, T.DestinationSiteUID, R.RoomUID, 2, &#xA;@RecyledStatusUID,&#xA;I.SiteUID, I.StatusUID, I.EntityUID, I.EntityTypeUID, 'Transfer Received via Automation',&#xA;0, GETDATE(), 0, GETDATE(), &#xA;I.ParentInventoryUID, I.ParentInventoryUID, 0, I.InventorySourceUID, I.ContainerUID, I.ContainerUID&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID &#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;where ti.transferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;--UPDATE I&#xA;--SET SiteUID = T.DestinationSiteUID, EntityUID = R.RoomUID, EntityTypeUID = 2,&#xA;--StatusUID = @RecyledStatusUID, LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;select *&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID&#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;JOIN tblTechTransfers tr ON TI.TransferUID = tr.TransferUID &#xA;WHERE TI.InventoryUID &gt; 0&#xA;and ti.transferUID = @TransferUID&#xA;&#xA;--NEED TO ADD Transfer History and complete transfer" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="&#xA;  /*&#xA; SSIS takes the list of transfers and iterates through them...&#xA; Checks for a room called 'Recyled Tag Room' and creates if it doesn't exist&#xA; Inserting into history and changing status&#xA; */&#xA;&#xA;&#xA; declare @RecycleSite int, @TransferUID int, @RecyledStatusUID int, @ReceivingTransferStatusUID int, @CompletedTransferStatusUID int&#xA;&#xA;set @RecycleSite = ?&#xA;set @TransferUID = ?&#xA;&#xA;select @RecyledStatusUID = (select statusid from tblStatus where statustypeuid = 6 and statusdesc = 'Recycled')&#xA;--StatusType is Room&#xA;--print cast(@RecyledStatusUID as varchar(10))&#xA;&#xA;&#xA;INSERT INTO tblUnvRooms (RoomNumber, RoomDescription, RoomTypeUID, RoomNotes, SiteUID, Active,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT 'Recycled Tag Room', 'Recycled Tag Room', 16, 'Room for Recycled Tags',&#xA;Sites.SiteUID, 1, 0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechSites AS Sites&#xA;LEFT JOIN tblUnvRooms AS Rooms ON Sites.SiteUID = Rooms.SiteUID&#xA;AND Rooms.RoomNumber = 'Recycled Tag Room'&#xA;WHERE sites.Siteuid = @RecycleSite&#xA;and Rooms.RoomUID IS NULL&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryHistory&#xA;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;StatusUID,&#xA;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, InventoryHistoryNotes,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT I.InventoryUID, I.InventoryTypeUID, T.DestinationSiteUID, R.RoomUID, 2, &#xA;@RecyledStatusUID,&#xA;I.SiteUID, I.StatusUID, I.EntityUID, I.EntityTypeUID, 'Transfer Received via Automated Process',&#xA;0, GETDATE(), 0, GETDATE(), &#xA;I.ParentInventoryUID, I.ParentInventoryUID, 0, I.InventorySourceUID, I.ContainerUID, I.ContainerUID&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID &#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;where ti.transferUID = @TransferUID&#xA;and ti.InventoryUID &lt;&gt; 0&#xA;&#xA;&#xA;&#xA;UPDATE I&#xA;SET SiteUID = T.DestinationSiteUID, EntityUID = R.RoomUID, EntityTypeUID = 2,&#xA;StatusUID = @RecyledStatusUID, LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;--select *&#xA;FROM tblTechInventory I&#xA;JOIN tblTechTransferInventory TI ON I.InventoryUID = TI.InventoryUID&#xA;JOIN tblStatus S ON TI.OriginStatusUID = S.statusID&#xA;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID&#xA;JOIN tblUnvRooms R ON T.DestinationSiteUID = R.SiteUID AND R.RoomNumber = 'Recycled Tag Room'&#xA;JOIN tblTechTransfers tr ON TI.TransferUID = tr.TransferUID &#xA;WHERE TI.InventoryUID &gt; 0&#xA;and ti.transferUID = @TransferUID&#xA;&#xA;&#xA;select @ReceivingTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Receiving')&#xA;&#xA;INSERT INTO tblTechTransferHistory&#xA;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @ReceivingTransferStatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;--select *&#xA;Update ti set Received = 1, ReceivedQuantity = 1, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;from tblTechTransferInventory ti&#xA;where ti.TransferUID = @TransferUID&#xA;and ti.InventoryUID &lt;&gt; 0&#xA;&#xA;--select *&#xA;Update ti set Received = 1, ReceivedQuantity = tui.Quantity, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;from tblTechTransferInventory ti&#xA;join tblTechUntaggedInventory tui on ti.UntaggedInventoryUID = ti.UntaggedInventoryUID&#xA;where ti.TransferUID = @TransferUID&#xA;and ti.UntaggedInventoryUID &lt;&gt; 0&#xA;&#xA;&#xA;&#xA;select @CompletedTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Complete')&#xA;--print cast(@@StatusUID as varchar(10))&#xA;&#xA;&#xA;INSERT INTO tblTechTransferHistory&#xA;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @CompletedTransferStatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;Update t&#xA;set StatusUID = @CompletedTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;--select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@RecycleSite"
                 SQLTask:DtsVariableName="$Project::DestinationSite"
@@ -271,6 +269,14 @@
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 1"
       DTS:To="Package\Process In Transit Transfers" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{DE6B9646-0DFB-4EE0-A5E2-463C80696DD8}"
+      DTS:From="Package\Process Approved Transfers"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\List of In Transit Transfers" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
@@ -304,14 +310,14 @@
           Id="Package\Process Approved Transfers"
           TopLeft="136,173" />
         <NodeLayout
-          Size="165,65"
-          Id="Package\Process In Transit Transfers\Process In transit Transfers INCOMPLETE"
+          Size="210,42"
+          Id="Package\Process In Transit Transfers\Process In transit Transfers"
           TopLeft="53,22" />
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="263,142"
-          Size="263,185"
+          PanelSize="334,142"
+          Size="334,185"
           Id="Package\Process In Transit Transfers"
           TopLeft="882,175" />
         <EdgeLayout
@@ -382,13 +388,47 @@
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="368.666666666667,173">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="605.666666666667,-67"
+              Start="0,0"
+              End="605.666666666667,-59.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,-29.2885897501145" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,-29.2885897501145"
+                    Point2="0,-33.2885897501145"
+                    Point3="4,-33.2885897501145" />
+                  <mssgle:LineSegment
+                    End="601.666666666667,-33.2885897501145" />
+                  <mssgle:CubicBezierSegment
+                    Point1="601.666666666667,-33.2885897501145"
+                    Point2="605.666666666667,-33.2885897501145"
+                    Point3="605.666666666667,-37.2885897501145" />
+                  <mssgle:LineSegment
+                    End="605.666666666667,-59.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <AnnotationLayout
-          Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xD;&#xA;&#xD;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xD;&#xA;currently using approvals only by fund account&#xD;&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xD;&#xA;Also, tblTechTransferWorkflows - still need to determine&#xD;&#xA;how that may play in.&#xD;&#xA;&#xD;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xD;&#xA;to Status 24 (Transit)&#xD;&#xA;&#xD;&#xA;Still unclear how tags will be received."
+          Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xA;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xA;currently using approvals only by fund account&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xA;Also, tblTechTransferWorkflows - still need to determine&#xA;how that may play in.&#xA;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xA;to Status 24 (Transit)&#xA;&#xA;Still unclear how tags will be received.&#xA;&#xA;1/18 - Current scope:  Move tags from approved to received&#xA;1/22 - Move tags from submitted to received"
           ParentId="Package"
           FontInfo="{assembly:Null}"
-          Size="344,329"
+          Size="335,409"
           Id="d86dd133-5c01-4ca4-9e4b-e7fcb8800116"
-          TopLeft="529,257" />
+          TopLeft="529,24" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
