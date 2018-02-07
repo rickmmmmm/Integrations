@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="7/22/2014 2:43:54 PM"
@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="DISD_Intg_TipWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="142"
-  DTS:VersionGUID="{5363A71B-77D0-48A7-932F-F0E92D3DFD8A}">
+  DTS:VersionBuild="144"
+  DTS:VersionGUID="{CF3C2AE2-41EF-4765-96FF-2374B34C863B}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[User::dataDepotServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWebHostedDallasISD;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Intg_TipWebImport-{0F3AE158-BCC2-4D38-87F8-A205FEA89288}MSANTOS_DEV.TipWebHostedIntegration;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Dallas_0202;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Intg_TipWebImport-{0F3AE158-BCC2-4D38-87F8-A205FEA89288}MSANTOS_DEV.TipWebHostedIntegration;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -36,11 +36,13 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{20F33CD2-278F-463E-BB2D-470F50134A2E}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::DBName]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="dataDepotDatabase">
       <DTS:VariableValue
-        DTS:DataType="8">TipWebHostedDallasISD</DTS:VariableValue>
+        DTS:DataType="8">TipWeb_Dallas_0202</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -55,11 +57,13 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{F85A87C2-8E9F-42DA-BD81-5D6929E95C78}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::Server]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="dataDepotServer">
       <DTS:VariableValue
-        DTS:DataType="8">.</DTS:VariableValue>
+        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -539,7 +543,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{0F3AE158-BCC2-4D38-87F8-A205FEA89288}"
-          SQLTask:SqlStatementSource="UPDATE tblTechPurchases&#xA;SET Other1 = Purchases.Other1,&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchases AS TP&#xA;JOIN (SELECT PurchaseOrder, MAX(Other1) AS Other1&#xA;FROM _ETL_Purchases&#xA;GROUP BY PurchaseOrder) AS Purchases&#xA;ON UPPER(TP.OrderNumber) = UPPER(Purchases.PurchaseOrder)&#xA;WHERE Purchases.Other1 IS NOT NULL&#xA;AND (TP.Other1 IS NULL&#xA;OR TP.Other1 &lt;&gt; Purchases.Other1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE tblTechInventoryExt SET InventoryExtValue = TP.Other1&#xA;FROM tblTechInventoryExt TIE&#xA;JOIN tblTechInventory TI ON TIE.InventoryUID = TI.InventoryUID&#xA;JOIN tblTechItems TTI ON TI.ItemUID = TTI.ItemUID&#xA;JOIN tblTechInventoryMeta TIM ON TIE.InventoryMetaUID = TIM.InventoryMetaUID&#xA;AND TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIE.InventoryExtValue &lt;&gt; TP.Other1&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 1, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 1&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 2, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 2&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 3, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 3&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 4, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 4&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryExt (InventoryUID, InventoryMetaUID, InventoryExtValue)&#xA;SELECT TI.InventoryUID, TIM.InventoryMetaUID, TP.Other1&#xA;FROM tblTechInventory TI&#xA;JOIN tblTechItems TTI ON TI.ItemUID = TTI.ItemUID&#xA;JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryExt TIE ON TI.InventoryUID = TIE.InventoryUID&#xA;AND TIE.InventoryMetaUID = TIM.InventoryMetaUID&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TP.Other1 &lt;&gt; ''&#xA;AND TIE.InventoryExtUID IS NULL&#xA;&#xA;GO&#xA;&#xA;UPDATE tblUnvDistrictPreferences&#xA;SET DistrictPreferenceValue = '1',&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;WHERE ApplicationUID = 2&#xA;AND DistrictPreferenceName = 'LockCustomFieldFRN#'&#xA;AND DistrictPreferenceValue &lt;&gt; '1'&#xA;&#xA;GO&#xA;&#xA;&#xA;IF (SELECT COUNT(*) FROM tblUnvDistrictPreferences WHERE DistrictPreferenceName = 'LockCustomFieldFRN#') = 0&#xA;&#x9;INSERT INTO tblUnvDistrictPreferences (ApplicationUID, DistrictPreferenceName,&#xA;&#x9;DistrictPreferenceDescription, DistrictPreferenceValue,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT 2, 'LockCustomFieldFRN#', 'Lock the FRN Number Custom Field', '1',&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="UPDATE tblTechPurchases&#xA;SET FRN = Purchases.Other1,&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechPurchases AS TP&#xA;JOIN (SELECT PurchaseOrder, MAX(Other1) AS Other1&#xA;FROM _ETL_Purchases&#xA;GROUP BY PurchaseOrder) AS Purchases&#xA;ON UPPER(TP.OrderNumber) = UPPER(Purchases.PurchaseOrder)&#xA;WHERE Purchases.Other1 IS NOT NULL&#xA;AND (TP.FRN IS NULL&#xA;OR TP.FRN &lt;&gt; Purchases.Other1)&#xA;&#xA;GO&#xA;&#xA;/*&#xA;UPDATE tblTechInventoryExt SET InventoryExtValue = TP.Other1&#xA;FROM tblTechInventoryExt TIE&#xA;JOIN tblTechInventory TI ON TIE.InventoryUID = TI.InventoryUID&#xA;JOIN tblTechItems TTI ON TI.ItemUID = TTI.ItemUID&#xA;JOIN tblTechInventoryMeta TIM ON TIE.InventoryMetaUID = TIM.InventoryMetaUID&#xA;AND TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIE.InventoryExtValue &lt;&gt; TP.Other1&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 1, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 1&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 2, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 2&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 3, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 3&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryMeta (InventoryMetaLabel, InventoryMetaOrder,&#xA;InventoryMetaRequired, InventoryMetaType, ItemTypeUID)&#xA;SELECT 'FRN#', 4, 1, 'Integer', TTI.ItemTypeUID&#xA;FROM (SELECT MAX(ItemUID) AS ItemUID, ItemTypeUID&#xA;FROM tblTechItems&#xA;GROUP BY ItemTypeUID) AS TTI&#xA;JOIN tblTechItemTypes AS TTIT ON TTI.ItemTypeUID = TTIT.ItemTypeUID&#xA;JOIN (SELECT MAX(PurchaseUID) AS PurchaseUID, ItemUID&#xA;FROM tblTechPurchaseItemDetails&#xA;GROUP BY ItemUID) AS TPID ON TTI.ItemUID = TPID.ItemUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;LEFT JOIN tblTechInventoryMeta TIM2 ON TTI.ItemTypeUID = TIM2.ItemTypeUID&#xA;AND TIM2.InventoryMetaOrder = 4&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TIM.InventoryMetaUID IS NULL&#xA;AND TIM2.InventoryMetaUID IS NULL&#xA;AND TTIT.ItemTypeName LIKE 'NETWORK%'&#xA;&#xA;GO&#xA;&#xA;&#xA;INSERT INTO tblTechInventoryExt (InventoryUID, InventoryMetaUID, InventoryExtValue)&#xA;SELECT TI.InventoryUID, TIM.InventoryMetaUID, TP.Other1&#xA;FROM tblTechInventory TI&#xA;JOIN tblTechItems TTI ON TI.ItemUID = TTI.ItemUID&#xA;JOIN tblTechInventoryMeta TIM ON TTI.ItemTypeUID = TIM.ItemTypeUID&#xA;AND TIM.InventoryMetaLabel = 'FRN#'&#xA;JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;JOIN tblTechPurchaseItemShipments TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;JOIN tblTechPurchaseItemDetails TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;JOIN tblTechPurchases TP ON TPID.PurchaseUID = TP.PurchaseUID&#xA;LEFT JOIN tblTechInventoryExt TIE ON TI.InventoryUID = TIE.InventoryUID&#xA;AND TIE.InventoryMetaUID = TIM.InventoryMetaUID&#xA;WHERE TP.Other1 IS NOT NULL&#xA;AND TP.Other1 &lt;&gt; ''&#xA;AND TIE.InventoryExtUID IS NULL&#xA;&#xA;GO&#xA;&#xA;UPDATE tblUnvDistrictPreferences&#xA;SET DistrictPreferenceValue = '1',&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;WHERE ApplicationUID = 2&#xA;AND DistrictPreferenceName = 'LockCustomFieldFRN#'&#xA;AND DistrictPreferenceValue &lt;&gt; '1'&#xA;&#xA;GO&#xA;&#xA;&#xA;IF (SELECT COUNT(*) FROM tblUnvDistrictPreferences WHERE DistrictPreferenceName = 'LockCustomFieldFRN#') = 0&#xA;&#x9;INSERT INTO tblUnvDistrictPreferences (ApplicationUID, DistrictPreferenceName,&#xA;&#x9;DistrictPreferenceDescription, DistrictPreferenceValue,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT 2, 'LockCustomFieldFRN#', 'Lock the FRN Number Custom Field', '1',&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#xA;GO&#xA;*/" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -758,7 +762,7 @@
 <!--If you manually edit this section and make a mistake, you can delete it. -->
 <!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
 <Objects
-  Version="8">
+  Version="sql12">
   <!--Each node below will contain properties that do not affect runtime behavior.-->
   <Package
     design-time-name="Package">
@@ -909,182 +913,6 @@
                   Capacity="5">
                   <mssgle:LineSegment
                     End="19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="550.141509433962,127.839622641509">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="26.7169811320755,0"
-              Start="0,0"
-              End="19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="740.594339622642,127.839622641509">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="26.7169811320755,0"
-              Start="0,0"
-              End="19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 4]"
-          TopLeft="849.160377358491,149.801886792453">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,30.3396226415094"
-              Start="0,0"
-              End="0,22.8396226415094">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,22.8396226415094" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 5]"
-          TopLeft="767.311320754717,202.103773584906">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-26.7169811320755,0"
-              Start="0,0"
-              End="-19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="-19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 6]"
-          TopLeft="576.858490566038,202.103773584906">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-26.7169811320755,0"
-              Start="0,0"
-              End="-19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="-19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 7]"
-          TopLeft="386.405660377359,202.103773584906">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-26.7169811320755,0"
-              Start="0,0"
-              End="-19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="-19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 8]"
-          TopLeft="195.952830188679,202.103773584906">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-26.7169811320755,0"
-              Start="0,0"
-              End="-19.2169811320755,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="-19.2169811320755,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 9]"
-          TopLeft="87.3490566037736,224.066037735849">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,30.2641509433962"
-              Start="0,0"
-              End="0,22.7641509433962">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,22.7641509433962" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1314,6 +1142,28 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="550.141509433962,127.839622641509">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="26.7169811320755,0"
+              Start="0,0"
+              End="19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 20]"
           TopLeft="169.235849056604,426.820754716981">
           <EdgeLayout.Curve>
@@ -1445,6 +1295,160 @@
                     End="-0.301886792452819,17.5849056603773" />
                   <mssgle:LineSegment
                     End="-0.301886792452819,27.6698113207547" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="740.594339622642,127.839622641509">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="26.7169811320755,0"
+              Start="0,0"
+              End="19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="849.160377358491,149.801886792453">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,30.3396226415094"
+              Start="0,0"
+              End="0,22.8396226415094">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22.8396226415094" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 5]"
+          TopLeft="767.311320754717,202.103773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-26.7169811320755,0"
+              Start="0,0"
+              End="-19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 6]"
+          TopLeft="576.858490566038,202.103773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-26.7169811320755,0"
+              Start="0,0"
+              End="-19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 7]"
+          TopLeft="386.405660377359,202.103773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-26.7169811320755,0"
+              Start="0,0"
+              End="-19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 8]"
+          TopLeft="195.952830188679,202.103773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-26.7169811320755,0"
+              Start="0,0"
+              End="-19.2169811320755,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-19.2169811320755,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 9]"
+          TopLeft="87.3490566037736,224.066037735849">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,30.2641509433962"
+              Start="0,0"
+              End="0,22.7641509433962">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22.7641509433962" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
