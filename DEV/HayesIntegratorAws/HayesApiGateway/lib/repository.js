@@ -15,7 +15,7 @@ seq =  new sequelize(database,username,password, {
             timestamps: false
           },
           pool: {
-            maxIdleTime: 1000
+            maxIdleTime: 100000
           }
     });
 
@@ -28,7 +28,8 @@ DataIntegrationsModel = {
     DataSentToTipweb: sequelize.BOOLEAN,
     DataCleared: sequelize.BOOLEAN,
     Client: sequelize.STRING,
-    IntegrationDate: sequelize.STRING
+    IntegrationDate: sequelize.STRING,
+    IntegrationType: sequelize.STRING
 };
 
 DataIntegrationsErrorsModel = {
@@ -58,12 +59,43 @@ DataIntegrationsAggregatesModel = {
     ReferenceDescription: sequelize.STRING
 }
 
+UserAPISettingsModel = {
+    Client: { type: sequelize.STRING, primaryKey: true },
+    UserName: { type: sequelize.STRING, primaryKey: true },
+	Passphrase: sequelize.STRING,
+	Email: sequelize.STRING,
+	Valid: sequelize.BOOLEAN,
+    CertificateVal: sequelize.STRING,
+    ClientFullName: sequelize.STRING,
+    Support: sequelize.BOOLEAN,
+    Admin: sequelize.BOOLEAN
+}
+
+DataIntegrationsMasterListModel = {
+    Client: { type: sequelize.STRING, primaryKey: true },
+    IntegrationType: { type: sequelize.STRING, primaryKey: true },
+    DateAdded: sequelize.STRING,
+    AddObj: sequelize.STRING,
+    Active: sequelize.BOOLEAN
+}
+
+DataIntegrationsFilesModel = {
+    DataIntegrationsFilesID: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    Client: sequelize.STRING,
+    FileNameAws: sequelize.STRING,
+    AwsFileLink: sequelize.STRING,
+    AddedDate: sequelize.STRING
+}
+
 module.exports = {
 
     DataIntegrations: seq.define('DataIntegrations', DataIntegrationsModel),
     DataIntegrationsErrors: seq.define('DataIntegrationsErrors', DataIntegrationsErrorsModel),
     DataIntegrationsMappings: seq.define('DataIntegrationsMappings', DataIntegrationsMappingsModel),
     DataIntegrationsAggregates: seq.define('DataIntegrationsAggregates', DataIntegrationsAggregatesModel),
+    UserAPISettings: seq.define('UserAPISettings',UserAPISettingsModel),
+    DataIntegrationsMasterList: seq.define('DataIntegrationsMasterList', DataIntegrationsMasterListModel, { tableName: 'DataIntegrationsMasterList'}),
+    DataIntegrationsFiles: seq.define('DataIntegrationsFiles', DataIntegrationsFilesModel, { tableName: 'DataIntegrationsFiles'}),
 
     selectIntegrationsById(id, options) {
 
@@ -142,6 +174,38 @@ module.exports = {
         );
     },
 
+    selectErrorCountByDate(date, options) {
+        this.DataIntegrations.hasMany(this.DataIntegrationsErrors, {
+            foreignKey: { 
+                name: 'DataIntegrationsID'}
+            });
+        
+        this.DataIntegrationsErrors.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsErrors.count({
+                    where : options.errtype ? { ErrorName: options.errtype } : {},
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: { IntegrationDate: date, Client: options.client }
+                    }]
+                }).then(
+                    data => {
+                        resolve(data);
+                    },
+                    err => {
+                        reject(err);
+                    }
+                );
+            }
+        );
+    },
+
     selectErrorsByIntegrationsID(id, options) {
         return new Promise(
             (resolve, reject) => {
@@ -179,6 +243,178 @@ module.exports = {
                         );
                     }
                 );
+            
+    },
+
+
+    selectAllAggregatesByDate(date, options) {
+        
+                return new Promise(
+                    (resolve, reject) => {
+                        this.DataIntegrationsAggregates.findAll({
+                            where: { DateRun: date },
+                            limit: parseInt(options.pagecount),
+                            offset: parseInt(options.pagenum - 1) * parseInt(options.pagecount)
+                        }).then(
+                            data => {
+                                resolve(data);
+                            },
+                            err => {
+                                reject(err);
+                            }
+                        );
+                    }
+                );
+            
+    },
+
+    selectAuthData(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this.UserAPISettings.findOne({ where: { UserName: options.username }}).then(
+                    data =>{
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                )
             }
+        );
+    },
+
+    checkCertByClientAndCertificateVal(options) {
+        return new Promise(
+            (resolve, reject) =>{
+                this.UserAPISettings.findOne({
+                        where: { Client: options.clientVal, CertificateVal: options.certVal }
+                    }
+                ).then(
+                    success => {
+                        if (!success) {
+                            reject();
+                        }
+                        resolve();
+                    },
+                    error => {
+                        reject();
+                    }
+                );
+            }
+        );
+    },
+
+    selectDataIntegrations(options) {
+
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsMasterList.findAll({ 
+                    where: { Active: true }
+                }).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+    },
+
+    selectDataIntegrationsByClient(options) {
+
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsMasterList.findAll({ 
+                    where: { Active: true, Client: options.client }
+                }).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+
+    },
+
+    selectCountErrors(options) {
+        return new Promise(
+            (resolve, reject) => { this.DataIntegrationsErrors.count({ DataIntegrationsID: options.intgid }).then(
+                data => {
+                    resolve(data);
+                },
+                error => {
+                    reject(error);
+                }
+            );
+        });
+    },
+
+    selectUserData(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this.UserAPISettings.findAll({
+                    attributes: ['Client','UserName','Email','AddedDate','Support','Admin']
+                }
+                ).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+    },
+
+    insertUser(user) {
+        return new Promise(
+            (resolve,reject) => {
+                this.UserAPISettings.create(user).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+    },
+
+    deactivateUser(user) {
+        return new Promise(
+            (resolve,reject) => {
+                this.UserAPISettings.update(user).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+    },
+
+    insertFileInfo(fileInfo) {
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsFiles.create(fileInfo).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
+        );
+    }
 
 }
