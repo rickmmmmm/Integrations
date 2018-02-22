@@ -1,16 +1,15 @@
 #!/usr/bin/env node
-
 "use strict";
 
-var chalk = require('chalk');
-var clear = require('clear');
-var CLI = require('clui');
-var figlet = require('figlet');
-var inquirer = require('inquirer');
-var Preferences = require('preferences');
-var Spinner = CLI.Spinner;
-var _ = require('lodash');
-var fs = require('fs');
+const chalk = require('chalk');
+const clear = require('clear');
+const CLI = require('clui');
+const figlet = require('figlet');
+const inquirer = require('inquirer');
+const Preferences = require('preferences');
+const Spinner = CLI.Spinner;
+const _ = require('lodash');
+const fs = require('fs');
 const repository = require('./lib/repository.js');
 const filetasks = require('./lib/file-tasks.js');
 const logger = require('./lib/log-to-file.js');
@@ -18,40 +17,73 @@ const configuration = require('./lib/configuration.js');
 const mappings = require('./lib/mappings.js');
 const rq = require('./lib/http-requests.js');
 
-var action = process.argv[2];
-var subaction = process.argv[3];
-
-var activities = [
+const activities = [
   { name: '--help', shortname: '-h', desc: 'Show help menu.', action: showHelp },
   { name: '--config', shortname: '-co', desc: 'Show current configuration settings.', action: getConfiguration },
-  { name: '--chunk', shortname: '-chu', desc: 'Toggles a chunk of data imported as completed.', action: toggleChunkedData },
-  { name: '--create', shortname: '-cr', desc: 'Creates New Integration ID.', action: createIntegration },
-  { name: '--mapflat', shortname: '-m', desc: 'Map purchase order data from JSON to Database table.', action: mapFlat, options: { filename: subaction } },
-  { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, options: { useIDs: true  } },
+  { name: '--chunk', shortname: '-chu', desc: 'Toggles a chunk of data imported as completed.', action: toggleChunkedData, reqOptions: ['id'] },
+  { name: '--create', shortname: '-cr', desc: 'Creates New Integration in database using instance id as unique key.', action: createIntegration, reqOptions: ['id'] },
+  { name: '--mapflat', shortname: '-m', desc: 'Map purchase order data from JSON file to database table.', action: mapFromFile, reqOptions: ['filename','id'] },
+  { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, reqOptions: ['useid','id']},
   { name: '--products', shortname: '-p', desc: 'Map products from flat data table to Products.', action: productsFunc },
-  { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: headersFunc },
-  { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: detailsFunc },
-  { name: '--shipping', shortname: '-sh', desc: 'Map shipments from flat data table to Shipments.', action: shippingFunc },
-  { name: '--filter-unncessary', shortname: '-fu', desc: 'Adds vendors to staging database.', action: filterOldRecords },
-  { name: '--filter-old-inserts', shortname: '-foi', desc: 'Removes any records that have already been inserted.', action: filterOldInserts },
-  { name: '--filter-bad-details', shortname: '-fbd', desc: 'Removes any detail and shipment records with a bad header.', action: filterDetailsWithBadHeaders },
-  { name: '--filter-bad-shipments', shortname: '-fbs', desc: 'Removes any shipment records with a bad detail record.', action: filterShipmentsWithBadDetails },
-  { name: '--complete', shortname: '-C', desc: 'Toggles an integration ID to completed.', action: toggleSuccessfulIntegration },
-  { name: '--send-to-api', shortname: '-S', desc: 'Toggles an integration ID from DataProcessing to DataSentToTipweb.', action: toggleFromProcessingToSending },
+  { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: headersFunc, reqOptions: ['id'] },
+  { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: detailsFunc, reqOptions: ['id'] },
+  { name: '--filter-unncessary', shortname: '-fu', desc: 'Filters out any records already sent.', action: filterOldRecords, reqOptions: ['id'] },
+  { name: '--filter-bad-details', shortname: '-fbd', desc: 'Removes any detail and shipment records with a bad header.', action: filterDetailsWithBadHeaders, reqOptions: ['id'] },
+  { name: '--filter-bad-shipments', shortname: '-fbs', desc: 'Removes any shipment records with a bad detail record.', action: filterShipmentsWithBadDetails, reqOptions: ['id'] },
+  { name: '--complete', shortname: '-C', desc: 'Toggles an integration ID to completed.', action: toggleSuccessfulIntegration, reqOptions: ['id'] },
+  { name: '--send-to-api', shortname: '-S', desc: 'Toggles an integration ID from DataProcessing to DataSentToTipweb.', action: toggleToSending, reqOptions: ['id'] },
+  { name: '--post-processing', shortname: '-PP', desc: 'Toggles an integration ID to DataPostProcessing.', action: toggleToPostProcessing, reqOptions: ['id'] },
   { name: '--toggle-products', shortname: '-tp', desc: 'Toggle products from not sent to sent to TIPWEBAPI.', action: toggleProducts },
   { name: '--toggle-vendors', shortname: '-tv', desc: 'Toggle vendors from not sent to sent to TIPWEBAPI', action: toggleVendors },
   { name: '--funding', shortname: '-f', desc: 'Map funding sources from flat data table to FundingSources.', action: fundingFunc },
-  { name: '--push-vendors', shortname: '-pv', desc: 'Push new vendor records via TIPWEBAPI.', action: upsertAllVendors, options:{ iVal: 0, lv: 800 }  },
-  { name: '--push-products', shortname: '-pp', desc: 'Push new product records via TIPWEBAPI.', action: upsertAllProducts, options: { iVal: 0, lv: 800 } },
-  { name: '--push-headers', shortname: '-ph', desc: 'Push new header records via TIPWEBAPI.', action: upsertAllHeaders, options: { iVal: 0, lv: 800 } },
-  { name: '--push-details', shortname: '-pd', desc: 'Push new detail records via TIPWEBAPI.', action: upsertAllDetails, options: { iVal: 0, lv: 800 } },
-  { name: '--push-shipments', shortname: '-ps', desc: 'Push new shipment records via TIPWEBAPI.', action: upsertAllShipments, options: { iVal: 0, lv: 800 } },
+  { name: '--push-vendors', shortname: '-pv', desc: 'Push new vendor records via TIPWEBAPI.', action: upsertAllVendors, reqOptions: ['id','iVal','lv']  },
+  { name: '--push-products', shortname: '-pp', desc: 'Push new product records via TIPWEBAPI.', action: upsertAllProducts, reqOptions: ['id','iVal','lv'] },
+  { name: '--push-headers', shortname: '-ph', desc: 'Push new header records via TIPWEBAPI.', action: upsertAllHeaders, reqOptions: ['id','iVal','lv'] },
+  { name: '--push-details', shortname: '-pd', desc: 'Push new detail records via TIPWEBAPI.', action: upsertAllDetails, reqOptions: ['id','iVal','lv'] },
+  { name: '--push-shipments', shortname: '-ps', desc: 'Push new shipment records via TIPWEBAPI.', action: upsertAllShipments, reqOptions: ['id','iVal','lv'] },
   { name: '--get-link-data', shortname: '-gld', desc: 'Get link table data for integration.', action: getLinkTableData },
   { name: '--custom-scripts', shortname: '-cust', desc: 'Runs a list of custom scripts on imported data.', action: runCustomScripts },
+  { name: '--invoices', shortname: '-in', desc: 'Map invoice headers from flat data table to Invoices.', action: invoiceHeaderFunc },
+  { name: '--invoice-details', shortname: '-ind', desc: 'Map invoice details records from flat data table to InvoiceDetails.', action: invoiceDetailsFunc },
+  { name: '--get-token', shortname: '-gta', desc: 'Get a token from the API', action: getApiToken },
+  { name: '--push-invoices', shortname: '-pinv', desc: 'Push new invoice records via TIPWEBAPI.', action: pushInvoiceHeaders, options:{ iVal: 0, lv: 800 }  },
+  { name: '--push-invoice-details', shortname: '-pind', desc: 'Push new invoice detail records via TIPWEBAPI.', action: pushInvoiceDetails, options:{ iVal: 0, lv: 800 }  },
+  { name: '--sending-id', shortname: '-sid', desc: 'Gets the first Integration ID that is sending to TIPWEBAPI', action: getProcessingIntegrationID }
 ]
 
-fire(action, subaction);
+const args = [
+  { name: '--filename', shortname: '-f', desc: 'Generic filename attribute.', objectKey: 'filename'},
+  { name: '--useid', shortname: '-ids', desc: 'Generic element to handle use of ID field', objectKey: 'useIDs' },
+  { name: '--iVal', shortname: '-i', desc: 'Value for i in recursive functions.', objectKey: 'iVal'},
+  { name: '--lengthValue', shortname: '-lv', desc: 'Value for chunk length in recursive functions.', objectKey: 'lv'},
+  { name: '--identifier', shortname: '-id', desc: 'Value for application execution unique identifier.', objectKey: 'id'}
+]
 
+let theArgs = processArgs(process.argv.slice(3,process.argv.length));
+
+fire(process.argv[2], theArgs);
+
+function processArgs(argsv) {
+  
+  let subaction = {};
+  let argVal;
+  
+  for (let arg of argsv) {
+    let argid = argsv.indexOf(arg);
+    if (argid % 2 === 0) {
+      argVal = args.filter(fil => { return fil.name === arg || fil.shortname === arg});
+      if (argVal) {
+        subaction[argVal[0].objectKey] = argsv[argid + 1];
+      }
+      else {
+        console.error(chalk.red('Error in' + arg +'No such option'));
+      }
+    }
+    
+  }
+
+  return subaction;
+}
 /**
  * Entry point function.
  * @param {*} action argument 1 from command line
@@ -59,10 +91,9 @@ fire(action, subaction);
  */
 function fire(action, subaction) {
   let a001 = activities.filter(fil => { return fil.name === action || fil.shortname === action; });
-  //console.log(a001);
   if (a001 && a001.length === 1) {
     let cb = a001[0].action;
-    let options = a001[0].options;
+    let options = subaction;
     let spinner = new Spinner('',['.','..','...','....'] );
     spinner.start();
     cb(options).then(
@@ -106,53 +137,26 @@ function getConfiguration() {
   process.exit(0);
 }
 
-/**
- * Container function for all data mapping from flat purchase order data to database.
- * @param {*} options 
- */
-function mapFlat(options) {
+function toggleChunkedData(options) {
   return new Promise(
     (res, rej) => {
-      if (!options.filename) {
-        console.log('A valid file to process must be provided.')
+
+      if (!options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot continue.'))
         rej();
       }
-  
-      let opts = { fileName: options.filename };
-      mapFlatDataToDatabase(opts).then(
+
+      repository.toggleChunk(options.id).then(
         resolve => {
-          console.log('Task Complete: Map purchase order data from JSON to Database table.');
           res();
         },
         reject => {
-          console.error(chalk.red('Task Error: ' + reject));
           rej();
         }
-      );
-    }
-  )
-}
-
-function toggleChunkedData() {
-  return new Promise(
-    (res, rej) => {
-      repository.getProcessingIntegrationID().then(
-        resolve => {
-          let intgid = resolve;
-          repository.toggleChunk(intgid).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej();
-            }
-          )
-        },
-        reject => {
-          rej();
-        }
-      )
-    }
+      );},
+      reject => {
+        rej();
+      }
   );
 }
 
@@ -162,7 +166,6 @@ function productsFunc() {
     (res,rej) => {
       repository.runProcIntegrations_StageProductData({ client: configuration.config.client }).then(
         resolve => {
-          console.log(resolve);
           res(resolve);
         },
         reject => {
@@ -180,25 +183,20 @@ function productsFunc() {
 function headersFunc(options) {
   return new Promise(
     (res,rej) => {
-      repository.getProcessingIntegrationID().then(
+      if (!options && !options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot proceed.'));
+        rej();
+      }   
+      stagePurchaseOrderHeaders({ integrationID: options.id }).then(
         resolve => {
-          let intgid = resolve;
-          stagePurchaseOrderHeaders({ integrationID: intgid }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej(reject);
-            }
-          );
+          res();
         },
         reject => {
-          console.error(chalk.red(reject));
-          rej();
+          rej(reject);
         }
       );
     }
-  )  
+  );  
 }
 
 /**
@@ -208,71 +206,65 @@ function headersFunc(options) {
 function detailsFunc(options) {
   return new Promise(
     (res,rej) => {
-      repository.getProcessingIntegrationID().then(
-        resolve => {
-          let intgid = resolve;
-          stagePurchaseOrderDetails({ integrationID: intgid }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej(reject);
-            }
-          );
-        },
-        reject => {
-          console.error(reject);
-        }
-      );
-    }
-  )
-}
 
-function shippingFunc(options) {
-  return new Promise(
-    (res,rej) => {
-      repository.getProcessingIntegrationID().then(
+      if (!options && !options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot proceed.'));
+        rej();
+      }
+
+      stagePurchaseOrderDetails({ integrationID: options.id }).then(
         resolve => {
-  
-          if (!resolve) {
-            rej();
-          }
-  
-          let intgid = resolve;
-          stageShippingRecords({ integrationID: intgid }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej(reject);
-            }
-          );
+          res();
         },
         reject => {
           rej(reject);
         }
       );
-    }
-  )
+    });
 }
+
+// function shippingFunc(options) {
+//   return new Promise(
+//     (res,rej) => {
+//       repository.getProcessingIntegrationID().then(
+//         resolve => {
+  
+//           if (!resolve) {
+//             rej();
+//           }
+  
+//           let intgid = resolve;
+//           stageShippingRecords({ integrationID: intgid }).then(
+//             resolve => {
+//               res();
+//             },
+//             reject => {
+//               rej(reject);
+//             }
+//           );
+//         },
+//         reject => {
+//           rej(reject);
+//         }
+//       );
+//     }
+//   )
+// }
 
 function fundingFunc(options) {
   return new Promise(
     (res,rej) => {
-      repository.getProcessingIntegrationID().then(
+
+      if(!options && !options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot proceed.'));
+        rej();
+      }
+      stageFundingSources({ integrationID: options.id }).then(
         resolve => {
-          let intgid = resolve;
-          stageFundingSources({ integrationID: intgid }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej(reject);
-            }
-          );
+          res();
         },
         reject => {
-          console.error(reject);
+          rej(reject);
         }
       );
     }
@@ -808,7 +800,7 @@ function stageFundingSources(options) {
                   );
         }
       );
-});
+  });
 }
 
 /**
@@ -820,89 +812,69 @@ function stageNewVendors(options) {
   return new Promise(
     (res,rej) => {
 
-      var integid;
-      var useVendorIDs = options ? options.useIDs : false;
+      if (!options && !options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot proceed.'));
+        rej();
+      }
 
-      repository.getProcessingIntegrationID().then(
+      let dataid = options.id;
+      let useVendorIDs = options ? options.useIDs : false;
+
+      repository.getCurrentVendors(useVendorIDs).then(
         resolve => {
-          integid = resolve;
-          repository.getCurrentVendors(useVendorIDs).then(
+          let currentVendors = resolve === [] ? resolve : resolve.map(m => { return m.dataValues; }); //need to change once we have uploaded data
+          repository.getNewVendors(dataid,currentVendors,useVendorIDs).then(
             resolve => {
-              let currentVendors = resolve === [] ? resolve : resolve.map(m => { return m.dataValues; }); //need to change once we have uploaded data
-              repository.getNewVendors(integid,currentVendors,useVendorIDs).then(
+              let flatVendors = resolve.map(m => { return m.dataValues; });
+
+              if (flatVendors && flatVendors.length === 0) {
+                console.log('No new vendors to add!');
+                res();
+              }
+
+              let vendorsToAdd = [];
+              for (let v of flatVendors) {
+                let x = { VendorID: v.VENDOR_ID, VendorName: v.VENDOR_NAME, Client: configuration.config.client };
+                vendorsToAdd.push(x);
+              }
+              console.log('Adding ' + vendorsToAdd.length + ' new vendors to staging table.')
+
+              repository.insertVendors(vendorsToAdd).then(
                 resolve => {
-                  let flatVendors = resolve.map(m => { return m.dataValues; });
-
-                  if (flatVendors && flatVendors.length === 0) {
-                    console.log('No new vendors to add!');
-                    res();
-                  }
-
-                  let vendorsToAdd = [];
-                  for (let v of flatVendors) {
-                    let x = { VendorID: v.VENDOR_ID, VendorName: v.VENDOR_NAME, Client: configuration.config.client };
-                    vendorsToAdd.push(x);
-                  }
-                  console.log('Adding ' + vendorsToAdd.length + ' new vendors to staging table.')
-
-                  repository.insertVendors(vendorsToAdd).then(
-                    resolve => {
-                      res();
-                    },
-                    reject => {
-                      var errorObject = {
-                      ErrorNumber: 500,
-                      ErrorName: 'Insert New Vendors',
-                      ErrorDescription: 'Insert of new vendors failed. More information is available in the ErrorObject.',
-                      ErrorObject: reject.toString(),
-                      DataIntegrationsID: integid
-                    };
-
-                    console.error(errorObject);
-
-                  repository.logError(errorObject).then(
-                    resolve => {
-                      rej();
-                    },
-                    reject => {
-                      rej();
-                    }
-                  );
-                    }
-                  )
+                  res();
                 },
                 reject => {
                   var errorObject = {
-                      ErrorNumber: 500,
-                      ErrorName: 'Get New Vendors',
-                      ErrorDescription: 'Select on new vendors failed. More information is available in the ErrorObject.',
-                      ErrorObject: reject.toString(),
-                      DataIntegrationsID: integid
-                    }
+                  ErrorNumber: 500,
+                  ErrorName: 'Insert New Vendors',
+                  ErrorDescription: 'Insert of new vendors failed. More information is available in the ErrorObject.',
+                  ErrorObject: reject.toString(),
+                  DataIntegrationsID: integid
+                };
 
-                    console.error(errorObject);
+                console.error(errorObject);
 
-                  repository.logError(errorObject).then(
-                    resolve => {
-                      rej();
-                    },
-                    reject => {
-                      rej();
-                    }
-                  );
+              repository.logError(errorObject).then(
+                resolve => {
+                  rej();
+                },
+                reject => {
+                  rej();
+                }
+              );
                 }
               )
             },
             reject => {
               var errorObject = {
-                      ErrorNumber: 500,
-                      ErrorName: 'Get Current Vendors',
-                      ErrorDescription: 'Select on current vendors failed. More information is available in the ErrorObject.',
-                      ErrorObject: reject.toString(),
-                      DataIntegrationsID: integid
-                    }
+                  ErrorNumber: 500,
+                  ErrorName: 'Get New Vendors',
+                  ErrorDescription: 'Select on new vendors failed. More information is available in the ErrorObject.',
+                  ErrorObject: reject.toString(),
+                  DataIntegrationsID: integid
+                }
 
-                    console.error(errorObject);
+                console.error(errorObject);
 
               repository.logError(errorObject).then(
                 resolve => {
@@ -913,18 +885,18 @@ function stageNewVendors(options) {
                 }
               );
             }
-          );
+          )
         },
         reject => {
           var errorObject = {
-                      ErrorNumber: 500,
-                      ErrorName: 'Get Current Integration ID',
-                      ErrorDescription: 'Application was not able to get the current integration ID. More information is available in the ErrorObject.',
-                      ErrorObject: reject.toString(),
-                      DataIntegrationsID: integid
-                    }
+                  ErrorNumber: 500,
+                  ErrorName: 'Get Current Vendors',
+                  ErrorDescription: 'Select on current vendors failed. More information is available in the ErrorObject.',
+                  ErrorObject: reject.toString(),
+                  DataIntegrationsID: integid
+                }
 
-                    console.error(errorObject);
+                console.error(errorObject);
 
           repository.logError(errorObject).then(
             resolve => {
@@ -936,7 +908,7 @@ function stageNewVendors(options) {
           );
         }
       );
-    });
+  });
 }
 
 /**
@@ -948,7 +920,7 @@ function createIntegration(options) {
 
   return new Promise( 
     (res,rej) =>  {
-      repository.insertIntegration({ client: configuration.config.client, description: configuration.config.typeDesc }).then(
+      repository.insertIntegration({ client: configuration.config.client, description: configuration.config.typeDesc, id: options.id, integrationType: configuration.config.mapType }).then(
         resolve => {
           res(resolve);
         },
@@ -975,151 +947,34 @@ function createIntegration(options) {
     });
 }
 
-/**
- * Maps data in file to Integration DB PurchaseOrderIntegrationFlatData
- * @param {*} options 
- */
-function mapFlatDataToDatabase(options) {
-  return new Promise (
-    (res,rej) => {
-      var intgid;
-      var mappingsData;
-      var fileToProcess;
-      var mappedData = [];
-
-      if (!options && !options.fileName) {
-        console.log('No file provided to process...');
-        process.exit(0);
-      }
-
-      fileToProcess = options.fileName;
-
-      repository.getProcessingIntegrationID().then(
-        resolve => {
-          intgid = resolve;
-          filetasks.getDataFile(fileToProcess).then(
-            resolve => {
-              let fileData;
-              if (!resolve.length) {
-                fileData = [];
-                fileData.push(JSON.parse(resolve));
-              }
-              else {
-                fileData = JSON.parse(resolve);
-              }
-              
-              repository.getMappings({ type: configuration.config.mapType, client: configuration.config.client }).then(
-                resolve => {
-                  mappingsData = resolve.map( m => { return m.dataValues; });
-                  console.log('Processing ' + fileData.length + ' records...');
-                  for (let line of fileData) {
-                    let linVal = JSON.parse(line);
-                    let mapData = mappingsData.map(m => { return JSON.parse(m.MappingsObject);});
-                    let m = mappings.mapIt(linVal,mapData);
-                    m["IntegrationsID"] = intgid;
-                    mappedData.push(m);
-                  }
-                  console.log('Successfully mapped ' + mappedData.length +' records...');
-                  console.log('Inserting data...');
-                  let trackerList;
-                  for (let item of mappedData) {
-                    repository.insertFlatData(item).then(
-                      resolve => {
-                        //console.log('Successfully added ' + JSON.stringify(item));
-                        if (!trackerList && mappedData.indexOf(item)===mappedData.length - 1) {
-                          res();
-                        }
-                      },
-                      reject => {
-                        trackerList = mappedData.indexOf(item);
-                        var errorObject = {
-                          ErrorNumber: item.PO_NUMBER,
-                          ErrorName: 'Bad Record',
-                          ErrorDescription: 'Data for this purchase order could not be parsed correctly. This usually indicates a data integrity issue. See error for more information.',
-                          ErrorObject: JSON.stringify({ errorData: item, error: reject.toString()}),
-                          DataIntegrationsID: intgid
-                        }
-                        repository.logError(errorObject).then(
-                          resolve => {
-                          },
-                          reject => {
-                          }
-                        ).then(
-                          resolve => {
-                            if (mappedData.indexOf(item) === trackerList) {
-                              res();
-                            }
-                          },
-                          reject => {
-                            res();
-                          }
-                        );
-                      }
-                    ); 
-                  }
-                },
-                reject => {
-
-                  var errorObject = {
-                    ErrorNumber: 500,
-                    ErrorName: 'Get Purchases Map',
-                    ErrorDescription: 'Application was not able to get the purchases mapping data from the database. More information is available in the ErrorObject.',
-                    ErrorObject: reject.toString(),
-                    DataIntegrationsID: intgid
-                  }
-
-                  repository.logError(errorObject).then(
-                    resolve => {
-                      rej();
-                    },
-                    reject => {
-                      rej();
-                    }
-                  );
-                }
-              );
-
-            },
-            reject => {
-              var errorObject = {
-                    ErrorNumber: 500,
-                    ErrorName: 'Get Purchases Map',
-                    ErrorDescription: 'Application was not able to get the purchases mapping data from the database. More information is available in the ErrorObject.',
-                    ErrorObject: JSON.stringify(reject),
-                    DataIntegrationsID: intgid
-                  }
-
-                  repository.logError(errorObject).then(
-                    resolve => {
-                      rej();
-                    },
-                    reject => {
-                      rej();
-                    }
-                  );
-            }
-          )
-            },
-        reject => {
-          console.log(reject);
-          rej();
-        }
-      ); 
-});
-}
-
 /**Gets API token for TIPWEBAPI */
 function getApiToken() {
-  rq.getToken().then(
-    resolve => {
-      console.log(resolve);
-      process.exit(0);
-    },
-    reject => {
-      console.error(reject);
-      process.exit(0);
-    }
-  );
+  return new Promise(
+    (res, rej) => {
+      rq.getToken().then(
+        resolve => {
+          console.log(resolve);
+          fs.writeFile(configuration.config.idFileLoc + 'token.json', JSON.stringify(resolve),
+            (err) => { 
+              if (err) { 
+                rej(err);
+                process.exit(0); 
+              }
+              
+              else {
+                res();
+                process.exit(0);
+              }
+            } 
+          )
+          
+        },
+        reject => {
+          console.error(reject);
+          process.exit(0);
+        }
+      );}
+    );
 }
 
 /**Upserts vendors via TIPWEBAPI */
@@ -1137,7 +992,7 @@ function upsertVendors(options) {
                   console.log(rejectedRecords.length + ' records were rejected.');
                   if (rejectedRecords.length > 0) {
                     for (let rec of rejectedRecords) {
-                      recerr = {
+                      let recerr = {
                         ErrorNumber: rec.badVendor.vendorID,
                         ErrorName: 'Vendor Rejected',
                         ErrorDescription: 'All purchase orders must be sourced from an accepted vendor in TipWEB-IT. A vendor record was rejected while attempting to add to application. The error has more information.',
@@ -1212,8 +1067,12 @@ function upsertProducts(options) {
           repository.getProductsToUpsert({ client: options.client, limitVal: options.limitVal, offset: options.offset }).then(
             resolve => {
               let dataToUpload = resolve.map( m => { return m.dataValues; });
+              for (let p of dataToUpload) {
+                p.ProductNumber = 'INTG' + p.ProductNumber;
+              }
               rq.upsertProducts(options.token,dataToUpload).then(
                 resolve => {
+                  console.log(resolve);
                   let rejectedRecords = JSON.parse(resolve);
                   console.log('Successfully processed ' + dataToUpload.length + ' records.');
                   console.log(rejectedRecords.length + ' records were rejected.');
@@ -1462,35 +1321,30 @@ function getProductsFromTipweb() {
 function upsertAllProducts(options) {
   return new Promise(
     (res,rej) => {
+
+      if (!options && !options.id) {
+        rej('No GUID provided. Process cannot proceed.');
+      }
+
+      if (!options && !options.iVal && !options.lv) {
+        rej('Pushing to API requires offset and limit values.');
+      }
+
       let client = configuration.config.client;
-      repository.getDataSendingToApiIntegrationID(client).then(
+      let intgid = options.id;
+      let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
+      
+      repository.getTotalProductsToUpsertCount({ client: client }).then(
         resolve => {
-          let intgid = resolve;
-          repository.getTotalProductsToUpsertCount({ client: client }).then(
-            resolve => {
-              console.log(resolve);
-              let total = resolve;
-              rq.getToken().then(
-                resolve => {
-                  console.log(resolve);          
-                  let lv = options.lv;
-                  let i = options.iVal;
-                  let tokenVal = resolve.token;
-                  upsertProductsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                  rej(reject);
-                }
-              )        
-            },
-            reject => {
-              rej(reject);
-            }
-          );
-        },
-      reject => {
-        rej(reject);
-      });
+          let total = resolve;         
+          let lv = parseInt(options.lv);
+          let i = parseInt(options.iVal);
+          upsertProductsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+          },
+          reject => {
+            rej(reject);
+          }        
+      );
     }
   );
 }
@@ -1501,35 +1355,29 @@ function upsertAllProducts(options) {
 function upsertAllVendors(options) {
   return new Promise(
     (res,rej) => {
+
+      if (!options && !options.id) {
+        rej('No GUID provided. Process cannot proceed.');
+      }
+
+      if (!options && !options.iVal && !options.lv) {
+        rej('Pushing to API requires offset and limit values.');
+      }
+
       let client = configuration.config.client;
-      repository.getDataSendingToApiIntegrationID(client).then(
+      let intgid = options.id;
+      let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
+      repository.getTotalVendorsToUpsertCount({ client: client }).then(
         resolve => {
-          let intgid = resolve;
-          repository.getTotalVendorsToUpsertCount({ client: client }).then(
-            resolve => {
-              console.log(resolve);
-              let total = resolve;
-              rq.getToken().then(
-                resolve => {
-                  console.log(resolve);          
-                  let lv = options.lv;
-                  let i = options.iVal;
-                  let tokenVal = resolve.token;
-                  upsertVendorsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                  rej(reject);
-                }
-              )        
-            },
-            reject => {
-              rej(reject);
-            }
-          );
-      },
-      reject => {
-        rej(reject);
-      });
+          let total = resolve;        
+          let lv = parseInt(options.lv);
+          let i = parseInt(options.iVal);
+          upsertVendorsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });       
+        },
+        reject => {
+          rej(reject);
+        }
+      );
     }
   );
 }
@@ -1540,37 +1388,31 @@ function upsertAllVendors(options) {
 function upsertAllHeaders(options) {
   return new Promise(
     (res,rej) => {
+      if (!options && !options.id) {
+        rej('No GUID provided. Process cannot proceed.');
+      }
+
+      if (!options && !options.iVal && !options.lv) {
+        rej('Pushing to API requires offset and limit values.');
+      }
+
       let client = configuration.config.client;
-      repository.getDataSendingToApiIntegrationID(client).then(
+      let intgid = options.id;
+      let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
+      repository.getTotalHeadersToUpsertCount({ id: intgid, client: client }).then(
         resolve => {
-          let intgid = resolve;
-          repository.getTotalHeadersToUpsertCount({ client: client }).then(
-            resolve => {
-              console.log(resolve);
-              let total = resolve;
-              rq.getToken().then(
-                resolve => {
-                  console.log(resolve);          
-                  let lv = options.lv;
-                  let i = options.iVal;
-                  let tokenVal = resolve.token;
-                  upsertHeadersRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                  rej(reject);
-                }
-              )        
-            },
-            reject => {
-              rej(reject);
-            }
-          );
+          console.log(resolve);
+          let total = resolve;         
+          let lv = parseInt(options.lv);
+          let i = parseInt(options.iVal);
+          upsertHeadersRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+        },
+        reject => {
+          rej(reject);
         }
       );
-    },
-  reject => {
-    rej(reject);
-  });
+    }
+  );
 }
 
 /**
@@ -1579,77 +1421,60 @@ function upsertAllHeaders(options) {
 function upsertAllDetails(options) {
   return new Promise(
     (res,rej) => {
+      if (!options && !options.id) {
+        rej('No GUID provided. Process cannot proceed.');
+      }
+
+      if (!options && !options.iVal && !options.lv) {
+        rej('Pushing to API requires offset and limit values.');
+      }
+
       let client = configuration.config.client;
-      repository.getDataSendingToApiIntegrationID(client).then(
-        resolve => {
-          let intgid = resolve;
-      repository.getTotalDetailsToUpsertCount({ client: client }).then(
+      let intgid = options.id;
+      let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
+      repository.getTotalDetailsToUpsertCount({ id:intgid, client: client }).then(
         resolve => {
           console.log(resolve);
-          let total = resolve;
-          rq.getToken().then(
-            resolve => {
-              console.log(resolve);          
-              let lv = options.lv;
-              let i = options.iVal;
-              let tokenVal = resolve.token;
-              upsertDetailsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid : intgid }, () => { res('Done'); });
-            },
-            reject => {
-              console.error(reject);
-              rej();
-            }
-          )        
+          let total = resolve;          
+          let lv = parseInt(options.lv);
+          let i = parseInt(options.iVal);
+          upsertDetailsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid : intgid }, () => { res('Done'); });
         },
         reject => {
           console.error(reject);
           rej();
         }
       );
-
-      
-    },
-    reject => {
-      rej();
-    });
-});
+  });
 }
 
 function upsertAllShipments(options) {
   return new Promise(
     (res,rej) => {
-      let client = configuration.config.client;
-      repository.getDataSendingToApiIntegrationID(client).then(
-        resolve => {
-          let intgid = resolve;
-          repository.getTotalShipmentsToUpsertCount({ client: client }).then(
-            resolve => {
-              console.log(resolve);
-              let total = resolve;
-              rq.getToken().then(
-                resolve => {
-                  console.log(resolve);          
-                  let lv = options.lv;
-                  let i = options.iVal;
-                  let tokenVal = resolve.token;
-                  upsertShipmentsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                  console.error(reject);
-                  rej();
-                }
-              )        
-            },
-            reject => {
-              console.error(reject);
-              rej();
-            }
-          );
+      if (!options && !options.id) {
+        rej('No GUID provided. Process cannot proceed.');
+      }
 
+      if (!options && !options.iVal && !options.lv) {
+        rej('Pushing to API requires offset and limit values.');
+      }
+
+      let client = configuration.config.client;
+      let intgid = options.id;
+      let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
+      repository.getTotalShipmentsToUpsertCount({ id: intgid, client: client }).then(
+        resolve => {
+          console.log(resolve);
+          let total = resolve;         
+          let lv = parseInt(options.lv);
+          let i = parseInt(options.iVal);
+          upsertShipmentsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
         },
-      reject => {
-        rej();
-      });
+        reject => {
+          console.error(reject);
+          rej();
+        }
+      );
     }
   );
 }
@@ -1819,13 +1644,10 @@ function upsertShipmentsRecursive(options, callback) {
  * Upsert Header records via TIPWEBAPI
  */
 function upsertHeaderRecords(options) {
-
-  console.log('In upsert headers')
-
   return new Promise(
     
       (res, rej) => {
-        repository.getHeadersToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
+        repository.getHeadersToUpsert({ intgid: options.intgid, client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
           resolve => {
             let dataToUpload = resolve.map( m => { return m.dataValues; });
             for (let value of dataToUpload) {
@@ -1837,31 +1659,54 @@ function upsertHeaderRecords(options) {
                 let rejectedRecords = resolve;
                 console.log('Successfully processed ' + dataToUpload.length + ' records.');
                 console.log(rejectedRecords.length + ' records were rejected.');
-                if (rejectedRecords.length > 0) {
-                  for (let rec of rejectedRecords) {
-                    let recerr = {
-                      ErrorNumber: rec.badPurchaseOrderHeader.orderNumber,
-                      ErrorName: 'Purchase Rejected',
-                      ErrorDescription: 'A purchase order consists of 3 parts; "header" which contains the shell information; "detail" which contains individual items on a purchase order; and "shipment" to an initial site. An invalid header record was submitted. See errors for reason it was rejected.',
-                      ErrorObject: JSON.stringify(rec),
+                let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badPurchaseOrderHeader.orderNumber; });
+                let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber } );
+                let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
+                repository.updateSubmittedValues({ target: 'PurchaseOrderHeader', ins: submittedVals, id: options.intgid }).then(
+                  resolve => {
+                    if (rejectedRecords.length > 0) {
+                      for (let rec of rejectedRecords) {
+                        let recerr = {
+                          ErrorNumber: rec.badPurchaseOrderHeader.orderNumber,
+                          ErrorName: 'Purchase Rejected',
+                          ErrorDescription: 'A purchase order consists of 3 parts; "header" which contains the shell information; "detail" which contains individual items on a purchase order; and "shipment" to an initial site. An invalid header record was submitted. See errors for reason it was rejected.',
+                          ErrorObject: JSON.stringify(rec),
+                          DataIntegrationsID: options.intgid
+                        }
+                        repository.logError(recerr).then(
+                          resolve => {
+                            if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                              res();
+                            }
+                          },
+                          reject => {
+                            if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                              rej(reject);
+                            }
+                          }
+                        );
+                      }
+                    }
+                  },
+                  reject => {
+                    var errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Toggle',
+                      ErrorDescription: 'Application was not able to toggle headers submitted to TipWEB-IT API. More information is available in the ErrorObject.',
+                      ErrorObject: JSON.stringify(reject),
                       DataIntegrationsID: options.intgid
                     }
-                    repository.logError(recerr).then(
+              
+                    repository.logError(errorObject).then(
                       resolve => {
-                        console.log('Success');
-                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                          res();
-                        }
+                        rej();
                       },
                       reject => {
-                        console.error(reject);
-                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                          rej(reject);
-                        }
+                        rej();
                       }
                     );
                   }
-                }
+                )
               },
               reject => {
                 var errorObject = {
@@ -1892,7 +1737,7 @@ function upsertHeaderRecords(options) {
 function upsertDetailRecords(options) {
   return new Promise(
     (res, rej) => {
-      repository.getDetailsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
+      repository.getDetailsToUpsert({ intgid: options.intgid, client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
         resolve => {
           let dataToUpload = resolve.map( m => { return m.dataValues; });
           rq.upsertDetails(options.token, dataToUpload).then(
@@ -1901,35 +1746,58 @@ function upsertDetailRecords(options) {
               let rejectedRecords = JSON.parse(resolve);
               console.log('Successfully processed ' + dataToUpload.length + ' records.');
               console.log(rejectedRecords.length + ' records were rejected.');
-              if (rejectedRecords.length > 0) {
-                for (let rec of rejectedRecords) {
-                  let recerr = {
-                    ErrorNumber: rec.badPurchaseOrderDetail.orderNumber,
-                    ErrorName: 'Detail Record Rejected',
-                    ErrorDescription: 'A purchase order consists of 3 parts; "header" which contains the shell information; "detail" which contains individual items on a purchase order; and "shipment" to an initial site. An invalid detail record was submitted. See errors for reason it was rejected.',
-                    ErrorObject: JSON.stringify(rec),
-                    DataIntegrationsID: options.intgid
+              let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badPurchaseOrderDetail.orderNumber; });
+              let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber } );
+              let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
+              repository.updateSubmittedValues({ target: 'PurchaseOrderDetail', ins: submittedVals, id: options.intgid }).then(
+                resolve => { 
+                  if (rejectedRecords.length > 0) {
+                    for (let rec of rejectedRecords) {
+                      let recerr = {
+                        ErrorNumber: rec.badPurchaseOrderDetail.orderNumber,
+                        ErrorName: 'Detail Record Rejected',
+                        ErrorDescription: 'A purchase order consists of 3 parts; "header" which contains the shell information; "detail" which contains individual items on a purchase order; and "shipment" to an initial site. An invalid detail record was submitted. See errors for reason it was rejected.',
+                        ErrorObject: JSON.stringify(rec),
+                        DataIntegrationsID: options.intgid
+                      }
+                      repository.logError(recerr).then(
+                        resolve => {
+                          console.log('Success');
+                          if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                            res();
+                          }
+                        },
+                      reject => {
+                        console.error(reject);
+                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                          res();
+                        }
+                      }
+                    );
                   }
-                  repository.logError(recerr).then(
-                    resolve => {
-                      console.log('Success');
-                      if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                        res();
-                      }
-                    },
-                    reject => {
-                      console.error(reject);
-                      if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                        res();
-                      }
-                    }
-                  );
                 }
-              }
               else {
                 res();
               }
             },
+            reject => {
+              var errorObject = {
+                ErrorNumber: 500,
+                ErrorName: 'Process Details',
+                ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
+                ErrorObject: reject.toString(),
+              }
+        
+              repository.logError(errorObject).then(
+                resolve => {
+                  rej();
+                },
+                reject => {
+                  rej();
+                }
+              );
+            });
+          },
             reject => {
 
               console.log(reject);
@@ -1976,7 +1844,7 @@ function upsertDetailRecords(options) {
 function upsertShipmentRecords(options) {
   return new Promise(
     (res, rej) => {
-      repository.getShipmentsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
+      repository.getShipmentsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset, id: options.intgid }).then(
         resolve => {
           let dataToUpload = resolve.map( m => { return m.dataValues; });
           rq.upsertShipments(options.token, dataToUpload).then(
@@ -1985,7 +1853,12 @@ function upsertShipmentRecords(options) {
               let rejectedRecords = JSON.parse(resolve);
               console.log('Successfully processed ' + dataToUpload.length + ' records.');
               console.log(rejectedRecords.length + ' records were rejected.');
-              if (rejectedRecords.length > 0) {
+              let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badShipment.orderNumber; });
+              let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber } );
+              let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
+              repository.updateSubmittedValues2({ target: 'Shipments', ins: submittedVals, id: options.intgid }).then(
+                resolve => { 
+                  if (rejectedRecords.length > 0) {
                 for (let rec of rejectedRecords) {
                   let recerr = {
                     ErrorNumber: rec.badShipment.orderNumber,
@@ -2012,7 +1885,11 @@ function upsertShipmentRecords(options) {
               }
               else {
                 res();
-              }
+              }},
+              reject => {
+
+              });
+              //to here
             },
             reject => {
 
@@ -2174,39 +2051,21 @@ function upsertProductRecords(options) {
 function filterOldRecords(options) {
   return new Promise(
     (res, rej) => {
-      repository.getProcessingIntegrationID().then(
+      if (!options && !options.id) {
+        console.error(chalk.red('No GUID provided. Task cannot proceed.'));
+        rej();
+      }
+      repository.runProcIntegrations_RemoveUnnecessaryRecords(options.id, { headers: configuration.dataConfig.procRemove.headers, details:configuration.dataConfig.procRemove.details, shipping: configuration.dataConfig.procRemove.shipping, inventory: configuration.dataConfig.procRemove.inventory, charges: configuration.dataConfig.procRemove.charges, payments: configuration.dataConfig.procRemove.payments }).then(
         resolve => {
-          let intgid = resolve;
-          repository.runProcIntegrations_RemoveUnnecessaryRecords(intgid, { headers: configuration.dataConfig.procRemove.headers, details:configuration.dataConfig.procRemove.details, shipping: configuration.dataConfig.procRemove.shipping, inventory: configuration.dataConfig.procRemove.inventory, charges: configuration.dataConfig.procRemove.charges, payments: configuration.dataConfig.procRemove.payments }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              var errorObject = {
-                ErrorNumber: 500,
-                ErrorName: 'Filter',
-                ErrorDescription: 'Application was not able to filter the unnecessary records from the export to TIPWEBAPI. More information is available in the ErrorObject.',
-                ErrorObject: reject.toString(),
-                DataIntegrationsID: itgid
-              }
-        
-              repository.logError(errorObject).then(
-                resolve => {
-                  rej();
-                },
-                reject => {
-                  rej();
-                }
-              );
-            }
-          )
+          res();
         },
         reject => {
           var errorObject = {
             ErrorNumber: 500,
-            ErrorName: 'Get Processing ID',
-            ErrorDescription: 'Application was not able to get the currently processing IntegrationsID. More information is available in the ErrorObject.',
-            ErrorObject: JSON.stringify(reject)
+            ErrorName: 'Filter',
+            ErrorDescription: 'Application was not able to filter the unnecessary records from the export to TIPWEBAPI. More information is available in the ErrorObject.',
+            ErrorObject: reject.toString(),
+            DataIntegrationsID: options.id
           }
     
           repository.logError(errorObject).then(
@@ -2218,7 +2077,7 @@ function filterOldRecords(options) {
             }
           );
         }
-      );
+      )
   });
 }
 
@@ -2276,44 +2135,24 @@ function filterShipmentsWithBadDetails(options) {
 function filterDetailsWithBadHeaders(options) {
   return new Promise(
     (res,rej) => {
-      repository.getDataSendingToApiIntegrationID(configuration.config.client).then(
+
+      if(!options && !options.id) {
+        console.error('No GUID provided. Task cannot proceed.');
+        rej();
+      }
+
+      repository.runProcIntegrations_FlagDetailsAndShipmentsFromBadHeaderRecords(options.id).then(
         resolve => {
-          let intgid = resolve;
-          repository.runProcIntegrations_FlagDetailsAndShipmentsFromBadHeaderRecords(intgid).then(
-            resolve => {
-              console.log("Removed detail and shipment records from manifest to send to API.")
-              process.exit(0);
-            },
-            reject => {
-              var errorObject = {
-                ErrorNumber: 500,
-                ErrorName: 'Proc Remove Details',
-                ErrorDescription: 'Application was not able to execute stored procedure to remove detail and shipment records from bad purchase order header records. More information is available in the ErrorObject.',
-                ErrorObject: reject.toString(),
-                DataIntegrationsID: intgid
-              }
-        
-              repository.logError(errorObject).then(
-                resolve => {
-                  console.log("Success... closing...");
-                  process.exit(0);
-                  return;
-                },
-                reject => {
-                  console.log('Error logging error.');
-                  process.exit(0);
-                  return;
-                }
-              );
-            }
-          )
+          console.log("Removed detail and shipment records from manifest to send to API.")
+          process.exit(0);
         },
         reject => {
           var errorObject = {
             ErrorNumber: 500,
-            ErrorName: 'Get Integration ID',
-            ErrorDescription: 'Application was not able to get Integration ID currently sending to TIPWEBAPI. More information is available in the ErrorObject.',
-            ErrorObject: reject.toString()
+            ErrorName: 'Proc Remove Details',
+            ErrorDescription: 'Application was not able to execute stored procedure to remove detail and shipment records from bad purchase order header records. More information is available in the ErrorObject.',
+            ErrorObject: reject.toString(),
+            DataIntegrationsID: intgid
           }
     
           repository.logError(errorObject).then(
@@ -2329,65 +2168,24 @@ function filterDetailsWithBadHeaders(options) {
             }
           );
         }
-      );
-  });
-}
-
-function filterOldInserts(options) {
-  return new Promise(
-    (res, rej) => {
-      repository.getProcessingIntegrationID().then(
-        resolve => {
-          let intgid = resolve;
-          repository.runProcIntegrations_RemoveExistingInserts(intgid, { headers: configuration.dataConfig.procRemove.headers, details:configuration.dataConfig.procRemove.details, shipping: configuration.dataConfig.procRemove.shipping, inventory: configuration.dataConfig.procRemove.inventory, charges: configuration.dataConfig.procRemove.charges, payments: configuration.dataConfig.procRemove.payments }).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              var errorObject = {
-                ErrorNumber: 500,
-                ErrorName: 'Filter',
-                ErrorDescription: 'Application was not able to filter the unnecessary records from the export to TIPWEBAPI. More information is available in the ErrorObject.',
-                ErrorObject: reject.toString(),
-                DataIntegrationsID: intgid
-              }
-        
-              repository.logError(errorObject).then(
-                resolve => {
-                  rej();
-                },
-                reject => {
-                  rej();
-                }
-              );
-            }
-          )
-        },
-        reject => {
-          var errorObject = {
-            ErrorNumber: 500,
-            ErrorName: 'Get Processing ID',
-            ErrorDescription: 'Application was not able to get the currently processing IntegrationsID. More information is available in the ErrorObject.',
-            ErrorObject: JSON.stringify(reject)
-          }
-    
-          repository.logError(errorObject).then(
-            resolve => {
-              rej();
-            },
-            reject => {
-              rej();
-            }
-          );
-        }
-      );
+      )
     });
 }
 
-function toggleFromProcessingToSending(options) {
+/**
+ * Toggle DataSentToTipweb
+ * @param {*} options Must contain an id parameter.
+ *//** */
+function toggleToSending(options) {
   return new Promise(
     (res, rej) => {
-      repository.beginSendingToTipwebAPI(configuration.config.client).then(
+
+      if(!options && !options.id) {
+        console.error('No GUID provided. Task cannot proceed.');
+        rej();
+      }
+
+      repository.beginSendingToTipwebAPI(options.id).then(
         resolve => {
           console.log('No longer processing. Sending to TipWEB-IT now.');
           res();
@@ -2398,8 +2196,8 @@ function toggleFromProcessingToSending(options) {
 
           var errorObject = {
             ErrorNumber: 500,
-            ErrorName: 'Start Sending',
-            ErrorDescription: 'Application was not able to convert process to sending. More information is available in the ErrorObject.',
+            ErrorName: 'Toggle',
+            ErrorDescription: 'Application was not able to toggle DataSentToTipweb process. More information is available in the ErrorObject.',
             ErrorObject: reject.toString()
           }
     
@@ -2416,27 +2214,29 @@ function toggleFromProcessingToSending(options) {
   });
 }
 
-function toggleSuccessfulIntegration() {
-  return new Promise( 
-    (res,rej) => {
-      repository.getDataSendingToApiIntegrationID(configuration.config.client).then(
+function toggleToPostProcessing(options) {
+  return new Promise(
+    (res, rej) => {
+
+      if(!options && !options.id) {
+        console.error('No GUID provided. Task cannot proceed.');
+        rej();
+      }
+
+      repository.beginDataPostProcessing(options.id).then(
         resolve => {
-          let intgid = resolve;
-          repository.completeIntegrationProcessing(intgid).then(
-            resolve => {
-              res();
-            },
-            reject => {
-              rej();
-            }
-          );
+          console.log('Complete!');
+          res();
         },
         reject => {
+
+          console.log(reject);
+
           var errorObject = {
             ErrorNumber: 500,
-            ErrorName: 'Get Integration ID',
-            ErrorDescription: 'Application was not able to get the Integration ID that is currently sending data to TIPWEB-IT. More information is available in the ErrorObject.',
-            ErrorObject: JSON.stringify(reject),
+            ErrorName: 'Toggle',
+            ErrorDescription: 'Application was not able to toggle DataPostProcessing process. More information is available in the ErrorObject.',
+            ErrorObject: reject.toString()
           }
     
           repository.logError(errorObject).then(
@@ -2452,13 +2252,37 @@ function toggleSuccessfulIntegration() {
   });
 }
 
+/**
+ * Toggle Integration as successful.
+ * @param {*} options Must contain an id parameter.
+ */
+function toggleSuccessfulIntegration(options) {
+  return new Promise( 
+    (res,rej) => {
+
+      if(!options && !options.id) {
+        console.error(chalk.red('No GUID provided to complete!'));
+        rej();
+      }
+
+      repository.completeIntegrationProcessing(options.id).then(
+        resolve => {
+          res();
+        },
+        reject => {
+          rej();
+        }
+      );
+  });
+}
+
 function getLinkTableData(options) {
   return new Promise(
     (res, rej) => {
       //get list of link tables
       //run query for data
       //write to json file
-      let linkTypes = configuration.config.links
+      let linkTypes = configuration.config.links;
 
       for (let l of linkTypes) {
         repository.getLinkTableData({ client: configuration.config.client, type: l.type }).then(
@@ -2514,3 +2338,802 @@ function runCustomScripts(options) {
       }
       );
 }
+
+/*Invoice Integrations */
+
+function mapFlatInvoicesToDatabase(options) {
+  return new Promise(
+    (res, rej) => {
+      repository.getProcessingIntegrationID().then(
+        resolve => {
+          let intgid = resolve;
+          console.log(options.fileName);
+          filetasks.getDataFile(options.fileName).then(
+            resolve => {
+              let fileData;
+              if (!resolve.length) {
+                fileData = [];
+                fileData.push(JSON.parse(resolve));
+              }
+              else {
+                fileData = JSON.parse(resolve);
+              }
+          repository.getMappings({ type: configuration.config.mapType, client: configuration.config.client }).then(
+            resolve => {
+              let mappingsData = resolve.map( m => { return m.dataValues; });
+              let mappedData = [];
+              console.log('Processing ' + fileData.length + ' records...');
+              for (let line of fileData) {
+                let linVal = JSON.parse(line);
+                let mapData = mappingsData.map(m => { return JSON.parse(m.MappingsObject);});
+                let m = mappings.mapIt(linVal,mapData);
+                m["DataIntegrationsID"] = intgid;
+                mappedData.push(m);
+              }
+              console.log('Successfully mapped ' + mappedData.length +' records...');
+              console.log('Inserting data...');
+              let trackerList;
+              for (let item of mappedData) {
+                repository.insertFlatDataInvoices(item).then(
+                  resolve => {
+                    if (!trackerList && mappedData.indexOf(item)===mappedData.length - 1) {
+                      res();
+                    }
+                  },
+                  reject => {
+                    trackerList = mappedData.indexOf(item);
+                    let errorObject = {
+                      ErrorNumber: item.InvoiceNumber,
+                      ErrorName: 'Bad Record',
+                      ErrorDescription: 'Data for this invoicecould not be parsed correctly. This usually indicates a data integrity issue. See error for more information.',
+                      ErrorObject: JSON.stringify({ errorData: item, error: reject.toString()}),
+                      DataIntegrationsID: intgid
+                    }
+                    repository.logError(errorObject).then(
+                      resolve => {
+                      },
+                      reject => {
+                      }
+                    ).then(
+                      resolve => {
+                        if (mappedData.indexOf(item) === trackerList) {
+                          res();
+                        }
+                      },
+                      reject => {
+                        res();
+                      }
+                    );
+                  }
+                ); 
+              }
+            },
+            reject => {
+
+              var errorObject = {
+                ErrorNumber: 500,
+                ErrorName: 'Get Purchases Map',
+                ErrorDescription: 'Application was not able to get the purchases mapping data from the database. More information is available in the ErrorObject.',
+                ErrorObject: reject.toString(),
+                DataIntegrationsID: intgid
+              }
+
+              repository.logError(errorObject).then(
+                resolve => {
+                  rej();
+                },
+                reject => {
+                  rej();
+                }
+              );
+            }
+          );
+        },
+          reject => {
+            let errorObject = {
+              ErrorNumber: 500,
+              ErrorName: 'Get File Data',
+              ErrorDescription: 'Application was not able to get the data from file. More information is available in the ErrorObject.',
+              ErrorObject: reject,
+            }
+      
+            repository.logError(errorObject).then(
+              resolve => {
+                rej();
+              },
+              reject => {
+                rej();
+              }
+            );
+        });
+      },
+        reject => {
+          let errorObject = {
+            ErrorNumber: 500,
+            ErrorName: 'Get Integration ID',
+            ErrorDescription: 'Application was not able to get the Integration ID that is currently sending data to TIPWEB-IT. More information is available in the ErrorObject.',
+            ErrorObject: reject,
+          }
+    
+          repository.logError(errorObject).then(
+            resolve => {
+              rej();
+            },
+            reject => {
+              rej();
+            }
+          );
+        }
+      );
+    }
+  );
+}
+
+function stageInvoices(options) {
+  return new Promise(
+    (res, rej) => {
+      let integid = options.intgid;
+      let mappedData = [];
+
+      repository.getInvoiceHeaders(options).then(
+        resolve => {
+          console.log('Retrieved ' + resolve.length + ' invoice records to process.');
+          let headerData = resolve.map(m => { return m.dataValues; });
+          repository.getMappings({ type: 'invoice header', client: configuration.config.client }).then(
+            resolve => {
+              let stage = resolve.map(m => { return m.dataValues; });
+              let mappingValues = stage.map(m => { return JSON.parse(m.MappingsObject); });
+              for (let line of headerData) {
+                let m = mappings.mapIt(line, mappingValues);
+                m["DataIntegrationsID"] = integid;
+                mappedData.push(m);
+              }
+
+              repository.insertInvoiceHeaders(mappedData).then(
+                resolve => {
+                  console.log('Successfully inserted ' + mappedData.length + ' into Invoices table.');
+                  res();
+                },
+                reject => {
+                  let errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Invoice Headers',
+                      ErrorDescription: 'Inserting Invoice records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+                }
+              )
+            },
+            reject => {
+              let errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Get Invoice Mappings',
+                      ErrorDescription: 'Getting Invoice Mapping records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                    console.error(errorObject);
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+            }
+          );
+        },
+        reject => {
+          var errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Get Invoice',
+                      ErrorDescription: 'Getting Invoice records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                    console.error(errorObject);
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+        }
+      );
+  });
+}
+
+function stageInvoiceDetails(options) {
+  return new Promise(
+    (res, rej) => {
+      var integid = options.integrationID;
+      var mappedData = [];
+
+      repository.getInvoiceDetails({ intgid: integid }).then(
+        resolve => {
+          console.log('Retrieved ' + resolve.length + ' invoice records to process.');
+          let headerData = resolve.map(m => { return m.dataValues; });
+          repository.getMappings({ type: 'invoice detail', client: configuration.config.client }).then(
+            resolve => {
+              let stage = resolve.map(m => { return m.dataValues; });
+              let mappingValues = stage.map(m => { return JSON.parse(m.MappingsObject); });
+              console.log(mappingValues);
+              for (let line of headerData) {
+                let m = mappings.mapIt(line, mappingValues);
+                m["DataIntegrationsID"] = integid;
+                mappedData.push(m);
+              }
+
+              repository.insertInvoiceDetails(mappedData).then(
+                resolve => {
+                  console.log('Successfully inserted ' + mappedData.length + ' into InvoiceDetails table.');
+                  res();
+                },
+                reject => {
+                  let errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Invoice Details',
+                      ErrorDescription: 'Inserting Invoice Details records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+                }
+              )
+            },
+            reject => {
+              let errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Get Invoice Details Mappings',
+                      ErrorDescription: 'Getting Invoice Details Mapping records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                    console.error(errorObject);
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+            }
+          );
+        },
+        reject => {
+          var errorObject = {
+                      ErrorNumber: 500,
+                      ErrorName: 'Get Invoice Details',
+                      ErrorDescription: 'Getting Invoice Details records failed. More information is available in the ErrorObject.',
+                      ErrorObject: reject.toString(),
+                      DataIntegrationsID: integid
+                    };
+
+                    console.error(errorObject);
+
+                  repository.logError(errorObject).then(
+                    resolve => {
+                      rej();
+                    },
+                    reject => {
+                      rej();
+                    }
+                  );
+        }
+      );
+  });
+}
+
+function invoiceHeaderFunc(options) {
+  return new Promise(
+    (res,rej) => {
+      repository.getProcessingIntegrationID().then(
+        resolve => {
+          let intgid = resolve;
+          console.log(resolve);
+          stageInvoices({ intgid: intgid }).then(
+            resolve => {
+              res();
+            },
+            reject => {
+              rej(reject);
+            }
+          );
+        },
+        reject => {
+          console.error(chalk.red(reject));
+          rej();
+        }
+      );
+    }
+  ); 
+}
+
+function invoiceDetailsFunc(options) {
+  return new Promise(
+    (res,rej) => {
+      repository.getProcessingIntegrationID().then(
+        resolve => {
+          let intgid = resolve;
+          stageInvoiceDetails({ integrationID: intgid }).then(
+            resolve => {
+              res();
+            },
+            reject => {
+              rej(reject);
+            }
+          );
+        },
+        reject => {
+          console.error(chalk.red(reject));
+          rej();
+        }
+      );
+    }
+  ); 
+}
+
+function mapFlatInvoices(options) {
+  return new Promise(
+    (res, rej) => {
+      if (!options.filename) {
+        console.log('A valid file to process must be provided.')
+        rej();
+      }
+  
+      let opts = { fileName: options.filename };
+      mapFlatInvoicesToDatabase(opts).then(
+        resolve => {
+          console.log('Task Complete: Map purchase order data from JSON to Database table.');
+          res();
+        },
+        reject => {
+          console.error(chalk.red('Task Error: ' + reject));
+          rej();
+        }
+      );
+    }
+  );
+}
+
+function pushInvoiceHeaders(options) {
+  return new Promise(
+    (res,rej) => {
+      let client = configuration.config.client;
+      repository.getDataSendingToApiIntegrationID(client).then(
+        resolve => {
+          let intgid = resolve;
+          repository.getInvoiceHeadersTotalCount({ client: client }).then(
+            resolve => {
+              console.log(resolve);
+              let total = resolve;
+              rq.getToken().then(
+                resolve => {
+                  console.log(resolve);          
+                  let lv = options.lv;
+                  let i = options.iVal;
+                  let tokenVal = resolve.token;
+                  pushInvoiceHeadersRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                },
+                reject => {
+                  rej(reject);
+                }
+              )        
+            },
+            reject => {
+              rej(reject);
+            }
+          );
+        }
+      );
+    },
+  reject => {
+    rej(reject);
+  });
+}
+
+function pushInvoiceHeadersRecursive(options, callback) {
+  let i = options.offset;
+  console.log(options);
+  pushInvoiceHeadersToApi(options).then(
+    resolve => {
+      i += options.limitVal;
+      if (i < options.total) {
+        console.log(options);
+        pushInvoiceHeadersRecursive({client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid}, callback);
+      }
+      else {
+        callback();
+      }
+    },
+    reject => {
+      i += options.limitVal;
+      console.log(reject);
+      if (i < options.total) {
+        console.log(options);
+        pushInvoiceHeadersRecursive({client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid}, callback);
+      }
+      else {
+        callback();
+      }
+    }
+  );
+}
+
+function pushInvoiceHeadersToApi(options) {
+  return new Promise(
+    
+      (res, rej) => {
+        repository.getInvoiceHeadersToAdd({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
+          resolve => {
+            let dataToUpload = resolve.map( m => { return m.dataValues; });
+            for (let value of dataToUpload) {
+              value.DataIntegration = undefined;
+            }
+            
+            rq.addInvoices(options.token, dataToUpload).then(
+              resolve => {
+                let rejectedRecords = JSON.parse(resolve);
+                console.log('Successfully processed ' + dataToUpload.length + ' records.');
+                console.log(rejectedRecords.length + ' records were rejected.');
+                if (rejectedRecords.length > 0) {
+                  for (let rec of rejectedRecords) {
+                    let recerr = {
+                      ErrorNumber: rec.badInvoice.orderNumber,
+                      ErrorName: 'Invoice Rejected',
+                      ErrorDescription: 'An invoice record was rejected.',
+                      ErrorObject: JSON.stringify(rec),
+                      DataIntegrationsID: options.intgid
+                    }
+                    repository.logError(recerr).then(
+                      resolve => {
+                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                          res();
+                        }
+                      },
+                      reject => {
+                        console.error(reject);
+                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                          rej(reject);
+                        }
+                      }
+                    );
+                  }
+                }
+              },
+              reject => {
+                var errorObject = {
+                  ErrorNumber: 500,
+                  ErrorName: 'Get Invoices to Process',
+                  ErrorDescription: 'Application was not able to get invoice values to add via TipWEB-IT API. More information is available in the ErrorObject.',
+                  ErrorObject: JSON.stringify(reject),
+                }
+          
+                repository.logError(errorObject).then(
+                  resolve => {
+                    rej();
+                  },
+                  reject => {
+                    rej();
+                  }
+                );
+              }
+            )
+          },
+          reject => {
+            rej();
+          }
+        )}
+      );
+}
+
+function pushInvoiceDetails(options) {
+  return new Promise(
+    (res,rej) => {
+      let client = configuration.config.client;
+      repository.getDataSendingToApiIntegrationID(client).then(
+        resolve => {
+          let intgid = resolve;
+          repository.getInvoiceDetailsTotalCount({ client: client }).then(
+            resolve => {
+              console.log(resolve);
+              let total = resolve;
+              rq.getToken().then(
+                resolve => {
+                  console.log(resolve);          
+                  let lv = options.lv;
+                  let i = options.iVal;
+                  let tokenVal = resolve.token;
+                  pushInvoiceDetailsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                },
+                reject => {
+                  rej(reject);
+                }
+              )        
+            },
+            reject => {
+              rej(reject);
+            }
+          );
+        }
+      );
+    },
+  reject => {
+    rej(reject);
+  });
+}
+
+function pushInvoiceDetailsRecursive(options, callback) {
+  let i = options.offset;
+  console.log(options);
+  pushInvoiceDetailsToApi(options).then(
+    resolve => {
+      i += options.limitVal;
+      if (i < options.total) {
+        console.log(options);
+        pushInvoiceDetailsRecursive({client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid}, callback);
+      }
+      else {
+        callback();
+      }
+    },
+    reject => {
+      i += options.limitVal;
+      console.log(reject);
+      if (i < options.total) {
+        console.log(options);
+        pushInvoiceDetailsRecursive({client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid}, callback);
+      }
+      else {
+        callback();
+      }
+    }
+  );
+}
+
+function pushInvoiceDetailsToApi(options) {
+  return new Promise(
+    
+      (res, rej) => {
+        repository.getInvoiceDetailsToAdd({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
+          resolve => {
+            let dataToUpload = resolve.map( m => { return m.dataValues; });
+            for (let value of dataToUpload) {
+              value.DataIntegration = undefined;
+            }
+            
+            rq.addInvoiceDetails(options.token, dataToUpload).then(
+              resolve => {
+                let rejectedRecords = JSON.parse(resolve);
+                console.log('Successfully processed ' + dataToUpload.length + ' records.');
+                console.log(rejectedRecords.length + ' records were rejected.');
+                if (rejectedRecords.length > 0) {
+                  for (let rec of rejectedRecords) {
+                    let recerr = {
+                      ErrorNumber: rec.badInvoiceDetail.orderNumber,
+                      ErrorName: 'Invoice Detail Rejected',
+                      ErrorDescription: 'An invoice detail record was rejected.',
+                      ErrorObject: JSON.stringify(rec),
+                      DataIntegrationsID: options.intgid
+                    }
+                    repository.logError(recerr).then(
+                      resolve => {
+                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                          res();
+                        }
+                      },
+                      reject => {
+                        console.error(reject);
+                        if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+                          rej(reject);
+                        }
+                      }
+                    );
+                  }
+                }
+              },
+              reject => {
+                var errorObject = {
+                  ErrorNumber: 500,
+                  ErrorName: 'Get Invoice Details to Process',
+                  ErrorDescription: 'Application was not able to get invoice detail values to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
+                  ErrorObject: JSON.stringify(reject),
+                }
+          
+                repository.logError(errorObject).then(
+                  resolve => {
+                    rej();
+                  },
+                  reject => {
+                    rej();
+                  }
+                );
+              }
+            )
+          },
+          reject => {
+            rej();
+          }
+        )}
+      );
+}
+
+/**Final Application Methods */
+
+/**General */
+
+function getProcessingIntegrationID() {
+  return new Promise(
+    (res, rej) => {
+      let client = configuration.config.client;
+      let type = configuration.config.mapType;
+      repository.getDataSendingToApiIntegrationID(client, type).then(
+        resolve => {
+          console.log(resolve);
+          let intgid = resolve;
+          fs.writeFile(configuration.config.idFileLoc+'intgid.txt',intgid.toString(),(err)=> { res(err); });
+        },
+        reject => {
+          console.error(chalk.red('Error! Did not get integration ID value.'));
+          rej()
+        }
+      );
+    }
+  );
+
+}
+
+/**
+ * Follows the below steps to map JSON data to a specified DB table.
+ * Step 1: Get file
+ * Step 2: Get mapping data
+ * Step 3: Map data
+ * Step 4: Call proper method to insert data into database
+ */
+function mapFromFile(options) {
+
+  return new Promise(
+    (res, rej) => {
+      if(!options || !options.filename) {
+        console.error(chalk.red('No file provided.'));
+        rej('Task Error');
+      }
+      else if (!options || !options.id) {
+        console.error(chalk.red('No GUID provided. Process cannot continue.'));
+        rej('Task Error');
+      }
+      else {
+        let dataid = options.id;
+        let filename = options.filename;
+        let mapType = configuration.config.mapType;
+        let mapClient = configuration.config.client;
+        let mappedData = [];
+
+        filetasks.getDataFile(filename).then(
+          resolve => {
+            let filedata = JSON.parse(resolve);
+            console.log('Processing ' + filedata.length + ' records...');
+            repository.getMappings({ client: mapClient, type: mapType }).then(
+              resolve => {
+                let theMaps = resolve.map(m => { return m.dataValues; });
+                for (let line of filedata) {
+                  let mapData = theMaps.map(m => { return JSON.parse(m.MappingsObject);});
+                  let m = mappings.mapIt(JSON.parse(line), mapData);
+                  m["IntegrationsID"] = dataid;
+                  mappedData.push(m);
+                }
+                console.log('Successfully mapped ' + mappedData.length +' records...');
+                let trackerList;
+                let tableInfo = configuration.dataConfig.flatDataTable;
+                for (let item of mappedData) {
+                  repository.insertFlatData(item, { target: tableInfo }).then(
+                    resolve => {
+                      //console.log('Successfully added ' + JSON.stringify(item));
+                      if (!trackerList && mappedData.indexOf(item)===mappedData.length - 1) {
+                        res();
+                      }
+                    },
+                    reject => {
+                      trackerList = mappedData.indexOf(item);
+                      var errorObject = {
+                        ErrorNumber: item.PO_NUMBER,
+                        ErrorName: 'Bad Record',
+                        ErrorDescription: 'Data for this record violated one or multiple data constraints. See error for more information.',
+                        ErrorObject: JSON.stringify({ errorData: item, error: reject.toString()}),
+                        DataIntegrationsID: dataid
+                      }
+                      repository.logError(errorObject).then(
+                        resolve => {
+                        },
+                        reject => {
+                        }
+                      ).then(
+                        resolve => {
+                          if (mappedData.indexOf(item) === trackerList) {
+                            res();
+                          }
+                        },
+                        reject => {
+                          res();
+                        }
+                      );
+                    }
+                  ); 
+                }
+              },
+              reject => {
+                let errorObject = {
+                  ErrorNumber: 500,
+                  ErrorName: 'Get Map Error',
+                  ErrorDescription: 'Application was not able to retrieve data field mappings from database. More information is available in the ErrorObject.',
+                  ErrorObject: reject.toString(),
+                  DataIntegrationsID: dataid
+                }
+    
+                repository.logError(errorObject).then(
+                  resolve => {
+                    rej();
+                  },
+                  reject => {
+                    rej();
+                  }
+                );
+              }
+            )
+          },
+          reject => {
+            let errorObject = {
+              ErrorNumber: 500,
+              ErrorName: 'File Error',
+              ErrorDescription: 'Application was not able to parse data from a file: ' + filename + '. More information is available in the ErrorObject.',
+              ErrorObject: reject.toString(),
+              DataIntegrationsID: dataid
+            }
+
+            repository.logError(errorObject).then(
+              resolve => {
+                rej();
+              },
+              reject => {
+                rej();
+              }
+            );
+          }
+        )
+      }
+
+    }
+  );
+}
+
+/**Purchase Orders */
+
+/**Invoices */

@@ -1,17 +1,19 @@
 module.exports = {
     config: {
-        "apiUrl":"https://www.tipwebintegrationtest.com/TIPWEBAPI/api",
-        "dbConnectionString":"Server=chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com;Database=TipWebHostedStagingChicaog_ETL;User ID=Tipweb;Password=Bookmaster;",
+        //"apiUrl":"https://assets.cps.edu/TIPWEBAPI/api",
+        //"apiUrl":"https://www.tipwebintegrationtest.com/TIPWEBAPI/api",
+        //"apiUrl":"http://localhost:55556/TIPWEB_API/api",
+        "apiUrl":"http://www.tipwebittraining.com/TIPWEBAPI5/api",
         "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
-        "database":"TipWebHostedStagingChicago_ETL",
-        "username":"Tipweb",
+        "database":"IntgAppData",
+        "username":"sa",
         "dbType":"mssql",
-        "sourceFile":"/home/",
         "sourceType":"csv",
         "mapType":"purchases",
-        "client":"Chicago Test",
-        "typeDesc":"Purchase Order Integration for Chicago Public Schools sourced from Oracle Purchasing",
-        "linksFolder":"/home/ec2-user/etc/model/linktables/",
+        "client":"CPS",
+        "idFileLoc":"/home/ec2-user/",
+        "typeDesc":"Invoice Detail Integration for Chicago Public Schools sourced from Oracle Purchasing",
+        "linksFolder":"/home/ec2-user/etc/CPS/linktables/",
         "links": [
             { "type":"Sites", "filename":"sites.json" }
         ],
@@ -20,9 +22,9 @@ module.exports = {
         ]
     },
     secrets: {
-        "secretkey":"7a228e0d-1665-404d-904f-0d5934d804b8",
-        "passphrase":"05a23af3-b199-4b72-9ea6-a1b3f4a5726c",
-        "password":"Bookmaster"
+        "secretkey":"7cd7f145-7989-4866-bd54-f646fa3ef739",
+        "passphrase":"632b5da8-2608-4aee-93aa-d2c41be137a9",
+        "password":"gemcap3663"
     },
     apiConfig: {
         "login" : "/Login/AuthorizeAPI",
@@ -31,19 +33,22 @@ module.exports = {
         "getFundingSources": "/Integrations/FundingSources/GetFundingSources",
         "addVendor" : "/Integrations/Vendors/AddVendors",
         "addHeader": "/Integrations/PurchaseOrders/AddPurchaseOrderHeaders",
-        "addDetail": "/Integrations/PurchaseOrders/AddPurchaseOrderDetails?dept=0&fund=None",
+        "addDetail": "/Integrations/PurchaseOrders/AddPurchaseOrderDetails?dept=999&fund=None",
         "addShipment":"/Integrations/Shipments/AddShipmentsExcludeExisting",
-        "addProduct":"/Integrations/Products/UpsertProducts"
+        "addProduct":"/Integrations/Products/UpsertProducts",
+        "addInvoices":"/Integrations/Invoices/AddInvoices",
+        "addInvoiceDetails":"/Integrations/Invoices/AddInvoiceDetails"
     },
     dataConfig: {
         procRemove: {
             "headers": "1",
             "details": "1",
-            "shipping": "1",
+            "shipping": "0",
             "charges": "0",
             "payments":"0",
             "inventory": "0"
-        }
+        },
+        flatDataTable: "PurchaseOrderIntegrationFlatData" //"Shipments"
     }
 }
 // still need to add configurations for client data. I'm thinking each integration will have an object in this configuration file

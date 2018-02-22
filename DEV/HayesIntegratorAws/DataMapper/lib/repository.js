@@ -22,14 +22,16 @@ seq =  new sequelize(database,username,password, {
     });
 
 DataIntegrationsModel = { 
-    IntegrationsID: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true}, 
+    IntegrationsID: { type: sequelize.INTEGER, primaryKey: true }, 
     IntegrationsObject: sequelize.STRING,
     DateAdded: sequelize.DATE,
     DataProcessedSuccessfully: sequelize.BOOLEAN,
     DataProcessing: sequelize.BOOLEAN,
     DataSentToTipweb: sequelize.BOOLEAN,
     DataCleared: sequelize.BOOLEAN,
-    Client: sequelize.STRING
+    Client: sequelize.STRING,
+    IntegrationType: sequelize.STRING,
+    DataPostProcessing: sequelize.BOOLEAN
 };
 
 PurchaseOrderIntegrationFlatDataModel = {
@@ -51,7 +53,8 @@ PurchaseOrderIntegrationFlatDataModel = {
     SHIPPEDTOSITE: sequelize.STRING,
     QUANTITYSHIPPED: sequelize.INTEGER,
     IntegrationsID: {type: sequelize.INTEGER, unique: 'cindex' },
-    Chunk: sequelize.BOOLEAN
+    Chunk: sequelize.BOOLEAN,
+    CFDA: sequelize.STRING
 };
 
 DataIntegrationsErrorsModel = {
@@ -104,7 +107,8 @@ PurchaseOrderDetailModel = {
     AccountCode: sequelize.STRING(100),
     DepartmentID: sequelize.INTEGER,
     DataIntegrationsID: { type: sequelize.INTEGER , unique:'ccidx' },
-    ShouldSubmit: sequelize.BOOLEAN
+    ShouldSubmit: sequelize.BOOLEAN,
+    CFDA: sequelize.STRING
 };
 
 ShipmentsModel = {
@@ -118,7 +122,7 @@ ShipmentsModel = {
     Status: sequelize.STRING,
     InvoiceNumber: sequelize.STRING,
     InvoiceDate: sequelize.STRING,
-    DataIntegrationsID: { type: sequelize.INTEGER , unique:'cccidx' },
+    IntegrationsID: { type: sequelize.INTEGER , unique:'cccidx' },
     ShouldSubmit: sequelize.BOOLEAN
 }
 
@@ -170,6 +174,46 @@ LinkTableModel = {
     LinkType: sequelize.STRING
 }
 
+InvoiceDetailsIntegrationFlatDataModel = {
+    OrderNumber: { type: sequelize.STRING, primaryKey: true },
+    InvoiceNumber: { type: sequelize.STRING, primaryKey: true },
+    InvoiceDate: sequelize.STRING,
+    InvoiceStatus: sequelize.STRING,
+    AuthorizationStatus: sequelize.STRING,
+    LineNumber: sequelize.STRING,
+    LineDescription: sequelize.STRING,
+    AssetPrice: sequelize.STRING,
+    InvoicePrice: sequelize.STRING,
+    Quantity: sequelize.STRING,
+    LineAmount: sequelize.STRING,
+    DataIntegrationsID: { type: sequelize.INTEGER, primaryKey: true },
+    Chunk: sequelize.BOOLEAN
+}
+
+InvoicesModel = {
+    OrderNumber: { type: sequelize.STRING, primaryKey: true },
+    InvoiceNumber: { type: sequelize.STRING, primaryKey: true },
+    InvoiceDate: sequelize.STRING,
+    InvoiceStatus: sequelize.STRING,
+    AuthorizationStatus: sequelize.STRING,
+    ShouldSubmit: sequelize.BOOLEAN,
+    DataIntegrationsID: { type: sequelize.INTEGER, primaryKey: true },
+    LastModifiedDate: sequelize.STRING
+}
+
+InvoiceDetailsModel = {
+    OrderNumber: { type: sequelize.STRING, primaryKey: true },
+    InvoiceNumber: { type: sequelize.STRING, primaryKey: true },
+    LineNumber: { type: sequelize.STRING, primaryKey: true },
+    LineDescription: sequelize.STRING,
+    AssetPrice: sequelize.STRING,
+    InvoicePrice: sequelize.STRING,
+    Quantity: sequelize.STRING,
+    LineAmount: sequelize.STRING,
+    ShouldSubmit: sequelize.BOOLEAN,
+    DataIntegrationsID: { type: sequelize.INTEGER, primaryKey: true }
+}
+
 module.exports = {
 
     DataIntegrations: seq.define('DataIntegrations', DataIntegrationsModel),
@@ -184,6 +228,9 @@ module.exports = {
     PurchaseOrderDetail: seq.define('PurchaseOrderDetail', PurchaseOrderDetailModel, {tableName: 'PurchaseOrderDetail'}),
     Shipments: seq.define('Shipments', ShipmentsModel),
     DataIntegrationsLinkTable: seq.define('DataIntegrationsLinkTable', LinkTableModel, {tableName: 'DataIntegrationsLinkTable'} ),
+    Invoices: seq.define('Invoices', InvoicesModel),
+    InvoiceDetails: seq.define('InvoiceDetails', InvoiceDetailsModel),
+    InvoiceDetailsIntegrationFlatData: seq.define('InvoiceDetailsIntegrationFlatData', InvoiceDetailsIntegrationFlatDataModel),
 
     /**
      * Gets map objects from database of the type specified.
@@ -225,7 +272,9 @@ module.exports = {
                 this.DataIntegrations.create({
                     IntegrationsObject: JSON.stringify(payload),
                     Client: payload.client,
-                    DataProcessing: true
+                    DataProcessing: true,
+                    IntegrationType: payload.integrationType,
+                    IntegrationsID: payload.id
                 }).then(
                     () => {
                         this.DataIntegrations.max('IntegrationsID').then(
@@ -243,26 +292,45 @@ module.exports = {
         );
     },
 
-    beginSendingToTipwebAPI(client) {
+    beginSendingToTipwebAPI(intgid) {
         return new Promise(
             (resolve,reject) => {
 
                 this.DataIntegrations.update({
-                    DataProcessing: false,
                     DataSentToTipweb: true
                 }, { 
-                    where: { DataProcessing: true, Client: client 
+                    where: { 
+                        IntegrationsID: intgid
                     } 
                 }).then(
-                    () => {
-                        this.DataIntegrations.max('IntegrationsID').then(
-                            data => {
-                                resolve(data);
-                            },
-                            error => {
-                                reject(error);
-                            }
-                        );
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+
+            }
+        );
+    },
+
+    beginDataPostProcessing(intgid) {
+        return new Promise(
+            (resolve,reject) => {
+
+                this.DataIntegrations.update({
+                    DataPostProcessing: true
+                }, { 
+                    where: { 
+                        IntegrationsID: intgid
+                    } 
+                }).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
                     }
                 );
 
@@ -273,7 +341,7 @@ module.exports = {
     completeIntegrationProcessing(intgid) {
         return new Promise(
             (resolve, reject) => {
-                this.DataIntegrations.update({DataProcessing: false, DataSentToTipweb: false, DataProcessedSuccessfully: true },
+                this.DataIntegrations.update({ DataProcessedSuccessfully: true },
                 { where: {IntegrationsID: intgid } }).then(
                     data => { resolve('Success')},
                     error => { reject(error); }
@@ -310,16 +378,17 @@ module.exports = {
         );
     },
 
-    getDataSendingToApiIntegrationID(client) {
+    getDataSendingToApiIntegrationID(client, mapType) {
         return new Promise(
             (resolve, reject) => {
                 this.DataIntegrations.findOne(
                     {
                         attributes: ['IntegrationsID'],
                         where: {
-                            DataProcessing: false,
                             DataSentToTipweb: true,
-                            Client: client
+                            DataProcessedSuccessfully: false,
+                            Client: client,
+                            IntegrationType: mapType
                         }
                     }
                 ).then(
@@ -341,16 +410,22 @@ module.exports = {
      * Inserts flat purchase order data into database.
      * @param {*} payload A valid map to the table columns the flat data table. Required columns are PO_NUMBER, LINE_NUMBER, IntegrationsID
      */
-    insertFlatData(payload) {
+    insertFlatData(payload, options) {
 
         return new Promise(
             (resolve, reject)=>{
 
                 if (!payload) {
+                    console.error(chalk.red('No data provided.'))
                     reject();
                 }
 
-                this.PurchaseOrderIntegrationFlatData.create(payload).then(
+                if (!options && !options.target) {
+                    console.error(chalk.red('No data target provided for flat client data.'));
+                    reject();
+                }
+
+                this[options.target].create(payload).then(
                     () => {
                         resolve('Success');
                     },
@@ -384,6 +459,46 @@ module.exports = {
                     }
                 )
         });
+    },
+
+    updateSubmittedValues(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this[options.target].update(
+                    {   
+                        Submitted: true
+                    },
+                    { where: { DataIntegrationsID: options.id, $in: options.ins  } }
+                ).then(
+                    data => {
+                        resolve();
+                    },
+                    error => {
+                        reject();
+                    }
+                )
+            }
+        );
+    },
+    
+    updateSubmittedValues2(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this[options.target].update(
+                    {   
+                        Submitted: true
+                    },
+                    { where: { IntegrationsID: options.id, $in: options.ins  } }
+                ).then(
+                    data => {
+                        resolve();
+                    },
+                    error => {
+                        reject();
+                    }
+                );
+            }
+        );
     },
 
     runProcIntegrations_StageProductData(options) {
@@ -428,32 +543,10 @@ module.exports = {
         );
     },
 
-    runProcIntegrations_RemoveExistingInserts(intgid, options) {
-        return new Promise(
-            (resolve, reject) => {
-
-                if (options) {
-                    let params = intgid + ','+ options.headers + ',' + options.details + ',' + options.shipping + ',' + options.inventory + ',' + options.charges + ',' + options.payments
-                    seq.query("EXEC Integrations_RemoveExistingInserts " + params).then(
-                        data => {
-                            resolve(data);
-                        },
-                        error => {
-                            reject(error);
-                        }
-                    );
-                }
-                else {
-                    reject('No parameters provided.');
-                }
-            }
-        )
-    },
-
     runProcIntegrations_FlagDetailsAndShipmentsFromBadHeaderRecords(intgid, options) {
         return new Promise(
             (resolve, reject) => {
-                seq.query("EXEC Integrations_FlagDetailsAndShipmentsFromBadHeaderRecords " + intgid).then(
+                seq.query("EXEC Integrations_FlagDetailsFromBadHeaderRecords " + intgid).then(
                     data => {
                         resolve(data);
                     },
@@ -975,10 +1068,11 @@ module.exports = {
                             model: this.DataIntegrations,
                             where: {
                                 Client: options.client,
+                                IntegrationsID: options.id,
                                 DataSentToTipweb: true
                             }
                         }],
-                        where: { ShouldSubmit: true },
+                        where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
                     }
                 ).then(
                     data => { resolve(data); },
@@ -1009,10 +1103,11 @@ module.exports = {
                                     model: this.DataIntegrations,
                                     where: {
                                         Client: options.client,
-                                        DataSentToTipweb: true
+                                        DataSentToTipweb: true,
+                                        IntegrationsID: options.id
                                     }
                                 }],
-                                where: { ShouldSubmit: true },
+                                where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
                             }
                         ).then(
                             data => { resolve(data); },
@@ -1071,8 +1166,7 @@ module.exports = {
                         include: [{
                             model: this.DataIntegrations,
                             where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
+                                IntegrationsID: options.intgid
                             }
                         }],
                         where: { ShouldSubmit: true },
@@ -1111,7 +1205,7 @@ module.exports = {
                             model: this.DataIntegrations,
                             where: {
                                 Client: options.client,
-                                DataSentToTipweb: true
+                                IntegrationsID: options.intgid
                             }
                         }],
                         where: { ShouldSubmit: true },
@@ -1165,13 +1259,13 @@ module.exports = {
         
         this.DataIntegrations.hasMany(this.Shipments, {
             foreignKey: {
-                name: 'DataIntegrationsID'
+                name: 'IntegrationsID'
             }
         });
 
         this.Shipments.belongsTo(this.DataIntegrations, {
             foreignKey: {
-                name: 'DataIntegrationsID'
+                name: 'IntegrationsID'
             }
         });
 
@@ -1182,10 +1276,11 @@ module.exports = {
                             model: this.DataIntegrations,
                             where: {
                                 Client: options.client,
-                                DataSentToTipweb: true
+                                DataSentToTipweb: true,
+                                IntegrationsID: options.id
                             }
                         }],
-                        where: { ShouldSubmit: true },
+                        where: { ShouldSubmit: true, IntegrationsID: options.id },
                     }
                 ).then(
                     data => { resolve(data); },
@@ -1198,13 +1293,13 @@ module.exports = {
     getShipmentsToUpsert(options) {
         this.DataIntegrations.hasMany(this.Shipments, {
             foreignKey: {
-                name: 'DataIntegrationsID'
+                name: 'IntegrationsID'
             }
         });
 
         this.Shipments.belongsTo(this.DataIntegrations, {
             foreignKey: {
-                name: 'DataIntegrationsID'
+                name: 'IntegrationsID'
             }
         });
 
@@ -1215,11 +1310,10 @@ module.exports = {
                         include: [{
                             model: this.DataIntegrations,
                             where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
+                                IntegrationsID: options.id
                             }
                         }],
-                        where: { ShouldSubmit: true },
+                        where: { ShouldSubmit: true, IntegrationsID: options.id },
                         offset: options.offsetVal,
                         limit: options.limitVal
                     }
@@ -1264,5 +1358,237 @@ module.exports = {
                 )
             }
         );
+    },
+
+    /*Invoices Data for CPS*/
+    insertFlatDataInvoices(payload) {
+        
+        return new Promise(
+            (resolve, reject) => {
+
+                if (!payload) {
+                    reject();
+                }
+
+                this.InvoiceDetailsIntegrationFlatData.create(payload).then(
+                    () => {
+                        resolve('Success');
+                    },
+                    err => {
+                        reject(err);
+                    }
+                )
+        });
+
+    },
+
+    getInvoiceHeaders(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this.InvoiceDetailsIntegrationFlatData.findAll(
+                    {
+                        attributes: ['OrderNumber', 'InvoiceNumber','InvoiceDate','InvoiceStatus','AuthorizationStatus'],
+                        where:{ DataIntegrationsID: options.intgid, Chunk: true },
+                        group: ['OrderNumber', 'InvoiceNumber','InvoiceDate','InvoiceStatus','AuthorizationStatus']
+                    }).then(
+                        data => {
+                            resolve(data);
+                        },
+                        err => {
+                            reject(err);
+                        }
+                );
+            }
+        );
+    },
+
+    insertInvoiceHeaders(payload) {
+        return new Promise(
+            (resolve, reject) => {
+                this.Invoices.bulkCreate(payload).then(
+                    data => {
+                        resolve();
+                    },
+                    err => {
+                        reject(err);
+                    }
+                );
+            }
+        );
+    },
+
+    getInvoiceDetails(options) {
+        return new Promise(
+            (resolve, reject) => {
+                this.InvoiceDetailsIntegrationFlatData.findAll(
+                    { where:{ DataIntegrationsID: options.intgid, Chunk: true } }).then(
+                        data => {
+                            resolve(data);
+                        },
+                        err => {
+                            reject(err);
+                        }
+                );
+            }
+        );
+    },
+
+    insertInvoiceDetails(payload) {
+        return new Promise(
+            (resolve, reject) => {
+                this.InvoiceDetails.bulkCreate(payload).then(
+                    data => {
+                        resolve();
+                    },
+                    err => {
+                        reject(err);
+                    }
+                );
+            }
+        );
+    },
+
+    getInvoiceHeadersToAdd(options) {
+        this.DataIntegrations.hasMany(this.Invoices, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.Invoices.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.Invoices.findAll({
+                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
+                        include: [{
+                            model: this.DataIntegrations,
+                            where: {
+                                Client: options.client,
+                                DataSentToTipweb: true
+                            }
+                        }],
+                        where: { ShouldSubmit: true },
+                        offset: options.offsetVal,
+                        limit: options.limitVal,
+                        order: ['OrderNumber']
+                        
+                    }
+                ).then(
+                    data => {resolve(data);},
+                    error => { reject(error); }
+                );
+            }
+        );
+    },
+
+    getInvoiceDetailsToAdd(options) {
+        this.DataIntegrations.hasMany(this.InvoiceDetails, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.InvoiceDetails.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.InvoiceDetails.findAll({
+                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
+                        include: [{
+                            model: this.DataIntegrations,
+                            where: {
+                                Client: options.client,
+                                DataSentToTipweb: true
+                            }
+                        }],
+                        where: { ShouldSubmit: true },
+                        offset: options.offsetVal,
+                        limit: options.limitVal,
+                        order: ['OrderNumber']
+                        
+                    }
+                ).then(
+                    data => {resolve(data);},
+                    error => { reject(error); }
+                );
+            }
+        );
+
+    },
+
+    getInvoiceHeadersTotalCount(options) {
+        this.DataIntegrations.hasMany(this.Invoices, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.Invoices.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.Invoices.count({
+                        include: [{
+                            model: this.DataIntegrations,
+                            where: {
+                                Client: options.client,
+                                DataSentToTipweb: true
+                            }
+                        }],
+                        where: { ShouldSubmit: true },
+                    }
+                ).then(
+                    data => { resolve(data); },
+                    error => { reject(error); }
+                );
+            }
+        );
+    },
+
+    getInvoiceDetailsTotalCount(options) {
+        this.DataIntegrations.hasMany(this.InvoiceDetails, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.InvoiceDetails.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.InvoiceDetails.count({
+                        include: [{
+                            model: this.DataIntegrations,
+                            where: {
+                                Client: options.client,
+                                DataSentToTipweb: true
+                            }
+                        }],
+                        where: { ShouldSubmit: true },
+                    }
+                ).then(
+                    data => { resolve(data); },
+                    error => { reject(error); }
+                );
+            }
+        );
     }
+
 }
