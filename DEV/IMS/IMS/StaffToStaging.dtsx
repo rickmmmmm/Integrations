@@ -12,11 +12,23 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="StaffToStaging"
   DTS:PackageType="5"
-  DTS:VersionBuild="138"
-  DTS:VersionGUID="{A79FF585-214D-4736-8680-FC63C2803E1B}">
+  DTS:VersionBuild="143"
+  DTS:VersionGUID="{D49A74B4-9109-4374-9DD7-5A56525365D4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[AeriesSSISImport]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{2E479B4D-C8AD-4AF0-BA68-1DBE4C4A32F8}"
+      DTS:ObjectName="AeriesSSISImport">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=AeriesSSISImport;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[AST Staff File]"
       DTS:CreationName="FLATFILE"
@@ -643,6 +655,15 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{262BDB06-D699-4967-A918-2061D4A81083}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="ExternalKey">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{50E75DFF-5989-4787-BE4C-715752858774}"
       DTS:IncludeInDebugDump="6789"
       DTS:Namespace="User"
@@ -787,6 +808,534 @@
   </DTS:Variables>
   <DTS:Executables>
     <DTS:Executable
+      DTS:refId="Package\Aeries File Check"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{2F82B2A5-784B-4412-807B-8EF120115190}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Aeries File Check"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{2E479B4D-C8AD-4AF0-BA68-1DBE4C4A32F8}"
+          SQLTask:SqlStatementSource="declare @CustomerID int, @cnt int&#xA;&#xA;set @CustomerID = ?&#xA;&#xA;&#xA;select @cnt = count(*)&#xA;--SELECT SchoolCode, StaffID1, FirstName, LastName&#xA;FROM AeriesTeacher  &#xA;WHERE CustomerID = 100 &#xA;AND StaffID1 NOT IN ('0','')&#xA;and ltrim(rtrim(InactiveStatusCode)) &lt;&gt; ''&#xA;&#xA;select @cnt as cnt"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="cnt"
+            SQLTask:DtsVariableName="User::StaffFileExists" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="@CustomerID"
+            SQLTask:DtsVariableName="User::ExternalKey"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="3"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Aeries Staff File"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{B3E05D72-72D1-4B12-A827-5F03C1F7BD41}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Aeries Staff File"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Aeries Staff File\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[_IMS_Staff]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Aeries Staff File\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[ClientTipWeb]"
+                  connectionManagerRefId="Package.ConnectionManagers[ClientTipWeb]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[FirstName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="FirstName"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FirstName]" />
+                    <inputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[LastName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="LastName"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastName]" />
+                    <inputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[StaffID1]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="StaffID1"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StaffID]"
+                      lineageId="Package\Aeries Staff File\20:invalid" />
+                    <inputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SchoolCode]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="SchoolCode"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[SchoolCode]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IMS_StaffID]"
+                      dataType="i4"
+                      name="IMS_StaffID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StaffID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="StaffID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CampusID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="FirstName" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="LastName" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MiddleName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="MiddleName" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StaffType]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="StaffType" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Location]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Location" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Department]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Department" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Phone]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Phone" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Email]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Email" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Address]"
+                      codePage="1252"
+                      dataType="str"
+                      length="500"
+                      name="Address" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Address2]"
+                      codePage="1252"
+                      dataType="str"
+                      length="500"
+                      name="Address2" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[City]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="City" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[State]"
+                      codePage="1252"
+                      dataType="str"
+                      length="2"
+                      name="State" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Zip]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="Zip" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Race]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Race" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Gender]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Gender" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Deactivate]"
+                      dataType="bool"
+                      name="Deactivate" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Import]"
+                      dataType="bool"
+                      name="Import" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[New]"
+                      dataType="bool"
+                      name="New" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RejectMessage]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1000"
+                      name="RejectMessage" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TeachersUID]"
+                      dataType="i4"
+                      name="TeachersUID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StaffTypeUID]"
+                      dataType="i4"
+                      name="StaffTypeUID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RoomUID]"
+                      dataType="i4"
+                      name="RoomUID" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StaffStatus]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="StaffStatus" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PrimarySite]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="PrimarySite" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Aeries Staff File\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Aeries Staff File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Aeries Staff File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Aeries Staff File\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">declare @CustomerID int
+
+set @CustomerID = ?
+
+SELECT distinct (case when ltrim(rtrim(isNull(SchoolCode, '0'))) = '0' then '999' else SchoolCode end) as SchoolCode, 
+ID, FirstName, LastName
+FROM AeriesStaff
+WHERE CustomerID =@CustomerID 
+AND ID NOT IN ('0','')
+and ltrim(rtrim(InactiveStatusCode)) &lt;&gt; ''</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping">"Parameter0:Input",{262BDB06-D699-4967-A918-2061D4A81083};</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Aeries Staff File\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[AeriesSSISImport]"
+                  connectionManagerRefId="Package.ConnectionManagers[AeriesSSISImport]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[SchoolCode]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SchoolCode]"
+                      length="50"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[SchoolCode]"
+                      name="SchoolCode"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[FirstName]"
+                      length="50"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FirstName]"
+                      name="FirstName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastName]"
+                      length="50"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastName]"
+                      name="LastName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ID]"
+                      length="150"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].Columns[ID]"
+                      name="ID"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SchoolCode]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="SchoolCode" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="FirstName" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="LastName" />
+                    <externalMetadataColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="ID" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SchoolCode]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SchoolCode]"
+                      name="SchoolCode" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ID]"
+                      name="ID" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[FirstName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[FirstName]"
+                      name="FirstName" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastName]"
+                      name="LastName" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Aeries Staff File.Paths[OLE DB Source Output]"
+              endId="Package\Aeries Staff File\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\Aeries Staff File\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
       DTS:refId="Package\Does File Exist"
       DTS:CreationName="Microsoft.ScriptTask"
       DTS:Description="Script Task"
@@ -805,14 +1354,35 @@
           ReadOnlyVariables="User::FullFileName"
           ReadWriteVariables="User::StaffFileExists">
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.resx"
             Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1182,35 +1752,14 @@ namespace ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4550,7 +5099,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:LocaleID="-1"
       DTS:ObjectName="Log End Data to Staging"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -4580,7 +5129,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:LocaleID="-1"
       DTS:ObjectName="Log File Exists"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -4616,7 +5165,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:LocaleID="-1"
       DTS:ObjectName="Log Missing Staff File"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="3">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -4651,7 +5200,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:ExecutableType="Microsoft.ScriptTask"
       DTS:LocaleID="-1"
       DTS:ObjectName="Set Exists for Staff Parent"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <ScriptProject
@@ -4914,14 +5463,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="ScriptMain.cs"
             Encoding="UTF8"><![CDATA[/*
@@ -5029,35 +5599,14 @@ namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5271,7 +5820,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{38041D3F-3E38-4040-964C-CEA24AEEE9C0}"
-          SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;select&#xA;CustomerName,&#xA;InitialCatalog,&#xA;SourceOrigin,&#xA;SFTPLocation,&#xA;StaffFile,&#xA;TextDelimiter,&#xA;TextQualifier,&#xA;ContainsHeader,&#xA;FileBased,&#xA;TeacherStatusUpdate,&#xA;TeacherPrimarySite&#xA;From CustomerList&#xA;where CustomersUID = @CustomerUID"
+          SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;select&#xA;CustomerName,&#xA;InitialCatalog,&#xA;SourceOrigin,&#xA;SFTPLocation,&#xA;StaffFile,&#xA;TextDelimiter,&#xA;TextQualifier,&#xA;ContainsHeader,&#xA;FileBased,&#xA;TeacherStatusUpdate,&#xA;TeacherPrimarySite,&#xA;ExternalKey&#xA;From CustomerList&#xA;where CustomersUID = @CustomerUID"
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="InitialCatalog"
@@ -5306,6 +5855,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <SQLTask:ResultBinding
             SQLTask:ResultName="TeacherPrimarySite"
             SQLTask:DtsVariableName="User::TeacherPrimarySite" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="ExternalKey"
+            SQLTask:DtsVariableName="User::ExternalKey" />
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="@CustomerUID"
             SQLTask:DtsVariableName="User::_CustomerUID"
@@ -5350,6 +5902,58 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:From="Package\Set Exists for Staff Parent"
       DTS:ObjectName="Constraint 11"
       DTS:To="Package\Import EZ1 Staff File Staff Status" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 12]"
+      DTS:CreationName=""
+      DTS:DTSID="{37F23891-5EDA-4801-9B8F-36F9FB089339}"
+      DTS:From="Package\Import EZ1 Staff File Staff Status"
+      DTS:ObjectName="Constraint 12"
+      DTS:To="Package\Log End Data to Staging" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 13]"
+      DTS:CreationName=""
+      DTS:DTSID="{46A7DCAE-EC23-49E4-A2B0-408EC279E19D}"
+      DTS:EvalOp="3"
+      DTS:Expression="!@[User::FileBased]"
+      DTS:From="Package\Log Begin Data to Staging"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 13"
+      DTS:To="Package\Aeries File Check" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 14]"
+      DTS:CreationName=""
+      DTS:DTSID="{532DE002-EBC4-4D47-BD10-5D9C0BFAFEA2}"
+      DTS:EvalOp="3"
+      DTS:Expression="@[User::StaffFileExists] &gt;0"
+      DTS:From="Package\Aeries File Check"
+      DTS:ObjectName="Constraint 14"
+      DTS:To="Package\Log File Exists" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 15]"
+      DTS:CreationName=""
+      DTS:DTSID="{57A7C2F0-47EB-476F-8283-F4B95BFE3982}"
+      DTS:EvalOp="3"
+      DTS:Expression="@[User::StaffFileExists] ==0"
+      DTS:From="Package\Aeries File Check"
+      DTS:ObjectName="Constraint 15"
+      DTS:To="Package\Log Missing Staff File" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 16]"
+      DTS:CreationName=""
+      DTS:DTSID="{5C659786-2ACA-4FC2-8E54-0E9219541C3F}"
+      DTS:EvalOp="3"
+      DTS:Expression="@SourceOrigin==&quot;AERIES&quot; &amp;&amp; @TeacherStatusUpdate==0 &amp;&amp; @[User::TeacherPrimarySite]==0"
+      DTS:From="Package\Set Exists for Staff Parent"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 16"
+      DTS:To="Package\Aeries Staff File" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 17]"
+      DTS:CreationName=""
+      DTS:DTSID="{8A85BAEA-871A-46B9-9EE5-D4393C773EED}"
+      DTS:From="Package\Aeries Staff File"
+      DTS:ObjectName="Constraint 17"
+      DTS:To="Package\Log End Data to Staging" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
       DTS:CreationName=""
@@ -5404,7 +6008,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:CreationName=""
       DTS:DTSID="{1633122A-0D9F-497C-8A57-636BE3397306}"
       DTS:EvalOp="3"
-      DTS:Expression="@FileBased=&quot;True&quot;"
+      DTS:Expression="@[User::FileBased]"
       DTS:From="Package\Log Begin Data to Staging"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 8"
@@ -5430,105 +6034,101 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="136,44"
           Id="Package\Does File Exist"
-          TopLeft="630.556603773585,42.6698113207547" />
+          TopLeft="498.556603773585,27.6698113207547" />
         <NodeLayout
           Size="136,44"
           Id="Package\Import AST Staff File"
-          TopLeft="915.5,212.820754716981" />
+          TopLeft="833.5,361.820754716981" />
         <NodeLayout
           Size="136,44"
           Id="Package\Import EZ1 Staff File"
-          TopLeft="5.5,190.933962264151" />
+          TopLeft="18.5,319.933962264151" />
         <NodeLayout
           Size="237,42"
           Id="Package\Import EZ1 Staff File Staff Status"
-          TopLeft="228,245" />
+          TopLeft="241,374" />
         <NodeLayout
           Size="136,44"
           Id="Package\Import UFA Staff File"
-          TopLeft="624.745283018868,272.254716981132" />
+          TopLeft="637.745283018868,401.254716981132" />
         <NodeLayout
           Size="136,59"
           Id="Package\Log Begin Data to Staging"
-          TopLeft="420.292452830189,11.1603773584906" />
+          TopLeft="266.292452830189,11.1603773584906" />
         <NodeLayout
-          Size="136,55"
+          Size="919,42"
           Id="Package\Log End Data to Staging"
-          TopLeft="750.330188679245,611.084905660377" />
+          TopLeft="151.330188679245,611.084905660377" />
         <NodeLayout
           Size="136,44"
           Id="Package\Log File Exists"
-          TopLeft="362.933962264151,113.896226415094" />
+          TopLeft="353.933962264151,203.896226415094" />
         <NodeLayout
           Size="136,44"
           Id="Package\Log Missing Staff File"
-          TopLeft="832.179245283019,45.688679245283" />
+          TopLeft="841.179245283019,91.688679245283" />
         <NodeLayout
           Size="136,54"
           Id="Package\Set Exists for Staff Parent"
-          TopLeft="555.122641509434,113.047169811321" />
+          TopLeft="570.122641509434,207.047169811321" />
         <NodeLayout
           Size="136,44"
           Id="Package\Staff Info"
-          TopLeft="241.537735849057,5.5" />
+          TopLeft="80.537735849057,13.5" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="766.330188679245,64.6320754716981">
+          TopLeft="634.556603773585,49.6698113207547">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="65.8490566037736,3.01886792452831"
+              StartConnector="{x:Null}"
+              EndConnector="206.622641509434,58.0188679245283"
               Start="0,0"
-              End="58.3490566037736,3.01886792452831">
+              End="199.122641509434,58.0188679245283">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="34.1132075471698,0" />
+                    End="115.623634558093,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="115.623634558093,0"
+                    Point2="119.623634558093,0"
+                    Point3="119.623634558093,4" />
                   <mssgle:LineSegment
-                    End="34.1132075471698,3.01886792452831" />
+                    End="119.623634558093,54.0188679245283" />
+                  <mssgle:CubicBezierSegment
+                    Point1="119.623634558093,54.0188679245283"
+                    Point2="119.623634558093,58.0188679245283"
+                    Point3="123.623634558093,58.0188679245283" />
                   <mssgle:LineSegment
-                    End="58.3490566037736,3.01886792452831" />
+                    End="199.122641509434,58.0188679245283" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="26.1132075471698,-26,16,16"
+              BoundingBox="111.623634558093,-22,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="377.537735849057,27.5">
+          TopLeft="216.537735849057,38.0801886792453">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="42.754716981132,13.1603773584906"
+              StartConnector="{x:Null}"
+              EndConnector="49.754716981132,0"
               Start="0,0"
-              End="35.254716981132,13.1603773584906">
+              End="42.254716981132,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="17.377358490566,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="17.377358490566,0"
-                    Point2="21.377358490566,0"
-                    Point3="21.377358490566,4" />
-                  <mssgle:LineSegment
-                    End="21.377358490566,9.16037735849056" />
-                  <mssgle:CubicBezierSegment
-                    Point1="21.377358490566,9.16037735849056"
-                    Point2="21.377358490566,13.1603773584906"
-                    Point3="25.377358490566,13.1603773584906" />
-                  <mssgle:LineSegment
-                    End="35.254716981132,13.1603773584906" />
+                    End="42.254716981132,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5539,30 +6139,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 10]"
-          TopLeft="692.745283018868,316.254716981132">
+          TopLeft="705.745283018868,445.254716981132">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="125.584905660377,294.830188679245"
+              StartConnector="{x:Null}"
+              EndConnector="-94.915094339623,165.830188679245"
               Start="0,0"
-              End="125.584905660377,287.330188679245">
+              End="-94.915094339623,158.330188679245">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,143.415094339623" />
+                    End="0,78.9150943396225" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,143.415094339623"
-                    Point2="0,147.415094339623"
-                    Point3="4,147.415094339623" />
+                    Point1="0,78.9150943396225"
+                    Point2="0,82.9150943396225"
+                    Point3="-4,82.9150943396225" />
                   <mssgle:LineSegment
-                    End="121.584905660377,147.415094339623" />
+                    End="-90.915094339623,82.9150943396225" />
                   <mssgle:CubicBezierSegment
-                    Point1="121.584905660377,147.415094339623"
-                    Point2="125.584905660377,147.415094339623"
-                    Point3="125.584905660377,151.415094339623" />
+                    Point1="-90.915094339623,82.9150943396225"
+                    Point2="-94.915094339623,82.9150943396225"
+                    Point3="-94.915094339623,86.9150943396225" />
                   <mssgle:LineSegment
-                    End="125.584905660377,287.330188679245" />
+                    End="-94.915094339623,158.330188679245" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5573,90 +6173,102 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 11]"
-          TopLeft="610.322641509434,167.047169811321">
+          TopLeft="625.322641509434,261.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-263.822641509434,77.952830188679"
+              StartConnector="{x:Null}"
+              EndConnector="-265.822641509434,112.952830188679"
               Start="0,0"
-              End="-263.822641509434,70.452830188679">
+              End="-265.822641509434,105.452830188679">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,30.9269174222003" />
+                    End="0,46.6087356040185" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,30.9269174222003"
-                    Point2="0,34.9269174222003"
-                    Point3="-4,34.9269174222003" />
+                    Point1="0,46.6087356040185"
+                    Point2="0,50.6087356040185"
+                    Point3="-4,50.6087356040185" />
                   <mssgle:LineSegment
-                    End="-259.822641509434,34.9269174222003" />
+                    End="-261.822641509434,50.6087356040185" />
                   <mssgle:CubicBezierSegment
-                    Point1="-259.822641509434,34.9269174222003"
-                    Point2="-263.822641509434,34.9269174222003"
-                    Point3="-263.822641509434,38.9269174222003" />
+                    Point1="-261.822641509434,50.6087356040185"
+                    Point2="-265.822641509434,50.6087356040185"
+                    Point3="-265.822641509434,54.6087356040185" />
                   <mssgle:LineSegment
-                    End="-263.822641509434,70.452830188679" />
+                    End="-265.822641509434,105.452830188679" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-139.911320754717,39.9269174222003,16,16"
+              BoundingBox="-140.911320754717,55.6087356040185,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="698.556603773585,86.6698113207547">
+          TopLeft="566.556603773585,71.6698113207547">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-267.622641509434,27.2264150943393"
+              StartConnector="{x:Null}"
+              EndConnector="-144.622641509434,132.226415094339"
               Start="0,0"
-              End="-267.622641509434,19.7264150943393">
+              End="-144.622641509434,124.726415094339">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,9.61320754716967" />
+                    End="0,62.1132075471697" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,9.61320754716967"
-                    Point2="0,13.6132075471697"
-                    Point3="-4,13.6132075471697" />
+                    Point1="0,62.1132075471697"
+                    Point2="0,66.1132075471697"
+                    Point3="-4,66.1132075471697" />
                   <mssgle:LineSegment
-                    End="-263.622641509434,13.6132075471697" />
+                    End="-140.622641509434,66.1132075471697" />
                   <mssgle:CubicBezierSegment
-                    Point1="-263.622641509434,13.6132075471697"
-                    Point2="-267.622641509434,13.6132075471697"
-                    Point3="-267.622641509434,17.6132075471697" />
+                    Point1="-140.622641509434,66.1132075471697"
+                    Point2="-144.622641509434,66.1132075471697"
+                    Point3="-144.622641509434,70.1132075471697" />
                   <mssgle:LineSegment
-                    End="-267.622641509434,19.7264150943393" />
+                    End="-144.622641509434,124.726415094339" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-141.811320754717,18.6132075471697,16,16"
+              BoundingBox="-80.311320754717,71.1132075471697,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="498.933962264151,137.971698113208">
+          TopLeft="489.933962264151,225.896226415094">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="56.188679245283,0"
+              StartConnector="{x:Null}"
+              EndConnector="80.188679245283,8.15094339622698"
               Start="0,0"
-              End="48.688679245283,0">
+              End="72.688679245283,8.15094339622698">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="48.688679245283,0" />
+                    End="36.0943396226415,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="36.0943396226415,0"
+                    Point2="40.0943396226415,0"
+                    Point3="40.0943396226415,4" />
+                  <mssgle:LineSegment
+                    End="40.0943396226415,4.15094339622698" />
+                  <mssgle:CubicBezierSegment
+                    Point1="40.0943396226415,4.15094339622698"
+                    Point2="40.0943396226415,8.15094339622698"
+                    Point3="44.0943396226415,8.15094339622698" />
+                  <mssgle:LineSegment
+                    End="72.688679245283,8.15094339622698" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5667,102 +6279,102 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 4]"
-          TopLeft="591.122641509434,167.047169811321">
+          TopLeft="599.722641509434,261.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-517.622641509434,23.8867924528302"
+              StartConnector="{x:Null}"
+              EndConnector="-513.222641509434,58.88679245283"
               Start="0,0"
-              End="-517.622641509434,16.3867924528302">
+              End="-513.222641509434,51.38679245283">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,4.26850507982583" />
+                    End="0,13.859109186514" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,4.26850507982583"
-                    Point2="0,8.26850507982583"
-                    Point3="-4,8.26850507982583" />
+                    Point1="0,13.859109186514"
+                    Point2="0,17.859109186514"
+                    Point3="-4,17.859109186514" />
                   <mssgle:LineSegment
-                    End="-513.622641509434,8.26850507982583" />
+                    End="-509.222641509434,17.859109186514" />
                   <mssgle:CubicBezierSegment
-                    Point1="-513.622641509434,8.26850507982583"
-                    Point2="-517.622641509434,8.26850507982583"
-                    Point3="-517.622641509434,12.2685050798258" />
+                    Point1="-509.222641509434,17.859109186514"
+                    Point2="-513.222641509434,17.859109186514"
+                    Point3="-513.222641509434,21.859109186514" />
                   <mssgle:LineSegment
-                    End="-517.622641509434,16.3867924528302" />
+                    End="-513.222641509434,51.38679245283" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-266.811320754717,13.2685050798258,16,16"
+              BoundingBox="-264.611320754717,22.859109186514,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 5]"
-          TopLeft="655.122641509434,167.047169811321">
+          TopLeft="676.522641509434,261.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="328.377358490566,45.7735849056604"
+              StartConnector="{x:Null}"
+              EndConnector="224.977358490566,100.77358490566"
               Start="0,0"
-              End="328.377358490566,38.2735849056604">
+              End="224.977358490566,93.27358490566">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,11.844702467344" />
+                    End="0,26.56248066811" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,11.844702467344"
-                    Point2="0,15.844702467344"
-                    Point3="4,15.844702467344" />
+                    Point1="0,26.56248066811"
+                    Point2="0,30.56248066811"
+                    Point3="4,30.56248066811" />
                   <mssgle:LineSegment
-                    End="324.377358490566,15.844702467344" />
+                    End="220.977358490566,30.56248066811" />
                   <mssgle:CubicBezierSegment
-                    Point1="324.377358490566,15.844702467344"
-                    Point2="328.377358490566,15.844702467344"
-                    Point3="328.377358490566,19.844702467344" />
+                    Point1="220.977358490566,30.56248066811"
+                    Point2="224.977358490566,30.56248066811"
+                    Point3="224.977358490566,34.56248066811" />
                   <mssgle:LineSegment
-                    End="328.377358490566,38.2735849056604" />
+                    End="224.977358490566,93.27358490566" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="156.188679245283,20.844702467344,16,16"
+              BoundingBox="104.488679245283,35.56248066811,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 6]"
-          TopLeft="983.5,256.820754716981">
+          TopLeft="901.5,405.820754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-133.169811320755,354.264150943396"
+              StartConnector="{x:Null}"
+              EndConnector="-138.836477987422,205.264150943396"
               Start="0,0"
-              End="-133.169811320755,346.764150943396">
+              End="-138.836477987422,197.764150943396">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,227.634252539913" />
+                    End="0,118.94444148402" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,227.634252539913"
-                    Point2="0,231.634252539913"
-                    Point3="-4,231.634252539913" />
+                    Point1="0,118.94444148402"
+                    Point2="0,122.94444148402"
+                    Point3="-4,122.94444148402" />
                   <mssgle:LineSegment
-                    End="-129.169811320755,231.634252539913" />
+                    End="-134.836477987422,122.94444148402" />
                   <mssgle:CubicBezierSegment
-                    Point1="-129.169811320755,231.634252539913"
-                    Point2="-133.169811320755,231.634252539913"
-                    Point3="-133.169811320755,235.634252539913" />
+                    Point1="-134.836477987422,122.94444148402"
+                    Point2="-138.836477987422,122.94444148402"
+                    Point3="-138.836477987422,126.94444148402" />
                   <mssgle:LineSegment
-                    End="-133.169811320755,346.764150943396" />
+                    End="-138.836477987422,197.764150943396" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5773,30 +6385,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 7]"
-          TopLeft="73.5,234.933962264151">
+          TopLeft="86.5,363.933962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="712.830188679245,376.150943396226"
+              StartConnector="{x:Null}"
+              EndConnector="220.663522012578,247.150943396226"
               Start="0,0"
-              End="712.830188679245,368.650943396226">
+              End="220.663522012578,239.650943396226">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,241.944847605225" />
+                    End="0,180.559900038839" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,241.944847605225"
-                    Point2="0,245.944847605225"
-                    Point3="4,245.944847605225" />
+                    Point1="0,180.559900038839"
+                    Point2="0,184.559900038839"
+                    Point3="4,184.559900038839" />
                   <mssgle:LineSegment
-                    End="708.830188679245,245.944847605225" />
+                    End="216.663522012578,184.559900038839" />
                   <mssgle:CubicBezierSegment
-                    Point1="708.830188679245,245.944847605225"
-                    Point2="712.830188679245,245.944847605225"
-                    Point3="712.830188679245,249.944847605225" />
+                    Point1="216.663522012578,184.559900038839"
+                    Point2="220.663522012578,184.559900038839"
+                    Point3="220.663522012578,188.559900038839" />
                   <mssgle:LineSegment
-                    End="712.830188679245,368.650943396226" />
+                    End="220.663522012578,239.650943396226" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5807,74 +6419,282 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 8]"
-          TopLeft="556.292452830189,40.6603773584906">
+          TopLeft="402.292452830189,40.6603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="74.2641509433962,24.0094339622642"
+              StartConnector="{x:Null}"
+              EndConnector="96.264150943396,9.00943396226409"
               Start="0,0"
-              End="66.7641509433962,24.0094339622642">
+              End="88.764150943396,9.00943396226409">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="33.1320754716981,0" />
+                    End="44.132075471698,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="33.1320754716981,0"
-                    Point2="37.1320754716981,0"
-                    Point3="37.1320754716981,4" />
+                    Point1="44.132075471698,0"
+                    Point2="48.132075471698,0"
+                    Point3="48.132075471698,4" />
                   <mssgle:LineSegment
-                    End="37.1320754716981,20.0094339622642" />
+                    End="48.132075471698,5.00943396226409" />
                   <mssgle:CubicBezierSegment
-                    Point1="37.1320754716981,20.0094339622642"
-                    Point2="37.1320754716981,24.0094339622642"
-                    Point3="41.1320754716981,24.0094339622642" />
+                    Point1="48.132075471698,5.00943396226409"
+                    Point2="48.132075471698,9.00943396226409"
+                    Point3="52.132075471698,9.00943396226409" />
                   <mssgle:LineSegment
-                    End="66.7641509433962,24.0094339622642" />
+                    End="88.764150943396,9.00943396226409" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="29.1320754716981,-22,16,16"
+              BoundingBox="40.132075471698,-22,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 9]"
-          TopLeft="623.122641509434,167.047169811321">
+          TopLeft="650.922641509434,261.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="69.6226415094339,105.207547169811"
+              StartConnector="{x:Null}"
+              EndConnector="54.8226415094341,140.207547169811"
               Start="0,0"
-              End="69.6226415094339,97.7075471698113">
+              End="54.8226415094341,132.707547169811">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,48.6037735849057" />
+                    End="0,58.8202646410192" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,48.6037735849057"
-                    Point2="0,52.6037735849057"
-                    Point3="4,52.6037735849057" />
+                    Point1="0,58.8202646410192"
+                    Point2="0,62.8202646410192"
+                    Point3="4,62.8202646410192" />
                   <mssgle:LineSegment
-                    End="65.6226415094339,52.6037735849057" />
+                    End="50.8226415094341,62.8202646410192" />
                   <mssgle:CubicBezierSegment
-                    Point1="65.6226415094339,52.6037735849057"
-                    Point2="69.6226415094339,52.6037735849057"
-                    Point3="69.6226415094339,56.6037735849057" />
+                    Point1="50.8226415094341,62.8202646410192"
+                    Point2="54.8226415094341,62.8202646410192"
+                    Point3="54.8226415094341,66.8202646410192" />
                   <mssgle:LineSegment
-                    End="69.6226415094339,97.7075471698113" />
+                    End="54.8226415094341,132.707547169811" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="26.811320754717,57.6037735849057,16,16"
+              BoundingBox="19.4113207547171,67.8202646410192,16,16"
               RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 12]"
+          TopLeft="359.5,416">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="99.4968553459116,195.084905660377"
+              Start="0,0"
+              End="99.4968553459116,187.584905660377">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,112.847509212613" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,112.847509212613"
+                    Point2="0,116.847509212613"
+                    Point3="4,116.847509212613" />
+                  <mssgle:LineSegment
+                    End="95.4968553459116,116.847509212613" />
+                  <mssgle:CubicBezierSegment
+                    Point1="95.4968553459116,116.847509212613"
+                    Point2="99.4968553459116,116.847509212613"
+                    Point3="99.4968553459116,120.847509212613" />
+                  <mssgle:LineSegment
+                    End="99.4968553459116,187.584905660377" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="161,42"
+          Id="Package\Aeries File Check"
+          TopLeft="101,97" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 13]"
+          TopLeft="334.292452830189,70.1603773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-152.792452830189,26.8396226415094"
+              Start="0,0"
+              End="-152.792452830189,19.3396226415094">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,9.4198113207547" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,9.4198113207547"
+                    Point2="0,13.4198113207547"
+                    Point3="-4,13.4198113207547" />
+                  <mssgle:LineSegment
+                    End="-148.792452830189,13.4198113207547" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-148.792452830189,13.4198113207547"
+                    Point2="-152.792452830189,13.4198113207547"
+                    Point3="-152.792452830189,17.4198113207547" />
+                  <mssgle:LineSegment
+                    End="-152.792452830189,19.3396226415094" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-84.3962264150945,18.4198113207547,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 14]"
+          TopLeft="181.5,139">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="219.100628930818,64.896226415094"
+              Start="0,0"
+              End="219.100628930818,57.396226415094">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,34.4849714787185" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,34.4849714787185"
+                    Point2="0,38.4849714787185"
+                    Point3="4,38.4849714787185" />
+                  <mssgle:LineSegment
+                    End="215.100628930818,38.4849714787185" />
+                  <mssgle:CubicBezierSegment
+                    Point1="215.100628930818,38.4849714787185"
+                    Point2="219.100628930818,38.4849714787185"
+                    Point3="219.100628930818,42.4849714787185" />
+                  <mssgle:LineSegment
+                    End="219.100628930818,57.396226415094" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="101.550314465409,43.4849714787185,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 15]"
+          TopLeft="262,118.844339622641">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="579.179245283019,0"
+              Start="0,0"
+              End="571.679245283019,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="571.679245283019,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="277.839622641509,5,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="154,42"
+          Id="Package\Aeries Staff File"
+          TopLeft="1012,235" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 16]"
+          TopLeft="706.122641509434,234.047169811321">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="305.877358490566,21.952830188679"
+              Start="0,0"
+              End="298.377358490566,21.952830188679">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="148.938679245283,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="148.938679245283,0"
+                    Point2="152.938679245283,0"
+                    Point3="152.938679245283,4" />
+                  <mssgle:LineSegment
+                    End="152.938679245283,17.952830188679" />
+                  <mssgle:CubicBezierSegment
+                    Point1="152.938679245283,17.952830188679"
+                    Point2="152.938679245283,21.952830188679"
+                    Point3="156.938679245283,21.952830188679" />
+                  <mssgle:LineSegment
+                    End="298.377358490566,21.952830188679" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="144.938679245283,-22,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 17]"
+          TopLeft="1089,277">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-174.503144654088,334.084905660377"
+              Start="0,0"
+              End="-174.503144654088,326.584905660377">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,245.477812813017" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,245.477812813017"
+                    Point2="0,249.477812813017"
+                    Point3="-4,249.477812813017" />
+                  <mssgle:LineSegment
+                    End="-170.503144654088,249.477812813017" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-170.503144654088,249.477812813017"
+                    Point2="-174.503144654088,249.477812813017"
+                    Point3="-174.503144654088,253.477812813017" />
+                  <mssgle:LineSegment
+                    End="-174.503144654088,326.584905660377" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -6141,6 +6961,79 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </TaskHost>
   <PipelineComponentMetadata
     design-time-name="Package\Import UFA Staff File\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Aeries Staff File">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Aeries Staff File\OLE DB Source"
+          TopLeft="418,66" />
+        <NodeLayout
+          Size="173,42"
+          Id="Package\Aeries Staff File\OLE DB Destination"
+          TopLeft="420,197" />
+        <EdgeLayout
+          Id="Package\Aeries Staff File.Paths[OLE DB Source Output]"
+          TopLeft="494,108">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="12.5,89"
+              Start="0,0"
+              End="12.5,81.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,40.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,40.5"
+                    Point2="0,44.5"
+                    Point3="4,44.5" />
+                  <mssgle:LineSegment
+                    End="8.5,44.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="8.5,44.5"
+                    Point2="12.5,44.5"
+                    Point3="12.5,48.5" />
+                  <mssgle:LineSegment
+                    End="12.5,81.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-1.75,49.5,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Aeries Staff File\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Aeries Staff File\OLE DB Destination">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
