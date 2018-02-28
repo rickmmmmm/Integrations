@@ -8,12 +8,12 @@
   DTS:DelayValidation="True"
   DTS:DTSID="{381095B6-A743-484C-AD17-3A90C97689C6}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LastModifiedProductVersion="14.0.0800.90"
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportClasses"
   DTS:PackageType="5"
-  DTS:VersionBuild="344"
-  DTS:VersionGUID="{E207E7CC-D478-4C92-8B0F-7F4C0D791A9A}">
+  DTS:VersionBuild="346"
+  DTS:VersionGUID="{1D2DC240-94C1-4F8A-9234-932A825E924F}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.\SQL2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -42,7 +42,7 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.\SQL2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -61,7 +61,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_11282017.csv">
+          DTS:ConnectionString="\Reject\_02262018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -200,7 +200,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_11282017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_02262018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -264,6 +264,15 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{130F3557-168A-45ED-AECB-70F38D255C41}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="FileBased">
+      <DTS:VariableValue
+        DTS:DataType="11">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{06D48D04-37A9-41DA-AE4D-0EEAEF8B83CE}"
       DTS:EvaluateAsExpression="True"
       DTS:Expression="@[User::SFTPLocation]+&quot;\\&quot;+   @[User::ClassesFileName]"
@@ -300,7 +309,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_11282017.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_02262018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -373,7 +382,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">.\SQL2014</DTS:VariableValue>
+        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -415,7 +424,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}"
-          SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;select&#xA;CustomerName,&#xA;InitialCatalog,&#xA;ClassList&#xA;From CustomerList&#xA;where CustomersUID = @CustomerUID"
+          SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;select&#xA;CustomerName,&#xA;InitialCatalog,&#xA;ClassList,&#xA;FileBased&#xA;From CustomerList&#xA;where CustomersUID = @CustomerUID"
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="ClassList"
@@ -426,6 +435,9 @@
           <SQLTask:ResultBinding
             SQLTask:ResultName="CustomerName"
             SQLTask:DtsVariableName="User::_CustomerName" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="FileBased"
+            SQLTask:DtsVariableName="User::FileBased" />
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="@CustomerUID"
             SQLTask:DtsVariableName="User::_CustomerUID"
@@ -687,7 +699,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT CourseID, CampusID, 
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT CourseID, CampusID, 
 ClassID, ClassName, Period, Section, RoomLocation,
 RejectMessage
 FROM _IMS_Classes
@@ -998,7 +1010,7 @@ where import = 0</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
 from CustomerList c
 join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID
 where c.CustomersUID = ?
@@ -1313,7 +1325,7 @@ and cep.Active = 1</property>
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
 from CustomerList c
 join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID
 where c.CustomersUID = ?
