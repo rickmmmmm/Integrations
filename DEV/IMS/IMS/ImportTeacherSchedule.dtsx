@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportTeacherSchedule"
   DTS:PackageType="5"
-  DTS:VersionBuild="367"
-  DTS:VersionGUID="{013ED69C-B38D-42CB-84A0-30DB1D600215}">
+  DTS:VersionBuild="368"
+  DTS:VersionGUID="{2EDD0961-4701-4ED0-ACCC-6C6563E89B7C}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -61,7 +61,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_02262018.csv">
+          DTS:ConnectionString="\Reject\_02282018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -182,7 +182,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_02262018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_02282018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -263,7 +263,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_02262018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_02282018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1431,7 +1431,7 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="&#xA;declare @SourceOrigin varchar(50)&#xA;&#xA;set @SourceOrigin = ?&#xA;&#xA;&#xA;if @SourceOrigin = 'EZ1'&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--Deleting duplicates here for performance&#xA;&#x9;delete _IMS_TeacherSchedule where&#xA;&#x9;&#x9;IMS_TeachertScheduleID IN (&#xA;&#x9;&#x9;SELECT IMS_TeachertScheduleID&#xA;&#x9;&#x9;FROM (&#xA;&#x9;&#x9;&#x9;SELECT ROW_NUMBER() OVER&#xA;&#x9;&#x9;&#x9;(&#xA;&#x9;&#x9;&#x9;&#x9;PARTITION BY TeacherID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;&#x9;ORDER BY IMS_TeachertScheduleID&#xA;&#x9;&#x9;&#x9;) AS rownum, IMS_TeachertScheduleID, TeacherID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;FROM _IMS_TeacherSchedule&#xA;&#x9;&#x9;&#x9;WHERE import = 1&#xA;&#x9;&#x9;) a&#xA;&#x9;&#x9;WHERE rownum &lt;&gt; 1&#xA;&#x9;)&#xA;&#xA;&#x9;insert _IMS_Classes (courseID, CampusID, ClassID, ClassName, period, section, MasterCourseUID, CampusUID)&#xA;&#x9;&#xA;&#x9;select distinct ts.courseID, t.CampusID, ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '') as ClassID, mc.CourseName as ClassName, ts.period, ts.section, &#xA;&#x9;mc.MasterCourseUID, c.CampusUID&#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join (select CourseID, CampusID from _IMS_CampusCourse where Import = 1) cc on cc.CourseID = ts.courseID &#xA;&#x9;join (select CourseID, CourseName,  MasterCourseUID from _IMS_masterCourse where import = 1) mc on cc.courseID = mc.CourseID &#xA;&#x9;join (select teacherid, campusid from _IMS_Teachers where import = 1) t on t.TeacherID = ts.TeacherID and t.CampusID = cc.campusID &#xA;&#x9;join tblCampuses c on c.CampusID = t.CampusID&#xA;&#x9;where ts.Import = 1&#xA;&#xA;&#xA;&#x9;&#xA;&#x9;--select * &#xA;&#x9;update ts set CampusID = c.CampusID, TeachersUID = t.TeachersUID, MasterCourseUID = c.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join  (select teacherid, CampusID, Teachersuid from _IMS_Teachers where import = 1) t on t.TeacherID = ts.TeacherID &#xA;&#x9;join (select MasterCourseUID, CampusID, CourseID, Section, Period from  _IMS_Classes where import = 1) c &#xA;&#x9;&#x9;on c.CampusID = t.CampusID and ts.CourseID = c.CourseID and ts.Section = c.Section and ts.Period = c.Period&#xA;&#xA;&#x9;END&#xA;&#xA;else if @SourceOrigin = 'AST'&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, TeachersUID = t.TeachersUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID  and ts.CampusID = c.CampusID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Teachers t on t.TeacherID = ts.TeacherID and t.CampusID = c.campusID&#xA;&#x9;where ts.import = 1 and t.import = 1;&#xA;&#xA;&#x9;insert _IMS_CampusCourse (CampusID, CourseID, MasterCourseUID, campusUID, Import )&#xA;&#x9;select distinct ss.CampusID, ss.CourseID, ss.MasterCourseUID, c.CampusUID, 1  &#xA;&#x9;from _IMS_TeacherSchedule ss&#xA;&#x9;join tblCampuses c on ss.CampusID = c.CampusID&#xA;&#x9;left outer join _IMS_CampusCourse cc&#xA;&#x9;&#x9;on cc.campusid = ss.campusid and cc.courseID = ss.CourseID&#xA;&#x9;where IMS_CampusCourseID is null&#xA;&#x9;and ltrim(rtrim(isNull(ss.CampusID, ''))) &lt;&gt; '' and ltrim(rtrim(isNull(ss.CourseID, ''))) &lt;&gt; '';&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ims set CampusCoursesAssignedUID = cca.CampusCoursesAssignedUID&#xA;&#x9;from _IMS_CampusCourse ims&#xA;&#x9;join tblCampusCoursesAssigned cca on ims.MasterCourseUID = cca.MasterCourseUID&#xA;&#x9;&#x9;and ims.CampusUID = cca.CampusUID&#xA;&#xA;&#x9;END&#xA;&#xA;&#xA;else if @SourceOrigin = 'UFA'&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, CampusID = c.CampusID, TeachersUID = t.TeachersUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Teachers t on t.TeacherID = ts.TeacherID and t.CampusID = c.campusID&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="&#xA;declare @SourceOrigin varchar(50)&#xA;&#xA;set @SourceOrigin = ?&#xA;&#xA;&#xA;if @SourceOrigin = 'EZ1'&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--Deleting duplicates here for performance&#xA;&#x9;delete _IMS_TeacherSchedule where&#xA;&#x9;&#x9;IMS_TeachertScheduleID IN (&#xA;&#x9;&#x9;SELECT IMS_TeachertScheduleID&#xA;&#x9;&#x9;FROM (&#xA;&#x9;&#x9;&#x9;SELECT ROW_NUMBER() OVER&#xA;&#x9;&#x9;&#x9;(&#xA;&#x9;&#x9;&#x9;&#x9;PARTITION BY TeacherID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;&#x9;ORDER BY IMS_TeachertScheduleID&#xA;&#x9;&#x9;&#x9;) AS rownum, IMS_TeachertScheduleID, TeacherID, CourseID, Period, Section&#xA;&#x9;&#x9;&#x9;FROM _IMS_TeacherSchedule&#xA;&#x9;&#x9;&#x9;WHERE import = 1&#xA;&#x9;&#x9;) a&#xA;&#x9;&#x9;WHERE rownum &lt;&gt; 1&#xA;&#x9;)&#xA;&#xA;&#x9;insert _IMS_Classes (courseID, CampusID, ClassID, ClassName, period, section, MasterCourseUID, CampusUID)&#xA;&#x9;&#xA;&#x9;select distinct ts.courseID, t.CampusID, ts.CourseID+isnull(ts.Period, '')+isnull(ts.section, '') as ClassID, mc.CourseName as ClassName, ts.period, ts.section, &#xA;&#x9;mc.MasterCourseUID, c.CampusUID&#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join (select CourseID, CampusID from _IMS_CampusCourse where Import = 1) cc on cc.CourseID = ts.courseID &#xA;&#x9;join (select CourseID, CourseName,  MasterCourseUID from _IMS_masterCourse where import = 1) mc on cc.courseID = mc.CourseID &#xA;&#x9;join (select teacherid, campusid from _IMS_Teachers where import = 1) t on t.TeacherID = ts.TeacherID and t.CampusID = cc.campusID &#xA;&#x9;join tblCampuses c on c.CampusID = t.CampusID&#xA;&#x9;where ts.Import = 1&#xA;&#xA;&#xA;&#x9;&#xA;&#x9;--select * &#xA;&#x9;update ts set CampusID = c.CampusID, TeachersUID = t.TeachersUID, MasterCourseUID = c.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join  (select teacherid, CampusID, Teachersuid from _IMS_Teachers where import = 1) t on t.TeacherID = ts.TeacherID &#xA;&#x9;join (select MasterCourseUID, CampusID, CourseID, Section, Period from  _IMS_Classes where import = 1) c &#xA;&#x9;&#x9;on c.CampusID = t.CampusID and ts.CourseID = c.CourseID and ts.Section = c.Section and ts.Period = c.Period&#xA;&#xA;&#x9;END&#xA;&#xA;else if @SourceOrigin = 'AST'&#xA;&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, TeachersUID = t.TeachersUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID  and ts.CampusID = c.CampusID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Teachers t on t.TeacherID = ts.TeacherID and t.CampusID = c.campusID&#xA;&#x9;where ts.import = 1 and t.import = 1;&#xA;&#xA;&#x9;insert _IMS_CampusCourse (CampusID, CourseID, MasterCourseUID, campusUID, Import )&#xA;&#x9;select distinct ss.CampusID, ss.CourseID, ss.MasterCourseUID, c.CampusUID, 1  &#xA;&#x9;from _IMS_TeacherSchedule ss&#xA;&#x9;join tblCampuses c on ss.CampusID = c.CampusID&#xA;&#x9;left outer join _IMS_CampusCourse cc&#xA;&#x9;&#x9;on cc.campusid = ss.campusid and cc.courseID = ss.CourseID&#xA;&#x9;where IMS_CampusCourseID is null&#xA;&#x9;and ltrim(rtrim(isNull(ss.CampusID, ''))) &lt;&gt; '' and ltrim(rtrim(isNull(ss.CourseID, ''))) &lt;&gt; '';&#xA;&#xA;&#x9;--select *&#xA;&#x9;update ims set CampusCoursesAssignedUID = cca.CampusCoursesAssignedUID&#xA;&#x9;from _IMS_CampusCourse ims&#xA;&#x9;join tblCampusCoursesAssigned cca on ims.MasterCourseUID = cca.MasterCourseUID&#xA;&#x9;&#x9;and ims.CampusUID = cca.CampusUID&#xA;&#xA;&#x9;END&#xA;&#xA;&#xA;else if @SourceOrigin = 'UFA'&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set CourseID = c.CourseID, Section = c.Section, Period = c.Period, CampusID = c.CampusID, TeachersUID = t.TeachersUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join _IMS_Classes c on ts.ClassID = c.ClassID&#xA;&#x9;join _IMS_masterCourse mc on c.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Teachers t on t.TeacherID = ts.TeacherID and t.CampusID = c.campusID&#xA;&#xA;&#xA;else if @SourceOrigin = 'AERIES'&#xA;&#xA;&#x9;--select * &#xA;&#x9;update ts set TeachersUID = t.TeachersUID, MasterCourseUID = mc.MasterCourseUID &#xA;&#x9;from _IMS_TeacherSchedule ts&#xA;&#x9;join _IMS_masterCourse mc on ts.courseID = mc.CourseID and mc.Import = 1&#xA;&#x9;join _IMS_Teachers t on t.TeacherID = ts.TeacherID and t.CampusID = ts.campusID&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@SourceOrigin"
                 SQLTask:DtsVariableName="User::SourceOrigin"
@@ -2899,6 +2899,78 @@ and cep.Active = 1</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 14]"
+          TopLeft="936.896226415094,906.481132075472">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="183.490566037736,-53.2169811320761"
+              Start="0,0"
+              End="175.990566037736,-53.2169811320761">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="87.745283018868,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="87.745283018868,0"
+                    Point2="91.745283018868,0"
+                    Point3="91.745283018868,-4" />
+                  <mssgle:LineSegment
+                    End="91.745283018868,-49.2169811320761" />
+                  <mssgle:CubicBezierSegment
+                    Point1="91.745283018868,-49.2169811320761"
+                    Point2="91.745283018868,-53.2169811320761"
+                    Point3="95.745283018868,-53.2169811320761" />
+                  <mssgle:LineSegment
+                    End="175.990566037736,-53.2169811320761" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="83.745283018868,1,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 15]"
+          TopLeft="709.764150943396,543.141509433962">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="202.415094339623,88.679245283019"
+              Start="0,0"
+              End="202.415094339623,81.179245283019">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,40.3396226415095" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,40.3396226415095"
+                    Point2="0,44.3396226415095"
+                    Point3="4,44.3396226415095" />
+                  <mssgle:LineSegment
+                    End="198.415094339623,44.3396226415095" />
+                  <mssgle:CubicBezierSegment
+                    Point1="198.415094339623,44.3396226415095"
+                    Point2="202.415094339623,44.3396226415095"
+                    Point3="202.415094339623,48.3396226415095" />
+                  <mssgle:LineSegment
+                    End="202.415094339623,81.179245283019" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="93.2075471698114,49.3396226415095,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
           TopLeft="440.990566037736,123.589622641509">
           <EdgeLayout.Curve>
@@ -3144,78 +3216,6 @@ and cep.Active = 1</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 14]"
-          TopLeft="936.896226415094,906.481132075472">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="183.490566037736,-53.2169811320761"
-              Start="0,0"
-              End="175.990566037736,-53.2169811320761">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="87.745283018868,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="87.745283018868,0"
-                    Point2="91.745283018868,0"
-                    Point3="91.745283018868,-4" />
-                  <mssgle:LineSegment
-                    End="91.745283018868,-49.2169811320761" />
-                  <mssgle:CubicBezierSegment
-                    Point1="91.745283018868,-49.2169811320761"
-                    Point2="91.745283018868,-53.2169811320761"
-                    Point3="95.745283018868,-53.2169811320761" />
-                  <mssgle:LineSegment
-                    End="175.990566037736,-53.2169811320761" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="83.745283018868,1,16,16"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 15]"
-          TopLeft="709.764150943396,543.141509433962">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="202.415094339623,88.679245283019"
-              Start="0,0"
-              End="202.415094339623,81.179245283019">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,40.3396226415095" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,40.3396226415095"
-                    Point2="0,44.3396226415095"
-                    Point3="4,44.3396226415095" />
-                  <mssgle:LineSegment
-                    End="198.415094339623,44.3396226415095" />
-                  <mssgle:CubicBezierSegment
-                    Point1="198.415094339623,44.3396226415095"
-                    Point2="202.415094339623,44.3396226415095"
-                    Point3="202.415094339623,48.3396226415095" />
-                  <mssgle:LineSegment
-                    End="202.415094339623,81.179245283019" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="93.2075471698114,49.3396226415095,16,16"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -3223,7 +3223,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Create Reject Report">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Create Reject Report\OLE DB Source"
@@ -3251,7 +3251,9 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
