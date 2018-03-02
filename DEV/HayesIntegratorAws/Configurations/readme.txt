@@ -1,0 +1,1 @@
+These configurations are used by lambda to initialize the EC2 instances that run the integration apps.
