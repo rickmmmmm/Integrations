@@ -10,8 +10,8 @@
     [InvoiceNumber]      VARCHAR (25)  NULL,
     [InvoiceDate]        DATETIME      NULL,
     [ShouldSubmit]       BIT           DEFAULT ('True') NULL,
-    [DataIntegrationsID] VARCHAR (100) NOT NULL,
+    [IntegrationsID] VARCHAR (100) NOT NULL,
     [Submitted]          BIT           DEFAULT ((0)) NULL,
-    PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [LineNumber] ASC, [SiteID] ASC, [DataIntegrationsID] ASC)
+    PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [LineNumber] ASC, [SiteID] ASC, [IntegrationsID] ASC)
 );
 

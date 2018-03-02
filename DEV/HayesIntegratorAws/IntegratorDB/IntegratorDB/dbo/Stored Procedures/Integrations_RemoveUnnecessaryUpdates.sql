@@ -34,8 +34,8 @@ BEGIN
     BEGIN
         UPDATE Shipments
         SET ShouldSubmit = 'False'
-        FROM (SELECT * FROM Shipments WHERE DataIntegrationsID = @intgid) s1
-        JOIN (SELECT * FROM Shipments WHERE DataIntegrationsID <> @intgid AND Submitted = 1) s2 on s1.OrderNumber = s2.OrderNumber
+        FROM (SELECT * FROM Shipments WHERE IntegrationsID = @intgid) s1
+        JOIN (SELECT * FROM Shipments WHERE IntegrationsID <> @intgid AND Submitted = 1) s2 on s1.OrderNumber = s2.OrderNumber
                                                                                         AND s1.LineNumber = s2.LineNumber
                                                                                         AND s1.SiteID = s2.SiteID
     END
