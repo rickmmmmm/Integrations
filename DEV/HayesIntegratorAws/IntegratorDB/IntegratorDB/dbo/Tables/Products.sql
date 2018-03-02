@@ -8,11 +8,13 @@
     [SuggestedPrice]     MONEY         NULL,
     [SKU]                VARCHAR (50)  NULL,
     [Serial]             VARCHAR (50)  NULL,
-    [Added]              BIT           DEFAULT ('True') NULL,
-    [Updated]            BIT           DEFAULT ('False') NULL,
-    [AddedDate]          DATETIME      DEFAULT (getdate()) NULL,
-    [LastUpdatedDate]    DATETIME      DEFAULT (getdate()) NULL,
+    [Added]              BIT           CONSTRAINT [DF_Products_Added] DEFAULT ('True') NULL,
+    [Updated]            BIT           CONSTRAINT [DF_Products_Updated] DEFAULT ('False') NULL,
+    [AddedDate]          DATETIME      CONSTRAINT [DF_Products_AddedDate] DEFAULT (getdate()) NULL,
+    [LastUpdatedDate]    DATETIME      CONSTRAINT [DF_Products_LastUpdatedDate] DEFAULT (getdate()) NULL,
     [Client]             VARCHAR (50)  NOT NULL,
-    PRIMARY KEY CLUSTERED ([ProductNumber] ASC, [ProductName] ASC, [Client] ASC)
+    CONSTRAINT [PK_Products] PRIMARY KEY CLUSTERED ([ProductNumber] ASC, [ProductName] ASC, [Client] ASC)
 );
+
+
 

@@ -4,9 +4,11 @@
     [InvoiceDate]         VARCHAR (50)  NULL,
     [InvoiceStatus]       VARCHAR (50)  NULL,
     [AuthorizationStatus] VARCHAR (50)  NULL,
-    [ShouldSubmit]        BIT           DEFAULT ((1)) NULL,
+    [ShouldSubmit]        BIT           CONSTRAINT [DF_Invoices_ShouldSubmit] DEFAULT ((1)) NULL,
     [DataIntegrationsID]  VARCHAR (100) NOT NULL,
     [LastModifiedDate]    VARCHAR (50)  NULL,
-    PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [DataIntegrationsID] ASC)
+    CONSTRAINT [PK_Invoices] PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [DataIntegrationsID] ASC)
 );
+
+
 

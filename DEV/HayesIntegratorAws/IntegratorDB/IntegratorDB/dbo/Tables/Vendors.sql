@@ -8,11 +8,13 @@
     [ZipCode]         VARCHAR (50)  NULL,
     [Phone]           VARCHAR (50)  NULL,
     [Email]           VARCHAR (100) NULL,
-    [Added]           BIT           DEFAULT ('True') NULL,
-    [Updated]         BIT           DEFAULT ('False') NULL,
-    [AddedDate]       DATETIME      DEFAULT (getdate()) NULL,
-    [LastUpdatedDate] DATETIME      DEFAULT (getdate()) NULL,
+    [Added]           BIT           CONSTRAINT [DF_Vendors_Added] DEFAULT ('True') NULL,
+    [Updated]         BIT           CONSTRAINT [DF_Vendors_Updated] DEFAULT ('False') NULL,
+    [AddedDate]       DATETIME      CONSTRAINT [DF_Vendors_AddedDate] DEFAULT (getdate()) NULL,
+    [LastUpdatedDate] DATETIME      CONSTRAINT [DF_Vendors_LastUpdatedDate] DEFAULT (getdate()) NULL,
     [Client]          VARCHAR (50)  NOT NULL,
-    PRIMARY KEY CLUSTERED ([VendorID] ASC, [VendorName] ASC, [Client] ASC)
+    CONSTRAINT [PK_Vendors] PRIMARY KEY CLUSTERED ([VendorID] ASC, [VendorName] ASC, [Client] ASC)
 );
+
+
 

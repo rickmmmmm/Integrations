@@ -11,7 +11,9 @@
     [Quantity]            VARCHAR (50)  NULL,
     [LineAmount]          VARCHAR (50)  NULL,
     [DataIntegrationsID]  VARCHAR (100) NOT NULL,
-    [Chunk]               BIT           DEFAULT ((1)) NULL,
-    PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [LineNumber] ASC, [DataIntegrationsID] ASC)
+    [Chunk]               BIT           CONSTRAINT [DF_InvoiceDetailsIntegrationFlatData_Chunk] DEFAULT ((1)) NULL,
+    CONSTRAINT [PK_InvoiceDetailsIntegrationFlatData] PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [LineNumber] ASC, [DataIntegrationsID] ASC)
 );
+
+
 

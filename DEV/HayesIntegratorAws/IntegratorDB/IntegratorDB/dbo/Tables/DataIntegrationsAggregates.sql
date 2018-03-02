@@ -7,6 +7,8 @@
     [ReferenceVal]         VARCHAR (50)  NULL,
     [TotalCount]           BIGINT        NULL,
     [ReferenceDescription] VARCHAR (MAX) NULL,
-    PRIMARY KEY CLUSTERED ([AggregatesID] ASC)
+    CONSTRAINT [PK_DataIntegrationsAggregates] PRIMARY KEY CLUSTERED ([AggregatesID] ASC)
 );
+
+
 

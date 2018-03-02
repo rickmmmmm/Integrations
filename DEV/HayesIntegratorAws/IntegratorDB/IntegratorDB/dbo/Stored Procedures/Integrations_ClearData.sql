@@ -17,7 +17,7 @@ BEGIN
     WHERE DataIntegrationsID in (SELECT IntegrationsID FROM DataIntegrations WHERE @client = Client and IntegrationDate between @dateStart and @dateEnd)
 
     DELETE FROM Shipments
-    WHERE DataIntegrationsID in (SELECT IntegrationsID FROM DataIntegrations WHERE @client = Client and IntegrationDate between @dateStart and @dateEnd)
+    WHERE IntegrationsID in (SELECT IntegrationsID FROM DataIntegrations WHERE @client = Client and IntegrationDate between @dateStart and @dateEnd)
 
     DELETE FROM PurchaseOrderIntegrationFlatData
     WHERE IntegrationsID in (SELECT IntegrationsID FROM DataIntegrations WHERE @client = Client and IntegrationDate between @dateStart and @dateEnd)

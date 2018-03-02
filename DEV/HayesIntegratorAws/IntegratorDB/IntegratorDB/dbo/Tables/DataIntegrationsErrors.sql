@@ -5,7 +5,9 @@
     [ErrorDescription]         VARCHAR (MAX) NULL,
     [ErrorObject]              VARCHAR (MAX) NULL,
     [DataIntegrationsID]       VARCHAR (100) NULL,
-    [AddedDate]                DATETIME      DEFAULT (getdate()) NULL,
-    PRIMARY KEY CLUSTERED ([DataIntegrationsErrorsID] ASC)
+    [AddedDate]                DATETIME      CONSTRAINT [DF_DataIntegrationsErrors_AddedDate] DEFAULT (getdate()) NULL,
+    CONSTRAINT [PK_DataIntegrationsErrors] PRIMARY KEY CLUSTERED ([DataIntegrationsErrorsID] ASC)
 );
+
+
 

@@ -7,8 +7,10 @@
     [InvoicePrice]       VARCHAR (50)  NULL,
     [Quantity]           VARCHAR (50)  NULL,
     [LineAmount]         VARCHAR (50)  NULL,
-    [ShouldSubmit]       BIT           DEFAULT ((1)) NULL,
+    [ShouldSubmit]       BIT           CONSTRAINT [DF_InvoiceDetails_ShouldSubmit] DEFAULT ((1)) NULL,
     [DataIntegrationsID] VARCHAR (100) NOT NULL,
-    PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [LineNumber] ASC, [DataIntegrationsID] ASC)
+    CONSTRAINT [PK_InvoiceDetails] PRIMARY KEY CLUSTERED ([InvoiceNumber] ASC, [OrderNumber] ASC, [LineNumber] ASC, [DataIntegrationsID] ASC)
 );
+
+
 

@@ -9,16 +9,16 @@ BEGIN
 
     -- Insert statements for procedure here
 
-UPDATE Shipments
-SET ShouldSubmit = 0
-FROM Shipments s
-LEFT JOIN vw_DistinctDetails d on s.OrderNumber = d.orderNumber and s.LineNumber = d.LineNumber
-WHERE s.DataIntegrationsID = @intgid and d.ordernumber is null
+    UPDATE Shipments
+    SET ShouldSubmit = 0
+    FROM Shipments s
+    LEFT JOIN vw_DistinctDetails d on s.OrderNumber = d.orderNumber and s.LineNumber = d.LineNumber
+    WHERE s.IntegrationsID = @intgid and d.ordernumber is null
 
-UPDATE Shipments
-SET ShouldSubmit = 0
-FROM Shipments s
-JOIN vw_DistinctShipments d on s.OrderNumber = d.orderNumber and s.LineNumber = d.LineNumber and s.SiteID = d.siteID
-WHERE s.DataIntegrationsID = @intgid
+    UPDATE Shipments
+    SET ShouldSubmit = 0
+    FROM Shipments s
+    JOIN vw_DistinctShipments d on s.OrderNumber = d.orderNumber and s.LineNumber = d.LineNumber and s.SiteID = d.siteID
+    WHERE s.IntegrationsID = @intgid
 
 END

@@ -8,10 +8,14 @@ BEGIN
     SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-    INSERT INTO Products (ProductName, ProductDescription, ProductType, Manufacturer, Model, Client, SuggestedPrice)
-    SELECT DISTINCT PRODUCT_NAME, PRODUCT_NAME, PRODUCT_TYPE, fd.MANUFACTURER, fd.MODEL, @client, PURCHASE_PRICE
+    INSERT INTO Products
+        (ProductName, ProductDescription, ProductType, Manufacturer, Model, Client, SuggestedPrice)
+    SELECT DISTINCT 
+        PRODUCT_NAME, PRODUCT_NAME, PRODUCT_TYPE, fd.MANUFACTURER, fd.MODEL, @client, PURCHASE_PRICE
     FROM PurchaseOrderIntegrationFlatData fd
-    JOIN DataIntegrations di on di.IntegrationsID = fd.IntegrationsID
-    LEFT JOIN Products p on LOWER(p.ProductName) = LOWER(fd.PRODUCT_NAME)
+    JOIN DataIntegrations di 
+        ON di.IntegrationsID = fd.IntegrationsID
+    LEFT JOIN Products p 
+        ON LOWER(p.ProductName) = LOWER(fd.PRODUCT_NAME)
     WHERE di.Client = @client and p.ProductNumber IS NULL
 END

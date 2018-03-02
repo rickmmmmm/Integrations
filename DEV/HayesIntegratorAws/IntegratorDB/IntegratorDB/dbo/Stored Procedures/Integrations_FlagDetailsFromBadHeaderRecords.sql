@@ -9,18 +9,18 @@ BEGIN
 
     -- Insert statements for procedure here
 
---Remove details with no header available    
-UPDATE PurchaseOrderDetail
-SET ShouldSubmit = 0
-FROM PurchaseOrderDetail det
-LEFT JOIN vw_DistinctHeaders head on det.OrderNumber = head.OrderNumber
-WHERE det.DataIntegrationsID = @intgid and head.OrderNumber IS NULL
+    --Remove details with no header available    
+    UPDATE PurchaseOrderDetail
+    SET ShouldSubmit = 0
+    FROM PurchaseOrderDetail det
+    LEFT JOIN vw_DistinctHeaders head on det.OrderNumber = head.OrderNumber
+    WHERE det.DataIntegrationsID = @intgid and head.OrderNumber IS NULL
 
---Remove details that have already been submitted
-UPDATE PurchaseOrderDetail
-SET ShouldSubmit = 0
-FROM PurchaseOrderDetail det
-JOIN vw_DistinctDetails dd on dd.ordernumber = det.OrderNumber and dd.LineNumber = det.LineNumber
-WHERE det.DataIntegrationsID = @intgid
+    --Remove details that have already been submitted
+    UPDATE PurchaseOrderDetail
+    SET ShouldSubmit = 0
+    FROM PurchaseOrderDetail det
+    JOIN vw_DistinctDetails dd on dd.ordernumber = det.OrderNumber and dd.LineNumber = det.LineNumber
+    WHERE det.DataIntegrationsID = @intgid
 
 END

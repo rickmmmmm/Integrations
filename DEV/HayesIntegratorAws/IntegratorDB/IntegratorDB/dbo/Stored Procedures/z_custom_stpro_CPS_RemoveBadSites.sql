@@ -20,6 +20,6 @@ BEGIN
 
     UPDATE Shipments
     SET ShouldSubmit = 0
-    WHERE DataIntegrationsID = @intgid AND SiteID not in (SELECT DISTINCT DestVal FROM DataIntegrationsLinkTable WHERE client = @client)
+    WHERE IntegrationsID = @intgid AND SiteID not in (SELECT DISTINCT DestVal FROM DataIntegrationsLinkTable WHERE client = @client)
 
 END

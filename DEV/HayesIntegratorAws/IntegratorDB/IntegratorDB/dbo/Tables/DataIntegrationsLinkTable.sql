@@ -4,6 +4,8 @@
     [SourceVal] VARCHAR (MAX) NULL,
     [DestVal]   VARCHAR (MAX) NULL,
     [LinkType]  VARCHAR (50)  NULL,
-    PRIMARY KEY CLUSTERED ([LinkID] ASC)
+    CONSTRAINT [PK_DataIntegrationsLinkTable] PRIMARY KEY CLUSTERED ([LinkID] ASC)
 );
+
+
 
