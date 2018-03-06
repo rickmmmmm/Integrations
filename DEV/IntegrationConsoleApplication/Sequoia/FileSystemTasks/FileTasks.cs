@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Model;
+using Serilog;
 using System.Configuration;
 using Newtonsoft.Json;
 
@@ -158,6 +159,7 @@ namespace SystemTasks
 
         public void createRejectFile(string fileName, List<RejectedRecord> rejects)
         {
+            Log.Debug("at createRejectFile the first one");
             using (StreamWriter writer = File.AppendText(fileName))
             {
                 var csv = new CsvWriter(writer);
@@ -171,6 +173,7 @@ namespace SystemTasks
 
         public void createRejectFile(string fileName, List<RejectedRecord> rejects, List<PurchaseOrderFile> payload)
         {
+            Log.Debug("at createRejectFile");
             foreach(var record in payload)
             {
                 if (rejects.Contains(rejects.Where(u => u.orderNumber == record.OrderNumber && u.LineNumber == record.LineNumber).FirstOrDefault()))

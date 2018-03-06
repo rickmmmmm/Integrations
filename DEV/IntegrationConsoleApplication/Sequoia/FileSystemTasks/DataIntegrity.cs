@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model;
 using DataAccess;
+using Serilog;
 using SystemTasks;
 
 namespace SystemTasks
@@ -18,7 +19,6 @@ namespace SystemTasks
         #region Purchase Orders
         public List<PurchaseOrderFile> removeBadElements(List<PurchaseOrderFile> payload)
         {
-
             int badItems = payload.Where(it => it.OrderNumber.Trim() == "" || it.OrderNumber == null).Count();
 
             ErrorEventArgs args = new ErrorEventArgs();
@@ -41,6 +41,7 @@ namespace SystemTasks
 
             catch(Exception e)
             {
+                Log.Error($"at siteNotFound exception: {e.Message}");
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";
                 args.actionName = "Data Integrity";
@@ -66,8 +67,9 @@ namespace SystemTasks
                 int testItem = _rep.getItemUIDFromName(productName);
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error($"at productNotFound exception: {ex.Message}");
                 return true;
             }
         }
@@ -83,6 +85,7 @@ namespace SystemTasks
 
             catch (Exception e)
             {
+                Log.Error($"at productNotFound in catalog exception: {e.Message}");
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";
                 args.actionName = "Data Integrity";
@@ -117,6 +120,7 @@ namespace SystemTasks
 
             catch (Exception e)
             {
+                Log.Error($"at modelNotFound exception: {e.Message}");
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";
                 args.actionName = "Data Integrity";
@@ -150,7 +154,7 @@ namespace SystemTasks
         public bool rejectLongRecord(PurchaseOrderFile record, bool vendorCheck = false, bool productCheck = false, bool fundingSourceCheck = false)
         {
             if (record.OrderNumber.Length >= 50)
-            {
+            {   
                 ErrorEventArgs args = new ErrorEventArgs();
                 args.message = "Record Rejected";
                 args.actionName = "Data Integrity";
@@ -227,6 +231,7 @@ namespace SystemTasks
 
             else
             {
+                Log.Error("rejectLongRecord = false");
                 return false;
             }
             

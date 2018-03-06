@@ -7,6 +7,7 @@ using Model;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using Serilog;
 
 namespace DataAccess
 {
@@ -145,6 +146,7 @@ namespace DataAccess
             int manId = -1;
 
             string returnQuery = "SELECT ManufacturerUID FROM tblUnvManufacturers WHERE LOWER(ManufacturerName) = '" + manufacturerName.ToLower() + "'";
+            Log.Debug($"Repository: getManufacturerUIDFromName - ManufacturerName: {manufacturerName}, query: {returnQuery}");
 
             if (_conn.State == ConnectionState.Open)
             {
@@ -170,7 +172,7 @@ namespace DataAccess
 
             reader.Close();
             _conn.Close();
-
+            Log.Debug($"Repository: getManufacturerUIDFromName after query: {manId}");
             if (manId == -1)
             {
                 throw new Exception("The specified Manufacturer was not found.");

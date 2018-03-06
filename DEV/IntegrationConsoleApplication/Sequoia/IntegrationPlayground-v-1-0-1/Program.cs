@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SystemTasks;
+using Newtonsoft.Json;
 using Model;
 using DataAccess;
+using Serilog;
 using Services;
 using System.Configuration;
 using FileSystemTasks;
@@ -20,6 +22,11 @@ namespace IntegrationPlayground_v_1_0_1
         //private List<PurchaseOrderFile> _returnFile;
         static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs\\SequoiaIntegrations.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
             if (args.Length > 0)
             {
                 ReadOption(args);
@@ -360,6 +367,7 @@ namespace IntegrationPlayground_v_1_0_1
 
         public static void PurchaseOrderMenu(string[] options)
         {
+            Log.Information("Entering PurchaseOrderMenu");
             Console.WriteLine("Paste Import File Name below:");
             string file = string.IsNullOrEmpty(options[1]) ? Console.ReadLine() : options[1] ;
             FileTasks ft = new FileTasks();
@@ -385,6 +393,7 @@ namespace IntegrationPlayground_v_1_0_1
             
             else if(!ft.checkFile(file))
             {
+                Log.Information("File does not exist. Please provide a valid file url.");
                 Console.WriteLine("File does not exist. Please provide a valid file url.");
 
                 if (options[5] == "--batch")
@@ -399,6 +408,7 @@ namespace IntegrationPlayground_v_1_0_1
                 try
                 {
                     var fileData = ft.serializeJsonFile(file);
+                    Log.Information($"FileData: {fileData}");
 
                     fileData = di.removeBadElements(fileData);
 
@@ -432,6 +442,12 @@ namespace IntegrationPlayground_v_1_0_1
                                 try
                                 {
                                     var itemNumber = "H" + DateTime.Now.Year.ToString() + DateTime.Now.DayOfYear.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
+
+                                    if (string.IsNullOrEmpty(item.Manufacturer))
+                                    {
+                                        item.Manufacturer = "Unknown";
+                                    }
+
                                     var uid = _repo.getManufacturerUIDFromName(item.Manufacturer);
 
                                     Item itemToAdd = new Item
@@ -460,6 +476,7 @@ namespace IntegrationPlayground_v_1_0_1
                                 }
                                 catch (Exception e)
                                 {
+                                    Log.Error($"at catch of add-items: {e.Message}");
                                     continue;
                                 }
                             }
@@ -468,6 +485,7 @@ namespace IntegrationPlayground_v_1_0_1
 
                     if (options[4] == "--add-funding")
                     {
+                        Log.Information("at add-funding");
                         var fundingSources = fileData.GroupBy(u => u.FundingSource);
 
                         foreach (var source in fundingSources)
@@ -481,25 +499,32 @@ namespace IntegrationPlayground_v_1_0_1
 
                     var outData = new List<PurchaseOrderFile>();
 
+                    Log.Information($"FileData count {fileData.Count}");
+
                     foreach (var item in fileData)
                     {
+                        Log.Debug("at foreach of item in fileData");
                         if (di.rejectLongRecord(item, true, true, true))
                         {
+                            Log.Debug("at rejectLongRecord = true");
                             continue;
                         }
 
                         if (!di.siteNotFound(item))
                         {
+                            Log.Debug("at siteNotFound = false");
                             continue;
                         }
 
                         if (!di.productNotFound(item))
                         {
+                            Log.Debug("at productNotFound in program.cs");
                             continue;
                         }
 
                         if (!di.modelNotFound(item)) //need to add option for adding model numbers
                         {
+                            Log.Debug("at modelNotFound in program.cs");
                             continue;
                         }
 
@@ -524,8 +549,9 @@ namespace IntegrationPlayground_v_1_0_1
                         }
 
                         outData.Add(item);
+                        Log.Information($"Outdata count: {outData.Count()}");
                     }
-
+                    Log.Debug($"OutData count before if: {outData.Count()}");
                     if (outData.Count > 0)
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
@@ -571,6 +597,7 @@ namespace IntegrationPlayground_v_1_0_1
                         }
                         catch (Exception e)
                         {
+                            Log.Error($"catch at end of integration {e.Message}");
                             Console.WriteLine("Error cleaning up data file info. Exception Message: " + e.Message);
                         }
 
@@ -585,6 +612,7 @@ namespace IntegrationPlayground_v_1_0_1
                     }
                     else
                     {
+                        Log.Error("No valid data uploaded. Please fix issues in file and re-upload.");
                         Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
                         Console.WriteLine("Press Any Key To Continue...");
                         if (options[5] == "--batch")
@@ -594,10 +622,11 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.ReadLine();
                     }
                 }
+                
 
                 catch (Exception e)
                 {
-
+                    Log.Error("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
                     Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
                     Console.WriteLine("Press Any Key To Continue...");
 
