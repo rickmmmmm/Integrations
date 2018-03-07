@@ -214,6 +214,60 @@ namespace SystemTasks
             File.Move(fileName, newFile);
         }
 
+        public void copyToArchive(string file, string archiveLocation)
+        {
+            if (!Directory.Exists(archiveLocation))
+            {
+                Directory.CreateDirectory(archiveLocation);
+            }
+
+            var directory = Path.GetDirectoryName(file);
+
+            var files = Directory.GetFiles(directory);
+
+            if (files != null)
+            {
+                foreach (var archiveFile in files)
+                {
+                    var fileName = Path.GetFileName(archiveFile);
+                    var destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
+                    File.Copy(archiveFile, destination, false);
+                }
+            }
+        }
+
+        public void moveToArchive(string file, string archiveLocation)
+        {
+            var destination = "";
+
+            if (!Directory.Exists(archiveLocation))
+            {
+                Directory.CreateDirectory(archiveLocation);
+            }
+
+            var directory = Path.GetDirectoryName(file);
+
+            var files = Directory.GetFiles(directory);
+
+            if (files != null)
+            {
+                foreach (var archiveFile in files)
+                {
+                    var fileName = Path.GetFileName(archiveFile);
+                    if (fileName == "Output.txt")
+                    {
+                        destination = Path.Combine(archiveLocation, $"{DateTime.Now.AddDays(-1).ToString("yyyyMMdd")}_{fileName}");
+                    }
+                    else
+                    {
+                        destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
+                    }
+                    
+                    File.Move(archiveFile, destination);
+                }
+            }
+        }
+
         public dynamic convertCsvFileToObject(string fileName, ImportType type)
         {
             switch (type)

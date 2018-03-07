@@ -549,9 +549,8 @@ namespace IntegrationPlayground_v_1_0_1
                         }
 
                         outData.Add(item);
-                        Log.Information($"Outdata count: {outData.Count()}");
                     }
-                    Log.Debug($"OutData count before if: {outData.Count()}");
+                    
                     if (outData.Count > 0)
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
@@ -566,9 +565,19 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
+                        Console.WriteLine("Where would you like to archive copies of the data files? Enter location below:");
+                        var archiveLocation = string.IsNullOrEmpty(options[8]) ? Console.ReadLine() : options[8];
+
                         var rejects = _repo.getRejectionsFromLastImport();
 
+                        // If Output.txt already exists, move to archive so that new file is written
+                        ft.moveToArchive(rejectFile, archiveLocation);
+
                         ft.createRejectFile(rejectFile, rejects, fileData);
+
+                        // Copy po_data.json and POdata.csv to archive 
+                        ft.copyToArchive(file, archiveLocation);
+
                         _repo.completeIntegration();
 
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
