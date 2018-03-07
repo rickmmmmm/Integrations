@@ -317,7 +317,7 @@ namespace SystemTasks
                     order.LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() && item[ConfigurationManager.AppSettings["LineNumber"]].ToString().Trim() != "" ? item[ConfigurationManager.AppSettings["LineNumber"]] : 0;
                     order.ShippedToSite = location;
                     order.QuantityShipped = order.Quantity;
-                    order.Notes = "";
+                    order.Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? item[ConfigurationManager.AppSettings["Notes"]].ToString().Trim() : null;
                     order.Accepted = null;
                     order.Reason = "";
 
