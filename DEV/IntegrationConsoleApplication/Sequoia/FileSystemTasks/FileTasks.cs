@@ -231,7 +231,7 @@ namespace SystemTasks
                 {
                     var fileName = Path.GetFileName(archiveFile);
                     var destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
-                    File.Copy(archiveFile, destination, false);
+                    File.Copy(archiveFile, destination, true);
                 }
             }
         }
@@ -263,6 +263,11 @@ namespace SystemTasks
                         destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
                     }
                     
+                    if (File.Exists(destination))
+                    {
+                        File.Delete(destination);
+                    }
+
                     File.Move(archiveFile, destination);
                 }
             }
