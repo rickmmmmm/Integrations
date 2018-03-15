@@ -1,8 +1,25 @@
 let aws = require('aws-sdk');
 let EC2 = new aws.EC2();
 
-exports.handler = (event, context, callback) => {
-    launchEC2Template(process.env.templateId, () => { context.succeed("done"); });
+exports.handler = (events, context, callback) => {
+    console.log('ProcessS3File lambda started');
+    console.log(events.Records);
+    let message = "";
+    if(events.Records.length > 0) {
+        let event = events.Records[0];
+        console.log(event);
+        if(event.eventName == 'ObjectCreated:Put') {
+            console.log('ProcessS3File template launching');
+            message = "done";
+            launchEC2Template(process.env.templateId, () => { context.succeed(message); });
+        } else {
+            message = "Non Put event fired";
+            console.log(message);
+        }
+    } else {
+        message = "Events Array is empty";
+        console.log(message);
+    }
 };
 
 function launchEC2Template(templateId, cb) {
@@ -13,6 +30,7 @@ function launchEC2Template(templateId, cb) {
             LaunchTemplateId: templateId
         }
     };
+
     EC2.runInstances(params,
         (err,data) => {
             if (err) {
@@ -25,4 +43,5 @@ function launchEC2Template(templateId, cb) {
             }
         }
     );
+
 };
