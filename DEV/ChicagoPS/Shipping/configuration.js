@@ -1,14 +1,14 @@
 module.exports = {
     config: {
-        "apiUrl":"http://www.tipwebittraining.com/TIPWEBAPI5/api",
-        "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
+        "apiUrl":"https://www.staginghss.com/IntgCPSTIPWebAPI/api",
+        "host":"integrations.cu5oaecilfzk.us-east-1.rds.amazonaws.com",
         "database":"IntgAppData",
-        "username":"sa",
+        "username":"intg-cps",
         "dbType":"mssql",
         "sourceFile":"/home/",
         "sourceType":"csv",
-		"idFileLoc":"/home/ec2-user/",
         "mapType":"shipping",
+        "idFileLoc":"/home/ec2-user/",
         "client":"CPS",
         "typeDesc":"Shipping Integration for Chicago Public Schools sourced from Oracle Purchasing",
         "linksFolder":"/home/ec2-user/etc/CPS/linktables/",
@@ -22,7 +22,7 @@ module.exports = {
     secrets: {
         "secretkey":"7cd7f145-7989-4866-bd54-f646fa3ef739",
         "passphrase":"632b5da8-2608-4aee-93aa-d2c41be137a9",
-        "password":"gemcap3663"
+        "password":"c4afrus7aSU&"
     },
     apiConfig: {
         "login" : "/Login/AuthorizeAPI",
@@ -44,7 +44,7 @@ module.exports = {
             "payments":"0",
             "inventory": "0"
         },
-		flatDataTable: "Shipments"
+        flatDataTable: "Shipments"
     }
 }
 // still need to add configurations for client data. I'm thinking each integration will have an object in this configuration file

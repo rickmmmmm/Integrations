@@ -1,19 +1,18 @@
 module.exports = {
     config: {
-        //"apiUrl":"https://assets.cps.edu/TIPWEBAPI/api",
-        "apiUrl":"https://www.tipwebintegrationtest.com/TIPWEBAPI/api",
-        "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
-        "database":"TipWebHostedStagingChicago_ETL",
-        "username":"Tipweb",
+        "apiUrl":"https://www.staginghss.com/IntgCPSTIPWebAPI/api",
+        "host":"integrations.cu5oaecilfzk.us-east-1.rds.amazonaws.com",
+        "database":"IntgAppData",
+        "username":"intg-cps",
         "dbType":"mssql",
         "mapType":"invoices",
         "client":"CPS",
         "typeDesc":"Invoice Detail Integration for Chicago Public Schools sourced from Oracle Purchasing"
     },
     secrets: {
-        "secretkey":"Mofo1234",
-        "passphrase":"gemcap3663",
-        "password":"Bookmaster"
+        "secretkey":"",
+        "passphrase":"",
+        "password":"c4afrus7aSU&"
     },
     apiConfig: {
         "login" : "/Login/AuthorizeAPI",
