@@ -5,7 +5,6 @@ TYPE="PurchaseOrder"
 AWSBUCKET="hssintg-prod"
 FOLDER="intg_prod"
 INTGFILE="intg_data_process.sh"
-#INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 
 echo ">>> Creating directory for Hayes DataMapper Application."
 mkdir -p /home/ec2-user/etc
@@ -49,4 +48,4 @@ echo ">>> downloaded BASH script "$INTGFILE
 echo ">>> Running BASH scripts..."
 cd /home/ec2-user/etc/$CLIENT/scripts
 sudo sh $INTGFILE;
-echo ">>> Completed Purchase Order Data Process!"
+echo ">>> Completed $TYPE Data Process!"

@@ -7,22 +7,22 @@ var database = configuration.config.database;
 var username = configuration.config.username;
 var password = configuration.secrets.password;
 
-seq =  new sequelize(database,username,password, {
-        host: configuration.config.host,
-          dialect: 'mssql',
-          logging: false,
-          define: {
-            timestamps: false
-          },
-          pool: {
-            requestTimeout: 150000,
-            idle: 20000,
-            acquire: 20000
-          }
-    });
+seq = new sequelize(database, username, password, {
+    host: configuration.config.host,
+    dialect: 'mssql',
+    logging: false,
+    define: {
+        timestamps: false
+    },
+    pool: {
+        requestTimeout: 150000,
+        idle: 20000,
+        acquire: 20000
+    }
+});
 
-DataIntegrationsModel = { 
-    IntegrationsID: { type: sequelize.INTEGER, primaryKey: true }, 
+DataIntegrationsModel = {
+    IntegrationsID: { type: sequelize.INTEGER, primaryKey: true },
     IntegrationsObject: sequelize.STRING,
     DateAdded: sequelize.DATE,
     DataProcessedSuccessfully: sequelize.BOOLEAN,
@@ -52,7 +52,7 @@ PurchaseOrderIntegrationFlatDataModel = {
     NOTES: sequelize.STRING(5000),
     SHIPPEDTOSITE: sequelize.STRING,
     QUANTITYSHIPPED: sequelize.INTEGER,
-    IntegrationsID: {type: sequelize.INTEGER, unique: 'cindex' },
+    IntegrationsID: { type: sequelize.INTEGER, unique: 'cindex' },
     Chunk: sequelize.BOOLEAN,
     CFDA: sequelize.STRING
 };
@@ -67,7 +67,7 @@ DataIntegrationsErrorsModel = {
 };
 
 DataIntegrationsActivityMonitorModel = {
-    DataIntegrationsActivityMonitorID:  { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    DataIntegrationsActivityMonitorID: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     DataIntegrationsActivityMonitorObject: sequelize.STRING(10000),
     AddedDate: sequelize.DATE,
     DataIntegrationsID: sequelize.INTEGER
@@ -81,7 +81,7 @@ DataIntegrationsMappingsModel = {
 };
 
 PurchaseOrderHeaderModel = {
-    OrderNumber: {type: sequelize.STRING, unique:'cidx', primaryKey: true },
+    OrderNumber: { type: sequelize.STRING, unique: 'cidx', primaryKey: true },
     Status: sequelize.STRING,
     VendorID: sequelize.INTEGER,
     VendorName: sequelize.STRING,
@@ -90,13 +90,13 @@ PurchaseOrderHeaderModel = {
     EstimatedDeliveryDate: sequelize.STRING,
     Notes: sequelize.STRING(500),
     Other1: sequelize.STRING(100),
-    DataIntegrationsID: { type: sequelize.INTEGER , unique:'cidx' },
+    DataIntegrationsID: { type: sequelize.INTEGER, unique: 'cidx' },
     ShouldSubmit: sequelize.BOOLEAN
 };
 
 PurchaseOrderDetailModel = {
-    OrderNumber: {type: sequelize.STRING, unique:'ccidx', primaryKey: true },
-    LineNumber: { type: sequelize.INTEGER , unique:'ccidx', primaryKey: true },
+    OrderNumber: { type: sequelize.STRING, unique: 'ccidx', primaryKey: true },
+    LineNumber: { type: sequelize.INTEGER, unique: 'ccidx', primaryKey: true },
     Status: sequelize.STRING,
     SiteID: sequelize.STRING,
     QuantityOrdered: sequelize.INTEGER,
@@ -106,15 +106,15 @@ PurchaseOrderDetailModel = {
     PurchasePrice: sequelize.DECIMAL,
     AccountCode: sequelize.STRING(100),
     DepartmentID: sequelize.INTEGER,
-    DataIntegrationsID: { type: sequelize.INTEGER , unique:'ccidx' },
+    DataIntegrationsID: { type: sequelize.INTEGER, unique: 'ccidx' },
     ShouldSubmit: sequelize.BOOLEAN,
     CFDA: sequelize.STRING
 };
 
 ShipmentsModel = {
-    OrderNumber: {type: sequelize.STRING, unique:'cccidx', primaryKey: true },
-    LineNumber: { type: sequelize.INTEGER , unique:'cccidx', primaryKey: true },
-    SiteID: {type: sequelize.STRING, unique:'cccidx', primaryKey: true },
+    OrderNumber: { type: sequelize.STRING, unique: 'cccidx', primaryKey: true },
+    LineNumber: { type: sequelize.INTEGER, unique: 'cccidx', primaryKey: true },
+    SiteID: { type: sequelize.STRING, unique: 'cccidx', primaryKey: true },
     TicketNumber: sequelize.INTEGER,
     QuantityShipped: sequelize.INTEGER,
     TicketedBy: sequelize.STRING,
@@ -122,13 +122,13 @@ ShipmentsModel = {
     Status: sequelize.STRING,
     InvoiceNumber: sequelize.STRING,
     InvoiceDate: sequelize.STRING,
-    IntegrationsID: { type: sequelize.INTEGER , unique:'cccidx' },
+    IntegrationsID: { type: sequelize.INTEGER, unique: 'cccidx' },
     ShouldSubmit: sequelize.BOOLEAN
 }
 
 ProductsModel = {
-    ProductNumber:  { type: sequelize.INTEGER , unique:'ccccidx', primaryKey: true },
-    ProductName:  { type: sequelize.STRING , unique:'ccccidx', primaryKey: true },
+    ProductNumber: { type: sequelize.INTEGER, unique: 'ccccidx', primaryKey: true },
+    ProductName: { type: sequelize.STRING, unique: 'ccccidx', primaryKey: true },
     ProductDescription: sequelize.STRING(1000),
     ProductType: sequelize.STRING,
     Model: sequelize.STRING,
@@ -214,6 +214,15 @@ InvoiceDetailsModel = {
     DataIntegrationsID: { type: sequelize.INTEGER, primaryKey: true }
 }
 
+DataIntegrationsFilesModel = {
+    DataIntegrationsFilesID: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    FileNameAws: sequelize.STRING,
+    AwsFileLink: sequelize.STRING,
+    Client: sequelize.STRING,
+    DataIntegrationsID: sequelize.INTEGER,
+    DateAdded: sequelize.DATE
+};
+
 module.exports = {
 
     DataIntegrations: seq.define('DataIntegrations', DataIntegrationsModel),
@@ -222,15 +231,16 @@ module.exports = {
     DataIntegrationsActivityMonitor: seq.define('DataIntegrationsActivityMonitor', DataIntegrationsActivityMonitorModel),
     DataIntegrationsMappings: seq.define('DataIntegrationsMappings', DataIntegrationsMappingsModel),
     Vendors: seq.define('Vendors', VendorsModel),
-    Products: seq.define('Products',ProductsModel),
+    Products: seq.define('Products', ProductsModel),
     FundingSources: seq.define('FundingSources', FundingSourcesModel),
-    PurchaseOrderHeader: seq.define('PurchaseOrderHeader', PurchaseOrderHeaderModel, {tableName:'PurchaseOrderHeader'}),
-    PurchaseOrderDetail: seq.define('PurchaseOrderDetail', PurchaseOrderDetailModel, {tableName: 'PurchaseOrderDetail'}),
+    PurchaseOrderHeader: seq.define('PurchaseOrderHeader', PurchaseOrderHeaderModel, { tableName: 'PurchaseOrderHeader' }),
+    PurchaseOrderDetail: seq.define('PurchaseOrderDetail', PurchaseOrderDetailModel, { tableName: 'PurchaseOrderDetail' }),
     Shipments: seq.define('Shipments', ShipmentsModel),
-    DataIntegrationsLinkTable: seq.define('DataIntegrationsLinkTable', LinkTableModel, {tableName: 'DataIntegrationsLinkTable'} ),
+    DataIntegrationsLinkTable: seq.define('DataIntegrationsLinkTable', LinkTableModel, { tableName: 'DataIntegrationsLinkTable' }),
     Invoices: seq.define('Invoices', InvoicesModel),
     InvoiceDetails: seq.define('InvoiceDetails', InvoiceDetailsModel),
     InvoiceDetailsIntegrationFlatData: seq.define('InvoiceDetailsIntegrationFlatData', InvoiceDetailsIntegrationFlatDataModel),
+    DataIntegrationsFiles: seq.define('DataIntegrationsFiles', DataIntegrationsFilesModel),
 
     /**
      * Gets map objects from database of the type specified.
@@ -240,10 +250,12 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.DataIntegrationsMappings.findAll(
-                    { where: {
-                        MappingsID: options.type,
-                        Client: options.client
-                    }}
+                    {
+                        where: {
+                            MappingsID: options.type,
+                            Client: options.client
+                        }
+                    }
                 ).then(
                     data => {
                         resolve(data);
@@ -263,8 +275,8 @@ module.exports = {
     insertIntegration(payload) {
 
         return new Promise(
-            (resolve,reject) => {
-                
+            (resolve, reject) => {
+
                 if (!payload) {
                     reject();
                 }
@@ -294,22 +306,22 @@ module.exports = {
 
     beginSendingToTipwebAPI(intgid) {
         return new Promise(
-            (resolve,reject) => {
+            (resolve, reject) => {
 
                 this.DataIntegrations.update({
                     DataSentToTipweb: true
-                }, { 
-                    where: { 
-                        IntegrationsID: intgid
-                    } 
-                }).then(
-                    data => {
-                        resolve(data);
-                    },
-                    error => {
-                        reject(error);
-                    }
-                );
+                }, {
+                        where: {
+                            IntegrationsID: intgid
+                        }
+                    }).then(
+                        data => {
+                            resolve(data);
+                        },
+                        error => {
+                            reject(error);
+                        }
+                    );
 
             }
         );
@@ -317,22 +329,22 @@ module.exports = {
 
     beginDataPostProcessing(intgid) {
         return new Promise(
-            (resolve,reject) => {
+            (resolve, reject) => {
 
                 this.DataIntegrations.update({
                     DataPostProcessing: true
-                }, { 
-                    where: { 
-                        IntegrationsID: intgid
-                    } 
-                }).then(
-                    data => {
-                        resolve(data);
-                    },
-                    error => {
-                        reject(error);
-                    }
-                );
+                }, {
+                        where: {
+                            IntegrationsID: intgid
+                        }
+                    }).then(
+                        data => {
+                            resolve(data);
+                        },
+                        error => {
+                            reject(error);
+                        }
+                    );
 
             }
         );
@@ -342,10 +354,10 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.DataIntegrations.update({ DataProcessedSuccessfully: true },
-                { where: {IntegrationsID: intgid } }).then(
-                    data => { resolve('Success')},
-                    error => { reject(error); }
-                );
+                    { where: { IntegrationsID: intgid } }).then(
+                        data => { resolve('Success') },
+                        error => { reject(error); }
+                    );
             }
         );
     },
@@ -365,7 +377,7 @@ module.exports = {
                     }
                 ).then(
                     data => {
-                        if(!data) {
+                        if (!data) {
                             reject('No integrations currently processing!');
                         }
                         resolve(data.dataValues.IntegrationsID);
@@ -393,7 +405,7 @@ module.exports = {
                     }
                 ).then(
                     data => {
-                        if(!data) {
+                        if (!data) {
                             reject('No integration data currently being sent to TipWEB-IT!');
                         }
                         resolve(data.dataValues.IntegrationsID);
@@ -413,7 +425,7 @@ module.exports = {
     insertFlatData(payload, options) {
 
         return new Promise(
-            (resolve, reject)=>{
+            (resolve, reject) => {
 
                 if (!payload) {
                     console.error(chalk.red('No data provided.'))
@@ -433,7 +445,7 @@ module.exports = {
                         reject(err);
                     }
                 )
-        });
+            });
 
     },
 
@@ -443,7 +455,7 @@ module.exports = {
      */
     logError(payload) {
         return new Promise(
-            (resolve, reject)=>{
+            (resolve, reject) => {
 
                 if (!payload) {
                     reject();
@@ -458,17 +470,17 @@ module.exports = {
                         reject(err);
                     }
                 )
-        });
+            });
     },
 
     updateSubmittedValues(options) {
         return new Promise(
             (resolve, reject) => {
                 this[options.target].update(
-                    {   
+                    {
                         Submitted: true
                     },
-                    { where: { DataIntegrationsID: options.id, $in: options.ins  } }
+                    { where: { DataIntegrationsID: options.id, $in: options.ins } }
                 ).then(
                     data => {
                         resolve();
@@ -480,15 +492,15 @@ module.exports = {
             }
         );
     },
-    
+
     updateSubmittedValues2(options) {
         return new Promise(
             (resolve, reject) => {
                 this[options.target].update(
-                    {   
+                    {
                         Submitted: true
                     },
-                    { where: { IntegrationsID: options.id, $in: options.ins  } }
+                    { where: { IntegrationsID: options.id, $in: options.ins } }
                 ).then(
                     data => {
                         resolve();
@@ -526,7 +538,7 @@ module.exports = {
             (resolve, reject) => {
 
                 if (options) {
-                    let params = intgid + ','+ options.headers + ',' + options.details + ',' + options.shipping + ',' + options.inventory + ',' + options.charges + ',' + options.payments
+                    let params = intgid + ',' + options.headers + ',' + options.details + ',' + options.shipping + ',' + options.inventory + ',' + options.charges + ',' + options.payments
                     seq.query("EXEC Integrations_RemoveUnnecessaryUpdates " + params).then(
                         data => {
                             resolve(data);
@@ -557,6 +569,7 @@ module.exports = {
             }
         );
     },
+
     runProcIntegrations_FlagShipmentsFromBadDetailRecords(intgid, options) {
         return new Promise(
             (resolve, reject) => {
@@ -571,6 +584,7 @@ module.exports = {
             }
         );
     },
+
     runProcIntegrations_AggregateDatafromPurchaseIntegration(date, client) {
         return new Promise(
             (resolve, reject) => {
@@ -600,13 +614,14 @@ module.exports = {
             }
         );
     },
+
     /**
      * DEPRECATED. Suggested for use to log actions as they occur in the application. May not need this and may instead copy the console to a text file upon completion.
-     * @param {*} payload 
+     * @param {*} payload
      */
     logActivity(payload) {
         return new Promise(
-            (resolve, reject)=>{
+            (resolve, reject) => {
 
                 if (!payload) {
                     reject();
@@ -621,7 +636,7 @@ module.exports = {
                         reject(err);
                     }
                 )
-        });
+            });
     },
 
     /* Vendors */
@@ -632,9 +647,9 @@ module.exports = {
                 if (useIDs) {
                     this.Vendors.findAll(
                         {
-                            attributes: ['VendorName','VendorID'],
+                            attributes: ['VendorName', 'VendorID'],
                             where: { Client: configuration.config.client },
-                            group: ['VendorName','VendorID']
+                            group: ['VendorName', 'VendorID']
                         }
                     ).then(
                         data => {
@@ -673,9 +688,9 @@ module.exports = {
                 }
 
                 var sqlConditions = [
-                                { IntegrationsID: intgid },
-                                { VENDOR_NAME: { $notIn: currentVendors } }
-                            ];
+                    { IntegrationsID: intgid },
+                    { VENDOR_NAME: { $notIn: currentVendors } }
+                ];
 
                 if (useGroups) {
 
@@ -683,19 +698,19 @@ module.exports = {
                     var currentVendorIDs = currentVendors === [] ? currentVendors : currentVendors.map(m => { return m.VendorID; });
 
                     sqlConditions = [
-                                { IntegrationsID: intgid },
-                                { VENDOR_NAME: { $notIn: currentVendorNames } },
-                                { VENDOR_ID: { $notIn: currentVendorIDs } }
-                            ];
+                        { IntegrationsID: intgid },
+                        { VENDOR_NAME: { $notIn: currentVendorNames } },
+                        { VENDOR_ID: { $notIn: currentVendorIDs } }
+                    ];
                 }
 
                 this.PurchaseOrderIntegrationFlatData.findAll(
                     {
-                        attributes: useGroups ? ['VENDOR_NAME','VENDOR_ID'] : 'VENDOR_NAME',
+                        attributes: useGroups ? ['VENDOR_NAME', 'VENDOR_ID'] : 'VENDOR_NAME',
                         where: {
                             $and: sqlConditions
                         },
-                        group: useGroups ? ['VENDOR_NAME','VENDOR_ID'] : 'VENDOR_NAME' 
+                        group: useGroups ? ['VENDOR_NAME', 'VENDOR_ID'] : 'VENDOR_NAME'
                     }
                 ).then(
                     data => {
@@ -732,11 +747,13 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Vendors.findAll(
-                    {   attributes: {exclude : 'id'},
-                        where: { $or:[{ Added: true }, { Updated: true }], Client: options.client },
+                    {
+                        attributes: { exclude: 'id' },
+                        where: { $or: [{ Added: true }, { Updated: true }], Client: options.client },
                         limit: options.limitVal,
-                        offset: options.offsetVal }
-                    
+                        offset: options.offsetVal
+                    }
+
                 ).then(
                     data => {
                         resolve(data);
@@ -753,11 +770,11 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Vendors.update(
-                    {   
+                    {
                         Added: false,
                         Updated: false
                     },
-                    { where: { $or:[{ Added: true }, { Updated: true }] }, Client: configuration.config.client }
+                    { where: { $or: [{ Added: true }, { Updated: true }] }, Client: configuration.config.client }
                 ).then(
                     data => {
                         resolve('Success!');
@@ -778,15 +795,15 @@ module.exports = {
                 var sqlIn = oldProducts === [] ? oldProducts : oldProducts.map(m => { return m.ProductName; });
 
                 this.PurchaseOrderIntegrationFlatData.findAll({
-                        attributes: ['PRODUCT_NAME','PRODUCT_TYPE','MODEL','MANUFACTURER', [sequelize.fn('MAX', sequelize.col('PURCHASE_PRICE')), 'SuggestedPrice']],
-                        group: ['PRODUCT_NAME','PRODUCT_TYPE','MODEL','MANUFACTURER'],
-                        where: {
-                            IntegrationsID: intgid,
-                            PRODUCT_NAME: {
-                                $notIn: sqlIn
-                            }
+                    attributes: ['PRODUCT_NAME', 'PRODUCT_TYPE', 'MODEL', 'MANUFACTURER', [sequelize.fn('MAX', sequelize.col('PURCHASE_PRICE')), 'SuggestedPrice']],
+                    group: ['PRODUCT_NAME', 'PRODUCT_TYPE', 'MODEL', 'MANUFACTURER'],
+                    where: {
+                        IntegrationsID: intgid,
+                        PRODUCT_NAME: {
+                            $notIn: sqlIn
                         }
                     }
+                }
                 ).then(
                     data => {
                         resolve(data);
@@ -803,12 +820,12 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Products.findAll({
-                        attributes: ['ProductName'],
-                        group: 'ProductName'
-                    }
+                    attributes: ['ProductName'],
+                    group: 'ProductName'
+                }
                 ).then(
                     data => {
-                        resolve(data);        
+                        resolve(data);
                     },
                     error => {
                         reject(error);
@@ -838,7 +855,7 @@ module.exports = {
             (resolve, reject) => {
                 for (let upd of newProductNamesList) {
                     this.Products.update(upd,
-                        { where: { ProductName: upd.ProductName }}
+                        { where: { ProductName: upd.ProductName } }
                     ).then(
                         data => {
                             resolve(data); //rows affected
@@ -856,12 +873,12 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Products.update(
-                    {   
+                    {
                         Added: false,
                         Updated: false
                     },
                     {
-                        where: { $or: [{ Added: true}, { Updated: true }], Client: configuration.config.client }
+                        where: { $or: [{ Added: true }, { Updated: true }], Client: configuration.config.client }
                     }
                 ).then(
                     data => {
@@ -880,23 +897,23 @@ module.exports = {
      */
     getProductsToUpsert(options) {
         return new Promise(
-        (resolve, reject) => {
-            this.Products.findAll({
-                attributes: { exclude: ['Added', 'Updated', 'AddedDate', 'LastUpdatedDate', 'id']},
-                where: { 
-                    $or: [{Added: true }, {Updated: true }], Client: options.client
-                },
-                limit: options.limitVal,
-                offset: options.offset
-            }).then(
-                data => {
-                    resolve(data);
-                },
-                error => {
-                    reject(error);
-                }
-            );
-        }
+            (resolve, reject) => {
+                this.Products.findAll({
+                    attributes: { exclude: ['Added', 'Updated', 'AddedDate', 'LastUpdatedDate', 'id'] },
+                    where: {
+                        $or: [{ Added: true }, { Updated: true }], Client: options.client
+                    },
+                    limit: options.limitVal,
+                    offset: options.offset
+                }).then(
+                    data => {
+                        resolve(data);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            }
         );
     },
 
@@ -906,12 +923,12 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.FundingSources.update(
-                    {   
+                    {
                         Added: false
                     }
                 ).then(
                     data => {
-                        return('Success!');
+                        return ('Success!');
                     },
                     err => {
                         reject(err);
@@ -936,7 +953,7 @@ module.exports = {
                 );
             }
         );
-        
+
     },
 
     getNewFundingSources(oldSources, intgid) {
@@ -945,7 +962,8 @@ module.exports = {
                 var sqlIn = oldSources === [] ? oldSources : oldSources.map(m => { return m.FundingSourceID; });
 
                 this.PurchaseOrderIntegrationFlatData.findAll(
-                    { attributes: ['FUNDING_SOURCE'],
+                    {
+                        attributes: ['FUNDING_SOURCE'],
                         group: ['FUNDING_SOURCE'],
                         where: { IntegrationsID: intgid, FUNDING_SOURCE: { $notIn: sqlIn } }
                     }
@@ -982,10 +1000,10 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderIntegrationFlatData.findAll({
-                        attributes: ['PO_NUMBER','PO_DATE','VENDOR_ID','VENDOR_NAME','SHIPPEDTOSITE'],
-                        group: ['PO_NUMBER','PO_DATE','VENDOR_ID','VENDOR_NAME','SHIPPEDTOSITE'],
-                        where: { IntegrationsID: intgid, Chunk: true }
-                    }
+                    attributes: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE'],
+                    group: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE'],
+                    where: { IntegrationsID: intgid, Chunk: true }
+                }
                 ).then(
                     data => {
                         resolve(data);
@@ -1002,7 +1020,7 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderIntegrationFlatData.findAll({
-                    attributes: { exclude: 'id'},
+                    attributes: { exclude: 'id' },
                     where: { IntegrationsID: intgid, Chunk: true }
                 }).then(
                     data => {
@@ -1064,16 +1082,16 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.count({
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                IntegrationsID: options.id,
-                                DataSentToTipweb: true
-                            }
-                        }],
-                        where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
-                    }
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            IntegrationsID: options.id,
+                            DataSentToTipweb: true
+                        }
+                    }],
+                    where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
@@ -1083,46 +1101,32 @@ module.exports = {
     },
 
     getTotalDetailsToUpsertCount(options) {
-        
-                this.DataIntegrations.hasMany(this.PurchaseOrderDetail, {
-                    foreignKey: {
-                        name: 'DataIntegrationsID'
-                    }
-                });
-        
-                this.PurchaseOrderDetail.belongsTo(this.DataIntegrations, {
-                    foreignKey: {
-                        name: 'DataIntegrationsID'
-                    }
-                });
-        
-                return new Promise(
-                    (resolve, reject) => {
-                        this.PurchaseOrderDetail.count({
-                                include: [{
-                                    model: this.DataIntegrations,
-                                    where: {
-                                        Client: options.client,
-                                        DataSentToTipweb: true,
-                                        IntegrationsID: options.id
-                                    }
-                                }],
-                                where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
-                            }
-                        ).then(
-                            data => { resolve(data); },
-                            error => { reject(error); }
-                        );
-                    }
-                );
-            },
-    getTotalVendorsToUpsertCount(options) {
-        
+
+        this.DataIntegrations.hasMany(this.PurchaseOrderDetail, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.PurchaseOrderDetail.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
         return new Promise(
             (resolve, reject) => {
-                this.Vendors.count({
-                        where: { $or: [ { Added: true }, { Updated: true }], Client: options.client },
-                    }
+                this.PurchaseOrderDetail.count({
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true,
+                            IntegrationsID: options.id
+                        }
+                    }],
+                    where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
@@ -1130,13 +1134,29 @@ module.exports = {
             }
         );
     },
+
+    getTotalVendorsToUpsertCount(options) {
+
+        return new Promise(
+            (resolve, reject) => {
+                this.Vendors.count({
+                    where: { $or: [{ Added: true }, { Updated: true }], Client: options.client },
+                }
+                ).then(
+                    data => { resolve(data); },
+                    error => { reject(error); }
+                );
+            }
+        );
+    },
+
     getTotalProductsToUpsertCount(options) {
-        
+
         return new Promise(
             (resolve, reject) => {
                 this.Products.count({
-                        where: { $or: [ { Added: true }, { Updated: true }], Client: options.client },
-                    }
+                    where: { $or: [{ Added: true }, { Updated: true }], Client: options.client },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
@@ -1162,21 +1182,21 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.findAll({
-                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                IntegrationsID: options.intgid
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                        offset: options.offsetVal,
-                        limit: options.limitVal,
-                        order: ['OrderNumber']
-                        
-                    }
+                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            IntegrationsID: options.intgid
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                    offset: options.offsetVal,
+                    limit: options.limitVal,
+                    order: ['OrderNumber']
+
+                }
                 ).then(
-                    data => {resolve(data);},
+                    data => { resolve(data); },
                     error => { reject(error); }
                 );
             }
@@ -1200,24 +1220,35 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderDetail.findAll({
-                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                IntegrationsID: options.intgid
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                        offset: options.offsetVal,
-                        limit: options.limitVal
-                    }
+                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            IntegrationsID: options.intgid
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                    offset: options.offsetVal,
+                    limit: options.limitVal
+                }
                 ).then(
-                    data => {resolve(data);},
+                    data => { resolve(this.escapePurchaseOrderDetails(data)); },
                     error => { reject(error); }
                 );
             }
         );
+    },
+
+    escapePurchaseOrderDetails(data) {
+        let escapedData = [];
+        for (let detail of data) {
+            detail.FundingSource = this.escapeString(detail.FundingSource);
+            detail.ProductName = this.escapeString(detail.ProductName);
+            detail.CFDA = this.escapeString(detail.CFDA);
+            escapedData.push(detail);
+        }
+        return escapedData;
     },
 
     /* Shipments */
@@ -1226,11 +1257,11 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderIntegrationFlatData.findAll({
-                    attributes: { exclude: 'id'},
+                    attributes: { exclude: 'id' },
                     where: { IntegrationsID: intgid, Chunk: true }
                 }).then(
                     data => {
-                        resolve(data);
+                        resolve(this.escapeShipments(data));
                     },
                     error => {
                         reject(error);
@@ -1238,6 +1269,22 @@ module.exports = {
                 )
             }
         );
+    },
+
+    escapeShipments(data) {
+        let escapedData = [];
+        for (let shipment of data) {
+            shipment.VENDOR_NAME = this.escapeString(shipment.VENDOR_NAME);
+            shipment.PRODUCT_NAME = this.escapeString(shipment.PRODUCT_NAME);
+            shipment.PRODUCT_TYPE = this.escapeString(shipment.PRODUCT_TYPE);
+            shipment.MODEL = this.escapeString(shipment.MODEL);
+            shipment.MANUFACTURER = this.escapeString(shipment.MANUFACTURER);
+            shipment.FUNDING_SOURCE = this.escapeString(shipment.FUNDING_SOURCE);
+            shipment.NOTES = this.escapeString(shipment.NOTES);
+            shipment.CFDA = this.escapeString(shipment.CFDA);
+            escapedData.push(shipment);
+        }
+        return escapedData;
     },
 
     insertShipments(payload) {
@@ -1256,7 +1303,7 @@ module.exports = {
     },
 
     getTotalShipmentsToUpsertCount(options) {
-        
+
         this.DataIntegrations.hasMany(this.Shipments, {
             foreignKey: {
                 name: 'IntegrationsID'
@@ -1272,16 +1319,16 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.count({
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                DataSentToTipweb: true,
-                                IntegrationsID: options.id
-                            }
-                        }],
-                        where: { ShouldSubmit: true, IntegrationsID: options.id },
-                    }
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true,
+                            IntegrationsID: options.id
+                        }
+                    }],
+                    where: { ShouldSubmit: true, IntegrationsID: options.id },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
@@ -1306,19 +1353,19 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.findAll({
-                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                IntegrationsID: options.id
-                            }
-                        }],
-                        where: { ShouldSubmit: true, IntegrationsID: options.id },
-                        offset: options.offsetVal,
-                        limit: options.limitVal
-                    }
+                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            IntegrationsID: options.id
+                        }
+                    }],
+                    where: { ShouldSubmit: true, IntegrationsID: options.id },
+                    offset: options.offsetVal,
+                    limit: options.limitVal
+                }
                 ).then(
-                    data => {resolve(data);},
+                    data => { resolve(data); },
                     error => { reject(error); }
                 );
             }
@@ -1329,7 +1376,7 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderIntegrationFlatData.update(
-                    {   
+                    {
                         Chunk: false
                     },
                     { where: { Chunk: true, IntegrationsID: intgid } }
@@ -1345,9 +1392,9 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.DataIntegrationsLinkTable.findAll({
-                        attributes: ['SourceVal', 'DestVal'],
-                        where: { Client: options.client, LinkType: options.type }
-                    }
+                    attributes: ['SourceVal', 'DestVal'],
+                    where: { Client: options.client, LinkType: options.type }
+                }
                 ).then(
                     data => {
                         resolve(data);
@@ -1362,7 +1409,7 @@ module.exports = {
 
     /*Invoices Data for CPS*/
     insertFlatDataInvoices(payload) {
-        
+
         return new Promise(
             (resolve, reject) => {
 
@@ -1378,7 +1425,7 @@ module.exports = {
                         reject(err);
                     }
                 )
-        });
+            });
 
     },
 
@@ -1387,9 +1434,9 @@ module.exports = {
             (resolve, reject) => {
                 this.InvoiceDetailsIntegrationFlatData.findAll(
                     {
-                        attributes: ['OrderNumber', 'InvoiceNumber','InvoiceDate','InvoiceStatus','AuthorizationStatus'],
-                        where:{ DataIntegrationsID: options.intgid, Chunk: true },
-                        group: ['OrderNumber', 'InvoiceNumber','InvoiceDate','InvoiceStatus','AuthorizationStatus']
+                        attributes: ['OrderNumber', 'InvoiceNumber', 'InvoiceDate', 'InvoiceStatus', 'AuthorizationStatus'],
+                        where: { DataIntegrationsID: options.intgid, Chunk: true },
+                        group: ['OrderNumber', 'InvoiceNumber', 'InvoiceDate', 'InvoiceStatus', 'AuthorizationStatus']
                     }).then(
                         data => {
                             resolve(data);
@@ -1397,7 +1444,7 @@ module.exports = {
                         err => {
                             reject(err);
                         }
-                );
+                    );
             }
         );
     },
@@ -1421,16 +1468,25 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.InvoiceDetailsIntegrationFlatData.findAll(
-                    { where:{ DataIntegrationsID: options.intgid, Chunk: true } }).then(
+                    { where: { DataIntegrationsID: options.intgid, Chunk: true } }).then(
                         data => {
-                            resolve(data);
+                            resolve(this.escapeInvoiceDetails(data));
                         },
                         err => {
                             reject(err);
                         }
-                );
+                    );
             }
         );
+    },
+
+    escapeInvoiceDetails(data) {
+        let escapedData = [];
+        for (let invoiceDetail of data) {
+            invoiceDetail.LineDescription = this.escapeString(invoiceDetail.LineDescription);
+            escapedData.push(invoiceDetail);
+        }
+        return escapedData;
     },
 
     insertInvoiceDetails(payload) {
@@ -1464,22 +1520,22 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Invoices.findAll({
-                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                        offset: options.offsetVal,
-                        limit: options.limitVal,
-                        order: ['OrderNumber']
-                        
-                    }
+                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                    offset: options.offsetVal,
+                    limit: options.limitVal,
+                    order: ['OrderNumber']
+
+                }
                 ).then(
-                    data => {resolve(data);},
+                    data => { resolve(data); },
                     error => { reject(error); }
                 );
             }
@@ -1502,22 +1558,22 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.InvoiceDetails.findAll({
-                        attributes: { exclude: ['ShouldSubmit','DataIntegrationsID', 'id']},
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                        offset: options.offsetVal,
-                        limit: options.limitVal,
-                        order: ['OrderNumber']
-                        
-                    }
+                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                    offset: options.offsetVal,
+                    limit: options.limitVal,
+                    order: ['OrderNumber']
+
+                }
                 ).then(
-                    data => {resolve(data);},
+                    data => { resolve(this.escapeInvoiceDetails(data)); },
                     error => { reject(error); }
                 );
             }
@@ -1541,15 +1597,15 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Invoices.count({
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                    }
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
@@ -1574,21 +1630,124 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.InvoiceDetails.count({
-                        include: [{
-                            model: this.DataIntegrations,
-                            where: {
-                                Client: options.client,
-                                DataSentToTipweb: true
-                            }
-                        }],
-                        where: { ShouldSubmit: true },
-                    }
+                    include: [{
+                        model: this.DataIntegrations,
+                        where: {
+                            Client: options.client,
+                            DataSentToTipweb: true
+                        }
+                    }],
+                    where: { ShouldSubmit: true },
+                }
                 ).then(
                     data => { resolve(data); },
                     error => { reject(error); }
                 );
             }
         );
+    },
+
+    /**
+     * Creates new data integration files record.
+     * @param {*} payload Object that maps to DataIntegrationsFiles table columns.
+     */
+    insertDataIntegrationsFile(payload) {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                if (!payload) {
+                    reject();
+                }
+                // console.log(payload);
+                this.DataIntegrationsFiles.create({
+                    FileNameAws: payload.FileNameAws,
+                    AwsFileLink: payload.AwsFileLink,
+                    Client: payload.Client,
+                    DataIntegrationsID: payload.DataIntegrationsID
+                }).then(
+                    () => {
+                        this.DataIntegrationsFiles.max('DataIntegrationsFilesID').then(
+                            data => {
+                                resolve(data);
+                            },
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    }
+                );
+
+            }
+        );
+    },
+
+    getProcessedFiles(options) {
+        this.DataIntegrationsFiles.hasMany(this.DataIntegrationsFiles, {
+            foreignKey: {
+                name: 'DataIntegrationsFilesID'
+            }
+        });
+
+        this.DataIntegrationsFiles.belongsTo(this.DataIntegrationsFiles, {
+            foreignKey: {
+                name: 'DataIntegrationsFilesID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsFiles
+                    .findAll({
+                        attributes: ['FileNameAws'],
+                        where: { DataIntegrationsID: options.id }
+                    })
+                    .then(
+                        data => {
+                            resolve(data);
+                        },
+                        err => {
+                            reject(err);
+                        }
+                    );
+            }
+        );
+    },
+
+    getProcessedFilesLinks(options) {
+        this.DataIntegrationsFiles.hasMany(this.DataIntegrationsFiles, {
+            foreignKey: {
+                name: 'DataIntegrationsFilesID'
+            }
+        });
+
+        this.DataIntegrationsFiles.belongsTo(this.DataIntegrationsFiles, {
+            foreignKey: {
+                name: 'DataIntegrationsFilesID'
+            }
+        });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.DataIntegrationsFiles
+                    .findAll({
+                        attributes: ['FileNameAws', 'AwsFileLink'],
+                        where: { DataIntegrationsID: options.id }
+                    })
+                    .then(
+                        data => {
+                            resolve(data);
+                        },
+                        err => {
+                            reject(err);
+                        }
+                    );
+            }
+        );
+    },
+
+    escapeString(line) {
+        return line.replace('\\', '\\\\').replace('"', '\"');
     }
 
 }

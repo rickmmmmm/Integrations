@@ -9,23 +9,28 @@ module.exports = {
     getToken() {
         return new Promise(
             (resolve, reject) => {
-
                 let loginUrl = configuration.config.apiUrl + configuration.apiConfig.login;
                 let body = { Key: configuration.secrets.secretkey, Phrase: configuration.secrets.passphrase }
-                request.post(loginUrl, {headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)},
-
-                (err, resp, body) => {
-                    console.log(err);
-                    if (err) {
-                        reject(err);
+                request.post(loginUrl,
+                    {
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        let respBody = JSON.parse(body);
-                        resolve(respBody);
-                    }
-                }
-            );
-                    
+                );
             }
         );
     },
@@ -34,42 +39,40 @@ module.exports = {
 
         return new Promise(
             (resolve, reject) => {
-                request.get(configuration.config.apiUrl + configuration.apiConfig.getVendors, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
+                request.get(configuration.config.apiUrl + configuration.apiConfig.getVendors, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } },
+                    (err, resp, body) => {
+                        if (err || resp.statusCode !== 200) {
+                            let errorObj = { statusCode: resp.statusCode, statusMessage: err }
+                            reject(err);
+                        }
+                        if (body) {
+                            let mappedBody = [];
+                            for (let b of JSON.parse(body)) {
+                                let outVal = {
+                                    VendorID: b.vendorID,
+                                    VendorName: b.vendorName,
+                                    Address1: b.address1,
+                                    Address2: b.address2,
+                                    City: b.city,
+                                    State: b.state,
+                                    ZipCode: b.zipCode,
+                                    Phone: b.phone,
+                                    Email: b.email
+                                }
 
-                    if (err || resp.statusCode !== 200) {
-                        let errorObj = { statusCode: resp.statusCode, statusMessage: err }
-                        
-                        reject(err);
-                    }
-                    if (body) {
-                        let mappedBody = [];
-                        for (let b of JSON.parse(body)) {
-                            let outVal = {
-                                VendorID : b.vendorID,
-                                VendorName : b.vendorName,
-                                Address1 : b.address1,
-                                Address2 : b.address2,
-                                City : b.city,
-                                State : b.state,
-                                ZipCode : b.zipCode,
-                                Phone : b.phone,
-                                Email : b.email
+                                console.log(outVal);
+
+                                mappedBody.push(outVal);
                             }
 
-                            console.log(outVal);
-
-                            mappedBody.push(outVal);
+                            resolve(mappedBody);
                         }
-
-                        resolve(mappedBody);
+                        else {
+                            let errorObj = { statusCode: resp.statusCode, statusMessage: resp.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    else {
-                        let errorObj = { statusCode: resp.statusCode, statusMessage: resp.statusMessage }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -77,43 +80,46 @@ module.exports = {
     getAllProducts(token) {
         return new Promise(
             (resolve, reject) => {
-                request.get(configuration.config.apiUrl + configuration.apiConfig.getProducts, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
+                request.get(configuration.config.apiUrl + configuration.apiConfig.getProducts,
+                    {
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (err, resp, body) => {
 
-                    console.log(resp.statusCode);
-                    console.log(resp.statusMessage);
+                        console.log(resp.statusCode);
+                        console.log(resp.statusMessage);
 
-                    if (err) {
-                        let errorObj = { err: err, response: resp }
-                        reject(err);
-                    }
-                    if (body) {
-
-                        let mappedBody = []
-
-                        for (let b of body) {
-                            let outVal = {
-                                ProuctNumber : b.productNumber,
-                                ProductName : b.productName,
-                                ProductDescription : b.productDescription,
-                                ProductType : b.productType,
-                                Model : b.model,
-                                Manufacturer : b.manufacturer,
-                                SuggestedPrice : b.suggestedPrice,
-                                SKU : b.sku
-                            };
-
-                            mappedBody.push(outVal);
+                        if (err) {
+                            let errorObj = { err: err, response: resp }
+                            reject(err);
                         }
+                        if (body) {
 
-                        resolve(mappedBody);
+                            let mappedBody = []
+
+                            for (let b of body) {
+                                let outVal = {
+                                    ProuctNumber: b.productNumber,
+                                    ProductName: b.productName,
+                                    ProductDescription: b.productDescription,
+                                    ProductType: b.productType,
+                                    Model: b.model,
+                                    Manufacturer: b.manufacturer,
+                                    SuggestedPrice: b.suggestedPrice,
+                                    SKU: b.sku
+                                };
+
+                                mappedBody.push(outVal);
+                            }
+
+                            resolve(mappedBody);
+                        }
+                        else {
+                            let errorObj = { err: err, response: resp }
+                            reject(errorObj);
+                        }
                     }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -121,43 +127,52 @@ module.exports = {
     getAllFundingSources(token) {
         return new Promise(
             (resolve, reject) => {
-                request.get(configuration.config.apiUrl + configuration.apiConfig.getFundingSources, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-                    if (err) {
-                        let errorObj = { err: err, response: resp }
-                        reject(err);
+                request.get(configuration.config.apiUrl + configuration.apiConfig.getFundingSources,
+                    {
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(JSON.parse(body));
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
-    
+
     upsertHeaders(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addHeader, { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-                    if (err) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addHeader,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(JSON.parse(body));
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -165,23 +180,26 @@ module.exports = {
     upsertDetails(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addDetail, 
-                    { body: JSON.stringify(body), 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-                    if (err) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addDetail,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -189,21 +207,26 @@ module.exports = {
     upsertShipments(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addShipment, { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-                    if (err) {
-                        let errorObj = { err: err, response: resp }
-                        reject(err);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addShipment,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -212,24 +235,26 @@ module.exports = {
 
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addProduct, 
-                    { body: JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-                              
-                    if (err && resp) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addProduct,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
@@ -237,73 +262,80 @@ module.exports = {
     upsertVendors(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addVendor, 
-                    { body: JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-
-                    if (err && resp) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addVendor,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
-    }, 
+    },
 
     addInvoices(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addInvoices, 
-                    { body: JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-
-                    if (err && resp) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addInvoices,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     },
+
     addInvoiceDetails(token, body) {
         return new Promise(
             (resolve, reject) => {
-                request.post(configuration.config.apiUrl + configuration.apiConfig.addInvoiceDetails, 
-                    { body: JSON.stringify(body),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }},
-                (err, resp, body) => {
-
-                    if (err && resp) {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
+                request.post(configuration.config.apiUrl + configuration.apiConfig.addInvoiceDetails,
+                    {
+                        body: JSON.stringify(body),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                    },
+                    (error, response, data) => {
+                        if (error) {
+                            let errorObj = { err: error, response: resp }
+                            reject(errorObj);
+                        } else if (response.statusCode !== 200) {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        } else if (data) {
+                            resolve(data);
+                        } else {
+                            let errorObj = { err: response.statusCode, response: response.statusMessage }
+                            reject(errorObj);
+                        }
                     }
-                    if (body) {
-                        resolve(body);
-                    }
-                    else {
-                        let errorObj = { err: err, response: resp }
-                        reject(errorObj);
-                    }
-                }
-            );
+                );
             }
         );
     }

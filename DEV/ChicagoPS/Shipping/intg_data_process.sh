@@ -1,19 +1,23 @@
 #!/bin/bash
 #Integration EC2 Process
 
-echo " #### Starting Shipment Data Process"
+echo " #### Setting Script Variables"
 CLIENT="CPS"
 TYPE="Shipping"
 AWSBUCKET="hssintg-prod"
 FOLDER="intg_prod"
 TEMPLATE="intgCpsPushShipping"
-###############################################################################################################################################
-#Set variable to instance-id
-###############################################################################################################################################
+REGION="us-east-1"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
+
+echo " #### Starting $CLIENT $TYPE Data Process"
+
+echo " #### Set region to $REGION"
+aws configure set default.region $REGION
 
 #clear local folders
-echo " #### Clearing previous data"
+echo " #### Clearing previous data";
 rm -rf /home/ec2-user/etc/$CLIENT/processing/json/parsed/*
 rm -rf /home/ec2-user/etc/$CLIENT/processing/json/arrays/*
 rm -rf /home/ec2-user/etc/$CLIENT/processing/csv/*
@@ -26,12 +30,20 @@ cd /home/ec2-user/etc/$CLIENT/processing/csv/
 
 # Move files to the archive path
 echo " #### Moving input files to Archive path: //$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/"
-# aws s3 rm s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/ --recursive
 for csvFile in *.csv; do
-    echo " #### Moving file $csvFile to the archive folder"
-    aws s3 mv "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/$csvFile" "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$csvFile"
-    # aws s3 rm s3:"//$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/$csvFile"
+    archiveExt="${csvFile##*.}";
+    archiveFileName="${csvFile%.*}";
+    ARCHIVE_FILE=$archiveFileName"_"$CURRENTDATE"."$archiveExt;
+    echo " #### Moving file $csvFile to the archive folder as $ARCHIVE_FILE"
+    aws s3 mv "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/$csvFile" "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$ARCHIVE_FILE"
+
+    echo " #### Adding file to DataIntegrationFiles"
+    hayes-datamapper --insert-process-file --client "$CLIENT" -id "$INSTANCEID" --filename "$csvFile" --filelink "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$ARCHIVE_FILE";
 done
+
+# remove the process file
+echo " #### Removing the run.process file"
+aws s3 rm "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/run.process"
 
 #Split file into 10,000 element chunks
 echo " #### Converting csv files to JSON..."
@@ -58,6 +70,7 @@ done
 echo " #### Starting datamapper entry for instance "$INSTANCEID;
 hayes-datamapper --create -id $INSTANCEID;
 hayes-datamapper -gld;
+
 ###############################################################################################################################################
 #    #Purchase Orders
 #        #Processing:
@@ -67,7 +80,8 @@ hayes-datamapper -gld;
 #                #Process Purchase Order Details
 #                #Toggle Post-processing
 ###############################################################################################################################################
-cd "/home/ec2-user/etc/$CLIENT/processing/json/arrays";
+cd "/home/ec2-user/etc/$CLIENT/processing/json/arrays/";
+
 for jsonArray in *.json; do
     echo " #### Mapping Array chunks of file: $jsonArray";
     hayes-datamapper --mapflat -f "/home/ec2-user/etc/$CLIENT/processing/json/arrays/$jsonArray" -id $INSTANCEID ;
@@ -75,6 +89,7 @@ for jsonArray in *.json; do
     hayes-datamapper -chu -id $INSTANCEID;
     echo " #### Next chunk";
 done
+
 ###############################################################################################################################################
         #Post-Processing:
             #Remove products that already exist
@@ -91,6 +106,7 @@ echo " #### Unnecessary records removed pre-push to API.";
 
 echo " #### Running custom scripts.";
 hayes-datamapper -cust
+
 echo " #### Beginning send to TIPWEBAPI."
 hayes-datamapper --send-to-api -id $INSTANCEID;
 echo " #### File Data Processing stage complete";
@@ -98,10 +114,9 @@ echo " #### File Data Processing stage complete";
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-echo " #### Set region to us-east-1"
-aws configure set default.region us-east-1;
 echo " #### Launching the EC2 for the next step using template $TEMPLATE"
 aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
+
 echo " #### Terminate instance $INSTANCEID"
 aws ec2 terminate-instances --instance-ids $INSTANCEID;
 ###############################################################################################################################################

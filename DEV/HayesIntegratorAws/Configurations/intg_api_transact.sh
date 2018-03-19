@@ -29,18 +29,19 @@ hayes-datamapper --sending-id;
 
 cd /home/ec2-user;
 INTEGRATIONID=$(<intgid.txt);
-
 echo " #### Retrieved Integration ID from database and saved to local file ID = "$INTEGRATIONID;
+
 hayes-datamapper --get-token;
-
 echo " #### Web API token retrieved."
+
 ...
+
 hayes-datamapper --endpoint_process -id $INTEGRATIONID -lv 800 -i 0;
-
 echo " #### Endpoint_Process Executed."
-...
-hayes-datamapper --complete -id $INTEGRATIONID;
 
+...
+
+hayes-datamapper --complete -id $INTEGRATIONID;
 echo " #### $TYPE Push Process Complete!"
 
 

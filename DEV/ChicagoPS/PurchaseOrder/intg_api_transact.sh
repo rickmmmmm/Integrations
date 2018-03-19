@@ -11,49 +11,55 @@
         #Cleanup:
             #Toggle DataProcessedSuccessfully
 ###############################################################################################################################################
-echo " #### Starting PO Push Transaction"
-CLIENT="CPS"
-TYPE="PurchaseOrder"
-REGION="us-east-1"
+echo " #### Setting Script Variables"
+CLIENT="CPS";
+TYPE="PurchaseOrder";
+REGION="us-east-1";
+INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id);
+CURRENTDATE=$(date '+%Y-%m-%d %H:%M:%S');
 
-echo " #### Updating DataMapper process"
+echo " #### Starting $CLIENT $TYPE API Push Process"
+
+echo " #### Set region to $REGION";
+aws configure set default.region $REGION;
+
+echo " #### Updating DataMapper process";
 hayes-datamapper --sending-id;
+
 cd /home/ec2-user;
 INTEGRATIONID=$(<intgid.txt);
 echo " #### Retrieved Integration ID from database and saved to local file ID = $INTEGRATIONID";
+
 hayes-datamapper --get-token;
 echo " #### Web API token retrieved."
+
 hayes-datamapper --push-vendors -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Vendors pushed to API."
+
 hayes-datamapper --push-products -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Products pushed to API."
+
 hayes-datamapper --push-headers -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Header records pushed to API."
-hayes-datamapper --push-details -id $INTEGRATIONID -lv 800 -i 0; ## THROWS ERRORS
+
+hayes-datamapper --push-details -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Detail records pushed to API."
+
 hayes-datamapper --complete -id $INTEGRATIONID;
-echo " #### Purchase Order Data Push process complete!"
-echo " #### Set region to $REGION"
-# aws configure set default.region us-east-1;
-aws configure set default.region $REGION;
-INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
-echo " #### Sending completion email "
-$MESSAGE="{
-  ""Subject"": {
-    ""Data"": ""$CLIENT Purchase Order Integration Complete"",
-    ""Charset"": ""utf8""
-  },
-  ""Body"": {
-    ""Text"": {
-      ""Data"": "" File: processed with InstanceID: $INSTANCEID "",
-      ""Charset"": ""utf8""
-    },
-    ""Html"": {
-      ""Data"": """",
-      ""Charset"": """"
-    }
-  }
-}"
-aws ses send-email --from "do_not_reply@hayessoft.com" --destination "ToAddresses=" --message=$MESSAGE
-echo " #### Terminate instance $INSTANCEID"
-aws ec2 terminate-instances --instance-ids $INSTANCEID
+echo " #### $TYPE Data Push process complete!"
+
+
+echo " #### Sending completion email ";
+
+FILES=$(hayes-datamapper --get-process-files -id $INTEGRATIONID);
+
+# RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com""";
+RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+TEXTCONTENT="\nThe $TYPE Integration has processed for files: $FILES\n\nTo access the results go to the error portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The $TYPE Integration has processed for files: $FILES<br /><br />To access the results go to the error portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+
+aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
+
+echo " #### Terminate instance $INSTANCEID";
+aws ec2 terminate-instances --instance-ids $INSTANCEID;

@@ -11,25 +11,46 @@
         #Cleanup:
             #Toggle DataProcessedSuccessfully
 ###############################################################################################################################################
-echo " #### Start"
+echo " #### Setting Script Variables"
 CLIENT="CPS"
 TYPE="Shipping"
 REGION="us-east-1"
+INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+CURRENTDATE=$(date '+%Y-%m-%d %H:%M:%S');
 
-echo " #### Updating DataMapper process"
+echo " #### Starting $CLIENT $TYPE API Push Process"
+
+echo " #### Set region to $REGION";
+aws configure set default.region $REGION;
+
+echo " #### Updating DataMapper process";
 hayes-datamapper --sending-id;
+
 cd /home/ec2-user;
 INTEGRATIONID=$(<intgid.txt);
 echo " #### Retrieved Integration ID from database and saved to local file ID = $INTEGRATIONID";
+
 hayes-datamapper --get-token;
 echo " #### Web API token retrieved."
+
 hayes-datamapper --push-shipments -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Shipments pushed to API."
+
 hayes-datamapper --complete -id $INTEGRATIONID;
-echo " #### Shipment Data Push process complete!"
-echo " #### Set region to $REGION"
-# aws configure set default.region us-east-1;
-aws configure set default.region $REGION;
-INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+echo " #### $TYPE Data Push process complete!"
+
+
+echo " #### Sending completion email ";
+
+FILES=$(hayes-datamapper --get-process-files -id $INTEGRATIONID);
+
+# RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com""";
+RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+TEXTCONTENT="\nThe $TYPE Integration has processed for files: $FILES\n\nTo access the results go to the error portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The $TYPE Integration has processed for files: $FILES<br /><br />To access the results go to the error portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+
+aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
+
 echo " #### Terminate instance $INSTANCEID"
 aws ec2 terminate-instances --instance-ids $INSTANCEID

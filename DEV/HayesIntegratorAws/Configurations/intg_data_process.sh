@@ -11,7 +11,7 @@ REGION="AWS_REGION"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
 
-echo " #### Starting $CLIENT $TYPE API Push Process"
+echo " #### Starting $CLIENT $TYPE Data Process"
 
 echo " #### Set region to $REGION"
 aws configure set default.region $REGION
@@ -92,7 +92,6 @@ hayes-datamapper -gld;
 cd "/home/ec2-user/etc/$CLIENT/processing/json/arrays/";
 
 for jsonArray in *.json; do
-
     echo " #### Mapping Array chunks of file: $jsonArray";
     hayes-datamapper --mapflat -f "/home/ec2-user/etc/$CLIENT/processing/json/arrays/$jsonArray" -id $INSTANCEID ;
     echo " #### Mapped flat data to database...";

@@ -40,4 +40,4 @@ echo ">>> downloaded BASH script "$INTGFILE
 echo ">>> Running BASH scripts..."
 cd /home/ec2-user/etc/$CLIENT/scripts
 sudo sh $INTGFILE;
-echo ">>> Completed Shipping Push Process!"
+echo ">>> Completed $TYPE Push Process!"
