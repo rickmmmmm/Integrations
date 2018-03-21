@@ -988,7 +988,6 @@ function getApiToken() {
 
 /**Upserts vendors via TIPWEBAPI */
 function upsertVendors(options) {
-    console.log('in upsert vendors...')
     return new Promise(
         (res, rej) => {
             repository.getVendorsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
@@ -997,6 +996,7 @@ function upsertVendors(options) {
                     rq.upsertVendors(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
+                            console.log();
                             console.log('Successfully processed ' + dataToUpload.length + ' records.');
                             console.log(rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
@@ -1084,13 +1084,12 @@ function upsertProducts(options) {
                     }
                     rq.upsertProducts(options.token, dataToUpload).then(
                         resolve => {
-                            console.log(); // to create a new line
-                            console.log('upsertProducts resolved');
                             let rejectedRecords = JSON.parse(resolve);
+                            console.log(); // to create a new line
                             console.log('Successfully processed ' + dataToUpload.length + ' records.');
                             console.log(rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
-                                console.log('Products Upserted. Saving Errors');
+                                // console.log('Products Upserted. Saving Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
                                         ErrorNumber: rec.badProduct.ProductNumber,
@@ -1106,7 +1105,7 @@ function upsertProducts(options) {
                                             }
                                         },
                                         reject => {
-                                            console.log("logError failed");
+                                            // console.log("logError failed");
                                             // console.error(reject);
                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                 res();
@@ -1175,7 +1174,7 @@ function getVendorsFromTipweb() {
                     repository.insertVendors(vendors).then(
                         resolve => {
                             // console.log(resolve);
-                            console.log('Successfully added records for vendors from TipWEB-IT API');
+                            // console.log('Successfully added records for vendors from TipWEB-IT API');
                             repository.toggleVendorSyncSwitch().then(
                                 resolve => {
                                     console.log('toggleVendorySyncSwitch resolve');
@@ -1203,7 +1202,7 @@ function getVendorsFromTipweb() {
                                 },
                                 reject => {
                                     // console.log();
-                                    console.log("logError failed");
+                                    // console.log("logError failed");
                                     // console.error(reject);
                                     return;
                                 }
@@ -1226,7 +1225,7 @@ function getVendorsFromTipweb() {
                             return;
                         },
                         reject => {
-                            console.log("logError failed");
+                            // console.log("logError failed");
                             // console.error(reject);
                             return;
                         }
@@ -1249,7 +1248,7 @@ function getVendorsFromTipweb() {
                     return;
                 },
                 reject => {
-                    console.log("logError failed");
+                    // console.log("logError failed");
                     // console.error(reject);
                     return;
                 }
@@ -1262,7 +1261,7 @@ function getVendorsFromTipweb() {
 function getProductsFromTipweb() {
     rq.getToken().then(
         resolve => {
-            console.log('getToken resolved');
+            // console.log('getToken resolved');
             // console.log(resolve);
             let tokenVal = resolve.token;
             rq.getAllProducts(tokenVal).then(
@@ -1270,7 +1269,7 @@ function getProductsFromTipweb() {
                     let products = resolve;
                     repository.insertNewProducts(products).then(
                         resolve => {
-                            console.log('Successfully added records for products from TipWEB-IT API');
+                            // console.log('Successfully added records for products from TipWEB-IT API');
                             repository.toggleProductsSyncSwitch().then(
                                 resolve => {
                                     console.log(resolve);
@@ -1295,7 +1294,7 @@ function getProductsFromTipweb() {
                                     return;
                                 },
                                 reject => {
-                                    console.log("logError failed");
+                                    // console.log("logError failed");
                                     // console.error(reject);
                                     return;
                                 }
@@ -1318,7 +1317,7 @@ function getProductsFromTipweb() {
                             return;
                         },
                         reject => {
-                            console.log("logError failed");
+                            // console.log("logError failed");
                             // console.error(reject);
                             return;
                         }
@@ -1341,7 +1340,7 @@ function getProductsFromTipweb() {
                     return;
                 },
                 reject => {
-                    console.log("logError failed");
+                    // console.log("logError failed");
                     // console.error(reject);
                     return;
                 }
@@ -1454,7 +1453,7 @@ function upsertAllHeaders(options) {
             if (tokenVal) {
                 repository.getTotalHeadersToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        console.log('getTotalHeadersToUpsertCount resolved');
+                        // console.log('getTotalHeadersToUpsertCount resolved');
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1495,8 +1494,8 @@ function upsertAllDetails(options) {
             if (tokenVal) {
                 repository.getTotalDetailsToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        console.log();
-                        console.log('getTotalDetailsToUpsertCount resolved successfully');
+                        // console.log();
+                        // console.log('getTotalDetailsToUpsertCount resolved successfully');
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1535,7 +1534,7 @@ function upsertAllShipments(options) {
             if (tokenVal) {
                 repository.getTotalShipmentsToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        console.log('getTotalShipmentsToUpsertCount resolved');
+                        // console.log('getTotalShipmentsToUpsertCount resolved');
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1610,7 +1609,7 @@ function upsertVendorsRecursive(options, callback) {
         reject => {
             i += options.limitVal;
             if (i < options.total) {
-                console.error(options);
+                // console.error(options);
                 upsertVendorsRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
             }
             else {
@@ -1641,7 +1640,7 @@ function upsertHeadersRecursive(options, callback) {
         },
         reject => {
             i += options.limitVal;
-            console.error(reject);
+            // console.error(reject);
             if (i < options.total) {
                 upsertHeadersRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
             }
@@ -1674,7 +1673,7 @@ function upsertDetailsRecursive(options, callback) {
         },
         reject => {
             i += options.limitVal;
-            console.error(reject);
+            // console.error(reject);
             if (i < options.total) {
                 // console.log(options);
                 upsertDetailsRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
@@ -1703,7 +1702,7 @@ function upsertShipmentsRecursive(options, callback) {
         },
         reject => {
             i += options.limitVal;
-            console.error(reject);
+            // console.error(reject);
             if (i < options.total) {
                 // console.log(options);
                 upsertShipmentsRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
@@ -1730,11 +1729,10 @@ function upsertHeaderRecords(options) {
                     }
                     console.log();
                     console.log('upsertHeaderRecords: ' + dataToUpload.length);
-                    //POINT
                     rq.upsertHeaders(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
-                            console.log('upsertHeaders resolved');
+                            // console.log('upsertHeaders resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords === undefined || rejectedRecords === null) {
                                 console.log('No Detail records were rejected');
@@ -1748,6 +1746,7 @@ function upsertHeaderRecords(options) {
                             let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
                             repository.updateSubmittedValues({ target: 'PurchaseOrderHeader', ins: submittedVals, id: options.intgid }).then(
                                 resolve => {
+                                    // console.log('updateSubmittedValues resolved');
                                     if (rejectedRecords.length > 0) {
                                         for (let rec of rejectedRecords) {
                                             let recerr = {
@@ -1795,8 +1794,8 @@ function upsertHeaderRecords(options) {
                             )
                         },
                         reject => {
-                            console.log();
-                            console.log("upsertHeaders http-request failed");
+                            // console.log();
+                            // console.log("upsertHeaders http-request failed");
 
                             var errorObject = {
                                 ErrorNumber: 500,
@@ -1837,7 +1836,7 @@ function upsertDetailRecords(options) {
                     rq.upsertDetails(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
-                            console.log('upsertDetails resolved');
+                            // console.log('upsertDetails resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords == undefined || rejectedRecords === null) {
                                 console.log('No Detail records were rejected');
@@ -1868,7 +1867,7 @@ function upsertDetailRecords(options) {
                                                     }
                                                 },
                                                 reject => {
-                                                    console.log("LogError failed");
+                                                    // console.log("LogError failed");
                                                     // console.error(reject);
                                                     if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                         res();
@@ -1901,8 +1900,8 @@ function upsertDetailRecords(options) {
                                 });
                         },
                         reject => {
-                            console.log();
-                            console.log("upsertDetails http-request failed");
+                            // console.log();
+                            // console.log("upsertDetails http-request failed");
 
                             var errorObject = {
                                 ErrorNumber: 500,
@@ -1957,7 +1956,7 @@ function upsertShipmentRecords(options) {
                     rq.upsertShipments(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
-                            console.log('upsertHeaders resolved');
+                            // console.log('upsertHeaders resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords == undefined || rejectedRecords === null) {
                                 console.log('No Detail records were rejected');
@@ -1988,7 +1987,7 @@ function upsertShipmentRecords(options) {
                                                     }
                                                 },
                                                 reject => {
-                                                    console.log("LogError failed");
+                                                    // console.log("LogError failed");
                                                     // console.error(reject);
                                                     if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                         res();
@@ -2007,14 +2006,14 @@ function upsertShipmentRecords(options) {
                             //to here
                         },
                         reject => {
-                            console.log();
-                            console.log("upsertShipments http-request failed");
+                            // console.log();
+                            // console.log("upsertShipments http-request failed");
 
                             var errorObject = {
                                 ErrorNumber: 500,
                                 ErrorName: 'Process Shipments',
                                 ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
-                                ErrorObject: JSON.stringify(reject) + ', ' + JSON.stringify(dataToUpload),
+                                ErrorObject: JSON.stringify(reject), // + ', ' + JSON.stringify(dataToUpload),
                                 DataIntegrationsID: options.intgid
                             }
 
@@ -2066,6 +2065,7 @@ function upsertProductRecords(options) {
                     rq.upsertProducts(tokenVal, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
+                            console.log();
                             console.log('Successfully processed ' + dataToUpload.length + ' records.');
                             console.log(rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords && rejectedRecords.length > 0) {
@@ -2085,7 +2085,7 @@ function upsertProductRecords(options) {
                                         },
                                         reject => {
                                             // console.error(reject);
-                                            console.log("LogError failed");
+                                            // console.log("LogError failed");
                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                 process.exit(0);
                                             }
@@ -2115,7 +2115,7 @@ function upsertProductRecords(options) {
                                     return;
                                 },
                                 reject => {
-                                    console.log("LogError failed");
+                                    // console.log("LogError failed");
                                     // console.error(reject);
                                     return;
                                 }
@@ -2138,7 +2138,7 @@ function upsertProductRecords(options) {
                             return;
                         },
                         reject => {
-                            console.log("LogError failed");
+                            // console.log("LogError failed");
                             // console.error(reject);
                             return;
                         }
@@ -2162,7 +2162,7 @@ function upsertProductRecords(options) {
                 },
                 reject => {
                     // console.error(reject);
-                    console.log("LogError failed");
+                    // console.log("LogError failed");
                     return;
                 }
             );
@@ -2280,12 +2280,12 @@ function filterDetailsWithBadHeaders(options) {
 
                     repository.logError(errorObject).then(
                         resolve => {
-                            console.log("Success... closing...");
+                            // console.log("Success... closing...");
                             process.exit(0);
                             return;
                         },
                         reject => {
-                            console.log('Error logging error.');
+                            // console.log('Error logging error.');
                             process.exit(0);
                             return;
                         }
@@ -2437,14 +2437,15 @@ function getLinkTableData(options) {
 function runCustomScripts(options) {
     return new Promise(
         (res, rej) => {
+            // console.log('runCustomScripts Starting');
             repository.getProcessingIntegrationID().then(
                 resolve => {
                     let intgid = resolve;
                     let custTasks = configuration.config.customTasks;
-                    let options = { client: configuration.config.client, intgid: intgid };
+                    let options = { client: configuration.config.client, intgid: '\'' + intgid + '\'' };
                     for (let task of custTasks) {
                         let funk = repository[task.fn];
-                        console.log('getProcessingIntegrationID repository task: ' + funk);
+                        // console.log('getProcessingIntegrationID repository task: ' + funk);
                         funk(options).then(
                             resolve => {
                                 if (custTasks.indexOf(task) === custTasks.length - 1) {
@@ -2459,7 +2460,8 @@ function runCustomScripts(options) {
                 },
                 reject => {
                     rej(reject);
-                });
+                }
+            );
         }
     );
 }
@@ -2487,6 +2489,7 @@ function mapFlatInvoicesToDatabase(options) {
                                 resolve => {
                                     let mappingsData = resolve.map(m => { return m.dataValues; });
                                     let mappedData = [];
+                                    console.log();
                                     console.log('Processing ' + fileData.length + ' records...');
                                     for (let line of fileData) {
                                         let linVal = JSON.parse(line);
@@ -2516,9 +2519,11 @@ function mapFlatInvoicesToDatabase(options) {
                                                 }
                                                 repository.logError(errorObject).then(
                                                     resolve => {
+                                                        // rej();
                                                     },
                                                     reject => {
-                                                        console.log("logError failed");
+                                                        // console.log("logError failed");
+                                                        // res();
                                                     }
                                                 ).then(
                                                     resolve => {
@@ -2673,7 +2678,7 @@ function stageInvoices(options) {
                         DataIntegrationsID: integid
                     };
 
-                    console.error(errorObject);
+                    // console.error(errorObject);
 
                     repository.logError(errorObject).then(
                         resolve => {
@@ -2702,7 +2707,7 @@ function stageInvoiceDetails(options) {
                         resolve => {
                             let stage = resolve.map(m => { return m.dataValues; });
                             let mappingValues = stage.map(m => { return JSON.parse(m.MappingsObject); });
-                            console.log(mappingValues);
+                            // console.log(mappingValues);
                             for (let line of headerData) {
                                 let m = mappings.mapIt(line, mappingValues);
                                 m["DataIntegrationsID"] = integid;
@@ -2797,7 +2802,7 @@ function invoiceHeaderFunc(options) {
                     );
                 },
                 reject => {
-                    console.error(chalk.red(reject));
+                    // console.error(chalk.red(reject));
                     rej();
                 }
             );
@@ -2821,7 +2826,7 @@ function invoiceDetailsFunc(options) {
                     );
                 },
                 reject => {
-                    console.error(chalk.red(reject));
+                    // console.error(chalk.red(reject));
                     rej();
                 }
             );
@@ -2844,7 +2849,7 @@ function mapFlatInvoices(options) {
                     res();
                 },
                 reject => {
-                    console.error(chalk.red('Task Error: ' + reject));
+                    // console.error(chalk.red('Task Error: ' + reject));
                     rej();
                 }
             );
@@ -2904,7 +2909,7 @@ function pushInvoiceHeadersRecursive(options, callback) {
         },
         reject => {
             i += options.limitVal;
-            console.error(reject);
+            // console.error(reject);
             if (i < options.total) {
                 // console.log(options);
                 pushInvoiceHeadersRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
@@ -2948,7 +2953,7 @@ function pushInvoiceHeadersToApi(options) {
                                             }
                                         },
                                         reject => {
-                                            console.log("logError failed");
+                                            // console.log("logError failed");
                                             // console.error(reject);
                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                 rej(reject);
@@ -3040,7 +3045,7 @@ function pushInvoiceDetailsRecursive(options, callback) {
         },
         reject => {
             i += options.limitVal;
-            console.error(reject);
+            // console.error(reject);
             if (i < options.total) {
                 // console.log(options);
                 pushInvoiceDetailsRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
@@ -3084,7 +3089,7 @@ function pushInvoiceDetailsToApi(options) {
                                             }
                                         },
                                         reject => {
-                                            console.log("logError failed");
+                                            // console.log("logError failed");
                                             // console.error(reject);
                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
                                                 rej(reject);
@@ -3193,7 +3198,7 @@ function mapFromFile(options) {
                                 for (let item of mappedData) {
                                     repository.insertFlatData(item, { target: tableInfo }).then(
                                         resolve => {
-                                            //console.log('Successfully added ' + JSON.stringify(item));
+                                            // console.log('Successfully added ' + JSON.stringify(item));
                                             if (!trackerList && mappedData.indexOf(item) === mappedData.length - 1) {
                                                 res();
                                             }
@@ -3290,7 +3295,7 @@ function insertDataIntegrationsFile(options) {
             // console.log(options);
             repository.insertDataIntegrationsFile({ FileNameAws: options.filename, AwsFileLink: options.filelink, Client: options.client, DataIntegrationsID: options.id }).then(
                 resolve => {
-                    console.log("File: " + options.filename + " inserted.");
+                    // console.log("File: " + options.filename + " inserted.");
                     res(resolve);
                 },
                 reject => {

@@ -476,6 +476,7 @@ module.exports = {
     updateSubmittedValues(options) {
         return new Promise(
             (resolve, reject) => {
+                // console.log('Calling updateSubmittedValues on ' + options.target);
                 this[options.target].update(
                     {
                         Submitted: true
@@ -483,10 +484,13 @@ module.exports = {
                     { where: { DataIntegrationsID: options.id, $in: options.ins } }
                 ).then(
                     data => {
+                        // console.log('Update Submitted resolved');
                         resolve();
                     },
                     error => {
-                        reject();
+                        // console.log('Update Submitted failed');
+                        // console.log(error);
+                        reject(error);
                     }
                 )
             }
@@ -496,6 +500,7 @@ module.exports = {
     updateSubmittedValues2(options) {
         return new Promise(
             (resolve, reject) => {
+                // console.log('Calling updateSubmittedValues2 on ' + options.target);
                 this[options.target].update(
                     {
                         Submitted: true
@@ -503,10 +508,13 @@ module.exports = {
                     { where: { IntegrationsID: options.id, $in: options.ins } }
                 ).then(
                     data => {
+                        // console.log('Update Submitted resolved');
                         resolve();
                     },
                     error => {
-                        reject();
+                        // console.log('Update Submitted failed');
+                        // console.log(error);
+                        reject(error);
                     }
                 );
             }

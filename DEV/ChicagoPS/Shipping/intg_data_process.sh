@@ -30,6 +30,8 @@ cd /home/ec2-user/etc/$CLIENT/processing/csv/
 
 # Move files to the archive path
 echo " #### Moving input files to Archive path: //$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/"
+processedFiles = "";
+processedFilesHtml = "";
 for csvFile in *.csv; do
     archiveExt="${csvFile##*.}";
     archiveFileName="${csvFile%.*}";
@@ -39,7 +41,18 @@ for csvFile in *.csv; do
 
     echo " #### Adding file to DataIntegrationFiles"
     hayes-datamapper --insert-process-file --client "$CLIENT" -id "$INSTANCEID" --filename "$csvFile" --filelink "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$ARCHIVE_FILE";
+
+    processedFiles="$processedFiles""\n    ""$csvFile";
+    processedFilesHtml="$processedFilesHtml""<br />    ""$csvFile";
 done
+
+echo " #### Sending the file processed email"
+RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+TEXTCONTENT="\nThe $TYPE Integration has processed for files: $processedFiles\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The $TYPE Integration has processed for files: $processedFilesHtml<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+
+aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
 # remove the process file
 echo " #### Removing the run.process file"

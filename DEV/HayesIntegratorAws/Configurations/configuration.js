@@ -16,7 +16,7 @@ module.exports = {
             { "type":"Type", "filename":"File" }
         ],
         "customTasks":[
-            { "type":"repository", "fn":"function_name" }
+            { "type":"repository", "fn":"dataMapper_function_name" }
         ]
     },
     secrets: {

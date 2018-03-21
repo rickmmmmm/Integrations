@@ -16,7 +16,7 @@ module.exports = {
             { "type":"Sites", "filename":"sites.json" }
         ],
         "customTasks":[
-            { "type":"repository", "fn":"runProc z_custom_stpro_CPS_RemoveBadSites" }
+            { "type":"repository", "fn":"runProcz_custom_stpro_CPS_RemoveBadSites" }
         ]
     },
     secrets: {

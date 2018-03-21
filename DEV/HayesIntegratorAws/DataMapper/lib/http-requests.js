@@ -62,7 +62,7 @@ module.exports = {
                                     Email: b.email
                                 }
 
-                                console.log(outVal);
+                                // console.log(outVal);
 
                                 mappedBody.push(outVal);
                             }
@@ -88,8 +88,8 @@ module.exports = {
                     },
                     (err, resp, body) => {
 
-                        console.log(resp.statusCode);
-                        console.log(resp.statusMessage);
+                        // console.log(resp.statusCode);
+                        // console.log(resp.statusMessage);
 
                         if (err) {
                             let errorObj = { err: err, response: resp }
@@ -155,6 +155,8 @@ module.exports = {
     upsertHeaders(token, body) {
         return new Promise(
             (resolve, reject) => {
+                // console.log('upsertHeaders body:');
+                // console.log(JSON.stringify(body));
                 request.post(configuration.config.apiUrl + configuration.apiConfig.addHeader,
                     {
                         body: JSON.stringify(body),

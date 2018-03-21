@@ -39,18 +39,14 @@ echo " #### New Shipments pushed to API."
 hayes-datamapper --complete -id $INTEGRATIONID;
 echo " #### $TYPE Data Push process complete!"
 
-
 echo " #### Sending completion email ";
-
-FILES=$(hayes-datamapper --get-processed-files -id $INTEGRATIONID);
-
 # RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com""";
-RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
-TEXTCONTENT="\nThe $TYPE Integration has processed for files: $FILES\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
-HTMLCONTENT="<br />The $TYPE Integration has processed for files: $FILES<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+TEXTCONTENT="\nThe $TYPE Integration has completed.\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The $TYPE Integration has completed.<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
 MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
 
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
 echo " #### Terminate instance $INSTANCEID"
-# aws ec2 terminate-instances --instance-ids $INSTANCEID
+aws ec2 terminate-instances --instance-ids $INSTANCEID
