@@ -24,9 +24,8 @@ function truncateString(obj, options) {
 
     if (obj[options.field] && obj[options.field].toString().trim().length > options.maxchars) {
         outVal = obj[options.field].trim().substring(0, options.maxchars - 1);
-    }
-    else {
-        outVal = obj[options.field]
+    } else {
+        outVal = obj[options.field] ? obj[options.field] : "";
     }
 
     return outVal.trim();

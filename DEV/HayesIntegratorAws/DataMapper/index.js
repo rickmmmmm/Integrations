@@ -960,8 +960,8 @@ function getApiToken() {
         (res, rej) => {
             rq.getToken().then(
                 resolve => {
-                    // console.log('getApiToken resolved');
-                    console.log(resolve);
+                    console.log('getApiToken resolved');
+                    // console.log(resolve);
                     fs.writeFile(configuration.config.idFileLoc + 'token.json', JSON.stringify(resolve),
                         (err) => {
                             if (err) {
@@ -1035,6 +1035,7 @@ function upsertVendors(options) {
                                 ErrorName: 'Upsert Vendors',
                                 ErrorDescription: 'Application was not able to upsert vendors to TIPWeb-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1054,6 +1055,7 @@ function upsertVendors(options) {
                         ErrorName: 'Get Vendors to Upsert',
                         ErrorDescription: 'Application was not able to get vendors to upsert. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -1125,6 +1127,7 @@ function upsertProducts(options) {
                                 ErrorName: 'Upsert Products',
                                 ErrorDescription: 'Application was not able to upsert products to TIPWeb-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1144,6 +1147,7 @@ function upsertProducts(options) {
                         ErrorName: 'Get Products to Upsert',
                         ErrorDescription: 'Application was not able to get products to upsert. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -1189,6 +1193,7 @@ function getVendorsFromTipweb() {
                                 ErrorName: 'Insert Vendors from API',
                                 ErrorDescription: 'Application was not able to insert Vendor information from TipWEB-IT web API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                //DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1212,6 +1217,7 @@ function getVendorsFromTipweb() {
                         ErrorName: 'Get Vendors from API',
                         ErrorDescription: 'Application was not able to get Vendor information from TipWEB-IT web API. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        //DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -1234,6 +1240,7 @@ function getVendorsFromTipweb() {
                 ErrorName: 'Get API Token',
                 ErrorDescription: 'Application was not able to get an API token to access TipWEB-IT web API. More information is available in the ErrorObject.',
                 ErrorObject: JSON.stringify(reject),
+                //DataIntegrationsID: options.intgid
             }
 
             repository.logError(errorObject).then(
@@ -1256,7 +1263,7 @@ function getProductsFromTipweb() {
     rq.getToken().then(
         resolve => {
             console.log('getToken resolved');
-            console.log(resolve);
+            // console.log(resolve);
             let tokenVal = resolve.token;
             rq.getAllProducts(tokenVal).then(
                 resolve => {
@@ -1279,6 +1286,7 @@ function getProductsFromTipweb() {
                                 ErrorName: 'Insert Products from API',
                                 ErrorDescription: 'Application was not able to insert Product information from TipWEB-IT web API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                //DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1301,6 +1309,7 @@ function getProductsFromTipweb() {
                         ErrorName: 'Get Products from API',
                         ErrorDescription: 'Application was not able to get Product information from TipWEB-IT web API. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        //DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -1323,6 +1332,7 @@ function getProductsFromTipweb() {
                 ErrorName: 'Get API Token',
                 ErrorDescription: 'Application was not able to get an API token to access TipWEB-IT web API. More information is available in the ErrorObject.',
                 ErrorObject: JSON.stringify(reject),
+                //DataIntegrationsID: options.intgid
             }
 
             repository.logError(errorObject).then(
@@ -1357,21 +1367,27 @@ function upsertAllProducts(options) {
 
             let client = configuration.config.client;
             let intgid = options.id;
-            let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
-
-            repository.getTotalProductsToUpsertCount({ client: client }).then(
-                resolve => {
-                    console.log(); // to create a new line
-                    console.log('upserAllProducts count: ' + resolve);
-                    let total = resolve;
-                    let lv = parseInt(options.lv);
-                    let i = parseInt(options.iVal);
-                    upsertProductsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                    rej(reject);
-                }
-            );
+            let tokenJson = require(configuration.config.idFileLoc + 'token.json');
+            tokenJson = JSON.parse(tokenJson);
+            let tokenVal = tokenJson['token'];
+            if (tokenVal) {
+                repository.getTotalProductsToUpsertCount({ client: client }).then(
+                    resolve => {
+                        console.log(); // to create a new line
+                        console.log('upserAllProducts count: ' + resolve);
+                        let total = resolve;
+                        let lv = parseInt(options.lv);
+                        let i = parseInt(options.iVal);
+                        upsertProductsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                    },
+                    reject => {
+                        rej(reject);
+                    }
+                );
+            } else {
+                console.log('tokenVal is empty');
+                process.exit(0);
+            }
         }
     );
 }
@@ -1393,18 +1409,25 @@ function upsertAllVendors(options) {
 
             let client = configuration.config.client;
             let intgid = options.id;
-            let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
-            repository.getTotalVendorsToUpsertCount({ client: client }).then(
-                resolve => {
-                    let total = resolve;
-                    let lv = parseInt(options.lv);
-                    let i = parseInt(options.iVal);
-                    upsertVendorsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                    rej(reject);
-                }
-            );
+            let tokenJson = require(configuration.config.idFileLoc + 'token.json');
+            tokenJson = JSON.parse(tokenJson);
+            let tokenVal = tokenJson['token'];
+            if (tokenVal) {
+                repository.getTotalVendorsToUpsertCount({ client: client }).then(
+                    resolve => {
+                        let total = resolve;
+                        let lv = parseInt(options.lv);
+                        let i = parseInt(options.iVal);
+                        upsertVendorsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                    },
+                    reject => {
+                        rej(reject);
+                    }
+                );
+            } else {
+                console.log('tokenVal is empty');
+                process.exit(0);
+            }
         }
     );
 }
@@ -1425,20 +1448,27 @@ function upsertAllHeaders(options) {
 
             let client = configuration.config.client;
             let intgid = options.id;
-            let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
-            repository.getTotalHeadersToUpsertCount({ id: intgid, client: client }).then(
-                resolve => {
-                    console.log('getTotalHeadersToUpsertCount resolved');
-                    // console.log(resolve);
-                    let total = resolve;
-                    let lv = parseInt(options.lv);
-                    let i = parseInt(options.iVal);
-                    upsertHeadersRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                    rej(reject);
-                }
-            );
+            let tokenJson = require(configuration.config.idFileLoc + 'token.json');
+            tokenJson = JSON.parse(tokenJson);
+            let tokenVal = tokenJson['token'];
+            if (tokenVal) {
+                repository.getTotalHeadersToUpsertCount({ id: intgid, client: client }).then(
+                    resolve => {
+                        console.log('getTotalHeadersToUpsertCount resolved');
+                        // console.log(resolve);
+                        let total = resolve;
+                        let lv = parseInt(options.lv);
+                        let i = parseInt(options.iVal);
+                        upsertHeadersRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                    },
+                    reject => {
+                        rej(reject);
+                    }
+                );
+            } else {
+                console.log('tokenVal is empty');
+                process.exit(0);
+            }
         }
     );
 }
@@ -1459,23 +1489,31 @@ function upsertAllDetails(options) {
 
             let client = configuration.config.client;
             let intgid = options.id;
-            let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
-            repository.getTotalDetailsToUpsertCount({ id: intgid, client: client }).then(
-                resolve => {
-                    console.log();
-                    console.log('getTotalDetailsToUpsertCount resolved successfully');
-                    // console.log(resolve);
-                    let total = resolve;
-                    let lv = parseInt(options.lv);
-                    let i = parseInt(options.iVal);
-                    upsertDetailsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                    console.error(reject);
-                    rej();
-                }
-            );
-        });
+            let tokenJson = require(configuration.config.idFileLoc + 'token.json');
+            tokenJson = JSON.parse(tokenJson);
+            let tokenVal = tokenJson['token'];
+            if (tokenVal) {
+                repository.getTotalDetailsToUpsertCount({ id: intgid, client: client }).then(
+                    resolve => {
+                        console.log();
+                        console.log('getTotalDetailsToUpsertCount resolved successfully');
+                        // console.log(resolve);
+                        let total = resolve;
+                        let lv = parseInt(options.lv);
+                        let i = parseInt(options.iVal);
+                        upsertDetailsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                    },
+                    reject => {
+                        console.error(reject);
+                        rej();
+                    }
+                );
+            } else {
+                console.log('tokenVal is empty');
+                process.exit(0);
+            }
+        }
+    );
 }
 
 function upsertAllShipments(options) {
@@ -1491,21 +1529,28 @@ function upsertAllShipments(options) {
 
             let client = configuration.config.client;
             let intgid = options.id;
-            let tokenVal = require(configuration.config.idFileLoc + 'token.json')['token'];
-            repository.getTotalShipmentsToUpsertCount({ id: intgid, client: client }).then(
-                resolve => {
-                    console.log('getTotalShipmentsToUpsertCount resolved');
-                    // console.log(resolve);
-                    let total = resolve;
-                    let lv = parseInt(options.lv);
-                    let i = parseInt(options.iVal);
-                    upsertShipmentsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
-                },
-                reject => {
-                    console.error(reject);
-                    rej();
-                }
-            );
+            let tokenJson = require(configuration.config.idFileLoc + 'token.json');
+            tokenJson = JSON.parse(tokenJson);
+            let tokenVal = tokenJson['token'];
+            if (tokenVal) {
+                repository.getTotalShipmentsToUpsertCount({ id: intgid, client: client }).then(
+                    resolve => {
+                        console.log('getTotalShipmentsToUpsertCount resolved');
+                        // console.log(resolve);
+                        let total = resolve;
+                        let lv = parseInt(options.lv);
+                        let i = parseInt(options.iVal);
+                        upsertShipmentsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
+                    },
+                    reject => {
+                        console.error(reject);
+                        rej();
+                    }
+                );
+            } else {
+                console.log('tokenVal is empty');
+                process.exit(0);
+            }
         }
     );
 }
@@ -1676,7 +1721,6 @@ function upsertShipmentsRecursive(options, callback) {
  */
 function upsertHeaderRecords(options) {
     return new Promise(
-
         (res, rej) => {
             repository.getHeadersToUpsert({ intgid: options.intgid, client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
@@ -1726,6 +1770,8 @@ function upsertHeaderRecords(options) {
                                                 }
                                             );
                                         }
+                                    } else {
+                                        res();
                                     }
                                 },
                                 reject => {
@@ -1757,6 +1803,7 @@ function upsertHeaderRecords(options) {
                                 ErrorName: 'Get Headers to Process',
                                 ErrorDescription: 'Application was not able to get header values to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1786,7 +1833,7 @@ function upsertDetailRecords(options) {
                     let dataToUpload = resolve.map(m => { return m.dataValues; });
                     console.log();
                     console.log('upsertDetailRecords: ' + dataToUpload.length);
-                    //POINT
+                    // console.log('token: ' + options.token);
                     rq.upsertDetails(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
@@ -1796,7 +1843,7 @@ function upsertDetailRecords(options) {
                                 console.log('No Detail records were rejected');
                                 rejectedRecords = [];
                             }
-                            console.log(rejectedRecords);
+                            // console.log(rejectedRecords);
                             console.log('Successfully processed ' + dataToUpload.length + ' records.');
                             console.log(rejectedRecords.length + ' records were rejected.');
                             let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badPurchaseOrderDetail.orderNumber; });
@@ -1840,6 +1887,7 @@ function upsertDetailRecords(options) {
                                         ErrorName: 'Process Details',
                                         ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
                                         ErrorObject: JSON.stringify(reject),
+                                        DataIntegrationsID: options.intgid
                                     }
 
                                     repository.logError(errorObject).then(
@@ -1861,6 +1909,7 @@ function upsertDetailRecords(options) {
                                 ErrorName: 'Process Details',
                                 ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -1880,6 +1929,7 @@ function upsertDetailRecords(options) {
                         ErrorName: 'Get Details to Process',
                         ErrorDescription: 'Application was not able to get detail values to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -1903,6 +1953,7 @@ function upsertShipmentRecords(options) {
                     let dataToUpload = resolve.map(m => { return m.dataValues; });
                     console.log();
                     console.log('upsertShipmentRecords: ' + dataToUpload.length);
+                    // console.log('token: ' + options.token);
                     rq.upsertShipments(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
@@ -1912,7 +1963,7 @@ function upsertShipmentRecords(options) {
                                 console.log('No Detail records were rejected');
                                 rejectedRecords = [];
                             }
-                            console.log(rejectedRecords);
+                            // console.log(rejectedRecords);
                             console.log('Successfully processed ' + dataToUpload.length + ' records.');
                             console.log(rejectedRecords.length + ' records were rejected.');
                             let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badShipment.orderNumber; });
@@ -1963,7 +2014,7 @@ function upsertShipmentRecords(options) {
                                 ErrorNumber: 500,
                                 ErrorName: 'Process Shipments',
                                 ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
-                                ErrorObject: JSON.stringify(reject),
+                                ErrorObject: JSON.stringify(reject) + ', ' + JSON.stringify(dataToUpload),
                                 DataIntegrationsID: options.intgid
                             }
 
@@ -1984,6 +2035,7 @@ function upsertShipmentRecords(options) {
                         ErrorName: 'Get Details to Process',
                         ErrorDescription: 'Application was not able to get shipment values to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -2054,6 +2106,7 @@ function upsertProductRecords(options) {
                                 ErrorName: 'Product Details',
                                 ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                // DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -2076,6 +2129,7 @@ function upsertProductRecords(options) {
                         ErrorName: 'Get Shipments to Process',
                         ErrorDescription: 'Application was not able to get products to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        //DataIntegrationsID: options.intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -2098,6 +2152,7 @@ function upsertProductRecords(options) {
                 ErrorName: 'Get API Token',
                 ErrorDescription: 'Application was not able to get an API token to access TipWEB-IT web API. More information is available in the ErrorObject.',
                 ErrorObject: JSON.stringify(reject),
+                //DataIntegrationsID: options.intgid
             }
 
             repository.logError(errorObject).then(
@@ -2183,7 +2238,8 @@ function filterShipmentsWithBadDetails(options) {
                         ErrorNumber: 500,
                         ErrorName: 'Get Integration ID',
                         ErrorDescription: 'Application was not able to get Integration ID currently sending to TIPWEBAPI. More information is available in the ErrorObject.',
-                        ErrorObject: JSON.stringify(reject)
+                        ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -2265,7 +2321,8 @@ function toggleToSending(options) {
                         ErrorNumber: 500,
                         ErrorName: 'Toggle',
                         ErrorDescription: 'Application was not able to toggle DataSentToTipweb process. More information is available in the ErrorObject.',
-                        ErrorObject: JSON.stringify(reject)
+                        ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.id
                     }
 
                     repository.logError(errorObject).then(
@@ -2303,7 +2360,8 @@ function toggleToPostProcessing(options) {
                         ErrorNumber: 500,
                         ErrorName: 'Toggle',
                         ErrorDescription: 'Application was not able to toggle DataPostProcessing process. More information is available in the ErrorObject.',
-                        ErrorObject: JSON.stringify(reject)
+                        ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: options.id
                     }
 
                     repository.logError(errorObject).then(
@@ -2503,6 +2561,7 @@ function mapFlatInvoicesToDatabase(options) {
                                 ErrorName: 'Get File Data',
                                 ErrorDescription: 'Application was not able to get the data from file. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -2521,6 +2580,7 @@ function mapFlatInvoicesToDatabase(options) {
                         ErrorName: 'Get Integration ID',
                         ErrorDescription: 'Application was not able to get the Integration ID that is currently sending data to TIPWEB-IT. More information is available in the ErrorObject.',
                         ErrorObject: JSON.stringify(reject),
+                        DataIntegrationsID: intgid
                     }
 
                     repository.logError(errorObject).then(
@@ -2896,6 +2956,8 @@ function pushInvoiceHeadersToApi(options) {
                                         }
                                     );
                                 }
+                            } else {
+                                res();
                             }
                         },
                         reject => {
@@ -2904,6 +2966,7 @@ function pushInvoiceHeadersToApi(options) {
                                 ErrorName: 'Get Invoices to Process',
                                 ErrorDescription: 'Application was not able to get invoice values to add via TipWEB-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -3029,6 +3092,8 @@ function pushInvoiceDetailsToApi(options) {
                                         }
                                     );
                                 }
+                            } else {
+                                res();
                             }
                         },
                         reject => {
@@ -3037,6 +3102,7 @@ function pushInvoiceDetailsToApi(options) {
                                 ErrorName: 'Get Invoice Details to Process',
                                 ErrorDescription: 'Application was not able to get invoice detail values to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
                                 ErrorObject: JSON.stringify(reject),
+                                DataIntegrationsID: options.intgid
                             }
 
                             repository.logError(errorObject).then(
@@ -3253,8 +3319,8 @@ function insertDataIntegrationsFile(options) {
 function getProcessedFiles(options) {
     return new Promise(
         (res, rej) => {
-            let client = configuration.config.client;
-            let type = configuration.config.mapType;
+            // let client = configuration.config.client;
+            // let type = configuration.config.mapType;
             repository.getProcessedFiles({ id: options.id }).then(
                 resolve => {
                     // console.log(resolve);

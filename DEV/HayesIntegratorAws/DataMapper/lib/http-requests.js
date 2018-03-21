@@ -11,6 +11,8 @@ module.exports = {
             (resolve, reject) => {
                 let loginUrl = configuration.config.apiUrl + configuration.apiConfig.login;
                 let body = { Key: configuration.secrets.secretkey, Phrase: configuration.secrets.passphrase }
+                // console.log('LoginUrl: ' + loginUrl);
+                // console.log('body: ' + JSON.stringify(body));
                 request.post(loginUrl,
                     {
                         headers: { 'Content-Type': 'application/json' },

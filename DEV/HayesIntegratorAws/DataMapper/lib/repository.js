@@ -538,7 +538,7 @@ module.exports = {
             (resolve, reject) => {
 
                 if (options) {
-                    let params = intgid + ',' + options.headers + ',' + options.details + ',' + options.shipping + ',' + options.inventory + ',' + options.charges + ',' + options.payments
+                    let params = '\'' + intgid + '\',' + options.headers + ',' + options.details + ',' + options.shipping + ',' + options.inventory + ',' + options.charges + ',' + options.payments
                     seq.query("EXEC Integrations_RemoveUnnecessaryUpdates " + params).then(
                         data => {
                             resolve(data);
@@ -1704,9 +1704,17 @@ module.exports = {
                     })
                     .then(
                         data => {
-                            resolve(data);
+                            // console.log('Get Processed files completed');
+                            let fileNames = [];
+                            for (let dataFile of data) {
+                                fileNames.push(dataFile.dataValues.FileNameAws);
+                            }
+                            // console.log(fileNames);
+                            resolve(fileNames);
                         },
                         err => {
+                            console.log('Get Processed Files failed');
+                            console.log(err);
                             reject(err);
                         }
                     );

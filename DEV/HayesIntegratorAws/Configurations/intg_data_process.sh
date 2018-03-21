@@ -44,11 +44,14 @@ cd /home/ec2-user/etc/$CLIENT/processing/csv/
 # Move files to the archive path
 echo " #### Moving input files to Archive path: //$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/"
 for csvFile in *.csv; do
-    echo " #### Moving file $csvFile to the archive folder"
-    aws s3 mv "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/$csvFile" "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$csvFile_$CURRENTDATE"
+    archiveExt="${csvFile##*.}";
+    archiveFileName="${csvFile%.*}";
+    ARCHIVE_FILE=$archiveFileName"_"$CURRENTDATE"."$archiveExt;
+    echo " #### Moving file $csvFile to the archive folder as $ARCHIVE_FILE"
+    aws s3 mv "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/$csvFile" "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$ARCHIVE_FILE"
 
     echo " #### Adding file to DataIntegrationFiles"
-    hayes-datamapper --insert-process-file -client $CLIENT -id $INSTANCEID -filename $csvFile -filelink "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$csvFile_$CURRENTDATE";
+    hayes-datamapper --insert-process-file --client "$CLIENT" -id "$INSTANCEID" --filename "$csvFile" --filelink "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/$ARCHIVE_FILE";
 done
 
 # remove the process file
