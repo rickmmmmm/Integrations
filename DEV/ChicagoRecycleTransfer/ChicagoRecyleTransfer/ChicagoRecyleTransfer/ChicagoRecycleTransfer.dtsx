@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="126"
-  DTS:VersionGUID="{107A15C3-571D-4D00-82A4-1D9AD2787042}">
+  DTS:VersionBuild="131"
+  DTS:VersionGUID="{D8B2971E-9862-4036-B4BA-13D1B02C6102}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_0212;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWebHostedChicagoPS;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -374,6 +374,15 @@
       DTS:ObjectName="TransferUID">
       <DTS:VariableValue
         DTS:DataType="3">750</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6D13AC78-6434-4EBF-9EFE-944623F63B7A}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="UntaggedInventoryCount">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -1030,6 +1039,33 @@ Order by TransferNumber, Tag</property>
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
+              DTS:refId="Package\Site List\Process In Transit Transfers\Get Untagged Count"
+              DTS:CreationName="Microsoft.ExecuteSQLTask"
+              DTS:Description="Execute SQL Task"
+              DTS:DTSID="{B0476176-8245-4019-8CFF-A19A1DC287A6}"
+              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="Get Untagged Count"
+              DTS:ThreadHint="0">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <SQLTask:SqlTaskData
+                  SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
+                  SQLTask:SqlStatementSource="declare @TransferUID int&#xA;&#xA;set @TransferUID = ?&#xA;&#xA;&#xA;&#xA;select count(*) as untagged from tblTechTransferInventory &#xA;where TransferUID = @TransferUID and UntaggedInventoryUID &gt; 0"
+                  SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  <SQLTask:ResultBinding
+                    SQLTask:ResultName="untagged"
+                    SQLTask:DtsVariableName="User::UntaggedInventoryCount" />
+                  <SQLTask:ParameterBinding
+                    SQLTask:ParameterName="@TransferUID"
+                    SQLTask:DtsVariableName="User::TransferUID"
+                    SQLTask:ParameterDirection="Input"
+                    SQLTask:DataType="3"
+                    SQLTask:ParameterSize="-1" />
+                </SQLTask:SqlTaskData>
+              </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable
               DTS:refId="Package\Site List\Process In Transit Transfers\Process In transit Transfers"
               DTS:CreationName="Microsoft.ExecuteSQLTask"
               DTS:Description="Execute SQL Task"
@@ -1097,7 +1133,7 @@ Order by TransferNumber, Tag</property>
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{27877574-49A2-4A75-A303-813C0CA3D5AB}"
-                  SQLTask:SqlStatementSource="DECLARE @mailProfile NVARCHAR(MAX), @email NVARCHAR(MAX), @ccemail NVARCHAR(MAX), @rpt Nvarchar(max)&#xA;declare @SiteName varchar(50), @OrigSiteName varchar(50), @TransferType varchar(50)&#xA;&#xA;DECLARE @body nvarchar(max), @subject NVARCHAR(max), @sText nvarchar(max), @logdate NVARCHAR(50) &#xA;&#xA;&#xA;SET @mailProfile = ?&#xA;set @email = ?&#xA;set @ccemail = ?&#xA;set @rpt = ?&#xA;set @SiteName = ?&#xA;set @OrigSiteName  = ?&#xA;set @TransferType = ?&#xA;&#xA;&#xA;&#xA;SELECT @logdate = CONVERT(VARCHAR(10), GETDATE(),101)&#xA;SET @subject= @TransferType  +' Transfer Complete to ' + @SiteName + ' Site (' + @logdate + ')'&#xA;&#xA;&#xA;set @sText = ''&#xA;&#xA;&#xA;set @sText = @sText +'A transfer from ' + @OrigSiteName + ' to the ' + @SiteName + ' Site has been completed.' +&#xA;&#x9;'&lt;br/&gt;The list of tags on the transfer is attached.'&#xA;&#x9; &#xA;&#xA;&#xA;SET @body = '&lt;html&gt;&lt;body&gt;' + @subject + &#xA;&#x9;'&lt;p&gt;' + @sText + '&lt;/p&gt;&lt;br/&gt;' +&#xA;&#x9; 'If you have any questions, please contact Customer Support at 1-800-495-5993.&lt;/p&gt;&lt;br&gt;' +&#xA;&#x9; '&lt;p&gt;Hayes Software Systems&lt;br&gt;1-800-495-5993&lt;/br&gt;&lt;/p&gt;' +&#xA;&#x9; '&lt;/body&gt;&lt;html&gt;'&#xA;&#xA;--print @body &#xA;&#xA;&#x9;--print @sText  + ' ' + 'attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject,&#xA;&#x9;&#x9;@file_attachments = @rpt;&#xA;&#xA;&#xA;    &#xA;    &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  SQLTask:SqlStatementSource="DECLARE @mailProfile NVARCHAR(MAX), @email NVARCHAR(MAX), @ccemail NVARCHAR(MAX), @rpt Nvarchar(max)&#xA;declare @SiteName varchar(50), @OrigSiteName varchar(50), @TransferType varchar(50), @numTags int, @untaggedcount int&#xA;&#xA;DECLARE @body nvarchar(max), @subject NVARCHAR(max), @sText nvarchar(max), @logdate NVARCHAR(50) &#xA;&#xA;&#xA;SET @mailProfile = ?&#xA;set @email = ?&#xA;set @ccemail = ?&#xA;set @rpt = ?&#xA;set @SiteName = ?&#xA;set @OrigSiteName  = ?&#xA;set @TransferType = ?&#xA;set @numTags = ?&#xA;set @untaggedcount = ?&#xA;&#xA;&#xA;SELECT @logdate = CONVERT(VARCHAR(10), GETDATE(),101)&#xA;SET @subject= @TransferType  +' Transfer Complete to ' + @SiteName + ' Site (' + @logdate + ')'&#xA;&#xA;&#xA;set @sText = ''&#xA;&#xA;&#xA;set @sText = @sText +'A transfer from ' + @OrigSiteName + ' to the ' + @SiteName + ' Site has been completed.' &#xA;&#xA;if @numTags &gt; 0&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;set @sText = @sText + '&lt;br/&gt;&lt;br/&gt;The list of tags on the transfer is attached.'&#xA;&#x9;&#x9;if @untaggedcount &gt; 0&#xA;&#x9;&#x9;&#x9;set @sText = @sText + '&lt;br/&gt;&lt;br/&gt;The transfer also includes untagged inventory.'&#xA;&#x9;END&#xA;ELSE&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;set @sText = @sText + '&lt;br/&gt;&lt;br/&gt;The transfer includes untagged inventory.'&#xA;&#xA;&#x9;END&#xA;&#x9; &#xA;&#xA;&#xA;SET @body = '&lt;html&gt;&lt;body&gt;' + @subject + &#xA;&#x9;'&lt;p&gt;' + @sText + '&lt;/p&gt;&lt;br/&gt;' +&#xA;&#x9; 'If you have any questions, please contact Customer Support at 1-800-495-5993.&lt;/p&gt;&lt;br&gt;' +&#xA;&#x9; '&lt;p&gt;Hayes Software Systems&lt;br&gt;1-800-495-5993&lt;/br&gt;&lt;/p&gt;' +&#xA;&#x9; '&lt;/body&gt;&lt;html&gt;'&#xA;&#xA;--print @body &#xA;&#xA;&#xA;if @numTags &gt; 0&#xA;&#xA;&#x9;--print @sText  + ' ' + 'attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject,&#xA;&#x9;&#x9;@file_attachments = @rpt;&#xA;&#xA;else&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject;&#xA;&#xA;    &#xA;    &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
                   <SQLTask:ParameterBinding
                     SQLTask:ParameterName="@mailProfile"
                     SQLTask:DtsVariableName="User::EmailProfile"
@@ -1140,6 +1176,18 @@ Order by TransferNumber, Tag</property>
                     SQLTask:ParameterDirection="Input"
                     SQLTask:DataType="129"
                     SQLTask:ParameterSize="-1" />
+                  <SQLTask:ParameterBinding
+                    SQLTask:ParameterName="@numTags"
+                    SQLTask:DtsVariableName="User::TagCount"
+                    SQLTask:ParameterDirection="Input"
+                    SQLTask:DataType="3"
+                    SQLTask:ParameterSize="-1" />
+                  <SQLTask:ParameterBinding
+                    SQLTask:ParameterName="@untaggedcount"
+                    SQLTask:DtsVariableName="User::UntaggedInventoryCount"
+                    SQLTask:ParameterDirection="Input"
+                    SQLTask:DataType="3"
+                    SQLTask:ParameterSize="-1" />
                 </SQLTask:SqlTaskData>
               </DTS:ObjectData>
             </DTS:Executable>
@@ -1159,14 +1207,19 @@ Order by TransferNumber, Tag</property>
             <DTS:PrecedenceConstraint
               DTS:refId="Package\Site List\Process In Transit Transfers.PrecedenceConstraints[Constraint 1]"
               DTS:CreationName=""
-              DTS:DTSID="{9BBD947C-0F01-4009-9B72-153C62434080}"
-              DTS:EvalOp="1"
-              DTS:Expression="@[User::TagCount] &gt;0"
+              DTS:DTSID="{538E9833-D7C8-493C-B9D3-E2D4D3C6F57D}"
               DTS:From="Package\Site List\Process In Transit Transfers\Get Tag List"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint 1"
-              DTS:To="Package\Site List\Process In Transit Transfers\Send Email Report"
-              DTS:Value="2" />
+              DTS:To="Package\Site List\Process In Transit Transfers\Get Untagged Count" />
+            <DTS:PrecedenceConstraint
+              DTS:refId="Package\Site List\Process In Transit Transfers.PrecedenceConstraints[Constraint 2]"
+              DTS:CreationName=""
+              DTS:DTSID="{29EFDE65-105F-452A-BB81-AB5E36E3B49B}"
+              DTS:From="Package\Site List\Process In Transit Transfers\Get Untagged Count"
+              DTS:LogicalAnd="True"
+              DTS:ObjectName="Constraint 2"
+              DTS:To="Package\Site List\Process In Transit Transfers\Send Email Report" />
           </DTS:PrecedenceConstraints>
           <DTS:ForEachVariableMappings>
             <DTS:ForEachVariableMapping
@@ -1196,14 +1249,35 @@ Order by TransferNumber, Tag</property>
               Language="CSharp"
               ReadOnlyVariables="User::SiteUID">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_2026688885954910addaea79fa13f619")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_2026688885954910addaea79fa13f619")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1582,35 +1656,14 @@ namespace ST_2026688885954910addaea79fa13f619.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_2026688885954910addaea79fa13f619")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_2026688885954910addaea79fa13f619")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -1933,7 +1986,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="165,42"
           Id="Package\Get Sites List"
@@ -1960,7 +2013,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
         <NodeLayout
           Size="138,42"
           Id="Package\Site List\Process In Transit Transfers\Get Tag List"
-          TopLeft="21,96" />
+          TopLeft="290,29" />
         <NodeLayout
           Size="210,42"
           Id="Package\Site List\Process In Transit Transfers\Process In transit Transfers"
@@ -1968,84 +2021,108 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
         <NodeLayout
           Size="165,42"
           Id="Package\Site List\Process In Transit Transfers\Send Email Report"
-          TopLeft="67,176" />
+          TopLeft="268,101" />
         <EdgeLayout
           Id="Package\Site List\Process In Transit Transfers.PrecedenceConstraints[Constraint]"
-          TopLeft="132,63">
+          TopLeft="237,42">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-42,33"
+              StartConnector="{x:Null}"
+              EndConnector="53,8"
               Start="0,0"
-              End="-42,25.5">
+              End="45.5,8">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,12.5" />
+                    End="22.5,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,12.5"
-                    Point2="0,16.5"
-                    Point3="-4,16.5" />
+                    Point1="22.5,0"
+                    Point2="26.5,0"
+                    Point3="26.5,4" />
                   <mssgle:LineSegment
-                    End="-38,16.5" />
+                    End="26.5,4" />
                   <mssgle:CubicBezierSegment
-                    Point1="-38,16.5"
-                    Point2="-42,16.5"
-                    Point3="-42,20.5" />
+                    Point1="26.5,4"
+                    Point2="26.5,8"
+                    Point3="30.5,8" />
                   <mssgle:LineSegment
-                    End="-42,25.5" />
+                    End="45.5,8" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-29,21.5,16,16"
+              BoundingBox="18.5,9,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="177,42"
+          Id="Package\Site List\Process In Transit Transfers\Get Untagged Count"
+          TopLeft="35,96" />
         <EdgeLayout
           Id="Package\Site List\Process In Transit Transfers.PrecedenceConstraints[Constraint 1]"
-          TopLeft="90,138">
+          TopLeft="359,71">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="59.5,38"
+              StartConnector="{x:Null}"
+              EndConnector="-235.5,25"
               Start="0,0"
-              End="59.5,30.5">
+              End="-235.5,17.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,14" />
+                    End="0,8.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,14"
-                    Point2="0,18"
-                    Point3="4,18" />
+                    Point1="0,8.5"
+                    Point2="0,12.5"
+                    Point3="-4,12.5" />
                   <mssgle:LineSegment
-                    End="55.5,18" />
+                    End="-231.5,12.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="55.5,18"
-                    Point2="59.5,18"
-                    Point3="59.5,22" />
+                    Point1="-231.5,12.5"
+                    Point2="-235.5,12.5"
+                    Point3="-235.5,16.5" />
                   <mssgle:LineSegment
-                    End="59.5,30.5" />
+                    End="-235.5,17.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="21.75,23,16,16"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Site List\Process In Transit Transfers.PrecedenceConstraints[Constraint 2]"
+          TopLeft="212,119.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="56,0"
+              Start="0,0"
+              End="48.5,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="48.5,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="500,268"
-          Size="500,311"
+          PanelSize="500,198"
+          Size="500,241"
           Id="Package\Site List\Process In Transit Transfers"
           TopLeft="343,129" />
         <NodeLayout
@@ -2057,7 +2134,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           TopLeft="197.5,85">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-71.8333333333333,51"
               Start="0,0"
               End="-71.8333333333333,43.5">
@@ -2091,7 +2168,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           TopLeft="479.666666666667,78">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="113.333333333333,51"
               Start="0,0"
               End="113.333333333333,43.5">
@@ -2125,7 +2202,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           TopLeft="208.333333333333,136">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="219,-58"
               Start="0,0"
               End="219,-50.5">
@@ -2166,7 +2243,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           TopLeft="566.5,80">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-26.5,83"
               Start="0,0"
               End="-26.5,75.5">
@@ -2198,14 +2275,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
         <AnnotationLayout
           Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xA;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xA;currently using approvals only by fund account&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xA;Also, tblTechTransferWorkflows - still need to determine&#xA;how that may play in.&#xA;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xA;to Status 24 (Transit)&#xA;&#xA;Still unclear how tags will be received.&#xA;&#xA;1/18 - Current scope:  Move tags from approved to received&#xA;1/22 - Move tags from submitted to received&#xA;1/29 - Add 'Donate' site to the list with email of tags&#xA;&#xA;2/2 - Add 'Untagged' and 'Warehouse' transfers"
           ParentId="Package"
-          FontInfo="{assembly:Null}"
+          FontInfo="{x:Null}"
           Size="349,425"
           Id="d86dd133-5c01-4ca4-9e4b-e7fcb8800116"
           TopLeft="1111,77" />
         <AnnotationLayout
           Text="Email to sballard2@cps.edu&#xA;Sharmin Ballard"
           ParentId="Package"
-          FontInfo="{assembly:Null}"
+          FontInfo="{x:Null}"
           Size="177,58"
           Id="9854bf47-561a-4f67-abfe-04424b2f278d"
           TopLeft="1070,586" />
@@ -2216,7 +2293,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
     design-time-name="Package\Site List\Process In Transit Transfers\Get Tag List">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="152,42"
           Id="Package\Site List\Process In Transit Transfers\Get Tag List\OLE DB Source"
@@ -2230,7 +2307,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           TopLeft="356,110">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,74"
               Start="0,0"
               End="0,66.5">
