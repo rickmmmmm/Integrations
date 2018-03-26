@@ -246,7 +246,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }

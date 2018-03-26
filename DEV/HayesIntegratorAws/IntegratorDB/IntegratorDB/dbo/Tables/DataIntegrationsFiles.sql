@@ -3,6 +3,7 @@
     [FileNameAws]             VARCHAR (MAX) NULL,
     [AwsFileLink]             VARCHAR (MAX) NULL,
     [Client]                  VARCHAR (50)  NULL,
+    [DataIntegrationsID]      VARCHAR (100) NULL,
     [AddedDate]               DATETIME      CONSTRAINT [DF_DataIntegrationsFiles_AddedDate] DEFAULT (getdate()) NULL,
     CONSTRAINT [PK_DataIntegrationsFiles] PRIMARY KEY CLUSTERED ([DataIntegrationsFilesID] ASC)
 );

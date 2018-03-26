@@ -36,8 +36,14 @@ echo " #### Web API token retrieved."
 hayes-datamapper --push-vendors -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Vendors pushed to API."
 
+hayes-datamapper --toggle-vendors
+echo " #### Toggled Vendors pushed to API."
+
 hayes-datamapper --push-products -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Products pushed to API."
+
+hayes-datamapper --toggle-products
+echo " #### Toggled products pushed to API."
 
 hayes-datamapper --push-headers -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Header records pushed to API."
@@ -58,4 +64,5 @@ MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Chars
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
 echo " #### Terminate instance $INSTANCEID";
-aws ec2 terminate-instances --instance-ids $INSTANCEID;
+aws ec2 terminate-instances --instance-ids $INSTANCEID
+# aws ec2 stop-instances --instance-ids $INSTANCEID

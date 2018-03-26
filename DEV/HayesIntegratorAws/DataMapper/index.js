@@ -20,35 +20,50 @@ const rq = require('./lib/http-requests.js');
 const activities = [
     { name: '--help', shortname: '-h', desc: 'Show help menu.', action: showHelp },
     { name: '--config', shortname: '-co', desc: 'Show current configuration settings.', action: getConfiguration },
-    { name: '--chunk', shortname: '-chu', desc: 'Toggles a chunk of data imported as completed.', action: toggleChunkedData, reqOptions: ['id'] },
+
     { name: '--create', shortname: '-cr', desc: 'Creates New Integration in database using instance id as unique key.', action: createIntegration, reqOptions: ['id'] },
-    { name: '--mapflat', shortname: '-m', desc: 'Map purchase order data from JSON file to database table.', action: mapFromFile, reqOptions: ['filename', 'id'] },
-    { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, reqOptions: ['useid', 'id'] },
-    { name: '--products', shortname: '-p', desc: 'Map products from flat data table to Products.', action: productsFunc },
-    { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: headersFunc, reqOptions: ['id'] },
-    { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: detailsFunc, reqOptions: ['id'] },
-    { name: '--filter-unncessary', shortname: '-fu', desc: 'Filters out any records already sent.', action: filterOldRecords, reqOptions: ['id'] },
-    { name: '--filter-bad-details', shortname: '-fbd', desc: 'Removes any detail and shipment records with a bad header.', action: filterDetailsWithBadHeaders, reqOptions: ['id'] },
-    { name: '--filter-bad-shipments', shortname: '-fbs', desc: 'Removes any shipment records with a bad detail record.', action: filterShipmentsWithBadDetails, reqOptions: ['id'] },
-    { name: '--complete', shortname: '-C', desc: 'Toggles an integration ID to completed.', action: toggleSuccessfulIntegration, reqOptions: ['id'] },
+    { name: '--chunk', shortname: '-chu', desc: 'Toggles a chunk of data imported as completed.', action: toggleChunkedData, reqOptions: ['id'] },
+    { name: '--sending-id', shortname: '-sid', desc: 'Gets the first Integration ID that is sending to TIPWEBAPI', action: getProcessingIntegrationID },
+    { name: '--get-token', shortname: '-gta', desc: 'Get a token from the API', action: getApiToken },
     { name: '--send-to-api', shortname: '-S', desc: 'Toggles an integration ID from DataProcessing to DataSentToTipweb.', action: toggleToSending, reqOptions: ['id'] },
     { name: '--post-processing', shortname: '-PP', desc: 'Toggles an integration ID to DataPostProcessing.', action: toggleToPostProcessing, reqOptions: ['id'] },
-    { name: '--toggle-products', shortname: '-tp', desc: 'Toggle products from not sent to sent to TIPWEBAPI.', action: toggleProducts },
-    { name: '--toggle-vendors', shortname: '-tv', desc: 'Toggle vendors from not sent to sent to TIPWEBAPI', action: toggleVendors },
-    { name: '--funding', shortname: '-f', desc: 'Map funding sources from flat data table to FundingSources.', action: fundingFunc },
+    { name: '--complete', shortname: '-C', desc: 'Toggles an integration ID to completed.', action: toggleSuccessfulIntegration, reqOptions: ['id'] },
+    { name: '--mapflat', shortname: '-m', desc: 'Map purchase order data from JSON file to database table.', action: mapFromFile, reqOptions: ['filename', 'id'] },
+
+    { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, reqOptions: ['useid', 'id'] },
     { name: '--push-vendors', shortname: '-pv', desc: 'Push new vendor records via TIPWEBAPI.', action: upsertAllVendors, reqOptions: ['id', 'iVal', 'lv'] },
+    { name: '--toggle-vendors', shortname: '-tv', desc: 'Toggle vendors from not sent to sent to TIPWEBAPI', action: toggleVendors },
+
+    { name: '--products', shortname: '-p', desc: 'Map products from flat data table to Products.', action: productsFunc },
     { name: '--push-products', shortname: '-pp', desc: 'Push new product records via TIPWEBAPI.', action: upsertAllProducts, reqOptions: ['id', 'iVal', 'lv'] },
+    { name: '--toggle-products', shortname: '-tp', desc: 'Toggle products from not sent to sent to TIPWEBAPI.', action: toggleProducts },
+
+    { name: '--funding', shortname: '-f', desc: 'Map funding sources from flat data table to FundingSources.', action: fundingFunc },
+
+    { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: headersFunc, reqOptions: ['id'] },
     { name: '--push-headers', shortname: '-ph', desc: 'Push new header records via TIPWEBAPI.', action: upsertAllHeaders, reqOptions: ['id', 'iVal', 'lv'] },
+
+    { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: detailsFunc, reqOptions: ['id'] },
     { name: '--push-details', shortname: '-pd', desc: 'Push new detail records via TIPWEBAPI.', action: upsertAllDetails, reqOptions: ['id', 'iVal', 'lv'] },
+
+    { name: '--filter-unncessary', shortname: '-fu', desc: 'Filters out any records already sent.', action: filterOldRecords, reqOptions: ['id'] },
+
+    { name: '--filter-bad-details', shortname: '-fbd', desc: 'Removes any detail and shipment records with a bad header.', action: filterDetailsWithBadHeaders, reqOptions: ['id'] },
+
     { name: '--push-shipments', shortname: '-ps', desc: 'Push new shipment records via TIPWEBAPI.', action: upsertAllShipments, reqOptions: ['id', 'iVal', 'lv'] },
-    { name: '--get-link-data', shortname: '-gld', desc: 'Get link table data for integration.', action: getLinkTableData },
-    { name: '--custom-scripts', shortname: '-cust', desc: 'Runs a list of custom scripts on imported data.', action: runCustomScripts },
+
+    { name: '--filter-bad-shipments', shortname: '-fbs', desc: 'Removes any shipment records with a bad detail record.', action: filterShipmentsWithBadDetails, reqOptions: ['id'] },
+
     { name: '--invoices', shortname: '-in', desc: 'Map invoice headers from flat data table to Invoices.', action: invoiceHeaderFunc },
     { name: '--invoice-details', shortname: '-ind', desc: 'Map invoice details records from flat data table to InvoiceDetails.', action: invoiceDetailsFunc },
-    { name: '--get-token', shortname: '-gta', desc: 'Get a token from the API', action: getApiToken },
+
     { name: '--push-invoices', shortname: '-pinv', desc: 'Push new invoice records via TIPWEBAPI.', action: pushInvoiceHeaders, options: { iVal: 0, lv: 800 } },
     { name: '--push-invoice-details', shortname: '-pind', desc: 'Push new invoice detail records via TIPWEBAPI.', action: pushInvoiceDetails, options: { iVal: 0, lv: 800 } },
-    { name: '--sending-id', shortname: '-sid', desc: 'Gets the first Integration ID that is sending to TIPWEBAPI', action: getProcessingIntegrationID },
+
+    { name: '--custom-scripts', shortname: '-cust', desc: 'Runs a list of custom scripts on imported data.', action: runCustomScripts },
+
+    { name: '--get-link-data', shortname: '-gld', desc: 'Get link table data for integration.', action: getLinkTableData },
+
     { name: '--insert-process-file', shortname: '-ipf', desc: 'Create the Data Integrations files', action: insertDataIntegrationsFile, reqOptions: ['client', 'id', 'filename', 'filelink'] },
     { name: '--get-processed-files', shortname: '-gpf', desc: 'Get the files processed by the specified DataIntegrationsID', action: getProcessedFiles, reqOptions: ['id'] },
     { name: '--get-processed-file-links', shortname: '-gpfl', desc: 'Get the files and links to processed by the specified DataIntegrationsID', action: getProcessedFilesLinks, reqOptions: ['id'] }
@@ -321,7 +336,7 @@ function stageShippingRecords(options) {
 
             repository.getFlatShipments(integid).then(
                 resolve => {
-                    console.log('Retrieved ' + resolve.length + ' shipment records to process.');
+                    console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' shipment records to process.');
                     let shipmentsData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'shipping', client: configuration.config.client }).then(
                         resolve => {
@@ -336,7 +351,7 @@ function stageShippingRecords(options) {
 
                             repository.insertShipments(mappedData).then(
                                 resolve => {
-                                    console.log('Successfully inserted ' + mappedData.length + ' into Shipments table.');
+                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into Shipments table.');
                                     res();
                                 },
                                 reject => {
@@ -420,7 +435,7 @@ function stagePurchaseOrderDetails(options) {
 
             repository.getDetailRecordsFlatData(integid).then(
                 resolve => {
-                    console.log('Retrieved ' + resolve.length + ' detail records to process.');
+                    console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' detail records to process.');
                     let detailData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'po details', client: configuration.config.client }).then(
                         resolve => {
@@ -519,7 +534,7 @@ function stagePurchaseOrderHeaders(options) {
 
             repository.getHeaderRecordsFlatData(integid).then(
                 resolve => {
-                    console.log('Retrieved ' + resolve.length + ' header records to process.');
+                    console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' header records to process.');
                     let headerData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'po headers', client: configuration.config.client }).then(
                         resolve => {
@@ -533,7 +548,7 @@ function stagePurchaseOrderHeaders(options) {
 
                             repository.insertHeaderRecords(mappedData).then(
                                 resolve => {
-                                    console.log('Successfully inserted ' + mappedData.length + ' into PurchaseOrderHeaders table.');
+                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into PurchaseOrderHeaders table.');
                                     res();
                                 },
                                 reject => {
@@ -618,7 +633,7 @@ function stageProducts(configuration, options) {
                     let productsFlat = resolve === [] ? resolve : resolve.map(m => { return m.dataValues; });
 
                     if (productsFlat && productsFlat.length === 0) {
-                        console.log('No new products to add!');
+                        console.log(mappings.getCurrentDate() + ' No new products to add!');
                         process.exit(0);
                     }
 
@@ -631,7 +646,7 @@ function stageProducts(configuration, options) {
 
                     repository.insertNewProducts(productsToAdd).then(
                         resolve => {
-                            console.log('Successfully staged ' + productsToAdd.length + ' records in Products table.');
+                            console.log(mappings.getCurrentDate() + ' Successfully staged ' + productsToAdd.length + ' records in Products table.');
                             process.exit(0);
                         },
                         reject => {
@@ -726,7 +741,7 @@ function stageFundingSources(options) {
                             let sourcesToAdd = [];
 
                             if (sourcesFlat && sourcesFlat.length === 0) {
-                                console.log('No funding sources to add!');
+                                console.log(mappings.getCurrentDate() + ' No funding sources to add!');
                                 res();
                             }
 
@@ -737,7 +752,7 @@ function stageFundingSources(options) {
 
                             repository.insertNewFundingSources(sourcesToAdd).then(
                                 resolve => {
-                                    console.log('Successfully added ' + sourcesToAdd.length + ' new funding sources!');
+                                    console.log(mappings.getCurrentDate() + ' Successfully added ' + sourcesToAdd.length + ' new funding sources!');
                                     res();
                                 },
                                 reject => {
@@ -835,7 +850,7 @@ function stageNewVendors(options) {
                             let flatVendors = resolve.map(m => { return m.dataValues; });
 
                             if (flatVendors && flatVendors.length === 0) {
-                                console.log('No new vendors to add!');
+                                console.log(mappings.getCurrentDate() + ' No new vendors to add!');
                                 res();
                             }
 
@@ -844,7 +859,7 @@ function stageNewVendors(options) {
                                 let x = { VendorID: v.VENDOR_ID, VendorName: v.VENDOR_NAME, Client: configuration.config.client };
                                 vendorsToAdd.push(x);
                             }
-                            console.log('Adding ' + vendorsToAdd.length + ' new vendors to staging table.')
+                            console.log(mappings.getCurrentDate() + ' Adding ' + vendorsToAdd.length + ' new vendors to staging table.')
 
                             repository.insertVendors(vendorsToAdd).then(
                                 resolve => {
@@ -960,7 +975,7 @@ function getApiToken() {
         (res, rej) => {
             rq.getToken().then(
                 resolve => {
-                    console.log('getApiToken resolved');
+                    console.log(mappings.getCurrentDate() + ' getApiToken resolved');
                     // console.log(resolve);
                     fs.writeFile(configuration.config.idFileLoc + 'token.json', JSON.stringify(resolve),
                         (err) => {
@@ -993,13 +1008,19 @@ function upsertVendors(options) {
             repository.getVendorsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
                     let dataToUpload = resolve.map(m => { return m.dataValues; });
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' upsertVendors starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertVendors(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
+                            if (rejectedRecords == undefined || rejectedRecords === null) {
+                                // console.log('No Detail records were rejected');
+                                rejectedRecords = [];
+                            }
                             console.log();
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
+                                console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
                                         ErrorNumber: rec.badVendor.vendorID,
@@ -1024,6 +1045,7 @@ function upsertVendors(options) {
                                         }
                                     );
                                 }
+                                console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             }
                             else {
                                 res();
@@ -1082,14 +1104,19 @@ function upsertProducts(options) {
                     for (let p of dataToUpload) {
                         p.ProductNumber = 'INTG' + p.ProductNumber;
                     }
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' upsertProducts starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertProducts(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
+                            if (rejectedRecords == undefined || rejectedRecords === null) {
+                                // console.log('No Detail records were rejected');
+                                rejectedRecords = [];
+                            }
                             console.log(); // to create a new line
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
-                                // console.log('Products Upserted. Saving Errors');
+                                console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
                                         ErrorNumber: rec.badProduct.ProductNumber,
@@ -1113,6 +1140,7 @@ function upsertProducts(options) {
                                         }
                                     );
                                 }
+                                console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             }
                             else {
                                 res();
@@ -1373,7 +1401,7 @@ function upsertAllProducts(options) {
                 repository.getTotalProductsToUpsertCount({ client: client }).then(
                     resolve => {
                         console.log(); // to create a new line
-                        console.log('upserAllProducts count: ' + resolve);
+                        console.log(mappings.getCurrentDate() + ' upserAllProducts count: ' + resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
                         let i = parseInt(options.iVal);
@@ -1384,7 +1412,7 @@ function upsertAllProducts(options) {
                     }
                 );
             } else {
-                console.log('tokenVal is empty');
+                console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
         }
@@ -1414,6 +1442,8 @@ function upsertAllVendors(options) {
             if (tokenVal) {
                 repository.getTotalVendorsToUpsertCount({ client: client }).then(
                     resolve => {
+                        console.log(); // to create a new line
+                        console.log(mappings.getCurrentDate() + ' upserAllVendors count: ' + resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
                         let i = parseInt(options.iVal);
@@ -1424,7 +1454,7 @@ function upsertAllVendors(options) {
                     }
                 );
             } else {
-                console.log('tokenVal is empty');
+                console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
         }
@@ -1453,7 +1483,8 @@ function upsertAllHeaders(options) {
             if (tokenVal) {
                 repository.getTotalHeadersToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        // console.log('getTotalHeadersToUpsertCount resolved');
+                        console.log();
+                        console.log(mappings.getCurrentDate() + ' upsertAllHeaders count: ' + resolve);
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1465,7 +1496,7 @@ function upsertAllHeaders(options) {
                     }
                 );
             } else {
-                console.log('tokenVal is empty');
+                console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
         }
@@ -1494,8 +1525,8 @@ function upsertAllDetails(options) {
             if (tokenVal) {
                 repository.getTotalDetailsToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        // console.log();
-                        // console.log('getTotalDetailsToUpsertCount resolved successfully');
+                        console.log();
+                        console.log(mappings.getCurrentDate() + ' upsertAllDetails count: ' + resolve);
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1508,7 +1539,7 @@ function upsertAllDetails(options) {
                     }
                 );
             } else {
-                console.log('tokenVal is empty');
+                console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
         }
@@ -1534,7 +1565,8 @@ function upsertAllShipments(options) {
             if (tokenVal) {
                 repository.getTotalShipmentsToUpsertCount({ id: intgid, client: client }).then(
                     resolve => {
-                        // console.log('getTotalShipmentsToUpsertCount resolved');
+                        console.log();
+                        console.log(mappings.getCurrentDate() + ' upsertAllShipments count: ' + resolve);
                         // console.log(resolve);
                         let total = resolve;
                         let lv = parseInt(options.lv);
@@ -1547,7 +1579,7 @@ function upsertAllShipments(options) {
                     }
                 );
             } else {
-                console.log('tokenVal is empty');
+                console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
         }
@@ -1574,7 +1606,7 @@ function upsertProductsRecursive(options, callback) {
             }
         },
         reject => {
-            i += options.offset;
+            i += options.limitVal;
             if (i < options.total) {
                 // console.log(options);
                 upsertProductsRecursive({ client: options.client, limitVal: options.limitVal, offset: i, token: options.token, total: options.total, intgid: options.intgid }, callback);
@@ -1728,26 +1760,31 @@ function upsertHeaderRecords(options) {
                         value.DataIntegration = undefined;
                     }
                     console.log();
-                    console.log('upsertHeaderRecords: ' + dataToUpload.length);
+                    console.log(mappings.getCurrentDate() + ' upsertHeaderRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertHeaders(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
                             // console.log('upsertHeaders resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords === undefined || rejectedRecords === null) {
-                                console.log('No Detail records were rejected');
+                                // console.log('No Detail records were rejected');
                                 rejectedRecords = [];
                             }
                             // console.log(rejectedRecords);
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badPurchaseOrderHeader.orderNumber; });
                             let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber });
                             let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
-                            repository.updateSubmittedValues({ target: 'PurchaseOrderHeader', ins: submittedVals, id: options.intgid }).then(
+
+                            let submittedHeaders = dataToUpload.filter(data => { return rejectedRecordNumbers.indexOf(data.OrderNumber) < 0; });
+                            submittedHeaders = submittedHeaders.map(submitted => { return { orderNumber: submitted.OrderNumber, vendorID: submitted.VendorID, siteID: submitted.SiteID }; });
+                            //repository.updateSubmittedValues({ target: 'PurchaseOrderHeader', ins: submittedVals, id: options.intgid }).then(
+                            repository.updateSubmittedHeaders({ id: options.intgid, headers: submittedHeaders }).then(
                                 resolve => {
-                                    // console.log('updateSubmittedValues resolved');
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedHeaders count: ' + submittedVals.length);
                                     if (rejectedRecords.length > 0) {
+                                        console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                         for (let rec of rejectedRecords) {
                                             let recerr = {
                                                 ErrorNumber: rec.badPurchaseOrderHeader.orderNumber,
@@ -1769,11 +1806,15 @@ function upsertHeaderRecords(options) {
                                                 }
                                             );
                                         }
+                                        console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                                     } else {
                                         res();
                                     }
                                 },
                                 reject => {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedHeaders failed');
+
                                     var errorObject = {
                                         ErrorNumber: 500,
                                         ErrorName: 'Toggle',
@@ -1831,7 +1872,7 @@ function upsertDetailRecords(options) {
                 resolve => {
                     let dataToUpload = resolve.map(m => { return m.dataValues; });
                     console.log();
-                    console.log('upsertDetailRecords: ' + dataToUpload.length);
+                    console.log(mappings.getCurrentDate() + ' upsertDetailRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     // console.log('token: ' + options.token);
                     rq.upsertDetails(options.token, dataToUpload).then(
                         resolve => {
@@ -1839,18 +1880,24 @@ function upsertDetailRecords(options) {
                             // console.log('upsertDetails resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords == undefined || rejectedRecords === null) {
-                                console.log('No Detail records were rejected');
+                                // console.log('No Detail records were rejected');
                                 rejectedRecords = [];
                             }
                             // console.log(rejectedRecords);
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badPurchaseOrderDetail.orderNumber; });
                             let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber });
                             let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
-                            repository.updateSubmittedValues({ target: 'PurchaseOrderDetail', ins: submittedVals, id: options.intgid }).then(
+
+                            let submittedDetails = dataToUpload.filter(data => { return rejectedRecordNumbers.indexOf(data.OrderNumber) < 0; });
+                            submittedDetails = submittedDetails.map(submitted => { return { orderNumber: submitted.OrderNumber, lineNumber: submitted.LineNumber, siteID: submitted.SiteID }; });
+                            //repository.updateSubmittedValues({ target: 'PurchaseOrderDetail', ins: submittedVals, id: options.intgid }).then(
+                            repository.updateSubmittedDetails({ id: options.intgid, details: submittedDetails }).then(
                                 resolve => {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedDetails count: ' + submittedVals.length);
                                     if (rejectedRecords.length > 0) {
+                                        console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                         for (let rec of rejectedRecords) {
                                             let recerr = {
                                                 ErrorNumber: rec.badPurchaseOrderDetail.orderNumber,
@@ -1875,16 +1922,20 @@ function upsertDetailRecords(options) {
                                                 }
                                             );
                                         }
+                                        console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                                     }
                                     else {
                                         res();
                                     }
                                 },
                                 reject => {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedDetails failed');
+
                                     var errorObject = {
                                         ErrorNumber: 500,
                                         ErrorName: 'Process Details',
-                                        ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
+                                        ErrorDescription: 'Application was not able to toggle details submitted to TipWEB-IT API. More information is available in the ErrorObject.',
                                         ErrorObject: JSON.stringify(reject),
                                         DataIntegrationsID: options.intgid
                                     }
@@ -1951,7 +2002,7 @@ function upsertShipmentRecords(options) {
                 resolve => {
                     let dataToUpload = resolve.map(m => { return m.dataValues; });
                     console.log();
-                    console.log('upsertShipmentRecords: ' + dataToUpload.length);
+                    console.log(mappings.getCurrentDate() + ' upsertShipmentRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     // console.log('token: ' + options.token);
                     rq.upsertShipments(options.token, dataToUpload).then(
                         resolve => {
@@ -1959,18 +2010,24 @@ function upsertShipmentRecords(options) {
                             // console.log('upsertHeaders resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords == undefined || rejectedRecords === null) {
-                                console.log('No Detail records were rejected');
+                                // console.log('No Detail records were rejected');
                                 rejectedRecords = [];
                             }
                             // console.log(rejectedRecords);
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             let rejectedRecordNumbers = rejectedRecords.map(m => { return m.badShipment.orderNumber; });
                             let dataToUploadNumbers = dataToUpload.map(m => { return m.OrderNumber });
                             let submittedVals = dataToUploadNumbers.filter(fil => { return rejectedRecordNumbers.indexOf(fil) < 0; });
-                            repository.updateSubmittedValues2({ target: 'Shipments', ins: submittedVals, id: options.intgid }).then(
+
+                            let submittedShipments = dataToUpload.filter(data => { return rejectedRecordNumbers.indexOf(data.OrderNumber) < 0; });
+                            submittedShipments = submittedShipments.map(submitted => { return { orderNumber: submitted.OrderNumber, lineNumber: submitted.LineNumber, siteID: submitted.SiteID }; });
+                            //repository.updateSubmittedValues2({ target: 'Shipments', ins: submittedVals, id: options.intgid }).then(
+                            repository.updateSubmittedShipments({ id: options.intgid, shipments: submittedShipments }).then(
                                 resolve => {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedShipments count: ' + submittedVals.length);
                                     if (rejectedRecords.length > 0) {
+                                        console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                         for (let rec of rejectedRecords) {
                                             let recerr = {
                                                 ErrorNumber: rec.badShipment.orderNumber,
@@ -1995,13 +2052,32 @@ function upsertShipmentRecords(options) {
                                                 }
                                             );
                                         }
+                                        console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                                     }
                                     else {
                                         res();
                                     }
                                 },
                                 reject => {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' updateSubmittedShipments failed');
 
+                                    var errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Toggle',
+                                        ErrorDescription: 'Application was not able to toggle shipments submitted to TipWEB-IT API. More information is available in the ErrorObject.',
+                                        ErrorObject: JSON.stringify(reject),
+                                        DataIntegrationsID: options.intgid
+                                    }
+
+                                    repository.logError(errorObject).then(
+                                        resolve => {
+                                            rej();
+                                        },
+                                        reject => {
+                                            rej();
+                                        }
+                                    );
                                 });
                             //to here
                         },
@@ -2062,12 +2138,17 @@ function upsertProductRecords(options) {
                     for (let d of dataToUpload) {
                         d.ProductNumber = 'INT' + d.ProductNumber;
                     }
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' upsertProductRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertProducts(tokenVal, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
+                            if (rejectedRecords == undefined || rejectedRecords === null) {
+                                // console.log('No Detail records were rejected');
+                                rejectedRecords = [];
+                            }
                             console.log();
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords && rejectedRecords.length > 0) {
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
@@ -2211,6 +2292,8 @@ function filterShipmentsWithBadDetails(options) {
                     let intgid = resolve;
                     repository.runProcIntegrations_FlagShipmentsFromBadDetailRecords(intgid).then(
                         resolve => {
+                            console.log();
+                            console.log(mappings.getCurrentDate() + ' Removed shipment records from manifest to send to API.')
                             res();
                         },
                         reject => {
@@ -2266,7 +2349,8 @@ function filterDetailsWithBadHeaders(options) {
 
             repository.runProcIntegrations_FlagDetailsAndShipmentsFromBadHeaderRecords(options.id).then(
                 resolve => {
-                    console.log("Removed detail and shipment records from manifest to send to API.")
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' Removed detail and shipment records from manifest to send to API.')
                     process.exit(0);
                 },
                 reject => {
@@ -2310,7 +2394,8 @@ function toggleToSending(options) {
 
             repository.beginSendingToTipwebAPI(options.id).then(
                 resolve => {
-                    console.log('No longer processing. Sending to TipWEB-IT now.');
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' No longer processing. Sending to TipWEB-IT now.');
                     res();
                 },
                 reject => {
@@ -2349,7 +2434,8 @@ function toggleToPostProcessing(options) {
 
             repository.beginDataPostProcessing(options.id).then(
                 resolve => {
-                    console.log('Complete!');
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' beginDataPostprocessing Complete!');
                     res();
                 },
                 reject => {
@@ -2392,9 +2478,13 @@ function toggleSuccessfulIntegration(options) {
 
             repository.completeIntegrationProcessing(options.id).then(
                 resolve => {
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' completeIntegrationProcessing resolved')
                     res();
                 },
                 reject => {
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' completeIntegrationProcessing rejected');
                     rej();
                 }
             );
@@ -2437,7 +2527,8 @@ function getLinkTableData(options) {
 function runCustomScripts(options) {
     return new Promise(
         (res, rej) => {
-            // console.log('runCustomScripts Starting');
+            console.log();
+            console.log(mappings.getCurrentDate() + ' runCustomScripts Starting');
             repository.getProcessingIntegrationID().then(
                 resolve => {
                     let intgid = resolve;
@@ -2449,10 +2540,14 @@ function runCustomScripts(options) {
                         funk(options).then(
                             resolve => {
                                 if (custTasks.indexOf(task) === custTasks.length - 1) {
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' Custom Function ' + task.fn + ' completed');
                                     res();
                                 }
                             },
                             reject => {
+                                console.log();
+                                console.log(mappings.getCurrentDate() + ' Custom function ' + task.fn + ' failed');
                                 rej(reject);
                             }
                         );
@@ -2474,7 +2569,8 @@ function mapFlatInvoicesToDatabase(options) {
             repository.getProcessingIntegrationID().then(
                 resolve => {
                     let intgid = resolve;
-                    // console.log(options.fileName);
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' mapFlatInvoicesToDatabase for file: ' + options.fileName);
                     filetasks.getDataFile(options.fileName).then(
                         resolve => {
                             let fileData;
@@ -2490,7 +2586,7 @@ function mapFlatInvoicesToDatabase(options) {
                                     let mappingsData = resolve.map(m => { return m.dataValues; });
                                     let mappedData = [];
                                     console.log();
-                                    console.log('Processing ' + fileData.length + ' records...');
+                                    console.log(mappings.getCurrentDate() + ' Processing ' + fileData.length + ' records...');
                                     for (let line of fileData) {
                                         let linVal = JSON.parse(line);
                                         let mapData = mappingsData.map(m => { return JSON.parse(m.MappingsObject); });
@@ -2498,7 +2594,8 @@ function mapFlatInvoicesToDatabase(options) {
                                         m["DataIntegrationsID"] = intgid;
                                         mappedData.push(m);
                                     }
-                                    console.log('Successfully mapped ' + mappedData.length + ' records...');
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' Successfully mapped ' + mappedData.length + ' records...');
                                     console.log('Inserting data...');
                                     let trackerList;
                                     for (let item of mappedData) {
@@ -2538,6 +2635,8 @@ function mapFlatInvoicesToDatabase(options) {
                                             }
                                         );
                                     }
+                                    console.log();
+                                    console.log(mappings.getCurrentDate() + ' insert all invoice flat data complete');
                                 },
                                 reject => {
 
@@ -2610,7 +2709,8 @@ function stageInvoices(options) {
 
             repository.getInvoiceHeaders(options).then(
                 resolve => {
-                    console.log('Retrieved ' + resolve.length + ' invoice records to process.');
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' invoice records to process.');
                     let headerData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'invoice header', client: configuration.config.client }).then(
                         resolve => {
@@ -2624,7 +2724,7 @@ function stageInvoices(options) {
 
                             repository.insertInvoiceHeaders(mappedData).then(
                                 resolve => {
-                                    console.log('Successfully inserted ' + mappedData.length + ' into Invoices table.');
+                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into Invoices table.');
                                     res();
                                 },
                                 reject => {
@@ -2701,7 +2801,7 @@ function stageInvoiceDetails(options) {
 
             repository.getInvoiceDetails({ intgid: integid }).then(
                 resolve => {
-                    console.log('Retrieved ' + resolve.length + ' invoice records to process.');
+                    console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' invoice records to process.');
                     let headerData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'invoice detail', client: configuration.config.client }).then(
                         resolve => {
@@ -2716,7 +2816,7 @@ function stageInvoiceDetails(options) {
 
                             repository.insertInvoiceDetails(mappedData).then(
                                 resolve => {
-                                    console.log('Successfully inserted ' + mappedData.length + ' into InvoiceDetails table.');
+                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into InvoiceDetails table.');
                                     res();
                                 },
                                 reject => {
@@ -2931,13 +3031,19 @@ function pushInvoiceHeadersToApi(options) {
                     for (let value of dataToUpload) {
                         value.DataIntegration = undefined;
                     }
-
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' upsertProductRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.addInvoices(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            if (rejectedRecords == undefined || rejectedRecords === null) {
+                                // console.log('No Detail records were rejected');
+                                rejectedRecords = [];
+                            }
+                            console.log();
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
+                                console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
                                         ErrorNumber: rec.badInvoice.orderNumber,
@@ -2961,6 +3067,7 @@ function pushInvoiceHeadersToApi(options) {
                                         }
                                     );
                                 }
+                                console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             } else {
                                 res();
                             }
@@ -3067,13 +3174,19 @@ function pushInvoiceDetailsToApi(options) {
                     for (let value of dataToUpload) {
                         value.DataIntegration = undefined;
                     }
-
+                    console.log();
+                    console.log(mappings.getCurrentDate() + ' pushInvoiceDetailsToApi starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.addInvoiceDetails(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);
-                            console.log('Successfully processed ' + dataToUpload.length + ' records.');
-                            console.log(rejectedRecords.length + ' records were rejected.');
+                            if (rejectedRecords == undefined || rejectedRecords === null) {
+                                // console.log('No Detail records were rejected');
+                                rejectedRecords = [];
+                            }
+                            console.log();
+                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
+                                console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
                                         ErrorNumber: rec.badInvoiceDetail.orderNumber,
@@ -3097,6 +3210,7 @@ function pushInvoiceDetailsToApi(options) {
                                         }
                                     );
                                 }
+                                console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             } else {
                                 res();
                             }
@@ -3178,21 +3292,25 @@ function mapFromFile(options) {
                 let mapType = configuration.config.mapType;
                 let mapClient = configuration.config.client;
                 let mappedData = [];
-
+                console.log();
+                console.log(mappings.getCurrentDate() + ' mapFromFile for file: ' + filename);
                 filetasks.getDataFile(filename).then(
                     resolve => {
                         let filedata = JSON.parse(resolve);
-                        console.log('Processing ' + filedata.length + ' records...');
+                        // console.log('Processing ' + filedata.length + ' records...');
                         repository.getMappings({ client: mapClient, type: mapType }).then(
                             resolve => {
                                 let theMaps = resolve.map(m => { return m.dataValues; });
+                                console.log();
+                                console.log(mappings.getCurrentDate() + ' Processing ' + filedata.length + ' records...');
                                 for (let line of filedata) {
                                     let mapData = theMaps.map(m => { return JSON.parse(m.MappingsObject); });
                                     let m = mappings.mapIt(JSON.parse(line), mapData);
                                     m["IntegrationsID"] = dataid;
                                     mappedData.push(m);
                                 }
-                                console.log('Successfully mapped ' + mappedData.length + ' records...');
+                                console.log();
+                                console.log(mappings.getCurrentDate() + ' Successfully mapped ' + mappedData.length + ' records...');
                                 let trackerList;
                                 let tableInfo = configuration.dataConfig.flatDataTable;
                                 for (let item of mappedData) {
@@ -3230,6 +3348,8 @@ function mapFromFile(options) {
                                         }
                                     );
                                 }
+                                console.log();
+                                console.log(mappings.getCurrentDate() + ' map flat data from file complete');
                             },
                             reject => {
                                 let errorObject = {

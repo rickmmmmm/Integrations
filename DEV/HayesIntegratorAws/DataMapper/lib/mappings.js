@@ -219,5 +219,22 @@ module.exports = {
             dest[m.toVal] = m.transformationObj ? this.transformObj(source, m.transformationObj) : source[m.fromVal] ? source[m.fromVal].toString().trim() : "";
         }
         return dest;
+    },
+
+    formatDate: function (date) {
+        var year = date.getFullYear();
+        var month = (date.getMonth() < 10 ? '0' + date.getMonth().toString() : date.getMonth().toString());
+        var day = (date.getDate() < 10 ? '0' + date.getDate().toString() : date.getDate().toString());
+        var hours = (date.getHours() < 10 ? '0' + date.getHours().toString() : date.getHours().toString());
+        var minutes = (date.getMinutes() < 10 ? '0' + date.getMinutes().toString() : date.getMinutes().toString());
+        var seconds = (date.getSeconds() < 10 ? '0' + date.getSeconds().toString() : date.getSeconds().toString());
+        var milliseconds = (date.getMilliseconds() < 10 ? '00' + date.getMilliseconds().toString() : date.getMilliseconds() < 100 ? '0' + date.getMilliseconds().toString() : date.getMilliseconds().toString());
+
+        return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
+    },
+
+    getCurrentDate: function () {
+        var currentDate = new Date(Date.now());
+        return this.formatDate(currentDate);
     }
 }

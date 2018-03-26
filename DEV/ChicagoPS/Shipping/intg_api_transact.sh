@@ -50,3 +50,4 @@ aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENT
 
 echo " #### Terminate instance $INSTANCEID"
 aws ec2 terminate-instances --instance-ids $INSTANCEID
+# aws ec2 stop-instances --instance-ids $INSTANCEID

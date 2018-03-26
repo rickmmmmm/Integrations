@@ -91,7 +91,8 @@ PurchaseOrderHeaderModel = {
     Notes: sequelize.STRING(500),
     Other1: sequelize.STRING(100),
     DataIntegrationsID: { type: sequelize.INTEGER, unique: 'cidx' },
-    ShouldSubmit: sequelize.BOOLEAN
+    ShouldSubmit: sequelize.BOOLEAN,
+    Submitted: sequelize.BOOLEAN
 };
 
 PurchaseOrderDetailModel = {
@@ -107,8 +108,9 @@ PurchaseOrderDetailModel = {
     AccountCode: sequelize.STRING(100),
     DepartmentID: sequelize.INTEGER,
     DataIntegrationsID: { type: sequelize.INTEGER, unique: 'ccidx' },
+    CFDA: sequelize.STRING,
     ShouldSubmit: sequelize.BOOLEAN,
-    CFDA: sequelize.STRING
+    Submitted: sequelize.BOOLEAN
 };
 
 ShipmentsModel = {
@@ -123,7 +125,8 @@ ShipmentsModel = {
     InvoiceNumber: sequelize.STRING,
     InvoiceDate: sequelize.STRING,
     IntegrationsID: { type: sequelize.INTEGER, unique: 'cccidx' },
-    ShouldSubmit: sequelize.BOOLEAN
+    ShouldSubmit: sequelize.BOOLEAN,
+    Submitted: sequelize.BOOLEAN
 }
 
 ProductsModel = {
@@ -473,50 +476,154 @@ module.exports = {
             });
     },
 
-    updateSubmittedValues(options) {
+    updateSubmittedHeaders(options) {
         return new Promise(
             (resolve, reject) => {
-                // console.log('Calling updateSubmittedValues on ' + options.target);
-                this[options.target].update(
-                    {
-                        Submitted: true
-                    },
-                    { where: { DataIntegrationsID: options.id, $in: options.ins } }
-                ).then(
-                    data => {
-                        // console.log('Update Submitted resolved');
-                        resolve();
-                    },
-                    error => {
-                        // console.log('Update Submitted failed');
-                        // console.log(error);
-                        reject(error);
+                // console.log('Calling updateSubmittedHeaders');
+                if (options.headers.length > 0) {
+                    // console.log(options.headers);
+                    for (let header of options.headers) {
+                        this.PurchaseOrderHeader.update(
+                            {
+                                Submitted: true
+                            },
+                            { where: { DataIntegrationsID: options.id, OrderNumber: header.orderNumber, VendorID: header.vendorID, SiteID: header.siteID } }
+                        ).then(
+                            data => {
+                                // console.log('Update Submitted resolved');
+                                if (options.headers.indexOf(header) === options.headers.length - 1) {
+                                    resolve();
+                                }
+                            },
+                            error => {
+                                // console.log('Update Submitted failed');
+                                // console.log(error);
+                                // reject(error);
+                                let recerr = {
+                                    ErrorNumber: null,
+                                    ErrorName: 'Update Submitted Headers',
+                                    ErrorDescription: 'Could not updated Submitted Headers values.',
+                                    ErrorObject: JSON.stringify(error),
+                                }
+                                this.logError(recerr).then(
+                                    res => {
+                                        if (options.headers.indexOf(header) === options.headers.length - 1) {
+                                            resolve();
+                                        }
+                                    },
+                                    rej => {
+                                        if (options.headers.indexOf(header) === options.headers.length - 1) {
+                                            resolve();
+                                        }
+                                    }
+                                );
+                            }
+                        )
                     }
-                )
+                } else {
+                    resolve();
+                }
             }
         );
     },
 
-    updateSubmittedValues2(options) {
+    updateSubmittedDetails(options) {
         return new Promise(
             (resolve, reject) => {
-                // console.log('Calling updateSubmittedValues2 on ' + options.target);
-                this[options.target].update(
-                    {
-                        Submitted: true
-                    },
-                    { where: { IntegrationsID: options.id, $in: options.ins } }
-                ).then(
-                    data => {
-                        // console.log('Update Submitted resolved');
-                        resolve();
-                    },
-                    error => {
-                        // console.log('Update Submitted failed');
-                        // console.log(error);
-                        reject(error);
+                // console.log('Calling updateSubmittedDetails');
+                if (options.details.length > 0) {
+                    // console.log(options.details);
+                    for (let detail of options.details) {
+                        this.PurchaseOrderDetail.update(
+                            {
+                                Submitted: true
+                            },
+                            { where: { DataIntegrationsID: options.id, OrderNumber: detail.orderNumber, LineNumber: detail.lineNumber, SiteID: detail.siteID } }
+                        ).then(
+                            data => {
+                                // console.log('Update Submitted resolved');
+                                if (options.details.indexOf(detail) === options.details.length - 1) {
+                                    resolve();
+                                }
+                            },
+                            error => {
+                                // console.log('Update Submitted failed');
+                                // console.log(error);
+                                // reject(error);
+                                let recerr = {
+                                    ErrorNumber: null,
+                                    ErrorName: 'Update Submitted Details',
+                                    ErrorDescription: 'Could not updated Submitted Details values.',
+                                    ErrorObject: JSON.stringify(error),
+                                }
+                                this.logError(recerr).then(
+                                    res => {
+                                        if (options.details.indexOf(detail) === options.details.length - 1) {
+                                            resolve();
+                                        }
+                                    },
+                                    rej => {
+                                        if (options.details.indexOf(detail) === options.details.length - 1) {
+                                            resolve();
+                                        }
+                                    }
+                                );
+                            }
+                        )
                     }
-                );
+                } else {
+                    resolve();
+                }
+            }
+        );
+    },
+
+    updateSubmittedShipments(options) {
+        return new Promise(
+            (resolve, reject) => {
+                // console.log('Calling updateSubmittedShipments');
+                if (options.shipments.length > 0) {
+                    for (let shipment of options.shipments) {
+                        this.Shipments.update(
+                            {
+                                Submitted: true
+                            },
+                            { where: { IntegrationsID: options.id, OrderNumber: shipment.orderNumber, LineNumber: shipment.lineNumber, SiteID: shipment.siteID } }
+                        ).then(
+                            data => {
+                                // console.log('Update Submitted resolved');
+                                if (options.shipments.indexOf(shipment) === options.shipments.length - 1) {
+                                    resolve();
+                                }
+                            },
+                            error => {
+                                // console.log('Update Submitted failed');
+                                // console.log(error);
+                                // reject(error);
+                                let recerr = {
+                                    ErrorNumber: null,
+                                    ErrorName: 'Update Submitted Shipments',
+                                    ErrorDescription: 'Could not updated Submitted Shipments values.',
+                                    ErrorObject: JSON.stringify(error),
+                                }
+                                this.logError(recerr).then(
+                                    res => {
+                                        if (options.shipments.indexOf(shipment) === options.shipments.length - 1) {
+                                            resolve();
+                                        }
+                                    },
+                                    rej => {
+                                        if (options.shipments.indexOf(shipment) === options.shipments.length - 1) {
+                                            resolve();
+                                        }
+                                    }
+                                );
+                            }
+                        )
+                    }
+                } else {
+                    resolve();
+                }
             }
         );
     },

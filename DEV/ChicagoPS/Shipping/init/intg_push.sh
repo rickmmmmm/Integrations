@@ -23,15 +23,15 @@ echo ">>> datamapper downloaded"
 cd /home/ec2-user/etc/apps/node/datamapper
 
 echo ">>> starting dos2unix process"
-dos2unix index.js
-dos2unix /lib/*
+sudo dos2unix index.js
+sudo dos2unix /lib/*
 
 echo ">>> Run npm install for datamapper"
-npm install
+sudo npm install
 
 echo ">>> download configuration.js "
 sudo aws s3 cp s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/configuration.js /home/ec2-user/etc/apps/node/datamapper/lib/configuration.js
-npm install -g
+sudo npm install -g
 
 echo ">>> Downloading BASH scripts..."
 sudo aws s3 cp s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/$INTGFILE /home/ec2-user/etc/$CLIENT/scripts
