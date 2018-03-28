@@ -20,7 +20,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -92,7 +92,7 @@ module.exports = {
                         // console.log(resp.statusMessage);
 
                         if (err) {
-                            let errorObj = { err: err, response: resp }
+                            let errorObj = { err: err, response: response }
                             reject(err);
                         }
                         if (body) {
@@ -117,7 +117,7 @@ module.exports = {
                             resolve(mappedBody);
                         }
                         else {
-                            let errorObj = { err: err, response: resp }
+                            let errorObj = { err: err, response: response }
                             reject(errorObj);
                         }
                     }
@@ -135,7 +135,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -164,7 +164,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -191,7 +191,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -218,7 +218,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -273,7 +273,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -300,7 +300,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
@@ -327,7 +327,7 @@ module.exports = {
                     },
                     (error, response, data) => {
                         if (error) {
-                            let errorObj = { err: error, response: resp }
+                            let errorObj = { err: error, response: response }
                             reject(errorObj);
                         } else if (response.statusCode !== 200) {
                             let errorObj = { err: response.statusCode, response: response.statusMessage }
