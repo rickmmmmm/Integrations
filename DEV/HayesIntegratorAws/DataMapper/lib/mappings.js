@@ -236,5 +236,10 @@ module.exports = {
     getCurrentDate: function () {
         var currentDate = new Date(Date.now());
         return this.formatDate(currentDate);
+    },
+
+    getCurrentShortDate: function () {
+        var currentDate = new Date(Date.now());
+        return currentDate.toLocaleDateString();
     }
 }

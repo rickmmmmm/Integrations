@@ -1007,7 +1007,9 @@ function upsertVendors(options) {
         (res, rej) => {
             repository.getVendorsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
-                    let dataToUpload = resolve.map(m => { return m.dataValues; });
+                    let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
+                    let dataToUpload = resolve.map(m => { return { VendorID: 0, VendorName: m.VendorName, Contact: '', Address1: m.Address1, Address2: m.Address2, City: m.City,
+                                                               State: m.State, ZipCode: m.ZipCode, Phone: m.Phone, Fax: '', Email: m.Email, AccountNumber: m.VendorID, Notes: noteAppend }; });
                     console.log();
                     console.log(mappings.getCurrentDate() + ' upsertVendors starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertVendors(options.token, dataToUpload).then(
@@ -1100,10 +1102,12 @@ function upsertProducts(options) {
         (res, rej) => {
             repository.getProductsToUpsert({ client: options.client, limitVal: options.limitVal, offset: options.offset }).then(
                 resolve => {
-                    let dataToUpload = resolve.map(m => { return m.dataValues; });
-                    for (let p of dataToUpload) {
-                        p.ProductNumber = 'INTG' + p.ProductNumber;
-                    }
+                    let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
+                    let dataToUpload = resolve.map(m => { return { ProductNumber: 0, ProductName: m.ProductName, ProductDescription: m.ProductDescription, ProductType: m.ProductType, Model: m.Model, Manufacturer: m.Manufacturer,
+                                                                   SuggestedPrice: m.SuggestedPrice, Notes: noteAppend, SKU: m.SKU, ProjectedLife: null, CustomField1: null, CustomField2: null, CustomField3: null }; });
+                    // for (let p of dataToUpload) {
+                    //     p.ProductNumber = 'INTG' + p.ProductNumber; //Empty the Product Number to alow the API to auto assign the Product Number
+                    // }
                     console.log();
                     console.log(mappings.getCurrentDate() + ' upsertProducts starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertProducts(options.token, dataToUpload).then(
@@ -1755,10 +1759,12 @@ function upsertHeaderRecords(options) {
         (res, rej) => {
             repository.getHeadersToUpsert({ intgid: options.intgid, client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
-                    let dataToUpload = resolve.map(m => { return m.dataValues; });
-                    for (let value of dataToUpload) {
-                        value.DataIntegration = undefined;
-                    }
+                    let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
+                    let dataToUpload = resolve.map(m => { return { OrderNumber: m.OrderNumber, Status: m.Status, VendorID: m.VendorID, VendorName: m.VendorName, SiteID: m.SiteID, PurchaseDate: m.PurchaseDate,
+                                                                   EstimatedDeliveryDate: m.EstimatedDeliveryDate, Notes: noteAppend + ' ' + m.Notes, Other1: m.Other1}; });
+                    // for (let value of dataToUpload) {
+                    //     value.DataIntegration = undefined;
+                    // }
                     console.log();
                     console.log(mappings.getCurrentDate() + ' upsertHeaderRecords starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertHeaders(options.token, dataToUpload).then(
@@ -1858,6 +1864,7 @@ function upsertHeaderRecords(options) {
                     )
                 },
                 reject => {
+                    console.log('getHeadersToUpsert failed: ' + reject);
                     rej();
                 }
             )
@@ -2007,7 +2014,7 @@ function upsertShipmentRecords(options) {
                     rq.upsertShipments(options.token, dataToUpload).then(
                         resolve => {
                             console.log();
-                            // console.log('upsertHeaders resolved');
+                            // console.log('upsertShipments resolved');
                             let rejectedRecords = JSON.parse(resolve);
                             if (rejectedRecords == undefined || rejectedRecords === null) {
                                 // console.log('No Detail records were rejected');
@@ -2124,132 +2131,131 @@ function upsertShipmentRecords(options) {
                 }
             );
         });
-
 }
 
-function upsertProductRecords(options) {
-    //get token
-    rq.getToken().then(
-        resolve => {
-            let tokenVal = resolve.token;
-            repository.getProductsToUpsert({ client: configuration.config.client, limit: options.limit, offset: options.offset }).then(
-                resolve => {
-                    let dataToUpload = resolve.map(m => { return m.dataValues; });
-                    for (let d of dataToUpload) {
-                        d.ProductNumber = 'INT' + d.ProductNumber;
-                    }
-                    console.log();
-                    console.log(mappings.getCurrentDate() + ' upsertProductRecords starting at ' + options.offset + ' run ' + options.limitVal);
-                    rq.upsertProducts(tokenVal, dataToUpload).then(
-                        resolve => {
-                            let rejectedRecords = JSON.parse(resolve);
-                            if (rejectedRecords == undefined || rejectedRecords === null) {
-                                // console.log('No Detail records were rejected');
-                                rejectedRecords = [];
-                            }
-                            console.log();
-                            console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
-                            if (rejectedRecords && rejectedRecords.length > 0) {
-                                for (let rec of rejectedRecords) {
-                                    let recerr = {
-                                        ErrorNumber: rec.badProduct.productNumber,
-                                        ErrorName: 'Product Record Rejected',
-                                        ErrorDescription: 'Product record was rejected. See ErrorObject for Rejection Reason.',
-                                        ErrorObject: JSON.stringify(rec),
-                                    }
-                                    repository.logError(recerr).then(
-                                        resolve => {
-                                            // console.log('Success!');
-                                            if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                                                process.exit(0);
-                                            }
-                                        },
-                                        reject => {
-                                            // console.error(reject);
-                                            // console.log("LogError failed");
-                                            if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
-                                                process.exit(0);
-                                            }
-                                        }
-                                    );
-                                }
-                            }
-                            else {
-                                process.exit(0);
-                            }
-                        },
-                        reject => {
+// function upsertProductRecords(options) {
+//     //get token
+//     rq.getToken().then(
+//         resolve => {
+//             let tokenVal = resolve.token;
+//             repository.getProductsToUpsert({ client: configuration.config.client, limit: options.limit, offset: options.offset }).then(
+//                 resolve => {
+//                     let dataToUpload = resolve.map(m => { return m.dataValues; });
+//                     for (let d of dataToUpload) {
+//                         d.ProductNumber = '0'; // 'INT' + d.ProductNumber;
+//                     }
+//                     console.log();
+//                     console.log(mappings.getCurrentDate() + ' upsertProductRecords starting at ' + options.offset + ' run ' + options.limitVal);
+//                     rq.upsertProducts(tokenVal, dataToUpload).then(
+//                         resolve => {
+//                             let rejectedRecords = JSON.parse(resolve);
+//                             if (rejectedRecords == undefined || rejectedRecords === null) {
+//                                 // console.log('No Detail records were rejected');
+//                                 rejectedRecords = [];
+//                             }
+//                             console.log();
+//                             console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
+//                             if (rejectedRecords && rejectedRecords.length > 0) {
+//                                 for (let rec of rejectedRecords) {
+//                                     let recerr = {
+//                                         ErrorNumber: rec.badProduct.productNumber,
+//                                         ErrorName: 'Product Record Rejected',
+//                                         ErrorDescription: 'Product record was rejected. See ErrorObject for Rejection Reason.',
+//                                         ErrorObject: JSON.stringify(rec),
+//                                     }
+//                                     repository.logError(recerr).then(
+//                                         resolve => {
+//                                             // console.log('Success!');
+//                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+//                                                 process.exit(0);
+//                                             }
+//                                         },
+//                                         reject => {
+//                                             // console.error(reject);
+//                                             // console.log("LogError failed");
+//                                             if (rejectedRecords.indexOf(rec) === rejectedRecords.length - 1) {
+//                                                 process.exit(0);
+//                                             }
+//                                         }
+//                                     );
+//                                 }
+//                             }
+//                             else {
+//                                 process.exit(0);
+//                             }
+//                         },
+//                         reject => {
 
-                            // console.error(reject);
+//                             // console.error(reject);
 
-                            var errorObject = {
-                                ErrorNumber: 500,
-                                ErrorName: 'Product Details',
-                                ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
-                                ErrorObject: JSON.stringify(reject),
-                                // DataIntegrationsID: options.intgid
-                            }
+//                             var errorObject = {
+//                                 ErrorNumber: 500,
+//                                 ErrorName: 'Product Details',
+//                                 ErrorDescription: 'Application was not able to upsert data via TipWEB-IT API. More information is available in the ErrorObject.',
+//                                 ErrorObject: JSON.stringify(reject),
+//                                 // DataIntegrationsID: options.intgid
+//                             }
 
-                            repository.logError(errorObject).then(
-                                resolve => {
-                                    // console.log();
-                                    return;
-                                },
-                                reject => {
-                                    // console.log("LogError failed");
-                                    // console.error(reject);
-                                    return;
-                                }
-                            );
-                        }
-                    )
-                },
-                reject => {
-                    var errorObject = {
-                        ErrorNumber: 500,
-                        ErrorName: 'Get Shipments to Process',
-                        ErrorDescription: 'Application was not able to get products to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
-                        ErrorObject: JSON.stringify(reject),
-                        //DataIntegrationsID: options.intgid
-                    }
+//                             repository.logError(errorObject).then(
+//                                 resolve => {
+//                                     // console.log();
+//                                     return;
+//                                 },
+//                                 reject => {
+//                                     // console.log("LogError failed");
+//                                     // console.error(reject);
+//                                     return;
+//                                 }
+//                             );
+//                         }
+//                     )
+//                 },
+//                 reject => {
+//                     var errorObject = {
+//                         ErrorNumber: 500,
+//                         ErrorName: 'Get Shipments to Process',
+//                         ErrorDescription: 'Application was not able to get products to upsert via TipWEB-IT API. More information is available in the ErrorObject.',
+//                         ErrorObject: JSON.stringify(reject),
+//                         //DataIntegrationsID: options.intgid
+//                     }
 
-                    repository.logError(errorObject).then(
-                        resolve => {
-                            // console.log();
-                            return;
-                        },
-                        reject => {
-                            // console.log("LogError failed");
-                            // console.error(reject);
-                            return;
-                        }
-                    );
-                }
-            );
-        },
-        reject => {
-            var errorObject = {
-                ErrorNumber: 500,
-                ErrorName: 'Get API Token',
-                ErrorDescription: 'Application was not able to get an API token to access TipWEB-IT web API. More information is available in the ErrorObject.',
-                ErrorObject: JSON.stringify(reject),
-                //DataIntegrationsID: options.intgid
-            }
+//                     repository.logError(errorObject).then(
+//                         resolve => {
+//                             // console.log();
+//                             return;
+//                         },
+//                         reject => {
+//                             // console.log("LogError failed");
+//                             // console.error(reject);
+//                             return;
+//                         }
+//                     );
+//                 }
+//             );
+//         },
+//         reject => {
+//             var errorObject = {
+//                 ErrorNumber: 500,
+//                 ErrorName: 'Get API Token',
+//                 ErrorDescription: 'Application was not able to get an API token to access TipWEB-IT web API. More information is available in the ErrorObject.',
+//                 ErrorObject: JSON.stringify(reject),
+//                 //DataIntegrationsID: options.intgid
+//             }
 
-            repository.logError(errorObject).then(
-                resolve => {
-                    // console.log();
-                    return;
-                },
-                reject => {
-                    // console.error(reject);
-                    // console.log("LogError failed");
-                    return;
-                }
-            );
-        }
-    );
-}
+//             repository.logError(errorObject).then(
+//                 resolve => {
+//                     // console.log();
+//                     return;
+//                 },
+//                 reject => {
+//                     // console.error(reject);
+//                     // console.log("LogError failed");
+//                     return;
+//                 }
+//             );
+//         }
+//     );
+// }
 
 function filterOldRecords(options) {
     return new Promise(
@@ -3032,7 +3038,7 @@ function pushInvoiceHeadersToApi(options) {
                         value.DataIntegration = undefined;
                     }
                     console.log();
-                    console.log(mappings.getCurrentDate() + ' upsertProductRecords starting at ' + options.offset + ' run ' + options.limitVal);
+                    console.log(mappings.getCurrentDate() + ' addInvoices starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.addInvoices(options.token, dataToUpload).then(
                         resolve => {
                             let rejectedRecords = JSON.parse(resolve);

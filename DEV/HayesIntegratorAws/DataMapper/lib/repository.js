@@ -485,6 +485,7 @@ module.exports = {
                     for (let header of options.headers) {
                         this.PurchaseOrderHeader.update(
                             {
+                                ShouldSubmit: false,
                                 Submitted: true
                             },
                             { where: { DataIntegrationsID: options.id, OrderNumber: header.orderNumber, VendorID: header.vendorID, SiteID: header.siteID } }
@@ -536,6 +537,7 @@ module.exports = {
                     for (let detail of options.details) {
                         this.PurchaseOrderDetail.update(
                             {
+                                ShouldSubmit: false,
                                 Submitted: true
                             },
                             { where: { DataIntegrationsID: options.id, OrderNumber: detail.orderNumber, LineNumber: detail.lineNumber, SiteID: detail.siteID } }
@@ -586,6 +588,7 @@ module.exports = {
                     for (let shipment of options.shipments) {
                         this.Shipments.update(
                             {
+                                ShouldSubmit: false,
                                 Submitted: true
                             },
                             { where: { IntegrationsID: options.id, OrderNumber: shipment.orderNumber, LineNumber: shipment.lineNumber, SiteID: shipment.siteID } }
@@ -1201,11 +1204,11 @@ module.exports = {
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            IntegrationsID: options.id,
+                            // IntegrationsID: options.id,
                             DataSentToTipweb: true
                         }
                     }],
-                    where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
+                    where: { ShouldSubmit: true }, //, DataIntegrationsID: options.id,
                 }
                 ).then(
                     data => { resolve(data); },
@@ -1236,11 +1239,11 @@ module.exports = {
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            DataSentToTipweb: true,
-                            IntegrationsID: options.id
+                            DataSentToTipweb: true //,
+                            // IntegrationsID: options.id
                         }
                     }],
-                    where: { ShouldSubmit: true, DataIntegrationsID: options.id, },
+                    where: { ShouldSubmit: true }, //, DataIntegrationsID: options.id,
                 }
                 ).then(
                     data => { resolve(data); },
@@ -1301,16 +1304,15 @@ module.exports = {
                     include: [{
                         model: this.DataIntegrations,
                         where: {
-                            IntegrationsID: options.intgid
+                            Client: options.client //,
+                            // IntegrationsID: options.intgid
                         }
                     }],
                     where: { ShouldSubmit: true },
                     offset: options.offsetVal,
                     limit: options.limitVal,
                     order: ['OrderNumber']
-
-                }
-                ).then(
+                }).then(
                     data => { resolve(data); },
                     error => { reject(error); }
                 );
@@ -1339,15 +1341,14 @@ module.exports = {
                     include: [{
                         model: this.DataIntegrations,
                         where: {
-                            Client: options.client,
-                            IntegrationsID: options.intgid
+                            Client: options.client //,
+                            // IntegrationsID: options.intgid
                         }
                     }],
                     where: { ShouldSubmit: true },
                     offset: options.offsetVal,
                     limit: options.limitVal
-                }
-                ).then(
+                }).then(
                     data => { resolve(this.escapePurchaseOrderDetails(data)); },
                     error => { reject(error); }
                 );
@@ -1438,11 +1439,11 @@ module.exports = {
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            DataSentToTipweb: true,
-                            IntegrationsID: options.id
+                            DataSentToTipweb: true //,
+                            // IntegrationsID: options.id
                         }
                     }],
-                    where: { ShouldSubmit: true, IntegrationsID: options.id },
+                    where: { ShouldSubmit: true }, //, IntegrationsID: options.id
                 }
                 ).then(
                     data => { resolve(data); },
@@ -1471,11 +1472,11 @@ module.exports = {
                     attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
                     include: [{
                         model: this.DataIntegrations,
-                        where: {
-                            IntegrationsID: options.id
-                        }
+                        // where: {
+                        //     IntegrationsID: options.id
+                        // }
                     }],
-                    where: { ShouldSubmit: true, IntegrationsID: options.id },
+                    where: { ShouldSubmit: true }, //, IntegrationsID: options.id
                     offset: options.offsetVal,
                     limit: options.limitVal
                 }

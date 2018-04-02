@@ -36,14 +36,14 @@ echo " #### Web API token retrieved."
 hayes-datamapper --push-vendors -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Vendors pushed to API."
 
-hayes-datamapper --toggle-vendors
-echo " #### Toggled Vendors pushed to API."
+# hayes-datamapper --toggle-vendors
+# echo " #### Toggled Vendors pushed to API."
 
 hayes-datamapper --push-products -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Products pushed to API."
 
-hayes-datamapper --toggle-products
-echo " #### Toggled products pushed to API."
+# hayes-datamapper --toggle-products
+# echo " #### Toggled products pushed to API."
 
 hayes-datamapper --push-headers -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Header records pushed to API."
