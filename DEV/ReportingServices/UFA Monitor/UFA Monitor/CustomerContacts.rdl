@@ -6,62 +6,42 @@
     <DataSource Name="DB">
       <DataSourceReference>DB</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
-      <rd:DataSourceID>323f86d6-7209-4724-bd9c-444b9fa8163c</rd:DataSourceID>
+      <rd:DataSourceID>fa7abb75-1518-4d61-b64a-248dffad517a</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="CustomerFiles">
+    <DataSet Name="DataSet1">
       <Query>
         <DataSourceName>DB</DataSourceName>
-        <CommandText>SELECT        cl.CustomerName, cl.SourceOrigin, ar.Description, CASE WHEN ar.Area = 'CCOURSE' AND CampusCourse = 1 THEN 1 WHEN ar.Area = 'MCOURSE' AND 
-                         MasterCourse = 1 THEN 1 WHEN ar.Area = 'STU' AND StudentDemog = 1 THEN 1 WHEN ar.Area = 'STUSCHED' AND 
-                         StudentSchedule = 1 THEN 1 WHEN ar.Area = 'TCHR' AND TeacherDemog = 1 THEN 1 WHEN ar.Area = 'TCHSCHED' AND 
-                         TeacherSchedule = 1 THEN 1 WHEN ar.Area = 'CLASS' AND ClassList = 1 THEN 1 WHEN ar.Area = 'STAFF' AND Staff = 1 THEN 1 ELSE 0 END AS Expected, 
-                         ISNULL(cs.FileReceived, '') AS FileReceived, ISNULL(cs.FileName, '') AS FileName, ISNULL(cs.LastRunDate, '12/31/1900') AS FileReceivedDate, 
-                         cl.LastRunDate
-FROM            ImportManagementSystem.dbo.CustomerList AS cl CROSS JOIN
-                         ImportManagementSystem.dbo.IMS_Area AS ar LEFT OUTER JOIN
-                         ImportManagementSystem.dbo.CustomerNotes AS cn ON cl.CustomersUID = cn.CustomersUID LEFT OUTER JOIN
-                             (SELECT        CustomersUID, FileReceived, Area, FileName, MAX(RunDate) AS LastRunDate
-                               FROM            ImportManagementSystem.dbo.CustomerFileStatus
-                               GROUP BY CustomersUID, FileReceived, Area, FileName) AS cs ON cl.CustomersUID = cs.CustomersUID AND ar.Area = cs.Area AND DATEADD(DAY, 
-                         DATEDIFF(DAY, 0, cl.LastRunDate), 0) = DATEADD(DAY, DATEDIFF(DAY, 0, cs.LastRunDate), 0) AND DATEPART(hour, cl.LastRunDate) = DATEPART(hour, 
-                         cs.LastRunDate) AND DATEPART(minute, cl.LastRunDate) = DATEPART(minute, cs.LastRunDate)
-WHERE        (cl.Active = 1)
-ORDER BY cl.CustomerName, ar.Area</CommandText>
+        <CommandText>select CustomerName, fc.FirstName, fc.Lastname, fc.Email, isNull(fc.OfficePhone, '') as Phone, isNull(fc.Notes, '') as Notes
+from ImportManagementSystem.dbo.CustomerList cl
+join ImportManagementSystem.dbo.CustomerFileContact fc on cl.CustomersUID = fc.CustomersUID</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="CustomerName">
           <DataField>CustomerName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="SourceOrigin">
-          <DataField>SourceOrigin</DataField>
+        <Field Name="FirstName">
+          <DataField>FirstName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Description">
-          <DataField>Description</DataField>
+        <Field Name="Lastname">
+          <DataField>Lastname</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Expected">
-          <DataField>Expected</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="FileReceived">
-          <DataField>FileReceived</DataField>
-          <rd:TypeName>System.Boolean</rd:TypeName>
-        </Field>
-        <Field Name="FileName">
-          <DataField>FileName</DataField>
+        <Field Name="Email">
+          <DataField>Email</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="FileReceivedDate">
-          <DataField>FileReceivedDate</DataField>
-          <rd:TypeName>System.DateTime</rd:TypeName>
+        <Field Name="Phone">
+          <DataField>Phone</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="LastRunDate">
-          <DataField>LastRunDate</DataField>
-          <rd:TypeName>System.DateTime</rd:TypeName>
+        <Field Name="Notes">
+          <DataField>Notes</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -70,32 +50,28 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
     <ReportSection>
       <Body>
         <ReportItems>
-          <Textbox Name="Headline">
+          <Textbox Name="textbox1">
             <CanGrow>true</CanGrow>
             <KeepTogether>true</KeepTogether>
             <Paragraphs>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Files Received</Value>
+                    <Value>CustomerContacts</Value>
                     <Style>
-                      <FontFamily>Tahoma</FontFamily>
+                      <FontFamily>Segoe UI Light</FontFamily>
                       <FontSize>24pt</FontSize>
                       <FontWeight>Bold</FontWeight>
-                      <Color>SteelBlue</Color>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style />
               </Paragraph>
             </Paragraphs>
-            <Top>0.14583in</Top>
+            <rd:DefaultName>textbox1</rd:DefaultName>
             <Height>0.43in</Height>
-            <Width>2.86458in</Width>
+            <Width>3.59375in</Width>
             <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
               <PaddingTop>2pt</PaddingTop>
@@ -106,28 +82,22 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.97917in</Width>
+                  <Width>1.45833in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.61458in</Width>
+                  <Width>1.13542in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.10417in</Width>
+                  <Width>1.48958in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.23958in</Width>
+                  <Width>2.86458in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.80208in</Width>
+                  <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>4.27083in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.5in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.47917in</Width>
+                  <Width>3.38542in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -136,7 +106,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderCustomerName">
+                        <Textbox Name="CustomerNameHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -166,7 +136,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -177,14 +146,14 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderFlavor">
+                        <Textbox Name="FirstNameHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Flavor</Value>
+                                  <Value>First Name</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -193,9 +162,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
                           <Style>
@@ -207,7 +174,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -218,14 +184,14 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderArea">
+                        <Textbox Name="LastNameHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Area</Value>
+                                  <Value>Last Name</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -234,9 +200,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
                           <Style>
@@ -248,7 +212,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -259,14 +222,14 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderFileExpected">
+                        <Textbox Name="EmailHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>File Expected</Value>
+                                  <Value>Email</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -275,10 +238,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <FontFamily />
-                                <TextAlign>Center</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
                           <Style>
@@ -290,7 +250,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -301,14 +260,14 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderFileReceived">
+                        <Textbox Name="PhoneHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>File Received</Value>
+                                  <Value>Phone</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -317,9 +276,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
                           <Style>
@@ -331,7 +288,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -342,14 +298,14 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="HeaderFileName">
+                        <Textbox Name="NotesHeader">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>File Name</Value>
+                                  <Value>Notes</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -358,9 +314,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
                           <Style>
@@ -372,89 +326,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </BottomBorder>
                             <BackgroundColor>SteelBlue</BackgroundColor>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="HeaderFileReceivedDate">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>File Check Date</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <FontSize>11pt</FontSize>
-                                    <FontWeight>Bold</FontWeight>
-                                    <Color>White</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <BackgroundColor>SteelBlue</BackgroundColor>
-                            <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="HeaderlastRunDate">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Last Run Date</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <FontSize>11pt</FontSize>
-                                    <FontWeight>Bold</FontWeight>
-                                    <Color>White</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <BackgroundColor>SteelBlue</BackgroundColor>
-                            <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -479,7 +350,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                                 <TextRun>
                                   <Value>=Fields!CustomerName.Value</Value>
                                   <Style>
-                                    <FontFamily>Verdana</FontFamily>
+                                    <FontFamily />
                                     <FontWeight>Bold</FontWeight>
                                     <Color>SteelBlue</Color>
                                   </Style>
@@ -492,6 +363,85 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>CustomerName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <FontFamily />
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox9</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <FontFamily />
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>textbox10</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -625,162 +575,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="textbox14">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
-                                  <Style>
-                                    <FontFamily />
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <FontFamily />
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>textbox14</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="textbox15">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
-                                  <Style>
-                                    <FontFamily />
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <FontFamily />
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>textbox15</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="textbox16">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
-                                  <Style>
-                                    <FontFamily />
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <FontFamily />
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>textbox16</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="textbox17">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
-                                  <Style>
-                                    <FontFamily />
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <FontFamily />
-                                <TextAlign>Right</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>textbox17</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                            </Border>
-                            <BottomBorder>
-                              <Style>Solid</Style>
-                            </BottomBorder>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
@@ -808,43 +602,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                           <rd:DefaultName>textbox3</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="SourceOrigin">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!SourceOrigin.Value</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Left</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>SourceOrigin</rd:DefaultName>
-                          <Style>
-                            <Border>
                               <Color>LightGrey</Color>
-                              <Style>Solid</Style>
                             </Border>
                             <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
@@ -857,16 +615,16 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Description">
+                        <Textbox Name="FirstName">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Description.Value</Value>
+                                  <Value>=Fields!FirstName.Value</Value>
                                   <Style>
-                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontFamily />
                                     <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
@@ -874,7 +632,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Description</rd:DefaultName>
+                          <rd:DefaultName>FirstName</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -891,90 +649,16 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Expected">
+                        <Textbox Name="Lastname">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=IIf(Fields!Expected.Value=1, "Yes", "No")</Value>
+                                  <Value>=Fields!Lastname.Value</Value>
                                   <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <Color>#333333</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Expected</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <FontFamily />
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="FileReceived">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=iif(Fields!FileReceived.Value="false","No","Yes")</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <FontWeight>=IIf((Fields!Expected.Value=1 and Fields!FileReceived.Value="False"), "Bold", "Default")</FontWeight>
-                                    <Color>=IIf((Fields!Expected.Value=1 and Fields!FileReceived.Value="False"), "Red", "Black")</Color>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>FileReceived</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="FileName">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!FileName.Value</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontFamily />
                                     <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
@@ -982,7 +666,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>FileName</rd:DefaultName>
+                          <rd:DefaultName>Lastname</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -999,33 +683,30 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="FileReceivedDate">
+                        <Textbox Name="Email">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!FileReceivedDate.Value</Value>
+                                  <Value>=Fields!Email.Value</Value>
                                   <Style>
-                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontFamily />
                                     <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Right</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>FileReceivedDate</rd:DefaultName>
+                          <rd:DefaultName>Email</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1036,33 +717,64 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="LastRunDate">
+                        <Textbox Name="Phone">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!LastRunDate.Value</Value>
+                                  <Value>=Fields!Phone.Value</Value>
                                   <Style>
-                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontFamily />
                                     <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style>
-                                <TextAlign>Right</TextAlign>
-                              </Style>
+                              <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>LastRunDate</rd:DefaultName>
+                          <rd:DefaultName>Phone</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <FontFamily />
-                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Notes">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Notes.Value</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Notes</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1077,8 +789,6 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
-                <TablixMember />
-                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -1129,10 +839,18 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>CustomerFiles</DataSetName>
-            <Top>0.82583in</Top>
+            <DataSetName>DataSet1</DataSetName>
+            <SortExpressions>
+              <SortExpression>
+                <Value>=Fields!CustomerName.Value</Value>
+              </SortExpression>
+              <SortExpression>
+                <Value>=Fields!Lastname.Value</Value>
+              </SortExpression>
+            </SortExpressions>
+            <Top>0.84667in</Top>
             <Height>0.64in</Height>
-            <Width>12.98958in</Width>
+            <Width>11.33333in</Width>
             <ZIndex>1</ZIndex>
             <Style />
           </Tablix>
@@ -1162,8 +880,8 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                 </Action>
               </Actions>
             </ActionInfo>
-            <Top>0.32583in</Top>
-            <Left>7.92709in</Left>
+            <Top>0.18in</Top>
+            <Left>6.87501in</Left>
             <Height>0.25in</Height>
             <Width>1.26041in</Width>
             <ZIndex>2</ZIndex>
@@ -1178,10 +896,10 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
             </Style>
           </Textbox>
         </ReportItems>
-        <Height>2.14292in</Height>
+        <Height>1.945in</Height>
         <Style />
       </Body>
-      <Width>13.38542in</Width>
+      <Width>11.86458in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>
@@ -1200,5 +918,5 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
   <Language>en-US</Language>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportID>60b4c8fd-7c00-402b-b9b1-af7a00369bc0</rd:ReportID>
+  <rd:ReportID>0f592dba-e334-4fb5-8b2a-2f314781b0a9</rd:ReportID>
 </Report>
