@@ -22,11 +22,13 @@
 FROM            ImportManagementSystem.dbo.CustomerList AS cl CROSS JOIN
                          ImportManagementSystem.dbo.IMS_Area AS ar LEFT OUTER JOIN
                          ImportManagementSystem.dbo.CustomerNotes AS cn ON cl.CustomersUID = cn.CustomersUID LEFT OUTER JOIN
-                             (SELECT        CustomersUID, FileReceived, Area, FileName, MAX(RunDate) AS LastRunDate
-                               FROM            ImportManagementSystem.dbo.CustomerFileStatus
-                               GROUP BY CustomersUID, FileReceived, Area, FileName) AS cs ON cl.CustomersUID = cs.CustomersUID AND ar.Area = cs.Area AND DATEADD(DAY, 
-                         DATEDIFF(DAY, 0, cl.LastRunDate), 0) = DATEADD(DAY, DATEDIFF(DAY, 0, cs.LastRunDate), 0) AND DATEPART(hour, cl.LastRunDate) = DATEPART(hour, 
-                         cs.LastRunDate) AND DATEPART(minute, cl.LastRunDate) = DATEPART(minute, cs.LastRunDate)
+                             (SELECT        cfs.CustomersUID, cfs.FileReceived, cfs.Area, cfs.FileName, fmaxdate.LastRunDate
+                               FROM            ImportManagementSystem.dbo.CustomerFileStatus AS cfs INNER JOIN
+                                                             (SELECT        CustomersUID, Area, MAX(RunDate) AS LastRunDate
+                                                               FROM            ImportManagementSystem.dbo.CustomerFileStatus
+                                                               GROUP BY CustomersUID, Area) AS fmaxdate ON cfs.CustomersUID = fmaxdate.CustomersUID AND cfs.Area = fmaxdate.Area AND 
+                                                         cfs.RunDate = fmaxdate.LastRunDate) AS cs ON cl.CustomersUID = cs.CustomersUID AND ar.Area = cs.Area AND DATEADD(DAY, DATEDIFF(DAY, 0, 
+                         cl.LastRunDate), 0) = DATEADD(DAY, DATEDIFF(DAY, 0, cs.LastRunDate), 0) AND DATEPART(hour, cl.LastRunDate) = DATEPART(hour, cs.LastRunDate)
 WHERE        (cl.Active = 1)
 ORDER BY cl.CustomerName, ar.Area</CommandText>
       </Query>
@@ -112,7 +114,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                   <Width>0.61458in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.10417in</Width>
+                  <Width>1.22917in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.23958in</Width>
@@ -1006,7 +1008,7 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!FileReceivedDate.Value</Value>
+                                  <Value>=iif(Fields!FileReceivedDate.Value="12/31/1900", "", Fields!FileReceivedDate.Value)</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#333333</Color>
@@ -1130,9 +1132,18 @@ ORDER BY cl.CustomerName, ar.Area</CommandText>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>CustomerFiles</DataSetName>
+            <Filters>
+              <Filter>
+                <FilterExpression>=Fields!SourceOrigin.Value</FilterExpression>
+                <Operator>NotEqual</Operator>
+                <FilterValues>
+                  <FilterValue>AERIES</FilterValue>
+                </FilterValues>
+              </Filter>
+            </Filters>
             <Top>1.29458in</Top>
             <Height>0.64in</Height>
-            <Width>12.98958in</Width>
+            <Width>13.11458in</Width>
             <ZIndex>1</ZIndex>
             <Style />
           </Tablix>

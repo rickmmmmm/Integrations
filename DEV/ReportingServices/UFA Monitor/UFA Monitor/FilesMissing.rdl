@@ -10,40 +10,55 @@
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="DataSet1">
+    <DataSet Name="MissingFiles">
       <Query>
         <DataSourceName>DB</DataSourceName>
         <CommandText>select customerName, sourceOrigin, Area, Description, Expected, FileReceived, FileName, LastRunDate
-	from (
-	SELECT  cl.CustomerName, cl.SourceOrigin, ar.Area, ar.Description, 
-			campuscourse,MasterCourse, StudentSchedule, TeacherDemog, TeacherSchedule,ClassList,Staff,
+from (
+SELECT      cl.CustomerName, cl.SourceOrigin, ar.Area, ar.Description,	
+			campuscourse,MasterCourse, StudentSchedule, TeacherDemog, TeacherSchedule,ClassList,Staff,	
 			CASE WHEN ar.Area = 'CCOURSE' AND CampusCourse = 1 THEN 1 
-			WHEN ar.Area = 'MCOURSE' AND MasterCourse = 1 THEN 1 WHEN ar.Area = 'STU' AND StudentDemog = 1 THEN 1 
+			WHEN ar.Area = 'MCOURSE' AND MasterCourse = 1 THEN 1 
+			WHEN ar.Area = 'STU' AND StudentDemog = 1 THEN 1 
 			WHEN ar.Area = 'STUSCHED' AND StudentSchedule = 1 THEN 1 
 			WHEN ar.Area = 'TCHR' AND TeacherDemog = 1 THEN 1 
 			WHEN ar.Area = 'TCHSCHED' AND TeacherSchedule = 1 THEN 1 
 			WHEN ar.Area = 'CLASS' AND ClassList = 1 THEN 1 
-			WHEN ar.Area = 'STAFF' AND Staff = 1 THEN 1 ELSE 0 END AS Expected, 
-			ISNULL(cs.FileReceived, '') AS FileReceived, ISNULL(cs.FileName, '') AS FileName, isNull(cs.LastRunDate, '12/31/1900') AS FileReceivedDate, cl.LastRunDate
-	FROM            ImportManagementSystem.dbo.CustomerList AS cl CROSS JOIN
-							 ImportManagementSystem.dbo.IMS_Area AS ar LEFT OUTER JOIN
-							 ImportManagementSystem.dbo.CustomerNotes AS cn ON cl.CustomersUID = cn.CustomersUID LEFT OUTER JOIN
-								 (SELECT        CustomersUID, FileReceived, Area, FileName, MAX(RunDate) AS LastRunDate
-								   FROM            ImportManagementSystem.dbo.CustomerFileStatus
-								   GROUP BY CustomersUID, FileReceived, Area, FileName) AS cs ON cl.CustomersUID = cs.CustomersUID AND ar.Area = cs.Area AND DATEADD(DAY, 
-							 DATEDIFF(DAY, 0, cl.LastRunDate), 0) = DATEADD(DAY, DATEDIFF(DAY, 0, cs.LastRunDate), 0) AND DATEPART(hour, cl.LastRunDate) = DATEPART(hour, 
-							 cs.LastRunDate) AND DATEPART(minute, cl.LastRunDate) = DATEPART(minute, cs.LastRunDate)
-	WHERE        (cl.Active = 1)
-	) f
-	where (area = 'CCOURSE' and campusCourse = 1 and FileReceived = 0)
-	or  (area = 'MCOURSE' and MasterCourse = 1 and FileReceived = 0)
-	or  (area = 'STUSCHED' and StudentSchedule = 1 and FileReceived = 0)
-	or  (area = 'TCHR' and TeacherDemog = 1 and FileReceived = 0)
-	or  (area = 'TCHSCHED' and TeacherSchedule = 1 and FileReceived = 0)
-	or  (area = 'CLASS' and ClassList = 1 and FileReceived = 0)
-	or (area = 'STAFF' and Staff = 1 and FileReceived = 0)
+			WHEN ar.Area = 'STAFF' AND Staff = 1 THEN 1 
+			ELSE 0 END AS Expected, 
+            ISNULL(cs.FileReceived, '') AS FileReceived, ISNULL(cs.FileName, '') AS FileName, ISNULL(cs.LastRunDate, '12/31/1900') AS FileReceivedDate, 
+            cl.LastRunDate
 
-ORDER BY CustomerName, Area</CommandText>
+--select *
+
+FROM        ImportManagementSystem.dbo.CustomerList AS cl 
+			CROSS JOIN ImportManagementSystem.dbo.IMS_Area AS ar 
+			LEFT OUTER JOIN ImportManagementSystem.dbo.CustomerNotes AS cn ON cl.CustomersUID = cn.CustomersUID 
+			LEFT OUTER JOIN
+                             (SELECT        cfs.CustomersUID, FileReceived, cfs.Area, [FileName],  LastRunDate
+                               FROM            ImportManagementSystem.dbo.CustomerFileStatus cfs
+							   join (
+									select CustomersUID, Area, max(RunDate) as LastRunDate
+									from ImportManagementSystem.dbo.CustomerFileStatus
+									group by CustomersUID, Area ) fmaxdate
+									on cfs.CustomersUID = fmaxdate.CustomersUID
+										and cfs.area = fmaxdate.area
+										and cfs.RunDate = fmaxdate.LastRunDate
+                              
+							   ) AS cs ON cl.CustomersUID = cs.CustomersUID AND ar.Area = cs.Area 
+							   AND DATEADD(DAY, DATEDIFF(DAY, 0, cl.LastRunDate), 0) = DATEADD(DAY, DATEDIFF(DAY, 0, cs.LastRunDate), 0) AND DATEPART(hour, cl.LastRunDate) = DATEPART(hour, 
+								cs.LastRunDate) 
+WHERE        (cl.Active = 1)
+	) f
+	where (f.area = 'CCOURSE' and campusCourse = 1 and FileReceived = 0)
+	or  (f.area = 'MCOURSE' and MasterCourse = 1 and FileReceived = 0)
+	or  (f.area = 'STUSCHED' and StudentSchedule = 1 and FileReceived = 0)
+	or  (f.area = 'TCHR' and TeacherDemog = 1 and FileReceived = 0)
+	or  (f.area = 'TCHSCHED' and TeacherSchedule = 1 and FileReceived = 0)
+	or  (f.area = 'CLASS' and ClassList = 1 and FileReceived = 0)
+	or (f.area = 'STAFF' and Staff = 1 and FileReceived = 0)
+
+ORDER BY CustomerName, f.Area</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -93,7 +108,7 @@ ORDER BY CustomerName, Area</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Missing Files-NOT Ready</Value>
+                    <Value>Missing Files</Value>
                     <Style>
                       <FontFamily>Tahoma</FontFamily>
                       <FontSize>24pt</FontSize>
@@ -793,7 +808,16 @@ ORDER BY CustomerName, Area</CommandText>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>DataSet1</DataSetName>
+            <DataSetName>MissingFiles</DataSetName>
+            <Filters>
+              <Filter>
+                <FilterExpression>=Fields!sourceOrigin.Value</FilterExpression>
+                <Operator>NotEqual</Operator>
+                <FilterValues>
+                  <FilterValue>AERIES</FilterValue>
+                </FilterValues>
+              </Filter>
+            </Filters>
             <Top>0.89875in</Top>
             <Height>0.64in</Height>
             <Width>10.07292in</Width>
