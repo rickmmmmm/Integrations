@@ -22,3 +22,9 @@ BEGIN
     WHERE s.IntegrationsID = @intgid
 
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_FlagShipmentsFromBadDetailRecords] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

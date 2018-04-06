@@ -30,3 +30,9 @@ BEGIN
     WHERE IntegrationDate = @DateToAgg AND Client = @Client AND err.ErrorNumber IS NULL and da.ShouldSubmit = 1
     GROUP BY IntegrationDate, Client
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_AggregateDataFromPurchaseIntegration] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

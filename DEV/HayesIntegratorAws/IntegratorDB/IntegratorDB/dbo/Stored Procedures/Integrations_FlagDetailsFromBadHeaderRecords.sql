@@ -24,3 +24,9 @@ BEGIN
     WHERE det.DataIntegrationsID = @intgid
 
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_FlagDetailsFromBadHeaderRecords] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

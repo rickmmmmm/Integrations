@@ -51,3 +51,9 @@ BEGIN
     END
 
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_RemoveExistingInserts] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

@@ -12,10 +12,12 @@
     [DepartmentID]       VARCHAR (50)  NULL,
     [CFDA]               VARCHAR (50)  NULL,
     [DataIntegrationsID] VARCHAR (100) NOT NULL,
-    [ShouldSubmit]       BIT           CONSTRAINT [DF_PurchaseOrderDetail_ShouldSubmit] DEFAULT ('True') NULL,
+    [ShouldSubmit]       BIT           CONSTRAINT [DF_PurchaseOrderDetail_ShouldSubmit] DEFAULT ((1)) NULL,
     [Submitted]          BIT           CONSTRAINT [DF_PurchaseOrderDetail_Submitted] DEFAULT ((0)) NULL,
     CONSTRAINT [PK_PurchaseOrderDetail] PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [LineNumber] ASC, [DataIntegrationsID] ASC)
 );
+
+
 
 
 

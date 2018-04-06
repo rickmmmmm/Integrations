@@ -30,3 +30,9 @@ BEGIN
     WHERE Client = @client and IntegrationDate between @dateStart and @dateEnd
 
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_ClearData] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

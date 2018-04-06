@@ -23,3 +23,9 @@ BEGIN
     WHERE IntegrationsID = @intgid AND SiteID not in (SELECT DISTINCT DestVal FROM DataIntegrationsLinkTable WHERE client = @client)
 
 END
+GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[z_custom_stpro_CPS_RemoveBadSites] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+

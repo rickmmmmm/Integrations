@@ -501,10 +501,11 @@ module.exports = {
                                 // console.log(error);
                                 // reject(error);
                                 let recerr = {
-                                    ErrorNumber: null,
+                                    ErrorNumber: header.orderNumber + '-' + header.vendorID + '-' + header.siteID,
                                     ErrorName: 'Update Submitted Headers',
                                     ErrorDescription: 'Could not updated Submitted Headers values.',
                                     ErrorObject: JSON.stringify(error),
+                                    DataIntegrationsID: options.id
                                 }
                                 this.logError(recerr).then(
                                     res => {
@@ -553,10 +554,11 @@ module.exports = {
                                 // console.log(error);
                                 // reject(error);
                                 let recerr = {
-                                    ErrorNumber: null,
+                                    ErrorNumber: detail.orderNumber + '-' + detail.lineNumber + '-' + detail.siteID,
                                     ErrorName: 'Update Submitted Details',
                                     ErrorDescription: 'Could not updated Submitted Details values.',
                                     ErrorObject: JSON.stringify(error),
+                                    DataIntegrationsID: options.id
                                 }
                                 this.logError(recerr).then(
                                     res => {
@@ -604,10 +606,11 @@ module.exports = {
                                 // console.log(error);
                                 // reject(error);
                                 let recerr = {
-                                    ErrorNumber: null,
+                                    ErrorNumber: shipment.orderNumber + '-' + shipment.lineNumber + '-' + shipment.siteID,
                                     ErrorName: 'Update Submitted Shipments',
                                     ErrorDescription: 'Could not updated Submitted Shipments values.',
                                     ErrorObject: JSON.stringify(error),
+                                    DataIntegrationsID: options.id
                                 }
                                 this.logError(recerr).then(
                                     res => {

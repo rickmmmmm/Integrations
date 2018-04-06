@@ -346,6 +346,7 @@ function stageShippingRecords(options) {
                             for (let line of shipmentsData) {
                                 let m = mappings.mapIt(line, mappingValues);
                                 m["DataIntegrationsID"] = integid;
+                                m["ShouldSubmit"] = true;
                                 mappedData.push(m);
                             }
 
@@ -446,6 +447,7 @@ function stagePurchaseOrderDetails(options) {
                             for (let line of detailData) {
                                 let m = mappings.mapIt(line, mappingValues);
                                 m["DataIntegrationsID"] = integid;
+                                m["ShouldSubmit"] = true;
                                 mappedData.push(m);
                             }
 
@@ -543,6 +545,7 @@ function stagePurchaseOrderHeaders(options) {
                             for (let line of headerData) {
                                 let m = mappings.mapIt(line, mappingValues);
                                 m["DataIntegrationsID"] = integid;
+                                m["ShouldSubmit"] = true;
                                 mappedData.push(m);
                             }
 
@@ -1104,7 +1107,7 @@ function upsertProducts(options) {
                 resolve => {
                     let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
                     let dataToUpload = resolve.map(m => { return { ProductNumber: 0, ProductName: m.ProductName, ProductDescription: m.ProductDescription, ProductType: m.ProductType, Model: m.Model, Manufacturer: m.Manufacturer,
-                                                                   SuggestedPrice: m.SuggestedPrice, Notes: noteAppend, SKU: m.SKU, ProjectedLife: null, CustomField1: null, CustomField2: null, CustomField3: null }; });
+                                                                   SuggestedPrice: m.SuggestedPrice, Notes: noteAppend, SKU: m.SKU, ProjectedLife: 0, CustomField1: null, CustomField2: null, CustomField3: null }; });
                     // for (let p of dataToUpload) {
                     //     p.ProductNumber = 'INTG' + p.ProductNumber; //Empty the Product Number to alow the API to auto assign the Product Number
                     // }
@@ -1123,7 +1126,7 @@ function upsertProducts(options) {
                                 console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
-                                        ErrorNumber: rec.badProduct.ProductNumber,
+                                        ErrorNumber: rec.badProduct.productNumber,
                                         ErrorName: 'Product Rejected',
                                         ErrorDescription: 'All purchase order items must be added to the TipWEB-IT item catalog. A product record was rejected while attempting to add to the catalog. The error has more information.',
                                         ErrorObject: JSON.stringify(rec),
@@ -1407,8 +1410,9 @@ function upsertAllProducts(options) {
                         console.log(); // to create a new line
                         console.log(mappings.getCurrentDate() + ' upserAllProducts count: ' + resolve);
                         let total = resolve;
-                        let lv = parseInt(options.lv);
                         let i = parseInt(options.iVal);
+                        let lv = parseInt(options.lv);
+
                         upsertProductsRecursive({ client: client, limitVal: lv, offset: i, token: tokenVal, total: total, intgid: intgid }, () => { res('Done'); });
                     },
                     reject => {

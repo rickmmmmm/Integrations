@@ -9,10 +9,12 @@
     [Notes]                 VARCHAR (500) NULL,
     [Other1]                VARCHAR (100) NULL,
     [DataIntegrationsID]    VARCHAR (100) NOT NULL,
-    [ShouldSubmit]          BIT           CONSTRAINT [DF_PurchaseOrderHeader_ShouldSubmit] DEFAULT ('True') NULL,
+    [ShouldSubmit]          BIT           CONSTRAINT [DF_PurchaseOrderHeader_ShouldSubmit] DEFAULT ((1)) NULL,
     [Submitted]             BIT           CONSTRAINT [DF_PurchaseOrderHeader_Submitted] DEFAULT ((0)) NULL,
     CONSTRAINT [PK_PurchaseOrderHeader] PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [DataIntegrationsID] ASC)
 );
+
+
 
 
 
