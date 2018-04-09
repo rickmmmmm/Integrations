@@ -17,6 +17,7 @@ TYPE="PurchaseOrder";
 REGION="us-east-1";
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id);
 CURRENTDATE=$(date '+%Y-%m-%d %H:%M:%S');
+SHIPPING_TEMPLATE="intgCpsDataProcessShipping"
 
 echo " #### Starting $CLIENT $TYPE API Push Process"
 
@@ -62,6 +63,13 @@ HTMLCONTENT="<br />The $TYPE Integration has completed.<br /><br />To access the
 MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
 
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
+
+
+###############################################################################################################################################
+#Stop currently running instance and start api push instance.
+###############################################################################################################################################
+echo " #### Launching the EC2 for the shiphing process for template $SHIPPING_TEMPLATE"
+aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$SHIPPING_TEMPLATE;
 
 echo " #### Terminate instance $INSTANCEID";
 aws ec2 terminate-instances --instance-ids $INSTANCEID

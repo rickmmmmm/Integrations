@@ -27,7 +27,6 @@ chmod -R 777 /home/ec2-user/etc/$CLIENT/linktables
 echo ">>> Downloading application data from AWS S3..."
 sudo aws s3 sync s3://$AWSBUCKET/apps/node/DataMapper /home/ec2-user/etc/apps/node/datamapper
 echo ">>> datamapper downloaded "
-
 cd /home/ec2-user/etc/apps/node/datamapper
 
 echo ">>> starting dos2unix process"

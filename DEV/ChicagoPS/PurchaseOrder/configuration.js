@@ -1,6 +1,6 @@
 module.exports = {
     config: {
-        "apiUrl":"https://www.staginghss.com/IntgCPSTIPWebAPI/api",
+        "apiUrl":"https://www.tipwebchicagops.com/TIPWebAPI/api",
         "host":"integrations.cu5oaecilfzk.us-east-1.rds.amazonaws.com",
         "database":"IntgAppData",
         "username":"intg-cps",

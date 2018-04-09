@@ -3313,11 +3313,19 @@ function mapFromFile(options) {
                                 let theMaps = resolve.map(m => { return m.dataValues; });
                                 console.log();
                                 console.log(mappings.getCurrentDate() + ' Processing ' + filedata.length + ' records...');
+
+                                let mapData = theMaps.map(m => { return JSON.parse(m.MappingsObject); });
+                                // console.log('Data Mappings');
+                                // console.log(mapData);
+
                                 for (let line of filedata) {
-                                    let mapData = theMaps.map(m => { return JSON.parse(m.MappingsObject); });
+                                    // console.log('Data to Map');
+                                    // console.log(line);
                                     let m = mappings.mapIt(JSON.parse(line), mapData);
                                     m["IntegrationsID"] = dataid;
                                     mappedData.push(m);
+                                    // console.log('Mapped Data');
+                                    // console.log(m);
                                 }
                                 console.log();
                                 console.log(mappings.getCurrentDate() + ' Successfully mapped ' + mappedData.length + ' records...');

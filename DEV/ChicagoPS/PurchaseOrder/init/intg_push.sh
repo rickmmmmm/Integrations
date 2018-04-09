@@ -13,7 +13,6 @@ mkdir -p /home/ec2-user/etc/apps/node/datamapper
 chmod -R 777 /home/ec2-user/etc/apps/node/datamapper
 
 echo ">>> Creating Directory for "$CLIENT
-
 mkdir -p /home/ec2-user/etc/$CLIENT/scripts
 chmod -R 777 /home/ec2-user/etc/$CLIENT/scripts
 

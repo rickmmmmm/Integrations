@@ -488,7 +488,7 @@ module.exports = {
                                 ShouldSubmit: false,
                                 Submitted: true
                             },
-                            { where: { DataIntegrationsID: options.id, OrderNumber: header.orderNumber, VendorID: header.vendorID, SiteID: header.siteID } }
+                            { where: { OrderNumber: header.orderNumber, VendorID: header.vendorID, SiteID: header.siteID } }
                         ).then(
                             data => {
                                 // console.log('Update Submitted resolved');
@@ -541,7 +541,7 @@ module.exports = {
                                 ShouldSubmit: false,
                                 Submitted: true
                             },
-                            { where: { DataIntegrationsID: options.id, OrderNumber: detail.orderNumber, LineNumber: detail.lineNumber, SiteID: detail.siteID } }
+                            { where: { OrderNumber: detail.orderNumber, LineNumber: detail.lineNumber, SiteID: detail.siteID } }
                         ).then(
                             data => {
                                 // console.log('Update Submitted resolved');
@@ -593,7 +593,7 @@ module.exports = {
                                 ShouldSubmit: false,
                                 Submitted: true
                             },
-                            { where: { IntegrationsID: options.id, OrderNumber: shipment.orderNumber, LineNumber: shipment.lineNumber, SiteID: shipment.siteID } }
+                            { where: { OrderNumber: shipment.orderNumber, LineNumber: shipment.lineNumber, SiteID: shipment.siteID } }
                         ).then(
                             data => {
                                 // console.log('Update Submitted resolved');
@@ -1203,7 +1203,10 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.count({
+                    // attributes: ['OrderNumber'],
+                    // group: ['OrderNumber'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
@@ -1238,7 +1241,10 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderDetail.count({
+                    // attributes: ['OrderNumber', 'LineNumber'],
+                    // group: ['OrderNumber', 'LineNumber'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
@@ -1303,8 +1309,11 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.findAll({
-                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    attributes: ['OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID', 'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'],
+                    group: ['OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID', 'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client //,
@@ -1340,8 +1349,11 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderDetail.findAll({
-                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    attributes: ['OrderNumber', 'LineNumber', 'Status', 'SiteID', 'FundingSource', 'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice', 'AccountCode', 'DepartmentID', 'CFDA'],
+                    group: ['OrderNumber', 'LineNumber', 'Status', 'SiteID', 'FundingSource', 'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice', 'AccountCode', 'DepartmentID', 'CFDA'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client //,
@@ -1438,7 +1450,10 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.count({
+                    // attributes: ['OrderNumber', 'LineNumber'],
+                    // group: ['OrderNumber', 'LineNumber'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
@@ -1472,8 +1487,11 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.findAll({
-                    attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
+                    attributes: ['OrderNumber', 'LineNumber', 'SiteID', 'TicketNumber', 'QuantityShipped', 'TicketedBy', 'TicketedDate', 'Status', 'InvoiceNumber', 'InvoiceDate'],
+                    group: ['OrderNumber', 'LineNumber', 'SiteID', 'TicketNumber', 'QuantityShipped', 'TicketedBy', 'TicketedDate', 'Status', 'InvoiceNumber', 'InvoiceDate'],
                     include: [{
+                        attributes: [],
                         model: this.DataIntegrations,
                         // where: {
                         //     IntegrationsID: options.id
