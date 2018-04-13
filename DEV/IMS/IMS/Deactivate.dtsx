@@ -1,0 +1,990 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="4/13/2018 1:42:01 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="CS-NBLAKELY"
+  DTS:CreatorName="HAYESSOFT\nblakely"
+  DTS:DTSID="{81F47EF7-F82D-407E-9ECA-412F1ABCC06F}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.0800.90"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Deactivate"
+  DTS:PackageType="5"
+  DTS:VersionBuild="16"
+  DTS:VersionGUID="{2202ACD7-E3D1-421A-BA04-B118A92E4E89}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[ClientTipWeb]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{72C950EE-B92B-4E79-A3C2-46960363F371}"
+      DTS:ObjectName="ClientTipWeb">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[$Package::InitCatalogClient]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI10.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Deactivate-{72C950EE-B92B-4E79-A3C2-46960363F371}CS-NBLAKELY\MSSQLSERVER2014.TipWeb_Albuquerque_0314;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[ImportManagementSystem]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+      DTS:ObjectName="ImportManagementSystem">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[msdb]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{0A4C17C2-ED35-4A6A-81DF-C8D55AE88C51}"
+      DTS:ObjectName="msdb">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=msdb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{F24DCA95-74A6-431D-9082-4001E0D426DC}"
+      DTS:ObjectName="CustomerName">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="3"
+      DTS:DTSID="{E4EA6FE6-B92E-41FB-AF22-2A262C6B65A9}"
+      DTS:ObjectName="CustomerUID">
+      <DTS:Property
+        DTS:DataType="3"
+        DTS:Name="ParameterValue">0</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{563D56EA-FEA7-4186-9FAB-788A742C80DA}"
+      DTS:ObjectName="InitCatalogClient">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{8C2DA69B-10F9-4344-873D-8637B9BD0B8E}"
+      DTS:ObjectName="SFTPLocation">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue"
+        xml:space="preserve"></DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{790C1BE4-8D87-4DB7-BF90-744D8C57A329}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IM_Staff">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{7F68FB98-DEC2-4816-A128-05F8E5785FBB}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IM_Students">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{8E9D75F6-780F-4355-A13D-31891DF08039}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IT_Staff">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{769E67CB-3823-4954-82D5-ACD33278CDA1}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IT_Students">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Deactivate IM Staff"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{6920B419-4838-4DC8-8466-11F255F8937E}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Deactivate IM Staff">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Staff\Deactivate IM Staff"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{ab894642-966a-4c47-825e-a0402614dcae}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Deactivate IM Staff"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Staff\IM Staff PH"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{01ec6e82-ee67-43c1-ace5-86f702b00a0e}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IM Staff PH"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Staff\IM Staff Reports"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{d871827b-7138-4669-a729-34f2c5f92491}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IM Staff Reports"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IM Staff.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{75A0A74F-2440-41F1-B4AA-268A07FC9125}"
+          DTS:EvalOp="1"
+          DTS:Expression="@[User::Deactivate_IM_Staff] &gt; 0"
+          DTS:From="Package\Deactivate IM Staff\IM Staff PH"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Deactivate IM Staff\Deactivate IM Staff" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IM Staff.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{B502A525-09F5-4CF0-A972-259EF0CA138D}"
+          DTS:From="Package\Deactivate IM Staff\Deactivate IM Staff"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Deactivate IM Staff\IM Staff Reports" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Deactivate IM Students"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{84163BCB-2329-41CB-A398-30E6974D47F4}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Deactivate IM Students">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Students\Deactivate IM Students"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{2dd64d19-a3e2-43c7-8a4b-e54a756b3df9}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Deactivate IM Students"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Students\IM Students PH"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{7044a1ec-f758-4c72-bf99-182e9fbdcda1}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IM Students PH"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IM Students\IM Students Report"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{27966e19-296e-48f3-91c8-f101325636e6}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IM Students Report"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IM Students.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{A0426C1B-8BFC-4E7E-BE54-7C0C3136C048}"
+          DTS:EvalOp="1"
+          DTS:Expression="@[User::Deactivate_IM_Students] &gt; 0"
+          DTS:From="Package\Deactivate IM Students\IM Students PH"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Deactivate IM Students\Deactivate IM Students" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IM Students.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{36CA62F0-C36D-45ED-89E4-659E9066EF2A}"
+          DTS:From="Package\Deactivate IM Students\Deactivate IM Students"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Deactivate IM Students\IM Students Report" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Deactivate IT Staff"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{796DD3B5-11BF-4363-A8D0-B08205BC2EAD}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Deactivate IT Staff">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Staff\Deactivate IT Staff"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{7355544e-b4b7-4563-bbb0-bf56a8b3447b}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Deactivate IT Staff"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Staff\IT Staff PH"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{2586CF6F-1DF8-440F-8955-424BBF765F4E}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IT Staff PH"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Staff\IT Staff Report"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{B042FB52-93B2-4485-8C6D-68F629DE6F43}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IT Staff Report"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IT Staff.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{288515C0-2765-4759-8D95-4A6C13B04237}"
+          DTS:EvalOp="1"
+          DTS:Expression="@[User::Deactivate_IT_Staff] &gt; 0"
+          DTS:From="Package\Deactivate IT Staff\IT Staff PH"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Deactivate IT Staff\Deactivate IT Staff" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IT Staff.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{84AFBC3D-C72A-46E6-92CB-B0E9DFFC61E9}"
+          DTS:From="Package\Deactivate IT Staff\Deactivate IT Staff"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Deactivate IT Staff\IT Staff Report" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Deactivate IT Students"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{EAF0F7E9-8D05-4BD7-B5E0-2EFA1477CC0B}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Deactivate IT Students">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Students\Disable IT Students"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{bf4ddfb0-361a-4d24-8b1a-84a52d8be355}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Disable IT Students"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Students\IT Students PH"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{bf4aafc2-c973-4965-8297-95c355c8acfc}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IT Students PH"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+              SQLTask:SqlStatementSource="select 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Deactivate IT Students\IT Students Report"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{962adc21-2bc6-4c2b-914b-5a1b71936d81}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="IT Students Report"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IT Students.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{44B690A6-AEA1-4A87-AD26-AA1F9B39F18E}"
+          DTS:EvalOp="1"
+          DTS:Expression="@[User::Deactivate_IT_Students] &gt; 0"
+          DTS:From="Package\Deactivate IT Students\IT Students PH"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Deactivate IT Students\Disable IT Students" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Deactivate IT Students.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{08572CD2-BAF3-4DAD-8C05-65A683934A82}"
+          DTS:From="Package\Deactivate IT Students\Disable IT Students"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Deactivate IT Students\IT Students Report" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Deactivate Options"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:DelayValidation="True"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{19A03DA8-7635-449F-90A6-CED399E00ADF}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Deactivate Options"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
+          SQLTask:SqlStatementSource="declare @customeruid int&#xA;&#xA;set @customeruid = ?&#xA;&#xA;select IT_Students, IT_Staff, IM_Students, IM_Staff&#xA;from CustomerConfiguration&#xA;where CustomersUID = @customeruid "
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="IT_Students"
+            SQLTask:DtsVariableName="User::Deactivate_IT_Students" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="IT_Staff"
+            SQLTask:DtsVariableName="User::Deactivate_IT_Staff" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="IM_Students"
+            SQLTask:DtsVariableName="User::Deactivate_IM_Students" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="IM_Staff"
+            SQLTask:DtsVariableName="User::Deactivate_IM_Staff" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="@customeruid"
+            SQLTask:DtsVariableName="$Package::CustomerUID"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="3"
+            SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{65975626-F34F-4440-A9BF-3E969BA0C738}"
+      DTS:From="Package\Deactivate Options"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Deactivate IT Students" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{A2F2C2BB-AE60-4498-81B7-AE14634BA507}"
+      DTS:From="Package\Deactivate IT Students"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Deactivate IT Staff" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{158ACA39-B202-4B69-AE95-DDEA13E4D0E2}"
+      DTS:From="Package\Deactivate IT Staff"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\Deactivate IM Students" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{5D1E8927-B2D8-4334-A10F-64C54569916C}"
+      DTS:From="Package\Deactivate IM Students"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\Deactivate IM Staff" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="170,42"
+          Id="Package\Deactivate Options"
+          TopLeft="128,94" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Deactivate IT Students\IT Students PH"
+          TopLeft="29.5,13.5" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Deactivate IT Students\Disable IT Students"
+          TopLeft="29.5,115.5" />
+        <EdgeLayout
+          Id="Package\Deactivate IT Students.PrecedenceConstraints[Constraint]"
+          TopLeft="108.75,55.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8,18.25,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="170,42"
+          Id="Package\Deactivate IT Students\IT Students Report"
+          TopLeft="35.5,217.5" />
+        <EdgeLayout
+          Id="Package\Deactivate IT Students.PrecedenceConstraints[Constraint 1]"
+          TopLeft="112,157.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="8.5,60"
+              Start="0,0"
+              End="8.5,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,26" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,26"
+                    Point2="0,30"
+                    Point3="4,30" />
+                  <mssgle:LineSegment
+                    End="4.5,30" />
+                  <mssgle:CubicBezierSegment
+                    Point1="4.5,30"
+                    Point2="8.5,30"
+                    Point3="8.5,34" />
+                  <mssgle:LineSegment
+                    End="8.5,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="212,314"
+          Size="212,357"
+          Id="Package\Deactivate IT Students"
+          TopLeft="117,219" />
+        <NodeLayout
+          Size="133,42"
+          Id="Package\Deactivate IT Staff\IT Staff PH"
+          TopLeft="53,30" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Deactivate IT Staff\Deactivate IT Staff"
+          TopLeft="33,116" />
+        <NodeLayout
+          Size="151,42"
+          Id="Package\Deactivate IT Staff\IT Staff Report"
+          TopLeft="42,200" />
+        <EdgeLayout
+          Id="Package\Deactivate IT Staff.PrecedenceConstraints[Constraint]"
+          TopLeft="117.5,72">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,44"
+              Start="0,0"
+              End="0,36.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,36.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8,10.25,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Deactivate IT Staff.PrecedenceConstraints[Constraint 1]"
+          TopLeft="116.5,158">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,42"
+              Start="0,0"
+              End="0,34.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,34.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="245,297"
+          Size="245,340"
+          Id="Package\Deactivate IT Staff"
+          TopLeft="380,236" />
+        <NodeLayout
+          Size="154,42"
+          Id="Package\Deactivate IM Students\IM Students PH"
+          TopLeft="32.5,18.5" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Deactivate IM Students\Deactivate IM Students"
+          TopLeft="32.5,119.5" />
+        <NodeLayout
+          Size="172,42"
+          Id="Package\Deactivate IM Students\IM Students Report"
+          TopLeft="38.5,221.5" />
+        <EdgeLayout
+          Id="Package\Deactivate IM Students.PrecedenceConstraints[Constraint]"
+          TopLeft="112.25,60.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,59"
+              Start="0,0"
+              End="0,51.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,51.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8,17.75,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Deactivate IM Students.PrecedenceConstraints[Constraint 1]"
+          TopLeft="115,161.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="9.5,60"
+              Start="0,0"
+              End="9.5,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,26" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,26"
+                    Point2="0,30"
+                    Point3="4,30" />
+                  <mssgle:LineSegment
+                    End="5.5,30" />
+                  <mssgle:CubicBezierSegment
+                    Point1="5.5,30"
+                    Point2="9.5,30"
+                    Point3="9.5,34" />
+                  <mssgle:LineSegment
+                    End="9.5,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="218,318"
+          Size="218,361"
+          Id="Package\Deactivate IM Students"
+          TopLeft="679,237" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="213,136">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="10,83"
+              Start="0,0"
+              End="10,75.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,37.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,37.5"
+                    Point2="0,41.5"
+                    Point3="4,41.5" />
+                  <mssgle:LineSegment
+                    End="6,41.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="6,41.5"
+                    Point2="10,41.5"
+                    Point3="10,45.5" />
+                  <mssgle:LineSegment
+                    End="10,75.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="329,397.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="51,8.5"
+              Start="0,0"
+              End="43.5,8.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="21.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="21.5,0"
+                    Point2="25.5,0"
+                    Point3="25.5,4" />
+                  <mssgle:LineSegment
+                    End="25.5,4.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="25.5,4.5"
+                    Point2="25.5,8.5"
+                    Point3="29.5,8.5" />
+                  <mssgle:LineSegment
+                    End="43.5,8.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="625,406">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="54,11.5"
+              Start="0,0"
+              End="46.5,11.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="23,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="23,0"
+                    Point2="27,0"
+                    Point3="27,4" />
+                  <mssgle:LineSegment
+                    End="27,7.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="27,7.5"
+                    Point2="27,11.5"
+                    Point3="31,11.5" />
+                  <mssgle:LineSegment
+                    End="46.5,11.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="135,42"
+          Id="Package\Deactivate IM Staff\IM Staff PH"
+          TopLeft="28,20" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Deactivate IM Staff\Deactivate IM Staff"
+          TopLeft="35,101" />
+        <NodeLayout
+          Size="158,42"
+          Id="Package\Deactivate IM Staff\IM Staff Reports"
+          TopLeft="28,193" />
+        <EdgeLayout
+          Id="Package\Deactivate IM Staff.PrecedenceConstraints[Constraint]"
+          TopLeft="95.5,62">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="22,39"
+              Start="0,0"
+              End="22,31.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,15.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,15.5"
+                    Point2="0,19.5"
+                    Point3="4,19.5" />
+                  <mssgle:LineSegment
+                    End="18,19.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="18,19.5"
+                    Point2="22,19.5"
+                    Point3="22,23.5" />
+                  <mssgle:LineSegment
+                    End="22,31.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="3,24.5,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Deactivate IM Staff.PrecedenceConstraints[Constraint 1]"
+          TopLeft="117.5,143">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-10.5,50"
+              Start="0,0"
+              End="-10.5,42.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,21" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,21"
+                    Point2="0,25"
+                    Point3="-4,25" />
+                  <mssgle:LineSegment
+                    End="-6.5,25" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-6.5,25"
+                    Point2="-10.5,25"
+                    Point3="-10.5,29" />
+                  <mssgle:LineSegment
+                    End="-10.5,42.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="206,308"
+          Size="206,351"
+          Id="Package\Deactivate IM Staff"
+          TopLeft="943.5,250" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="897,417.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="46.5,8"
+              Start="0,0"
+              End="39,8">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="19.25,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="19.25,0"
+                    Point2="23.25,0"
+                    Point3="23.25,4" />
+                  <mssgle:LineSegment
+                    End="23.25,4" />
+                  <mssgle:CubicBezierSegment
+                    Point1="23.25,4"
+                    Point2="23.25,8"
+                    Point3="27.25,8" />
+                  <mssgle:LineSegment
+                    End="39,8" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
