@@ -16,7 +16,7 @@ BEGIN
     -- Insert statements for procedure here
     IF @headers = 1
     BEGIN
-        UPDATE PurchaseOrderHeader
+        UPDATE h1
         SET ShouldSubmit = 0
         FROM (SELECT * FROM PurchaseOrderHeader WHERE Dataintegrationsid = @intgid) h1
         INNER JOIN (SELECT * FROM PurchaseOrderHeader WHERE Dataintegrationsid <> @intgid AND Submitted = 1) h2 ON h1.OrderNumber = h2.OrderNumber
@@ -24,7 +24,7 @@ BEGIN
 
     IF @details = 1
     BEGIN
-        UPDATE PurchaseOrderDetail
+        UPDATE h1
         SET ShouldSubmit = 0
         FROM (SELECT * FROM PurchaseOrderDetail WHERE Dataintegrationsid = @intgid) h1
         JOIN (SELECT * FROM PurchaseOrderDetail WHERE Dataintegrationsid <> @intgid AND Submitted = 1) h2 ON h1.OrderNumber = h2.OrderNumber
@@ -32,7 +32,7 @@ BEGIN
     END
     IF @shipping = 1
     BEGIN
-        UPDATE Shipments
+        UPDATE s1
         SET ShouldSubmit = 0
         FROM (SELECT * FROM Shipments WHERE IntegrationsID = @intgid) s1
         JOIN (SELECT * FROM Shipments WHERE IntegrationsID <> @intgid AND Submitted = 1) s2 ON s1.OrderNumber = s2.OrderNumber

@@ -7,9 +7,9 @@ BEGIN
 
     -- Insert statements for procedure here
     INSERT INTO Products
-        (ProductName, ProductDescription, ProductType, Manufacturer, Model, Client, SuggestedPrice)
+        (ProductName, ProductDescription, ProductType, Model, Manufacturer, SuggestedPrice, SKU, Serial, Added, Updated, AddedDate, Client)
     SELECT --DISTINCT 
-        fd.PRODUCT_NAME, fd.PRODUCT_NAME AS PRODUCT_DESC, fd.PRODUCT_TYPE, fd.MANUFACTURER, fd.MODEL, @client AS Client, MAX(fd.PURCHASE_PRICE) PURCHASE_PRICE
+        fd.PRODUCT_NAME, fd.PRODUCT_NAME AS PRODUCT_DESC, fd.PRODUCT_TYPE, fd.MODEL, fd.MANUFACTURER, MAX(fd.PURCHASE_PRICE) PURCHASE_PRICE, NULL AS SKU, NULL AS Serial, 1, 0, GETUTCDATE(), @client AS Client
     FROM dbo.PurchaseOrderIntegrationFlatData fd
     --JOIN DataIntegrations di 
     --    ON di.IntegrationsID = fd.IntegrationsID
@@ -22,8 +22,4 @@ BEGIN
         fd.PRODUCT_NAME, fd.PRODUCT_TYPE, fd.MANUFACTURER, fd.MODEL--, fd.PURCHASE_PRICE
 END
 GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].[Integrations_StageProductData] TO [intg-cps]
-    WITH GRANT OPTION
-    AS [dbo];
 

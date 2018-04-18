@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[z_custom_stpro_CPS_RemoveBadSites](
     @client varchar(50),
-    @intgid int
+    @intgid varchar(100)
 )
 AS
 BEGIN
