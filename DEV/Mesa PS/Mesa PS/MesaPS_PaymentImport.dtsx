@@ -1,0 +1,2099 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="7/9/2015 7:54:57 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="HAYESINTEGRATIO"
+  DTS:CreatorName="HAYESSOFT\jjohnston"
+  DTS:DTSID="{47C13959-9783-48EF-AF42-E5A7594FD23B}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.0800.90"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="MesaPS_PaymentImport"
+  DTS:PackageType="5"
+  DTS:VersionBuild="168"
+  DTS:VersionGUID="{6C1043C5-80E5-4361-9726-B65C943B43C8}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[DatabaseConnection]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+      DTS:ObjectName="DatabaseConnection">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[User::DatabaseName]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[User::DatabaseServer]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TIPWebHostedKellerISD;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_PaymentImport-{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}LocalHost.TIPWebHostedKellerISD;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[ErrorFile]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{311ED9A5-24B9-423F-BD22-048682C82A40}"
+      DTS:ObjectName="ErrorFile">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[User::ArchiveErrorFilePath]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="E:\Integration\KellerISD\Archive\Errors\Errors_04252018.txt">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="FineID"
+              DTS:DTSID="{F1358E8C-4AAE-4B77-8870-338373CBC23F}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Amount"
+              DTS:DTSID="{6C9C3E31-D6E8-4945-9220-5906EDC184E8}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Type"
+              DTS:DTSID="{DB2F2F7C-798B-4AB3-80AB-FF7F64E8A5DE}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Date"
+              DTS:DTSID="{D3C7E693-B19D-4CE6-9DBF-BF7FCE35ECCF}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:DataType="302"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Note"
+              DTS:DTSID="{F71D950F-4501-4178-8C9E-453581192737}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[PaymentFile]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{4EB795CC-80A0-4D09-9196-9DBDFDF41169}"
+      DTS:ObjectName="PaymentFile">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[User::ProcessingFileName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x003C_none_x003E_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="D:\Integration\KellerISD\Processing\Payments\finepayments_07302015.txt">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Column 0"
+              DTS:DTSID="{D0F3CB15-1D40-4137-975F-49A5EE4E6A76}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Column 1"
+              DTS:DTSID="{A552322A-F6F8-4AE3-8239-8AFC6B3C6148}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x0009_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Column 2"
+              DTS:DTSID="{C70EE6A8-6B92-4D53-955D-5B9859FDCFC9}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:MaximumWidth="50"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Column 3"
+              DTS:DTSID="{DE91F726-56DE-45A7-A19A-90CB93FC6774}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:LogProviders>
+    <DTS:LogProvider
+      DTS:ConfigString="DatabaseConnection"
+      DTS:CreationName="Microsoft.LogProviderSQLServer"
+      DTS:Description="Writes log entries for events to a SQL Server database"
+      DTS:DTSID="{1D4B9EEE-0304-4550-8AB8-DDE5924C70DD}"
+      DTS:ObjectName="SSIS log provider for SQL Server">
+      <DTS:ObjectData>
+        <InnerObject />
+      </DTS:ObjectData>
+    </DTS:LogProvider>
+  </DTS:LogProviders>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{9B4B16C0-B42F-4001-9F71-1E3B667A5089}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ArchiveErrorDirectory">
+      <DTS:VariableValue
+        DTS:DataType="8">Archive\Errors\</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{0BC463D8-4570-4BDC-978B-7D8C8646A0D5}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::RootDirectory] + @[User::ArchiveErrorDirectory] + Substring(@[User::ErrorFileName] ,1, LEN(@[User::ErrorFileName])-4) +&quot;_&quot;  + RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;mm&quot;, GETDATE())), 2)  +  RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;dd&quot;, GETDATE())), 2) + (DT_STR, 4, 1252) (DATEPART(&quot;yyyy&quot;, GETDATE())) + &quot;.txt&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ArchiveErrorFilePath">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\Integration\KellerISD\Archive\Errors\Errors_04252018.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{67E7CDF0-7E12-498C-B0E1-56B366F0394D}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ArchivePaymentDirectory">
+      <DTS:VariableValue
+        DTS:DataType="8">Archive\Payments\</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{CDDBBD7E-3CE6-411D-BB94-41F448299AC5}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::RootDirectory] + @[User::ArchivePaymentDirectory] + Substring(@[User::PaymentFileName] ,1, LEN(@[User::PaymentFileName])-4) +&quot;_&quot;  + RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;mm&quot;, GETDATE())), 2)  +  RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;dd&quot;, GETDATE())), 2) + (DT_STR, 4, 1252) (DATEPART(&quot;yyyy&quot;, GETDATE())) + &quot;.txt&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ArchivePaymentFilePath">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\Integration\KellerISD\Archive\Payments\finepayments_04252018.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{13D82B6D-065A-4E1E-BAE7-4914088B3B31}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="BCCEmail">
+      <DTS:VariableValue
+        DTS:DataType="8">jjohnston@hayessoft.com</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{569CA435-A093-45D1-83AC-CAE068BB4191}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="CCEmail">
+      <DTS:VariableValue
+        DTS:DataType="8">support@hayessoft.com</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{944A1150-1164-413B-9651-AB7390BFC853}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClientName">
+      <DTS:VariableValue
+        DTS:DataType="8">Keller ISD</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{4F5BBE32-32F3-4040-8335-4401AD472CAD}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClientPaymentDirectory">
+      <DTS:VariableValue
+        DTS:DataType="8">Client File\Payments\</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{68A8F710-B642-4CDD-BED6-7285B99D8C60}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::RootDirectory] + @[User::ClientPaymentDirectory] + @[User::PaymentFileName]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClientPaymentFilePath">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\Integration\KellerISD\Client File\Payments\finepayments.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{346C3759-A79B-4DF7-B001-F0DCDE7AE8D7}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="DatabaseName">
+      <DTS:VariableValue
+        DTS:DataType="8">TIPWebHostedKellerISD</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{1880803F-9E52-46FB-8208-69E711D3A324}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="DatabaseServer">
+      <DTS:VariableValue
+        DTS:DataType="8">.</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{F0981A7C-6B9A-400A-9BDE-C28757EBCF35}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="DeleteFileName">
+      <DTS:VariableValue
+        DTS:DataType="8">D:\Integration\KellerISD\Processing\Payments\finepayments_07302015.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{F054EDFE-6FF0-401D-A998-192478869506}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="EMail">
+      <DTS:VariableValue
+        DTS:DataType="8">amanda.horn@kellerisd.net</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{FEC92C94-A19A-4ED2-A1AB-01735112C30D}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ErrorFileName">
+      <DTS:VariableValue
+        DTS:DataType="8">Errors.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{5D8FEF30-D052-49C6-B375-D22651183C55}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="JobName">
+      <DTS:VariableValue
+        DTS:DataType="8">Keller ISD Payment File Import</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{8B63E1F9-4CB6-41F9-A52B-5593EAD23CC7}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="PackageName">
+      <DTS:VariableValue
+        DTS:DataType="8">KISD_PaymentImport</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{FE8A2052-D24F-46C7-B4E6-C593ECAE02A6}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="PaymentFileName">
+      <DTS:VariableValue
+        DTS:DataType="8">finepayments.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{F8E8211C-9530-4681-9C14-33DFEA434F91}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ProcessingFileName">
+      <DTS:VariableValue
+        DTS:DataType="8">D:\Integration\KellerISD\Processing\Payments\finepayments_07302015.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{B668F08B-9AAD-4273-836D-FEA380C7E704}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ProcessingPaymentDirectory">
+      <DTS:VariableValue
+        DTS:DataType="8">Processing\Payments\</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{A160CC6D-8C21-4FF4-BF1F-CFD07A68A978}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::RootDirectory] + @[User::ProcessingPaymentDirectory] + Substring(@[User::PaymentFileName] ,1, LEN(@[User::PaymentFileName])-4) +&quot;_&quot;  + RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;mm&quot;, GETDATE())), 2)  +  RIGHT(&quot;0&quot; + (DT_STR, 2, 1252) (DATEPART(&quot;dd&quot;, GETDATE())), 2) + (DT_STR, 4, 1252) (DATEPART(&quot;yyyy&quot;, GETDATE())) + &quot;.txt&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ProcessingPaymentFilePath">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\Integration\KellerISD\Processing\Payments\finepayments_04252018.txt</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{262FF5C4-5789-4996-BE6A-9742B7DC8A51}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="RootDirectory">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\Integration\KellerISD\</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:LoggingOptions
+    DTS:FilterKind="0"
+    DTS:LoggingMode="2" />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Delete Files in Processing"
+      DTS:CreationName="STOCK:FOREACHLOOP"
+      DTS:Description="Foreach Loop Container"
+      DTS:DTSID="{2A0283C4-1F15-45F5-B040-7E390895175A}"
+      DTS:ExecutableType="STOCK:FOREACHLOOP"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Delete Files in Processing">
+      <DTS:ForEachEnumerator
+        DTS:CreationName="Microsoft.ForEachFileEnumerator"
+        DTS:DTSID="{58802BA2-A8F7-4173-95E3-9DD78BEF8FFE}"
+        DTS:ObjectName="{58802BA2-A8F7-4173-95E3-9DD78BEF8FFE}">
+        <DTS:PropertyExpression
+          DTS:Name="Directory">@[User::RootDirectory] + @[User::ProcessingPaymentDirectory]</DTS:PropertyExpression>
+        <DTS:ObjectData>
+          <ForEachFileEnumeratorProperties>
+            <FEFEProperty
+              Folder="E:\Integration\KellerISD\Processing\Payments\" />
+            <FEFEProperty
+              FileSpec="*.*" />
+            <FEFEProperty
+              FileNameRetrievalType="0" />
+            <FEFEProperty
+              Recurse="0" />
+          </ForEachFileEnumeratorProperties>
+        </DTS:ObjectData>
+      </DTS:ForEachEnumerator>
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Delete Files in Processing\Delete File"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{5C26FD15-15B2-4DD2-988F-5FCAA19F4B7A}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Delete File"
+          DTS:TaskContact="File System Task;Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="DeleteFile"
+              TaskSourcePath="User::DeleteFileName"
+              TaskIsSourceVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:ForEachVariableMappings>
+        <DTS:ForEachVariableMapping
+          DTS:CreationName=""
+          DTS:DTSID="{85784DE3-0074-4C7B-A5B4-432001682894}"
+          DTS:ObjectName="{85784DE3-0074-4C7B-A5B4-432001682894}"
+          DTS:ValueIndex="0"
+          DTS:VariableName="User::DeleteFileName" />
+      </DTS:ForEachVariableMappings>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Import Data into TIPWeb-IM"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{524B698F-4321-41A4-9BF7-C2F0E3CBFFFE}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Import Data into TIPWeb-IM">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Import Data into TIPWeb-IM\Data Preparation"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{CFFFF379-5312-45A3-9055-83329774D7BF}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Data Preparation"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="UPDATE dbo._ETL_Payments&#xA;SET PaymentID = PC.PaymentID, ID = PC.ID, ISBN = PC.ISBN,&#xA;Price = PC.Price, Copies = PC.Copies, TotalOwed = PC.TotalOwed,&#xA;TotalPaid = P.TotalPaid + PC.TotalPaid&#xA;FROM dbo._ETL_Payments P&#xA;JOIN tblStudentsDistribution SD ON P.Accession = SD.Accession&#xA;JOIN tblPaymentsCollected PC ON SD.Accession = PC.Accession&#xA;AND SD.StudentsUID = PC.ID&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET ID = SD.StudentsUID, ISBN = SD.ISBN, Price = BI.Price,&#xA;Copies = 1, TotalOwed = BI.Price&#xA;FROM dbo._ETL_Payments P&#xA;JOIN tblStudentsDistribution SD ON P.Accession = SD.Accession&#xA;JOIN tblBookInventory BI ON SD.ISBN = BI.ISBN&#xA;WHERE P.PaymentID IS NULL&#xA;AND SD.Code IN ('LOST', 'PRTL')&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET TotalPaid = 0&#xA;WHERE TotalPaid &lt; 0&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET TotalPaid = TotalOwed&#xA;WHERE TotalPaid &gt; TotalOwed&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET Code = 'PAY1'&#xA;WHERE [Type] = 'Payment'&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET Code = 'PRTL'&#xA;WHERE TotalPaid &lt; TotalOwed&#xA;AND TotalPaid &gt; 0&#xA;AND [Type] = 'Adjustment'&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_Payments&#xA;SET Code = 'LOST'&#xA;WHERE TotalPaid = 0&#xA;AND [Type] = 'Adjustment'&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Import Data into TIPWeb-IM\INSERT Payments"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{53DD733E-856E-4D62-B138-33725FE07D15}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="INSERT Payments"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="INSERT INTO dbo.tblPaymentsCollected&#xA;(ID, ISBN, Accession, Code, Price, Copies, TotalOwed,&#xA;TotalPaid, UserID, ModifiedDate, Notes, Archived)&#xA;SELECT P.ID, P.ISBN, P.Accession, P.Code, P.Price, P.Copies, P.TotalOwed,&#xA;--P.TotalPaid, 0, P.ModifiedDate, 'InTouch PaymentID ' + Notes, 0&#xA;P.TotalPaid, 0, P.ModifiedDate, 'Payment collected in InTouch', 0&#xA;FROM dbo._ETL_Payments P&#xA;LEFT JOIN tblPaymentsCollected PC ON P.ID = PC.ID&#xA;AND P.Accession = PC.Accession&#xA;WHERE [Type] = 'Payment'&#xA;AND PC.PaymentID IS NULL&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Import Data into TIPWeb-IM\UPDATE Payments"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{1563C7F6-2ECF-4DC2-9728-2CBF05838DDA}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="UPDATE Payments"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="UPDATE tblPaymentsCollected&#xA;SET TotalPaid = P.TotalPaid, Code = P.Code,&#xA;--Notes = CASE WHEN PC.Notes IS NULL THEN 'InTouch PaymentID ' + P.PaymentID&#xA;--ELSE PC.Notes + '; InTouch PaymentID ' + P.PaymentID END&#xA;Notes = CASE WHEN PC.Notes IS NULL THEN 'Payment collected in InTouch'&#xA;ELSE PC.Notes + '; Payment collected in InTouch' END&#xA;FROM tblPaymentsCollected PC&#xA;JOIN _ETL_Payments P ON PC.PaymentID = P.PaymentID&#xA;WHERE P.[Type] = 'Payment'&#xA;AND (PC.TotalPaid &lt;&gt; P.TotalPaid&#xA;OR PC.Code &lt;&gt; P.Code)&#xA;&#xA;GO&#xA;&#xA;UPDATE tblPaymentsCollected&#xA;SET TotalPaid = P.TotalPaid, Code = P.Code,&#xA;--Notes = CASE WHEN PC.Notes IS NULL THEN 'InTouch PaymentID ' + P.PaymentID&#xA;--ELSE PC.Notes + '; InTouch PaymentID ' + P.PaymentID END&#xA;Notes = CASE WHEN PC.Notes IS NULL THEN 'Adjustment made in InTouch'&#xA;ELSE PC.Notes + '; Adjustment made in InTouch' END&#xA;FROM tblPaymentsCollected PC&#xA;JOIN _ETL_Payments P ON PC.PaymentID = P.PaymentID&#xA;WHERE P.[Type] = 'Adjustment'&#xA;AND (PC.TotalPaid &lt;&gt; P.TotalPaid&#xA;OR PC.Code &lt;&gt; P.Code)&#xA;&#xA;GO&#xA;&#xA;UPDATE tblStudentsDistribution&#xA;SET Code = P.Code&#xA;FROM tblStudentsDistribution SD&#xA;JOIN _ETL_Payments P ON SD.Accession = P.Accession&#xA;AND SD.StudentsUID = P.ID&#xA;WHERE SD.Code &lt;&gt; P.Code&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{D459DA21-5487-4DE7-A0CF-16F9D070F9FE}"
+          DTS:From="Package\Import Data into TIPWeb-IM\Data Preparation"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Import Data into TIPWeb-IM\UPDATE Payments" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{60FB6960-6D1D-4ECB-95DC-A5C3366AB763}"
+          DTS:From="Package\Import Data into TIPWeb-IM\UPDATE Payments"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Import Data into TIPWeb-IM\INSERT Payments" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Import, Archive Files"
+      DTS:CreationName="STOCK:FOREACHLOOP"
+      DTS:Description="Foreach Loop Container"
+      DTS:DTSID="{080F855C-2686-4D19-9709-08091755A698}"
+      DTS:ExecutableType="STOCK:FOREACHLOOP"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Import, Archive Files">
+      <DTS:ForEachEnumerator
+        DTS:CreationName="Microsoft.ForEachFileEnumerator"
+        DTS:DTSID="{575CFBDF-8848-4BC2-9F7A-09B18DF8AAAF}"
+        DTS:ObjectName="{575CFBDF-8848-4BC2-9F7A-09B18DF8AAAF}">
+        <DTS:PropertyExpression
+          DTS:Name="Directory">@[User::RootDirectory] + @[User::ProcessingPaymentDirectory]</DTS:PropertyExpression>
+        <DTS:ObjectData>
+          <ForEachFileEnumeratorProperties>
+            <FEFEProperty
+              Folder="E:\Integration\KellerISD\Processing\Payments\" />
+            <FEFEProperty
+              FileSpec="*.*" />
+            <FEFEProperty
+              FileNameRetrievalType="0" />
+            <FEFEProperty
+              Recurse="0" />
+          </ForEachFileEnumeratorProperties>
+        </DTS:ObjectData>
+      </DTS:ForEachEnumerator>
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Import, Archive Files\File System Task"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{516E6F7A-4305-43FF-9A17-85D542CD115A}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="File System Task"
+          DTS:TaskContact="File System Task;Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOverwriteDestFile="True"
+              TaskSourcePath="User::ProcessingFileName"
+              TaskIsSourceVariable="True"
+              TaskDestinationPath="User::ArchivePaymentFilePath"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Import, Archive Files\Import File"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{72111FF9-DCF8-4251-A2D4-EC3F0EE3855F}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Import File"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v10; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <pipeline
+              BLOBTempStoragePath=""
+              bufferTempStoragePath=""
+              version="1">
+              <components>
+                <component
+                  refId="Package\Import, Archive Files\Import File\Flat File Source"
+                  componentClassID="Microsoft.FlatFileSource"
+                  contactInfo="Flat File Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+                  description="Flat File Source"
+                  localeId="1033"
+                  name="Flat File Source"
+                  usesDispositions="true"
+                  version="1">
+                  <properties>
+                    <property
+                      dataType="System.Boolean"
+                      description="Specifies whether zero-length columns are treated as null."
+                      name="RetainNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of an output column containing the file name. If no name is specified, no output column containing the file name will be generated."
+                      name="FileNameColumnName"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Import, Archive Files\Import File\Flat File Source.Connections[FlatFileConnection]"
+                      connectionManagerID="Package.ConnectionManagers[PaymentFile]"
+                      connectionManagerRefId="Package.ConnectionManagers[PaymentFile]"
+                      name="FlatFileConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output]"
+                      name="Flat File Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 0]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 0]"
+                          length="50"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 0]"
+                          name="Column 0"
+                          truncationRowDisposition="FailComponent">
+                          <properties>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                              name="FastParse">false</property>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the data is in binary format."
+                              name="UseBinaryFormat">false</property>
+                          </properties>
+                        </outputColumn>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 1]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 1]"
+                          length="50"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 1]"
+                          name="Column 1"
+                          truncationRowDisposition="FailComponent">
+                          <properties>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                              name="FastParse">false</property>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the data is in binary format."
+                              name="UseBinaryFormat">false</property>
+                          </properties>
+                        </outputColumn>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 2]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 2]"
+                          length="50"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 2]"
+                          name="Column 2"
+                          truncationRowDisposition="FailComponent">
+                          <properties>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                              name="FastParse">false</property>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the data is in binary format."
+                              name="UseBinaryFormat">false</property>
+                          </properties>
+                        </outputColumn>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 3]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 3]"
+                          length="50"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 3]"
+                          name="Column 3"
+                          truncationRowDisposition="FailComponent">
+                          <properties>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the column uses the faster, locale-neutral parsing routines."
+                              name="FastParse">false</property>
+                            <property
+                              dataType="System.Boolean"
+                              description="Indicates whether the data is in binary format."
+                              name="UseBinaryFormat">false</property>
+                          </properties>
+                        </outputColumn>
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 0]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Column 0" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 1]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Column 1" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 2]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Column 2" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].ExternalColumns[Column 3]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Column 3" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output]"
+                      isErrorOut="true"
+                      name="Flat File Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                          codePage="1252"
+                          dataType="text"
+                          description="Flat File Source Error Output Column"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[Flat File Source Error Output Column]"
+                          name="Flat File Source Error Output Column" />
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Import, Archive Files\Import File\OLE DB Destination"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[dbo].[_ETL_StagingPayments]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">3</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Import, Archive Files\Import File\OLE DB Destination.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[DatabaseConnection]"
+                      connectionManagerRefId="Package.ConnectionManagers[DatabaseConnection]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column 0]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Column 0"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FineID]"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 0]" />
+                        <inputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column 1]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Column 1"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Type]"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 1]" />
+                        <inputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column 2]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Column 2"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Date]"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 2]" />
+                        <inputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column 3]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Column 3"
+                          externalMetadataColumnId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Amount]"
+                          lineageId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output].Columns[Column 3]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ETLStagingPaymentUID]"
+                          dataType="i4"
+                          name="ETLStagingPaymentUID" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FineID]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="FineID" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Amount]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Amount" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Type]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Type" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Date]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Date" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Accepted]"
+                          dataType="bool"
+                          name="Accepted" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Note]"
+                          codePage="1252"
+                          dataType="text"
+                          name="Note" />
+                        <externalMetadataColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Imported]"
+                          dataType="dbTimeStamp"
+                          name="Imported" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Import, Archive Files\Import File\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Import, Archive Files\Import File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Import, Archive Files\Import File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Import, Archive Files\Import File\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Import, Archive Files\Import File.Paths[Flat File Source Output]"
+                  endId="Package\Import, Archive Files\Import File\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  name="Flat File Source Output"
+                  startId="Package\Import, Archive Files\Import File\Flat File Source.Outputs[Flat File Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Import, Archive Files.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{9DE5DFD7-D886-44BB-B161-C13FA35DE5B3}"
+          DTS:From="Package\Import, Archive Files\Import File"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Import, Archive Files\File System Task" />
+      </DTS:PrecedenceConstraints>
+      <DTS:ForEachVariableMappings>
+        <DTS:ForEachVariableMapping
+          DTS:CreationName=""
+          DTS:DTSID="{8A5D29AB-052F-409D-A40C-12E46EA113BE}"
+          DTS:ObjectName="{8A5D29AB-052F-409D-A40C-12E46EA113BE}"
+          DTS:ValueIndex="0"
+          DTS:VariableName="User::ProcessingFileName" />
+      </DTS:ForEachVariableMappings>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Prepare for Staging"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{2E0C2A28-DE00-4BEB-ACAE-52EAC0513616}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Prepare for Staging">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Prepare for Staging\Drop, Create Staging Table"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{0EBDB627-8667-4E62-81E9-003260CAB440}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Drop, Create Staging Table"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="IF OBJECT_ID('dbo._ETL_StagingPayments', 'U') IS NOT NULL DROP TABLE dbo._ETL_StagingPayments;&#xA;&#xA;GO&#xA;&#xA;SET ANSI_NULLS ON&#xA;&#xA;GO&#xA;&#xA;SET QUOTED_IDENTIFIER ON&#xA;&#xA;GO&#xA;&#xA;SET ANSI_PADDING ON&#xA;&#xA;GO&#xA;&#xA;CREATE TABLE [dbo].[_ETL_StagingPayments](&#xA;&#x9;[ETLStagingPaymentUID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[FineID] [varchar](50) NULL,&#xA;&#x9;--[PaymentID] [varchar](50) NULL,&#xA;&#x9;[Amount] [varchar](50) NULL,&#xA;&#x9;[Type] [varchar](50) NULL,&#xA;&#x9;[Date] [varchar](50) NULL,&#xA;&#x9;[Accepted] [bit] NULL,&#xA;&#x9;[Note] [varchar](MAX) NULL,&#xA;&#x9;[Imported] [datetime] NULL,&#xA; CONSTRAINT [PK__ETL_StagingPayments] PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[ETLStagingPaymentUID] ASC&#xA;)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]&#xA;) ON [PRIMARY]&#xA;&#xA;GO&#xA;&#xA;SET ANSI_PADDING ON&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Prepare for Staging\Move File to Processing"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{11593557-CBFE-4365-8671-0F799E90CC03}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Move File to Processing"
+          DTS:TaskContact="File System Task;Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="RenameFile"
+              TaskSourcePath="User::ClientPaymentFilePath"
+              TaskIsSourceVariable="True"
+              TaskDestinationPath="User::ProcessingPaymentFilePath"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Prepare for Staging.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{9BE927AF-BEA2-49CC-ADB8-706BC6DCCFC7}"
+          DTS:From="Package\Prepare for Staging\Move File to Processing"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Prepare for Staging\Drop, Create Staging Table" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Prepare for TIPWeb-IM"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{150FA51C-6A52-4132-ADC7-87164FAC13C2}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Prepare for TIPWeb-IM">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Prepare for TIPWeb-IM\Data Validation"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{6DBCA42A-02E9-4263-AEA8-814EB10B96F4}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Data Validation"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="UPDATE dbo._ETL_StagingPayments&#xA;SET FineID = ''&#xA;WHERE FineID IS NULL&#xA;&#xA;GO&#xA;&#xA;--UPDATE dbo._ETL_StagingPayments&#xA;--SET PaymentID = ''&#xA;--WHERE PaymentID IS NULL&#xA;&#xA;--GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET Amount = ''&#xA;WHERE Amount IS NULL&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET [Type] = ''&#xA;WHERE [Type] IS NULL&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET [Date] = ''&#xA;WHERE [Date] IS NULL&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Fine ID not found in TIPWeb-IM'&#xA;ELSE Note + '; ' +  'Fine ID not found in TIPWeb-IM' END&#xA;FROM _ETL_StagingPayments SP&#xA;LEFT JOIN tblStudentsDistribution SD ON SP.FineID = SD.Accession&#xA;WHERE SD.DistributionID IS NULL&#xA;&#xA;GO&#xA;&#xA;--UPDATE dbo._ETL_StagingPayments&#xA;--SET Accepted = 0,&#xA;--Note = CASE WHEN Note IS NULL THEN 'Missing Payment ID'&#xA;--ELSE Note + '; ' +  'Missing Payment ID' END&#xA;--WHERE PaymentID = ''&#xA;&#xA;--GO&#xA;&#xA;--UPDATE dbo._ETL_StagingPayments&#xA;--SET Accepted = 0,&#xA;--Note = CASE WHEN Note IS NULL THEN 'Payment already imported'&#xA;--ELSE Note + '; ' +  'Payment already imported' END&#xA;--FROM dbo._ETL_StagingPayments SP&#xA;--JOIN tblPaymentsCollected PC ON PC.Notes LIKE '%' + SP.PaymentID + '%'&#xA;&#xA;--GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Invalid Amount'&#xA;ELSE Note + '; ' +  'Invalid Amount' END&#xA;WHERE ISNUMERIC(Amount) = 0&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Type must be Payment or Adjustment'&#xA;ELSE Note + '; ' +  'Type must be Payment or Adjustment' END&#xA;WHERE [Type] NOT IN ('Payment', 'Adjustment')&#xA;&#xA;GO&#xA;&#xA;UPDATE dbo._ETL_StagingPayments&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Invalid Date'&#xA;ELSE Note + '; ' +  'Invalid Date' END&#xA;WHERE ISDATE([Date]) = 0&#xA;&#xA;GO&#xA;&#xA;UPDATE  dbo._ETL_StagingPayments&#xA;SET Accepted = 1&#xA;WHERE Accepted IS NULL&#xA;&#xA;GO &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Prepare for TIPWeb-IM\Drop, Create Payments Table"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{45269BAC-19DD-4267-BDDB-E7719AA7AC3D}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Drop, Create Payments Table"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="IF OBJECT_ID('dbo._ETL_Payments', 'U') IS NOT NULL DROP TABLE dbo._ETL_Payments;&#xA;&#xA;GO&#xA;&#xA;SET ANSI_NULLS ON&#xA;&#xA;GO&#xA;&#xA;SET QUOTED_IDENTIFIER ON&#xA;&#xA;GO&#xA;&#xA;SET ANSI_PADDING ON&#xA;&#xA;GO&#xA;&#xA;CREATE TABLE [dbo].[_ETL_Payments](&#xA;&#x9;[ETLPaymentUID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[ID] [int] NULL,&#xA;&#x9;[ISBN] [varchar](50) NULL,&#xA;&#x9;[Accession] [varchar](50) NULL,&#xA;&#x9;[Code] [varchar](50) NULL,&#xA;&#x9;[Price] [money] NULL,&#xA;&#x9;[Copies] [int] NULL,&#xA;&#x9;[TotalOwed] [money] NULL,&#xA;&#x9;[TotalPaid] [money] NULL,&#xA;&#x9;[Type] [varchar](50) NULL,&#xA;&#x9;[ModifiedDate] [datetime] NOT NULL,&#xA;&#x9;[Notes] [varchar](7500) NULL,&#xA;&#x9;[PaymentID] [int] NULL,&#xA; CONSTRAINT [PK__ETL_Payments] PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[ETLPaymentUID] ASC&#xA;)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]&#xA;) ON [PRIMARY]&#xA;&#xA;GO&#xA;&#xA;SET ANSI_PADDING ON&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Prepare for TIPWeb-IM\INSERT into _ETL_Payments"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{FACD0831-DC01-4EC9-A59D-E054A97CCF76}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="INSERT into _ETL_Payments"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="UPDATE _ETL_StagingPayments&#xA;SET Amount = CONVERT(VARCHAR, SJ.Amount)&#xA;FROM _ETL_StagingPayments SP&#xA;JOIN (SELECT MAX(ETLStagingPaymentUID) AS ID,&#xA;SUM(CONVERT(MONEY, Amount)) AS Amount&#xA;FROM _ETL_StagingPayments&#xA;WHERE Accepted = 1&#xA;GROUP BY FineID) SJ ON SP.ETLStagingPaymentUID = SJ.ID&#xA;&#xA;GO&#xA;&#xA;INSERT INTO dbo._ETL_Payments&#xA;(ID, ISBN, Accession, Code, Price, Copies, TotalOwed,&#xA;TotalPaid, [Type], ModifiedDate)--, Notes)&#xA;SELECT NULL, NULL, FineID, NULL, NULL, NULL, NULL,&#xA;ABS(CONVERT(money, Amount)/100), 'Payment',&#xA;CONVERT(datetime, [Date])--, PaymentID&#xA;FROM _ETL_StagingPayments&#xA;WHERE ETLStagingPaymentUID IN&#xA;(SELECT MAX(ETLStagingPaymentUID) AS ID&#xA;FROM _ETL_StagingPayments&#xA;WHERE Accepted = 1&#xA;GROUP BY FineID)&#xA;AND [Type] = 'Payment'&#xA;&#xA;GO&#xA;&#xA;INSERT INTO dbo._ETL_Payments&#xA;(ID, ISBN, Accession, Code, Price, Copies, TotalOwed,&#xA;TotalPaid, [Type], ModifiedDate)--, Notes)&#xA;SELECT NULL, NULL, FineID, NULL, NULL, NULL, NULL,&#xA;ABS(CONVERT(money, Amount)/100) * -1, 'Adjustment',&#xA;CONVERT(datetime, [Date])--, PaymentID&#xA;FROM _ETL_StagingPayments&#xA;WHERE ETLStagingPaymentUID IN&#xA;(SELECT MAX(ETLStagingPaymentUID) AS ID&#xA;FROM _ETL_StagingPayments&#xA;WHERE Accepted = 1&#xA;GROUP BY FineID)&#xA;AND [Type] = 'Adjustment'&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Prepare for TIPWeb-IM.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{E2C61253-09DA-44F9-A881-ECD8484BA607}"
+          DTS:From="Package\Prepare for TIPWeb-IM\Data Validation"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Prepare for TIPWeb-IM\Drop, Create Payments Table" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Prepare for TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{6685789E-84D5-4009-AE19-F86871D669D4}"
+          DTS:From="Package\Prepare for TIPWeb-IM\Drop, Create Payments Table"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Prepare for TIPWeb-IM\INSERT into _ETL_Payments" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Wrap up"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{2AB3714C-9FA9-4994-A6BC-8BC045BAB9E9}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Wrap up">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Wrap up\Export Error File"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{E1F63490-E660-43E5-87E2-011F8E9DF993}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Export Error File"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v10; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <pipeline
+              BLOBTempStoragePath=""
+              bufferTempStoragePath=""
+              version="1">
+              <components>
+                <component
+                  refId="Package\Wrap up\Export Error File\Flat File Destination"
+                  componentClassID="Microsoft.FlatFileDestination"
+                  contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+                  description="Flat File Destination"
+                  localeId="1033"
+                  name="Flat File Destination">
+                  <properties>
+                    <property
+                      dataType="System.Boolean"
+                      description="Specifies whether the data will overwrite or append to the destination file."
+                      name="Overwrite">true</property>
+                    <property
+                      dataType="System.Null"
+                      description="Specifies the text to write to the destination file before any data is written."
+                      expressionType="Notify"
+                      name="Header" />
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Wrap up\Export Error File\Flat File Destination.Connections[FlatFileConnection]"
+                      connectionManagerID="Package.ConnectionManagers[ErrorFile]"
+                      connectionManagerRefId="Package.ConnectionManagers[ErrorFile]"
+                      name="FlatFileConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input]"
+                      hasSideEffects="true"
+                      name="Flat File Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].Columns[FineID]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="FineID"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[FineID]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FineID]" />
+                        <inputColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].Columns[Amount]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Amount"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Amount]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Amount]" />
+                        <inputColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].Columns[Type]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Type"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Type]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Type]" />
+                        <inputColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].Columns[Date]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="Date"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Date]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Date]" />
+                        <inputColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].Columns[Note]"
+                          cachedCodepage="1252"
+                          cachedDataType="text"
+                          cachedName="Note"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Note]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Note]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[FineID]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="FineID" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Amount]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Amount" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Type]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Type" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Date]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Date" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Note]"
+                          codePage="1252"
+                          dataType="text"
+                          name="Note" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                </component>
+                <component
+                  refId="Package\Wrap up\Export Error File\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT FineID,-- PaymentID,
+Amount, [Type], [Date], Note
+FROM _ETL_StagingPayments
+WHERE Accepted = 0</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">2</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Wrap up\Export Error File\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[DatabaseConnection]"
+                      connectionManagerRefId="Package.ConnectionManagers[DatabaseConnection]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FineID]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[FineID]"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[FineID]"
+                          name="FineID"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Amount]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Amount]"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Amount]"
+                          name="Amount"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Type]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Type]"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Type]"
+                          name="Type"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Date]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Date]"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Date]"
+                          name="Date"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Note]"
+                          codePage="1252"
+                          dataType="text"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Note]"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].Columns[Note]"
+                          name="Note"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[FineID]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="FineID" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Amount]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Amount" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Type]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Type" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Date]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="Date" />
+                        <externalMetadataColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Note]"
+                          codePage="1252"
+                          dataType="text"
+                          name="Note" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[FineID]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[FineID]"
+                          name="FineID" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Amount]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Amount]"
+                          name="Amount" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Type]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Type]"
+                          name="Type" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Date]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Date]"
+                          name="Date" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Note]"
+                          codePage="1252"
+                          dataType="text"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Note]"
+                          name="Note" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Wrap up\Export Error File.Paths[OLE DB Source Output]"
+                  endId="Package\Wrap up\Export Error File\Flat File Destination.Inputs[Flat File Destination Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Wrap up\Export Error File\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Wrap up\Send E-mail"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{BAC37126-F705-4605-B7AE-918F47359D90}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Send E-mail"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@bodyHTML NVARCHAR(MAX),&#xA;&#x9;@title NVARCHAR(150),&#xA;&#x9;@email NVARCHAR(1000),&#xA;&#x9;@ccemail NVARCHAR(1000),&#xA;&#x9;@bccemail NVARCHAR(1000),&#xA;&#x9;@mailProfile NVARCHAR(MAX),&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@totcount NVARCHAR(20),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@attachment NVARCHAR(1000),&#xA;&#x9;@attachments NVARCHAR(MAX)&#xA;&#xA;SET @email = ?&#xA;SET @ccemail = ?&#xA;SET @bccemail = ?&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @attachment = ?&#xA;&#xA;SET @mailProfile ='TIPWEBIMEmail'&#xA;&#xA;SET @totcount =  CAST((SELECT ISNULL(totalcount, '0') FROM&#xA;(SELECT  COUNT(*) AS totalcount&#xA;FROM _ETL_StagingPayments&#xA;WHERE Accepted = 0) a) AS VARCHAR(20))&#xA;&#xA;SET @attachments = @attachment&#xA;&#xA;SET @title = @jobname + ' Integration Status - '+  CONVERT(VARCHAR(10), GETDATE(), 101)&#xA;&#xA;SET @bodyHTML = &#xA;N'&lt;html&gt;&lt;body&gt;The Error file has been generated&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Rejected: '+ @totcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'If you have any questions, please contact us at 1-800-495-5993&lt;br&gt;&lt;br&gt;'+&#xA;N'Thank you,&lt;br&gt;&lt;br&gt;'+&#xA;N'Hayes Software Systems&lt;br&gt;'+&#xA;N'www.hayessoft.com'+&#xA;N'&lt;/body&gt;&lt;/html&gt;'&#xA;&#xA;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;@profile_name = @mailProfile,&#xA;&#x9;@recipients = @email,&#xA;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;@blind_copy_recipients = @bccemail,&#xA;&#x9;@body_format = 'HTML',&#xA;&#x9;@body = @bodyHTML, &#xA;&#x9;@subject = @title,&#xA;&#x9;@file_attachments = @attachments;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@email"
+                SQLTask:DtsVariableName="User::EMail"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@ccemail"
+                SQLTask:DtsVariableName="User::CCEmail"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@bccemail"
+                SQLTask:DtsVariableName="User::BCCEmail"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@clientname"
+                SQLTask:DtsVariableName="User::ClientName"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@jobname"
+                SQLTask:DtsVariableName="User::JobName"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@attachment"
+                SQLTask:DtsVariableName="User::ArchiveErrorFilePath"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="1000" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Wrap up\Update Dashboard"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{C001CDB1-8AF6-4C8A-9676-F5279E9CEBC6}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Update Dashboard"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{319F2CA5-DC94-4E7D-8C1E-25A639AB96AA}"
+              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@totcount int,&#xA;&#x9;@errcount int,&#xA;&#x9;@filename NVARCHAR(1000),&#xA;&#x9;@packagename NVARCHAR(100)&#xA;&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @filename = ?&#xA;SET @packagename = ?&#xA;&#xA;SET @totcount = (SELECT COUNT(*) AS totalcount&#xA;FROM _ETL_StagingPayments)&#xA;&#xA;SET @errcount = (SELECT COUNT(*) AS errorcount&#xA;FROM _ETL_StagingPayments&#xA;WHERE Accepted = 0)&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.ErrorCount&#xA;WHERE Client = @clientname AND JobName = @jobname&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.FileExist&#xA;WHERE client = @clientname AND job_name = @jobname&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.TaskOnError&#xA;WHERE Client = @clientname AND JobName = @jobname&#xA;&#xA;INSERT INTO _IntegrationDashboard.dbo.FileExist&#xA;(client, job_name, filecheck, filename, filesize, file_rcvd_date, category)&#xA;VALUES (@clientname, @jobname, 1, @filename, -1, GETDATE(), 'Payments') &#xA;&#xA;INSERT INTO _IntegrationDashboard.dbo.ErrorCount&#xA;(Client, JobName, TotalRecord, ErrorCount, ErrorRptPath, RptDate, Category)&#xA;VALUES (@clientname, @jobname , @totcount,  @errcount, '', GETDATE(), 'Payments')&#xA;&#xA;IF EXISTS (SELECT * FROM sys.tables WHERE name = 'sysssislog')&#xA;BEGIN&#xA;&#x9;INSERT INTO _IntegrationDashboard.dbo.TaskOnError&#xA;&#x9;(Client, JobName, error_id, starttime, endtime, [MESSAGE], taskname, category)&#xA;&#x9;SELECT @clientname, @jobname, id AS error_id,&#xA;&#x9;starttime, endtime, [message], [source] AS taskname, 'Payments'&#xA;&#x9;FROM sysssislog&#xA;&#x9;WHERE (EVENT IN ('OnError'))&#xA;&#x9;AND source != @packagename&#xA;&#x9;ORDER BY id&#xA;END&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@clientname"
+                SQLTask:DtsVariableName="User::ClientName"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@jobname"
+                SQLTask:DtsVariableName="User::JobName"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@filename"
+                SQLTask:DtsVariableName="User::ProcessingPaymentFilePath"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@packagename"
+                SQLTask:DtsVariableName="User::PackageName"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="100" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Wrap up.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{43EC2B90-2173-4483-BE90-CF77CD4BBC02}"
+          DTS:From="Package\Wrap up\Export Error File"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Wrap up\Send E-mail" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Wrap up.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{A0B3BB3B-D5AD-4BBA-8B0A-1E2312168253}"
+          DTS:From="Package\Wrap up\Send E-mail"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Wrap up\Update Dashboard" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{25CED1E6-E0E2-4CF5-8048-5FC95F8103E6}"
+      DTS:From="Package\Delete Files in Processing"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Prepare for Staging" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{51DCA056-F6FA-401F-92B4-280F26BD893B}"
+      DTS:From="Package\Prepare for Staging"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Import, Archive Files" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{75A8B457-B580-40B4-8F08-52B89E21CD3E}"
+      DTS:From="Package\Import, Archive Files"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\Prepare for TIPWeb-IM" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{92C6AD22-0550-469E-B3C6-37291D3E4910}"
+      DTS:From="Package\Prepare for TIPWeb-IM"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\Import Data into TIPWeb-IM" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 4]"
+      DTS:CreationName=""
+      DTS:DTSID="{319E5BF0-B95B-489B-86B5-B9028DB7D24E}"
+      DTS:From="Package\Import Data into TIPWeb-IM"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 4"
+      DTS:To="Package\Wrap up" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Delete Files in Processing\Delete File"
+          TopLeft="13.0188679245283,14.8867924528302" />
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,75"
+          Size="164,119"
+          Id="Package\Delete Files in Processing"
+          TopLeft="5.5,5.5" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Import Data into TIPWeb-IM\Data Preparation"
+          TopLeft="13.9622641509434,15.9056603773585" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Import Data into TIPWeb-IM\INSERT Payments"
+          TopLeft="14.2264150943396,187.641509433962" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Import Data into TIPWeb-IM\UPDATE Payments"
+          TopLeft="14.0754716981132,99.7924528301887" />
+        <EdgeLayout
+          Id="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint]"
+          TopLeft="81.8490566037735,59.8301886792453">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0.11320754716985,39.9622641509434"
+              Start="0,0"
+              End="0.11320754716985,32.4622641509434">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20" />
+                  <mssgle:LineSegment
+                    End="0.11320754716985,20" />
+                  <mssgle:LineSegment
+                    End="0.11320754716985,32.4622641509434" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
+          TopLeft="61.2075471698113,143.716981132075">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="20.9056603773586,43.9245283018868"
+              Start="0,0"
+              End="20.9056603773586,36.4245283018868">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32.9433962264151" />
+                  <mssgle:LineSegment
+                    End="20.9056603773586,32.9433962264151" />
+                  <mssgle:LineSegment
+                    End="20.9056603773586,36.4245283018868" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,245"
+          Size="164,289"
+          Id="Package\Import Data into TIPWeb-IM"
+          TopLeft="872.028301886792,9.46226415094338" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Import, Archive Files\File System Task"
+          TopLeft="12.8679245283019,103.943396226415" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Import, Archive Files\Import File"
+          TopLeft="12.9433962264151,14.8867924528302" />
+        <EdgeLayout
+          Id="Package\Import, Archive Files.PrecedenceConstraints[Constraint]"
+          TopLeft="80.8301886792453,58.811320754717">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-0.0754716981131764,45.1320754716981"
+              Start="0,0"
+              End="-0.0754716981131764,37.6320754716981">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22.5660377358491" />
+                  <mssgle:LineSegment
+                    End="-0.0754716981131764,22.5660377358491" />
+                  <mssgle:LineSegment
+                    End="-0.0754716981131764,37.6320754716981" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,161"
+          Size="164,205"
+          Id="Package\Import, Archive Files"
+          TopLeft="437.009433962264,7.5" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Prepare for Staging\Drop, Create Staging Table"
+          TopLeft="13.3962264150943,102.698113207547" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Prepare for Staging\Move File to Processing"
+          TopLeft="13.3207547169811,14.7735849056604" />
+        <EdgeLayout
+          Id="Package\Prepare for Staging.PrecedenceConstraints[Constraint]"
+          TopLeft="81.2075471698113,58.6981132075472">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0.0754716981132333,44"
+              Start="0,0"
+              End="0.0754716981132333,36.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22" />
+                  <mssgle:LineSegment
+                    End="0.0754716981132333,22" />
+                  <mssgle:LineSegment
+                    End="0.0754716981132333,36.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,163"
+          Size="164,207"
+          Id="Package\Prepare for Staging"
+          TopLeft="221.952830188679,6.59433962264151" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Prepare for TIPWeb-IM\Data Validation"
+          TopLeft="14.1132075471697,16.8867924528302" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Prepare for TIPWeb-IM\Drop, Create Payments Table"
+          TopLeft="14.3396226415094,101.792452830189" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Prepare for TIPWeb-IM\INSERT into _ETL_Payments"
+          TopLeft="14.1132075471697,187.603773584906" />
+        <EdgeLayout
+          Id="Package\Prepare for TIPWeb-IM.PrecedenceConstraints[Constraint]"
+          TopLeft="82,60.811320754717">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0.226415094339586,40.9811320754717"
+              Start="0,0"
+              End="0.226415094339586,33.4811320754717">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.4905660377358" />
+                  <mssgle:LineSegment
+                    End="0.226415094339586,20.4905660377358" />
+                  <mssgle:LineSegment
+                    End="0.226415094339586,33.4811320754717" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Prepare for TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
+          TopLeft="82.2264150943396,145.716981132075">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-0.226415094339586,41.8867924528302"
+              Start="0,0"
+              End="-0.226415094339586,34.3867924528302">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.9433962264151" />
+                  <mssgle:LineSegment
+                    End="-0.226415094339586,20.9433962264151" />
+                  <mssgle:LineSegment
+                    End="-0.226415094339586,34.3867924528302" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,246"
+          Size="164,290"
+          Id="Package\Prepare for TIPWeb-IM"
+          TopLeft="653.122641509434,8.48113207547169" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Wrap up\Export Error File"
+          TopLeft="15.0188679245284,15.9056603773585" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Wrap up\Send E-mail"
+          TopLeft="15.132075471698,99.7924528301887" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\Wrap up\Update Dashboard"
+          TopLeft="15.2452830188679,187.603773584906" />
+        <EdgeLayout
+          Id="Package\Wrap up.PrecedenceConstraints[Constraint]"
+          TopLeft="82.9056603773586,59.8301886792453">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0.11320754716985,39.9622641509434"
+              Start="0,0"
+              End="0.11320754716985,32.4622641509434">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20" />
+                  <mssgle:LineSegment
+                    End="0.11320754716985,20" />
+                  <mssgle:LineSegment
+                    End="0.11320754716985,32.4622641509434" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Wrap up.PrecedenceConstraints[Constraint 1]"
+          TopLeft="62.2641509433963,143.716981132075">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="20.8679245283017,43.8867924528302"
+              Start="0,0"
+              End="20.8679245283017,36.3867924528302">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32.9056603773585" />
+                  <mssgle:LineSegment
+                    End="20.8679245283017,32.9056603773585" />
+                  <mssgle:LineSegment
+                    End="20.8679245283017,36.3867924528302" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="164,244"
+          Size="164,288"
+          Id="Package\Wrap up"
+          TopLeft="1090.29245283019,9.72641509433961" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="169.235849056604,64.8962264150943">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="52.7169811320755,45.0566037735849"
+              Start="0,0"
+              End="45.2169811320755,45.0566037735849">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="26.3396226415094,0" />
+                  <mssgle:LineSegment
+                    End="26.3396226415094,45.0566037735849" />
+                  <mssgle:LineSegment
+                    End="45.2169811320755,45.0566037735849" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="385.688679245283,109.952830188679">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="51.3207547169811,-0.113207547169811"
+              Start="0,0"
+              End="43.8207547169811,-0.113207547169811">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="25.6603773584906,0" />
+                  <mssgle:LineSegment
+                    End="25.6603773584906,-0.113207547169811" />
+                  <mssgle:LineSegment
+                    End="43.8207547169811,-0.113207547169811" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="600.745283018868,109.839622641509">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="52.3773584905661,43.4339622641509"
+              Start="0,0"
+              End="44.8773584905661,43.4339622641509">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="26.188679245283,0" />
+                  <mssgle:LineSegment
+                    End="26.188679245283,43.4339622641509" />
+                  <mssgle:LineSegment
+                    End="44.8773584905661,43.4339622641509" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="816.858490566038,153.27358490566">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="55.1698113207547,0.452830188679247"
+              Start="0,0"
+              End="47.6698113207547,0.452830188679247">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="27.5849056603773,0" />
+                  <mssgle:LineSegment
+                    End="27.5849056603773,0.452830188679247" />
+                  <mssgle:LineSegment
+                    End="47.6698113207547,0.452830188679247" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="1035.7641509434,153.72641509434">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="54.5283018867924,-0.226415094339625"
+              Start="0,0"
+              End="47.0283018867924,-0.226415094339625">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="27.2452830188679,0" />
+                  <mssgle:LineSegment
+                    End="27.2452830188679,-0.226415094339625" />
+                  <mssgle:LineSegment
+                    End="47.0283018867924,-0.226415094339625" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
