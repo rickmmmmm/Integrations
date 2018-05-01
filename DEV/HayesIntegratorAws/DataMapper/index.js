@@ -30,21 +30,23 @@ const activities = [
     { name: '--complete', shortname: '-C', desc: 'Toggles an integration ID to completed.', action: toggleSuccessfulIntegration, reqOptions: ['id'] },
     { name: '--mapflat', shortname: '-m', desc: 'Map purchase order data from JSON file to database table.', action: mapFromFile, reqOptions: ['filename', 'id'] },
 
-    { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, reqOptions: ['useid', 'id'] },
+    { name: '--vendors', shortname: '-v', desc: 'Adds vendors to staging database.', action: stageNewVendors, reqOptions: ['useid'] },
     { name: '--push-vendors', shortname: '-pv', desc: 'Push new vendor records via TIPWEBAPI.', action: upsertAllVendors, reqOptions: ['id', 'iVal', 'lv'] },
     { name: '--toggle-vendors', shortname: '-tv', desc: 'Toggle vendors from not sent to sent to TIPWEBAPI', action: toggleVendors },
 
-    { name: '--products', shortname: '-p', desc: 'Map products from flat data table to Products.', action: productsFunc },
+    { name: '--products', shortname: '-p', desc: 'Map products from flat data table to Products.', action: stageNewProducts },
     { name: '--push-products', shortname: '-pp', desc: 'Push new product records via TIPWEBAPI.', action: upsertAllProducts, reqOptions: ['id', 'iVal', 'lv'] },
     { name: '--toggle-products', shortname: '-tp', desc: 'Toggle products from not sent to sent to TIPWEBAPI.', action: toggleProducts },
 
-    { name: '--funding', shortname: '-f', desc: 'Map funding sources from flat data table to FundingSources.', action: fundingFunc },
+    { name: '--funding', shortname: '-f', desc: 'Map funding sources from flat data table to FundingSources.', action: stageNewFundingSources },
 
-    { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: headersFunc, reqOptions: ['id'] },
+    { name: '--stage-headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: stageHeaders, reqOptions: ['id'] },
+    { name: '--headers', shortname: '-hd', desc: 'Map headers from flat data table to PurchaseOrderHeaders.', action: addHeaders, reqOptions: ['id'] },
     { name: '--push-headers', shortname: '-ph', desc: 'Push new header records via TIPWEBAPI.', action: upsertAllHeaders, reqOptions: ['id', 'iVal', 'lv'] },
 
-    { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: detailsFunc, reqOptions: ['id'] },
+    { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: stageNewDetails, reqOptions: ['id'] },
     { name: '--push-details', shortname: '-pd', desc: 'Push new detail records via TIPWEBAPI.', action: upsertAllDetails, reqOptions: ['id', 'iVal', 'lv'] },
+    // { name: '--details', shortname: '-det', desc: 'Map details from flat data table to PurchaseOrderDetails.', action: addDetails, reqOptions: ['id'] },
 
     { name: '--filter-unncessary', shortname: '-fu', desc: 'Filters out any records already sent.', action: filterOldRecords, reqOptions: ['id'] },
 
@@ -128,8 +130,7 @@ function fire(action, subaction) {
                 process.exit(100);
             }
         );
-    }
-    else {
+    } else {
         console.error('Invalid command.');
         process.exit(100);
     }
@@ -183,7 +184,8 @@ function toggleChunkedData(options) {
 }
 
 /** */
-function productsFunc() {
+function stageNewProducts() {
+    //#POINT
     return new Promise(
         (res, rej) => {
             repository.runProcIntegrations_StageProductData({ client: configuration.config.client }).then(
@@ -193,7 +195,7 @@ function productsFunc() {
                 reject => {
                     rej(reject);
                 }
-            )
+            );
         }
     );
 }
@@ -202,13 +204,15 @@ function productsFunc() {
  * Container function for all header related db activity.
  * @param {*} options
  */
-function headersFunc(options) {
+function stageHeaders(options) {
+    //#POINT
     return new Promise(
         (res, rej) => {
-            if (!options && !options.id) {
+            if (!options || !options.id) {
                 console.error(chalk.red('No GUID provided. Task cannot proceed.'));
                 rej();
             }
+
             stagePurchaseOrderHeaders({ integrationID: options.id }).then(
                 resolve => {
                     res();
@@ -221,14 +225,40 @@ function headersFunc(options) {
     );
 }
 
+function addHeaders(options) {
+    //#POINT
+    // return new Promise(
+    //     (res, rej) => {
+    return repository.runProcIntegrations_InsertPurchaseOrderHeaders({ client: configuration.config.client, dataIntegrationID: options.id }).then(
+        resolve => {
+            res(resolve);
+        },
+        reject => {
+            let errorObject = {
+                ErrorNumber: 500,
+                ErrorName: 'Insert Headers',
+                ErrorDescription: 'Adding Header record failed. More information is available in the ErrorObject.',
+                ErrorObject: JSON.stringify(reject),
+                DataIntegrationsID: options.id
+            };
+
+            repository.logError(errorObject);
+
+            return Promise.reject(reject);
+        }
+    );
+    //     }
+    // );
+}
+
 /**
  * Container function for all detail related db activity.
  * @param {*} options
  */
-function detailsFunc(options) {
+function stageNewDetails(options) {
+    //#POINT
     return new Promise(
         (res, rej) => {
-
             if (!options && !options.id) {
                 console.error(chalk.red('No GUID provided. Task cannot proceed.'));
                 rej();
@@ -245,45 +275,43 @@ function detailsFunc(options) {
         });
 }
 
-// function shippingFunc(options) {
-//   return new Promise(
-//     (res,rej) => {
-//       repository.getProcessingIntegrationID().then(
-//         resolve => {
-
-//           if (!resolve) {
-//             rej();
-//           }
-
-//           let intgid = resolve;
-//           stageShippingRecords({ integrationID: intgid }).then(
-//             resolve => {
-//               res();
-//             },
-//             reject => {
-//               rej(reject);
-//             }
-//           );
-//         },
-//         reject => {
-//           rej(reject);
-//         }
-//       );
-//     }
-//   )
-// }
-
-function fundingFunc(options) {
+/*
+function shippingFunc(options) {
     return new Promise(
         (res, rej) => {
-
-            if (!options && !options.id) {
-                console.error(chalk.red('No GUID provided. Task cannot proceed.'));
-                rej();
-            }
-            stageFundingSources({ integrationID: options.id }).then(
+            repository.getProcessingIntegrationID().then(
                 resolve => {
-                    res();
+
+                    if (!resolve) {
+                        rej();
+                    }
+
+                    let intgid = resolve;
+                    stageShippingRecords({ integrationID: intgid }).then(
+                        resolve => {
+                            res();
+                        },
+                        reject => {
+                            rej(reject);
+                        }
+                    );
+                },
+                reject => {
+                    rej(reject);
+                }
+            );
+        }
+    )
+}
+*/
+
+function stageNewFundingSources(options) {
+    //#POINT
+    return new Promise(
+        (res, rej) => {
+            repository.runProcIntegrations_StageProductData({ client: configuration.config.client }).then(
+                resolve => {
+                    res(resolve);
                 },
                 reject => {
                     rej(reject);
@@ -336,6 +364,7 @@ function stageShippingRecords(options) {
 
             repository.getFlatShipments(integid).then(
                 resolve => {
+                    console.log();
                     console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' shipment records to process.');
                     let shipmentsData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'shipping', client: configuration.config.client }).then(
@@ -345,13 +374,26 @@ function stageShippingRecords(options) {
 
                             for (let line of shipmentsData) {
                                 let m = mappings.mapIt(line, mappingValues);
-                                m["DataIntegrationsID"] = integid;
-                                m["ShouldSubmit"] = true;
-                                mappedData.push(m);
+                                if (m && !(m instanceof Error)) {
+                                    m["DataIntegrationsID"] = integid;
+                                    // m["ShouldSubmit"] = true;
+                                    mappedData.push(m);
+                                } else {
+                                    let errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Map From File',
+                                        ErrorDescription: 'Mapping a line from the File caused an error',
+                                        ErrorObject: JSON.stringify(m),
+                                        DataIntegrationsID: integid
+                                    };
+
+                                    repository.logError(errorObject);
+                                }
                             }
 
                             repository.insertShipments(mappedData).then(
                                 resolve => {
+                                    console.log();
                                     console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into Shipments table.');
                                     res();
                                 },
@@ -436,6 +478,7 @@ function stagePurchaseOrderDetails(options) {
 
             repository.getDetailRecordsFlatData(integid).then(
                 resolve => {
+                    console.log();
                     console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' detail records to process.');
                     let detailData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'po details', client: configuration.config.client }).then(
@@ -446,9 +489,21 @@ function stagePurchaseOrderDetails(options) {
 
                             for (let line of detailData) {
                                 let m = mappings.mapIt(line, mappingValues);
-                                m["DataIntegrationsID"] = integid;
-                                m["ShouldSubmit"] = true;
-                                mappedData.push(m);
+                                if (m && !(m instanceof Error)) {
+                                    m["DataIntegrationsID"] = integid;
+                                    // m["ShouldSubmit"] = true;
+                                    mappedData.push(m);
+                                } else {
+                                    let errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Stage Purchase Order Details',
+                                        ErrorDescription: 'Mapping a detail line caused an error',
+                                        ErrorObject: JSON.stringify(m),
+                                        DataIntegrationsID: integid
+                                    };
+
+                                    repository.logError(errorObject);
+                                }
                             }
 
                             repository.insertDetailRecords(mappedData).then(
@@ -533,9 +588,9 @@ function stagePurchaseOrderHeaders(options) {
         (res, rej) => {
             var integid = options.integrationID;
             var mappedData = [];
-
             repository.getHeaderRecordsFlatData(integid).then(
                 resolve => {
+                    console.log();
                     console.log(mappings.getCurrentDate() + ' Retrieved ' + resolve.length + ' header records to process.');
                     let headerData = resolve.map(m => { return m.dataValues; });
                     repository.getMappings({ type: 'po headers', client: configuration.config.client }).then(
@@ -544,14 +599,32 @@ function stagePurchaseOrderHeaders(options) {
                             let mappingValues = stage.map(m => { return JSON.parse(m.MappingsObject); });
                             for (let line of headerData) {
                                 let m = mappings.mapIt(line, mappingValues);
-                                m["DataIntegrationsID"] = integid;
-                                m["ShouldSubmit"] = true;
-                                mappedData.push(m);
+                                if (m && !(m instanceof Error)) {
+                                    m["DataIntegrationsID"] = integid;
+                                    // m["ShouldSubmit"] = true;
+                                    mappedData.push(m);
+                                    // console.log('Mapped Data Line');
+                                    // console.log(m);
+                                } else {
+                                    let errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Stage Purchase Order Header',
+                                        ErrorDescription: 'Mapping a header line caused an error',
+                                        ErrorObject: JSON.stringify(m),
+                                        DataIntegrationsID: integid
+                                    };
+
+                                    repository.logError(errorObject);
+                                }
                             }
 
-                            repository.insertHeaderRecords(mappedData).then(
+                            repository.insertHeaderStageData(mappedData, { client: configuration.config.client, id: integid }).then(
+                                //repository.insertHeaderRecords(mappedData, { client: configuration.config.client, id: integid }).then(
                                 resolve => {
-                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into PurchaseOrderHeaders table.');
+                                    console.log();
+                                    // console.log(mappings.getCurrentDate() + ' Successfully inserted ' + mappedData.length + ' into PurchaseOrderHeaders table.');
+                                    // console.log(mappings.getCurrentDate() + ' Successfully inserted ' + resolve + ' into PurchaseOrderHeaders table.');
+                                    console.log(mappings.getCurrentDate() + ' Successfully inserted ' + resolve + ' into PurchaseOrderHeaderStaging table.');
                                     res();
                                 },
                                 reject => {
@@ -584,7 +657,6 @@ function stagePurchaseOrderHeaders(options) {
                             };
 
                             // console.error(errorObject);
-
                             repository.logError(errorObject).then(
                                 resolve => {
                                     rej();
@@ -606,7 +678,6 @@ function stagePurchaseOrderHeaders(options) {
                     };
 
                     // console.error(errorObject);
-
                     repository.logError(errorObject).then(
                         resolve => {
                             rej();
@@ -636,6 +707,7 @@ function stageProducts(configuration, options) {
                     let productsFlat = resolve === [] ? resolve : resolve.map(m => { return m.dataValues; });
 
                     if (productsFlat && productsFlat.length === 0) {
+                        console.log();
                         console.log(mappings.getCurrentDate() + ' No new products to add!');
                         process.exit(0);
                     }
@@ -649,6 +721,7 @@ function stageProducts(configuration, options) {
 
                     repository.insertNewProducts(productsToAdd).then(
                         resolve => {
+                            console.log();
                             console.log(mappings.getCurrentDate() + ' Successfully staged ' + productsToAdd.length + ' records in Products table.');
                             process.exit(0);
                         },
@@ -729,7 +802,7 @@ function stageProducts(configuration, options) {
  * All funding sources get staged in Integrations DB.
  * @param {*} configuration
  * @param {*} options
- */
+ * /
 function stageFundingSources(options) {
     return new Promise(
         (res, rej) => {
@@ -826,113 +899,24 @@ function stageFundingSources(options) {
                 }
             );
         });
-}
+} */
 
 /**
  * All new vendors get staged in Integrations DB
  * @param {*} options
  */
 function stageNewVendors(options) {
-
+    //#POINT
     return new Promise(
         (res, rej) => {
-
-            if (!options && !options.id) {
-                console.error(chalk.red('No GUID provided. Task cannot proceed.'));
-                rej();
-            }
-
-            let dataid = options.id;
-            let useVendorIDs = options ? options.useIDs : false;
-
-            repository.getCurrentVendors(useVendorIDs).then(
+            repository.runProcIntegrations_StageVendorData({ client: configuration.config.client }).then(
                 resolve => {
-                    let currentVendors = resolve === [] ? resolve : resolve.map(m => { return m.dataValues; }); //need to change once we have uploaded data
-                    repository.getNewVendors(dataid, currentVendors, useVendorIDs).then(
-                        resolve => {
-                            let flatVendors = resolve.map(m => { return m.dataValues; });
-
-                            if (flatVendors && flatVendors.length === 0) {
-                                console.log(mappings.getCurrentDate() + ' No new vendors to add!');
-                                res();
-                            }
-
-                            let vendorsToAdd = [];
-                            for (let v of flatVendors) {
-                                let x = { VendorID: v.VENDOR_ID, VendorName: v.VENDOR_NAME, Client: configuration.config.client };
-                                vendorsToAdd.push(x);
-                            }
-                            console.log(mappings.getCurrentDate() + ' Adding ' + vendorsToAdd.length + ' new vendors to staging table.')
-
-                            repository.insertVendors(vendorsToAdd).then(
-                                resolve => {
-                                    res();
-                                },
-                                reject => {
-                                    var errorObject = {
-                                        ErrorNumber: 500,
-                                        ErrorName: 'Insert New Vendors',
-                                        ErrorDescription: 'Insert of new vendors failed. More information is available in the ErrorObject.',
-                                        ErrorObject: JSON.stringify(reject),
-                                        DataIntegrationsID: integid
-                                    };
-
-                                    // console.error(errorObject);
-
-                                    repository.logError(errorObject).then(
-                                        resolve => {
-                                            rej();
-                                        },
-                                        reject => {
-                                            rej();
-                                        }
-                                    );
-                                }
-                            )
-                        },
-                        reject => {
-                            var errorObject = {
-                                ErrorNumber: 500,
-                                ErrorName: 'Get New Vendors',
-                                ErrorDescription: 'Select on new vendors failed. More information is available in the ErrorObject.',
-                                ErrorObject: JSON.stringify(reject),
-                                DataIntegrationsID: integid
-                            }
-
-                            // console.error(errorObject);
-
-                            repository.logError(errorObject).then(
-                                resolve => {
-                                    rej();
-                                },
-                                reject => {
-                                    rej();
-                                }
-                            );
-                        }
-                    )
+                    res(resolve);
                 },
                 reject => {
-                    var errorObject = {
-                        ErrorNumber: 500,
-                        ErrorName: 'Get Current Vendors',
-                        ErrorDescription: 'Select on current vendors failed. More information is available in the ErrorObject.',
-                        ErrorObject: JSON.stringify(reject),
-                        DataIntegrationsID: integid
-                    }
-
-                    // console.error(errorObject);
-
-                    repository.logError(errorObject).then(
-                        resolve => {
-                            rej();
-                        },
-                        reject => {
-                            rej();
-                        }
-                    );
+                    rej(reject);
                 }
-            );
+            )
         });
 }
 
@@ -978,6 +962,7 @@ function getApiToken() {
         (res, rej) => {
             rq.getToken().then(
                 resolve => {
+                    console.log();
                     console.log(mappings.getCurrentDate() + ' getApiToken resolved');
                     // console.log(resolve);
                     fs.writeFile(configuration.config.idFileLoc + 'token.json', JSON.stringify(resolve),
@@ -1011,8 +996,12 @@ function upsertVendors(options) {
             repository.getVendorsToUpsert({ client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
                     let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
-                    let dataToUpload = resolve.map(m => { return { VendorID: 0, VendorName: m.VendorName, Contact: '', Address1: m.Address1, Address2: m.Address2, City: m.City,
-                                                               State: m.State, ZipCode: m.ZipCode, Phone: m.Phone, Fax: '', Email: m.Email, AccountNumber: m.VendorID, Notes: noteAppend }; });
+                    let dataToUpload = resolve.map(m => {
+                        return {
+                            VendorID: 0, VendorName: m.VendorName, Contact: '', Address1: m.Address1, Address2: m.Address2, City: m.City,
+                            State: m.State, ZipCode: m.ZipCode, Phone: m.Phone, Fax: '', Email: m.Email, AccountNumber: m.VendorID, Notes: noteAppend
+                        };
+                    });
                     console.log();
                     console.log(mappings.getCurrentDate() + ' upsertVendors starting at ' + options.offset + ' run ' + options.limitVal);
                     rq.upsertVendors(options.token, dataToUpload).then(
@@ -1025,6 +1014,7 @@ function upsertVendors(options) {
                             console.log();
                             console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
+                                console.log();
                                 console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
@@ -1050,6 +1040,7 @@ function upsertVendors(options) {
                                         }
                                     );
                                 }
+                                console.log();
                                 console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             }
                             else {
@@ -1106,8 +1097,12 @@ function upsertProducts(options) {
             repository.getProductsToUpsert({ client: options.client, limitVal: options.limitVal, offset: options.offset }).then(
                 resolve => {
                     let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
-                    let dataToUpload = resolve.map(m => { return { ProductNumber: 0, ProductName: m.ProductName, ProductDescription: m.ProductDescription, ProductType: m.ProductType, Model: m.Model, Manufacturer: m.Manufacturer,
-                                                                   SuggestedPrice: m.SuggestedPrice, Notes: noteAppend, SKU: m.SKU, ProjectedLife: 0, CustomField1: null, CustomField2: null, CustomField3: null }; });
+                    let dataToUpload = resolve.map(m => {
+                        return {
+                            ProductNumber: 0, ProductName: m.ProductName, ProductDescription: m.ProductDescription, ProductType: m.ProductType, Model: m.Model, Manufacturer: m.Manufacturer,
+                            SuggestedPrice: m.SuggestedPrice, Notes: noteAppend, SKU: m.SKU, ProjectedLife: 0, CustomField1: null, CustomField2: null, CustomField3: null
+                        };
+                    });
                     // for (let p of dataToUpload) {
                     //     p.ProductNumber = 'INTG' + p.ProductNumber; //Empty the Product Number to alow the API to auto assign the Product Number
                     // }
@@ -1123,6 +1118,7 @@ function upsertProducts(options) {
                             console.log(); // to create a new line
                             console.log(mappings.getCurrentDate() + ' Successfully processed ' + dataToUpload.length + ' records, ' + rejectedRecords.length + ' records were rejected.');
                             if (rejectedRecords.length > 0) {
+                                console.log();
                                 console.log(mappings.getCurrentDate() + ' Saving ' + rejectedRecords.length + ' Errors');
                                 for (let rec of rejectedRecords) {
                                     let recerr = {
@@ -1147,6 +1143,7 @@ function upsertProducts(options) {
                                         }
                                     );
                                 }
+                                console.log();
                                 console.log(mappings.getCurrentDate() + ' Save Errors Complete');
                             }
                             else {
@@ -1208,6 +1205,7 @@ function getVendorsFromTipweb() {
                     let vendors = resolve;
                     repository.insertVendors(vendors).then(
                         resolve => {
+                            console.log();
                             // console.log(resolve);
                             // console.log('Successfully added records for vendors from TipWEB-IT API');
                             repository.toggleVendorSyncSwitch().then(
@@ -1420,6 +1418,7 @@ function upsertAllProducts(options) {
                     }
                 );
             } else {
+                console.log();
                 console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
@@ -1462,6 +1461,7 @@ function upsertAllVendors(options) {
                     }
                 );
             } else {
+                console.log();
                 console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
@@ -1504,6 +1504,7 @@ function upsertAllHeaders(options) {
                     }
                 );
             } else {
+                console.log();
                 console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
@@ -1547,6 +1548,7 @@ function upsertAllDetails(options) {
                     }
                 );
             } else {
+                console.log();
                 console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
@@ -1587,6 +1589,7 @@ function upsertAllShipments(options) {
                     }
                 );
             } else {
+                console.log();
                 console.log(mappings.getCurrentDate() + ' tokenVal is empty');
                 process.exit(0);
             }
@@ -1764,8 +1767,12 @@ function upsertHeaderRecords(options) {
             repository.getHeadersToUpsert({ intgid: options.intgid, client: options.client, limitVal: options.limitVal, offsetVal: options.offset }).then(
                 resolve => {
                     let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
-                    let dataToUpload = resolve.map(m => { return { OrderNumber: m.OrderNumber, Status: m.Status, VendorID: m.VendorID, VendorName: m.VendorName, SiteID: m.SiteID, PurchaseDate: m.PurchaseDate,
-                                                                   EstimatedDeliveryDate: m.EstimatedDeliveryDate, Notes: noteAppend + ' ' + m.Notes, Other1: m.Other1}; });
+                    let dataToUpload = resolve.map(m => {
+                        return {
+                            OrderNumber: m.OrderNumber, Status: m.Status, VendorID: m.VendorID, VendorName: m.VendorName, SiteID: m.SiteID, PurchaseDate: m.PurchaseDate,
+                            EstimatedDeliveryDate: m.EstimatedDeliveryDate, Notes: noteAppend + ' ' + m.Notes, Other1: m.Other1
+                        };
+                    });
                     // for (let value of dataToUpload) {
                     //     value.DataIntegration = undefined;
                     // }
@@ -2601,8 +2608,20 @@ function mapFlatInvoicesToDatabase(options) {
                                         let linVal = JSON.parse(line);
                                         let mapData = mappingsData.map(m => { return JSON.parse(m.MappingsObject); });
                                         let m = mappings.mapIt(linVal, mapData);
-                                        m["DataIntegrationsID"] = intgid;
-                                        mappedData.push(m);
+                                        if (m && !(m instanceof Error)) {
+                                            m["DataIntegrationsID"] = intgid;
+                                            mappedData.push(m);
+                                        } else {
+                                            let errorObject = {
+                                                ErrorNumber: 500,
+                                                ErrorName: 'Map Flat Invoices',
+                                                ErrorDescription: 'Mapping an Invoice Line caused an error',
+                                                ErrorObject: JSON.stringify(m),
+                                                DataIntegrationsID: integid
+                                            };
+
+                                            repository.logError(errorObject);
+                                        }
                                     }
                                     console.log();
                                     console.log(mappings.getCurrentDate() + ' Successfully mapped ' + mappedData.length + ' records...');
@@ -2728,8 +2747,20 @@ function stageInvoices(options) {
                             let mappingValues = stage.map(m => { return JSON.parse(m.MappingsObject); });
                             for (let line of headerData) {
                                 let m = mappings.mapIt(line, mappingValues);
-                                m["DataIntegrationsID"] = integid;
-                                mappedData.push(m);
+                                if (m && !(m instanceof Error)) {
+                                    m["DataIntegrationsID"] = integid;
+                                    mappedData.push(m);
+                                } else {
+                                    let errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Stage Invoices',
+                                        ErrorDescription: 'Mapping an Invoice caused an error',
+                                        ErrorObject: JSON.stringify(m),
+                                        DataIntegrationsID: integid
+                                    };
+
+                                    repository.logError(errorObject);
+                                }
                             }
 
                             repository.insertInvoiceHeaders(mappedData).then(
@@ -2820,8 +2851,20 @@ function stageInvoiceDetails(options) {
                             // console.log(mappingValues);
                             for (let line of headerData) {
                                 let m = mappings.mapIt(line, mappingValues);
-                                m["DataIntegrationsID"] = integid;
-                                mappedData.push(m);
+                                if (m && !(m instanceof Error)) {
+                                    m["DataIntegrationsID"] = integid;
+                                    mappedData.push(m);
+                                } else {
+                                    let errorObject = {
+                                        ErrorNumber: 500,
+                                        ErrorName: 'Stage Invoice Details',
+                                        ErrorDescription: 'Mapping an Invoice Detail caused an error',
+                                        ErrorObject: JSON.stringify(m),
+                                        DataIntegrationsID: integid
+                                    };
+
+                                    repository.logError(errorObject);
+                                }
                             }
 
                             repository.insertInvoiceDetails(mappedData).then(
@@ -3322,8 +3365,20 @@ function mapFromFile(options) {
                                     // console.log('Data to Map');
                                     // console.log(line);
                                     let m = mappings.mapIt(JSON.parse(line), mapData);
-                                    m["IntegrationsID"] = dataid;
-                                    mappedData.push(m);
+                                    if (m && !(m instanceof Error)) {
+                                        m["IntegrationsID"] = dataid;
+                                        mappedData.push(m);
+                                    } else {
+                                        let errorObject = {
+                                            ErrorNumber: 500,
+                                            ErrorName: 'Map From File',
+                                            ErrorDescription: 'Mapping a line from the File caused an error',
+                                            ErrorObject: JSON.stringify(m),
+                                            DataIntegrationsID: integid
+                                        };
+
+                                        repository.logError(errorObject);
+                                    }
                                     // console.log('Mapped Data');
                                     // console.log(m);
                                 }

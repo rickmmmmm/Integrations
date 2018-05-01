@@ -214,11 +214,15 @@ module.exports = {
 
     mapIt: function (source, mapObj) {
         var dest = {};
-
-        for (let m of mapObj) {
-            dest[m.toVal] = m.transformationObj ? this.transformObj(source, m.transformationObj) : source[m.fromVal] ? source[m.fromVal].toString().trim() : "";
+        try {
+            for (let m of mapObj) {
+                dest[m.toVal] = m.transformationObj ? this.transformObj(source, m.transformationObj) : source[m.fromVal] ? source[m.fromVal].toString().trim() : "";
+            }
+            return dest;
+        } catch (err) {
+            let error = new Error(err);
+            return error;
         }
-        return dest;
     },
 
     formatDate: function (date) {

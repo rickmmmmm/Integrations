@@ -95,6 +95,20 @@ PurchaseOrderHeaderModel = {
     Submitted: sequelize.BOOLEAN
 };
 
+PurchaseOrderHeaderStagingModel = {
+    PurchaseOrderHeaderStagingUID: { type: sequelize.INTEGER, unique: 'cidx', primaryKey: true, autoIncrement: true },
+    OrderNumber: sequelize.STRING,
+    Status: sequelize.STRING,
+    VendorID: sequelize.INTEGER,
+    VendorName: sequelize.STRING,
+    SiteID: sequelize.STRING,
+    PurchaseDate: sequelize.DATEONLY,
+    EstimatedDeliveryDate: sequelize.STRING,
+    Notes: sequelize.STRING(500),
+    Other1: sequelize.STRING(100),
+    DataIntegrationsID: { type: sequelize.INTEGER, unique: 'cidx' }
+};
+
 PurchaseOrderDetailModel = {
     OrderNumber: { type: sequelize.STRING, unique: 'ccidx', primaryKey: true },
     LineNumber: { type: sequelize.INTEGER, unique: 'ccidx', primaryKey: true },
@@ -237,6 +251,7 @@ module.exports = {
     Products: seq.define('Products', ProductsModel),
     FundingSources: seq.define('FundingSources', FundingSourcesModel),
     PurchaseOrderHeader: seq.define('PurchaseOrderHeader', PurchaseOrderHeaderModel, { tableName: 'PurchaseOrderHeader' }),
+    PurchaseOrderHeaderStaging: seq.define('PurchaseOrderHeaderStaging', PurchaseOrderHeaderStagingModel, { tableName: 'PurchaseOrderHeaderStaging' }),
     PurchaseOrderDetail: seq.define('PurchaseOrderDetail', PurchaseOrderDetailModel, { tableName: 'PurchaseOrderDetail' }),
     Shipments: seq.define('Shipments', ShipmentsModel),
     DataIntegrationsLinkTable: seq.define('DataIntegrationsLinkTable', LinkTableModel, { tableName: 'DataIntegrationsLinkTable' }),
@@ -494,6 +509,7 @@ module.exports = {
                                 // console.log('Update Submitted resolved');
                                 if (options.headers.indexOf(header) === options.headers.length - 1) {
                                     resolve();
+                                    // return Promise.resolve();
                                 }
                             },
                             error => {
@@ -511,11 +527,13 @@ module.exports = {
                                     res => {
                                         if (options.headers.indexOf(header) === options.headers.length - 1) {
                                             resolve();
+                                            // return Promise.resolve();
                                         }
                                     },
                                     rej => {
                                         if (options.headers.indexOf(header) === options.headers.length - 1) {
                                             resolve();
+                                            // return Promise.resolve();
                                         }
                                     }
                                 );
@@ -524,6 +542,7 @@ module.exports = {
                     }
                 } else {
                     resolve();
+                    // return Promise.resolve();
                 }
             }
         );
@@ -760,8 +779,9 @@ module.exports = {
             });
     },
 
-    /* Vendors */
+    //#region Vendors
 
+    /*
     getCurrentVendors(useIDs = false) {
         return new Promise(
             (resolve, reject) => {
@@ -800,7 +820,8 @@ module.exports = {
             }
         )
     },
-
+    */
+    /*
     getNewVendors(intgid, currentVendors, useGroups) {
         return new Promise(
             (resolve, reject) => {
@@ -844,7 +865,8 @@ module.exports = {
             }
         );
     },
-
+    */
+    /*
     insertVendors(payload) {
         return new Promise(
             (resolve, reject) => {
@@ -862,6 +884,27 @@ module.exports = {
                 )
             }
         )
+    },
+    */
+
+    runProcIntegrations_StageVendorData(options) {
+        return new Promise(
+            (resolve, reject) => {
+                if (options) {
+                    seq.query("EXEC Integrations_StageVendorData '" + options.client + "'").then(
+                        data => {
+                            resolve(data);
+                        },
+                        error => {
+                            reject(error);
+                        }
+                    );
+                }
+                else {
+                    reject('No parameters provided.');
+                }
+            }
+        );
     },
 
     getVendorsToUpsert(options) {
@@ -908,7 +951,9 @@ module.exports = {
         );
     },
 
-    /* Products */
+    //#endregion
+
+    //#region Products
 
     getNewProducts(oldProducts, intgid) {
         return new Promise(
@@ -1038,7 +1083,9 @@ module.exports = {
         );
     },
 
-    /* Funding Sources */
+    //#endregion Products
+
+    //#region Funding Sources
 
     toggleFundingSourcesSyncSwitch() {
         return new Promise(
@@ -1115,7 +1162,9 @@ module.exports = {
         );
     },
 
-    /* Purchase Order Headers and Detail Data */
+    //#endregion Funding Sources
+
+    //#region Purchase Order Headers
 
     getHeaderRecordsFlatData(intgid) {
         return new Promise(
@@ -1155,7 +1204,168 @@ module.exports = {
         );
     },
 
-    insertHeaderRecords(payload) {
+    insertHeaderStageData(payload, options) {
+        // return new Promise(
+        //     (resolve, reject) => {
+            try {
+                return this.PurchaseOrderHeaderStaging.bulkCreate(payload).then(
+                    data => {
+                        console.log();
+                        console.log('bulkCreate to PurchaseOrderHeaderStaging complete.');
+                        // console.log(data);
+                        return Promise.resolve(payload.length);
+                    },
+                    error => {
+                        return Promise.reject(error);
+                    }
+                );
+            } catch (error) {
+                console.log('insertHeaderStageData error caught');
+                console.log(error);
+                return Promise.reject(error);
+            }
+        //     }
+        // );
+    },
+/*
+    insertHeaderRecords(payload, options) {
+
+        return new Promise(
+            (resolve, reject) => {
+                try {
+
+                    let successCount = 0;
+                    let totalProcessed = 0;
+                    let totalToProcess = payload.length;
+                    let validData = [];
+                    payload.forEach(header => {
+                        // Check that the header does not already exist
+                        this.headerCount(header.OrderNumber, options).then(
+                            data => {
+                                let exists = data > 0;
+                                if (!exists) {
+                                    validData.push(header);
+                                    successCount++;
+                                    totalProcessed++;
+                                    // this.PurchaseOrderHeader.create(header).then(
+                                    //     data => {
+                                    if (totalProcessed >= totalToProcess) {
+                                        // resolve(successCount);
+                                        console.log();
+                                        console.log('********************* INSERTING HEADERS **********************');
+                                        this.insertHeaders(validData).then(
+                                            data => {
+                                                resolve(successCount);
+                                            },
+                                            error => {
+                                                let errorObject = {
+                                                    ErrorNumber: 500,
+                                                    ErrorName: 'Insert Headers',
+                                                    ErrorDescription: 'Creating Header record failed. More information is available in the ErrorObject.',
+                                                    ErrorObject: JSON.stringify(error),
+                                                    DataIntegrationsID: options.id
+                                                };
+
+                                                this.logError(errorObject);
+                                                resolve(successCount);
+                                            }
+                                        );
+                                    }
+                                    //     },
+                                    //     error => {
+                                    //         let errorObject = {
+                                    //             ErrorNumber: header.OrderNumber,
+                                    //             ErrorName: 'Create Header',
+                                    //             ErrorDescription: 'Creating Header record failed. More information is available in the ErrorObject.',
+                                    //             ErrorObject: JSON.stringify(error),
+                                    //             DataIntegrationsID: options.id
+                                    //         };
+
+                                    //         this.logError(errorObject);
+                                    //         totalProcessed++;
+                                    //         if (totalProcessed >= totalToProcess) {
+                                    //             resolve(successCount);
+                                    //         }
+                                    //     }
+                                    // );
+                                } else {
+                                    totalProcessed++;
+                                    if (totalProcessed >= totalToProcess) {
+                                        // resolve(successCount);
+                                        console.log();
+                                        console.log('********************* INSERTING HEADERS **********************');
+                                        this.insertHeaders(validData).then(
+                                            data => {
+                                                resolve(successCount);
+                                            },
+                                            error => {
+                                                let errorObject = {
+                                                    ErrorNumber: 500,
+                                                    ErrorName: 'Insert Headers',
+                                                    ErrorDescription: 'Creating Header record failed. More information is available in the ErrorObject.',
+                                                    ErrorObject: JSON.stringify(error),
+                                                    DataIntegrationsID: options.id
+                                                };
+
+                                                this.logError(errorObject);
+                                                resolve(successCount);
+                                            }
+                                        );
+                                    }
+                                }
+                            },
+                            error => {
+                                let errorObject = {
+                                    ErrorNumber: header.OrderNumber,
+                                    ErrorName: 'Find Headers',
+                                    ErrorDescription: 'Find Header failed. More information is available in the ErrorObject.',
+                                    ErrorObject: JSON.stringify(error),
+                                    DataIntegrationsID: options.id
+                                };
+
+                                this.logError(errorObject);
+
+                                totalProcessed++;
+                                if (totalProcessed >= totalToProcess) {
+                                    // resolve(successCount);
+                                    console.log();
+                                    console.log('********************* INSERTING HEADERS **********************');
+                                    this.insertHeaders(validData).then(
+                                        data => {
+                                            resolve(successCount);
+                                        },
+                                        error => {
+                                            let errorObject = {
+                                                ErrorNumber: 500,
+                                                ErrorName: 'Insert Headers',
+                                                ErrorDescription: 'Creating Header record failed. More information is available in the ErrorObject.',
+                                                ErrorObject: JSON.stringify(error),
+                                                DataIntegrationsID: options.id
+                                            };
+
+                                            this.logError(errorObject);
+                                            resolve(successCount);
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    });
+
+                    console.log();
+                    console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Headers Processed %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+
+                } catch (error) {
+                    console.log('insertHeaderRecords error caught');
+                    console.log(error);
+                    reject(error);
+                }
+            }
+        );
+    },
+*/
+/*
+    insertHeaders(payload) {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.bulkCreate(payload).then(
@@ -1168,6 +1378,65 @@ module.exports = {
                 );
             }
         );
+    },
+*/
+/*
+    headerCount(orderNumber, options) {
+
+        // this.DataIntegrations.hasMany(this.PurchaseOrderHeader, {
+        //     foreignKey: {
+        //         name: 'DataIntegrationsID'
+        //     }
+        // });
+
+        // this.PurchaseOrderHeader.belongsTo(this.DataIntegrations, {
+        //     foreignKey: {
+        //         name: 'DataIntegrationsID'
+        //     }
+        // });
+
+        return new Promise(
+            (resolve, reject) => {
+                this.PurchaseOrderHeader.count({
+                    // include: [{
+                    //     attributes: [],
+                    //     model: this.DataIntegrations,
+                    //     where: {
+                    //         Client: options.client,
+                    //         IntegrationsID: options.id
+                    //     }
+                    // }],
+                    where: { OrderNumber: orderNumber, DataIntegrationsID: options.id }
+                }).then(
+                    data => { resolve(data); },
+                    error => { reject(error); }
+                );
+            }
+        );
+    },
+*/
+    runProcIntegrations_InsertPurchaseOrderHeaders(options) {
+        // return new Promise(
+        //     (resolve, reject) => {
+                if (options) {
+                    // console.log('Execute Integrations_InsertPurchaseOrderHeaders');
+                    return seq.query("EXEC Integrations_InsertPurchaseOrderHeaders '" + options.client + "', '" + options.dataIntegrationID + "'").then(
+                        data => {
+                            // console.log('Insert Purchase Order Headers successful');
+                            return Promise.resolve(data);
+                        },
+                        error => {
+                            // console.log('Failed to insert Purchase Order Headers');
+                            return Promise.reject(error);
+                        }
+                    );
+                }
+                else {
+                    // console.log('Integrations_InsertPurchaseOrderHeaders No parameters provided');
+                    return Promise.reject('No parameters provided.');
+                }
+        //     }
+        // );
     },
 
     insertDetailRecords(payload) {
@@ -1203,20 +1472,17 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.count({
-                    // attributes: ['OrderNumber'],
-                    // group: ['OrderNumber'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            // IntegrationsID: options.id,
+                            IntegrationsID: options.id,
                             DataSentToTipweb: true
                         }
                     }],
-                    where: { ShouldSubmit: true }, //, DataIntegrationsID: options.id,
-                }
-                ).then(
+                    where: { ShouldSubmit: true, DataIntegrationsID: options.id },
+                }).then(
                     data => { resolve(data); },
                     error => { reject(error); }
                 );
@@ -1241,18 +1507,16 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderDetail.count({
-                    // attributes: ['OrderNumber', 'LineNumber'],
-                    // group: ['OrderNumber', 'LineNumber'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            DataSentToTipweb: true //,
-                            // IntegrationsID: options.id
+                            DataSentToTipweb: true,
+                            IntegrationsID: options.id
                         }
                     }],
-                    where: { ShouldSubmit: true }, //, DataIntegrationsID: options.id,
+                    where: { ShouldSubmit: true, DataIntegrationsID: options.id },
                 }
                 ).then(
                     data => { resolve(data); },
@@ -1309,15 +1573,14 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderHeader.findAll({
-                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
                     attributes: ['OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID', 'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'],
                     group: ['OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID', 'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
                         where: {
-                            Client: options.client //,
-                            // IntegrationsID: options.intgid
+                            Client: options.client,
+                            IntegrationsID: options.intgid
                         }
                     }],
                     where: { ShouldSubmit: true },
@@ -1331,6 +1594,10 @@ module.exports = {
             }
         );
     },
+
+    //#endregion Purchase Order Headers
+
+    //#region Purchase Order Details
 
     getDetailsToUpsert(options) {
 
@@ -1349,15 +1616,14 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderDetail.findAll({
-                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
                     attributes: ['OrderNumber', 'LineNumber', 'Status', 'SiteID', 'FundingSource', 'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice', 'AccountCode', 'DepartmentID', 'CFDA'],
                     group: ['OrderNumber', 'LineNumber', 'Status', 'SiteID', 'FundingSource', 'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice', 'AccountCode', 'DepartmentID', 'CFDA'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
                         where: {
-                            Client: options.client //,
-                            // IntegrationsID: options.intgid
+                            Client: options.client,
+                            IntegrationsID: options.intgid
                         }
                     }],
                     where: { ShouldSubmit: true },
@@ -1382,14 +1648,16 @@ module.exports = {
         return escapedData;
     },
 
-    /* Shipments */
+    //#endregion Purchase Order Details
+
+    //#region Purchase Shipments
 
     getFlatShipments(intgid) {
         return new Promise(
             (resolve, reject) => {
                 this.PurchaseOrderIntegrationFlatData.findAll({
                     attributes: { exclude: 'id' },
-                    where: { IntegrationsID: intgid, Chunk: true }
+                    where: { IntegrationsID: intgid }
                 }).then(
                     data => {
                         resolve(this.escapeShipments(data));
@@ -1432,7 +1700,27 @@ module.exports = {
             }
         );
     },
-
+    /*
+        runProcIntegrations_StagePurchaseOrderDetails(options) {
+            return new Promise(
+                (resolve, reject) => {
+                    if (options) {
+                        seq.query("EXEC Integrations_StagePurchaseOrderDetails '" + options.client + "'").then(
+                            data => {
+                                resolve(data);
+                            },
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    }
+                    else {
+                        reject('No parameters provided.');
+                    }
+                }
+            );
+        },
+    */
     getTotalShipmentsToUpsertCount(options) {
 
         this.DataIntegrations.hasMany(this.Shipments, {
@@ -1450,18 +1738,16 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.count({
-                    // attributes: ['OrderNumber', 'LineNumber'],
-                    // group: ['OrderNumber', 'LineNumber'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
                         where: {
                             Client: options.client,
-                            DataSentToTipweb: true //,
-                            // IntegrationsID: options.id
+                            DataSentToTipweb: true,
+                            IntegrationsID: options.id
                         }
                     }],
-                    where: { ShouldSubmit: true }, //, IntegrationsID: options.id
+                    where: { ShouldSubmit: true, IntegrationsID: options.id },
                 }
                 ).then(
                     data => { resolve(data); },
@@ -1487,17 +1773,16 @@ module.exports = {
         return new Promise(
             (resolve, reject) => {
                 this.Shipments.findAll({
-                    // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
                     attributes: ['OrderNumber', 'LineNumber', 'SiteID', 'TicketNumber', 'QuantityShipped', 'TicketedBy', 'TicketedDate', 'Status', 'InvoiceNumber', 'InvoiceDate'],
                     group: ['OrderNumber', 'LineNumber', 'SiteID', 'TicketNumber', 'QuantityShipped', 'TicketedBy', 'TicketedDate', 'Status', 'InvoiceNumber', 'InvoiceDate'],
                     include: [{
                         attributes: [],
                         model: this.DataIntegrations,
-                        // where: {
-                        //     IntegrationsID: options.id
-                        // }
+                        where: {
+                            IntegrationsID: options.id
+                        }
                     }],
-                    where: { ShouldSubmit: true }, //, IntegrationsID: options.id
+                    where: { ShouldSubmit: true, IntegrationsID: options.id },
                     offset: options.offsetVal,
                     limit: options.limitVal
                 }
@@ -1508,6 +1793,8 @@ module.exports = {
             }
         );
     },
+
+    //#endregion Purchase Shipments
 
     toggleChunk(intgid) {
         return new Promise(

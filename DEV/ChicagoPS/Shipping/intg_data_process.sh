@@ -1,15 +1,26 @@
 #!/bin/bash
 #Integration EC2 Process
-
 echo " #### Setting Script Variables"
+DEBUG=true
+ENVIRONMENT="QA"
+LAUNCH_NEXT=false
+CHUNK_SIZE=5000
 CLIENT="CPS"
 TYPE="Shipping"
-AWSBUCKET="hssintg-prod"
-FOLDER="intg_prod"
 TEMPLATE="intgCpsPushShipping"
-REGION="us-east-1"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
+if [ $ENVIRONMENT = "Production" ]; then
+    ### PROD
+    AWSBUCKET="hssintg-prod"
+    FOLDER="intg_prod"
+    REGION="us-east-1"
+else
+    ### QA
+    AWSBUCKET="hssintg"
+    FOLDER="intg_test"
+    REGION="us-east-1"
+fi
 
 echo " #### Starting $CLIENT $TYPE Data Process"
 
@@ -28,10 +39,14 @@ echo " #### Getting new data from AWS S3 bucket."
 aws s3 sync s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files /home/ec2-user/etc/$CLIENT/processing/csv
 cd /home/ec2-user/etc/$CLIENT/processing/csv/
 
+echo " #### Starting datamapper entry for instance "$INSTANCEID;
+hayes-datamapper --create -id $INSTANCEID;
+hayes-datamapper -gld;
+
 # Move files to the archive path
 echo " #### Moving input files to Archive path: //$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/archive/"
-processedFiles = "";
-processedFilesHtml = "";
+processedFiles="";
+processedFilesHtml="";
 for csvFile in *.csv; do
     archiveExt="${csvFile##*.}";
     archiveFileName="${csvFile%.*}";
@@ -47,7 +62,12 @@ for csvFile in *.csv; do
 done
 
 echo " #### Sending the file processed email"
-RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+if [ $ENVIRONMENT = "Production" ]; then
+    RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com,lsager@hayessoft.com""";
+else
+    # RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com""";
+fi
 TEXTCONTENT="\nThe $TYPE Integration has begun processing files: $processedFiles\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
 HTMLCONTENT="<br />The $TYPE Integration has begun processing files: $processedFilesHtml<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
 MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
@@ -69,7 +89,7 @@ cd "/home/ec2-user/etc/$CLIENT/processing/json/";
 echo " #### Splitting large JSON file to smaller chunks..."
 for jsonFile in *.json; do
     echo " #### Splitting json file: $jsonFile"
-    cat "$jsonFile" | jq -c -M '.[]' | split -l 10000 - "./parsed/$jsonFile";
+    cat "$jsonFile" | jq -c -M '.[]' | split -l $CHUNK_SIZE - "./parsed/$jsonFile";
 done
 
 #Convert each chunk into a JSON array
@@ -79,10 +99,6 @@ for jsonChunk in *; do
     echo " #### converting json chunks to arrays for file: $jsonChunk"
     cat "$jsonChunk" | jq --raw-input . | jq -s . > "../arrays/$jsonChunk.json";
 done
-
-echo " #### Starting datamapper entry for instance "$INSTANCEID;
-hayes-datamapper --create -id $INSTANCEID;
-hayes-datamapper -gld;
 
 ###############################################################################################################################################
 #    #Purchase Orders
@@ -127,12 +143,18 @@ echo " #### File Data Processing stage complete";
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-echo " #### Launching the EC2 for the next step using template $TEMPLATE"
-aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
+if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
+    echo " #### Launching the EC2 for the next step using template $TEMPLATE"
+    aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
+fi
 
-echo " #### Terminate instance $INSTANCEID"
-aws ec2 terminate-instances --instance-ids $INSTANCEID
-# aws ec2 stop-instances --instance-ids $INSTANCEID
+if [ ! $DEBUG ]; then
+    echo " #### Terminate instance $INSTANCEID"
+    aws ec2 terminate-instances --instance-ids $INSTANCEID
+else
+    echo " #### Stop instance $INSTANCEID"
+    aws ec2 stop-instances --instance-ids $INSTANCEID
+fi
 ###############################################################################################################################################
 #DONE!
 ###############################################################################################################################################

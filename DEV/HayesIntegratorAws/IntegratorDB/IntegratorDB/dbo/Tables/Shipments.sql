@@ -9,11 +9,8 @@
     [Status]          VARCHAR (50)  NULL,
     [InvoiceNumber]   VARCHAR (25)  NULL,
     [InvoiceDate]     DATETIME      NULL,
-    [ShouldSubmit]    BIT           CONSTRAINT [DF_Shipments_ShouldSubmit] DEFAULT ('True') NULL,
     [IntegrationsID]  VARCHAR (100) NOT NULL,
-    [Submitted]       BIT           CONSTRAINT [DF_Shipments_Submitted] DEFAULT ((0)) NULL,
+    [ShouldSubmit]    BIT           CONSTRAINT [DF_Shipments_ShouldSubmit] DEFAULT ((1)) NOT NULL,
+    [Submitted]       BIT           CONSTRAINT [DF_Shipments_Submitted] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Shipments] PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [LineNumber] ASC, [SiteID] ASC, [IntegrationsID] ASC)
 );
-
-
-

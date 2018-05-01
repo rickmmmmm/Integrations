@@ -18,7 +18,7 @@ BEGIN
 END
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].[Integrations_StageProductData] TO [intg-cps]
+    ON OBJECT::[dbo].[Integrations_StageVendorData] TO [intg-cps]
     WITH GRANT OPTION
     AS [dbo];
 GO

@@ -12,6 +12,9 @@
             #Toggle DataProcessedSuccessfully
 ###############################################################################################################################################
 echo " #### Setting Script Variables"
+DEBUG=true
+ENVIRONMENT="QA"
+LAUNCH_NEXT=false
 CLIENT="CPS";
 TYPE="PurchaseOrder";
 REGION="us-east-1";
@@ -37,14 +40,14 @@ echo " #### Web API token retrieved."
 hayes-datamapper --push-vendors -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Vendors pushed to API."
 
-# hayes-datamapper --toggle-vendors
-# echo " #### Toggled Vendors pushed to API."
+hayes-datamapper --toggle-vendors
+echo " #### Toggled Vendors pushed to API."
 
 hayes-datamapper --push-products -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Products pushed to API."
 
-# hayes-datamapper --toggle-products
-# echo " #### Toggled products pushed to API."
+hayes-datamapper --toggle-products
+echo " #### Toggled products pushed to API."
 
 hayes-datamapper --push-headers -id $INTEGRATIONID -lv 800 -i 0;
 echo " #### New Header records pushed to API."
@@ -56,8 +59,12 @@ hayes-datamapper --complete -id $INTEGRATIONID;
 echo " #### $TYPE Data Push process complete!"
 
 echo " #### Sending completion email ";
-# RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com""";
-RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+if [ $ENVIRONMENT = "Production" ]; then
+    RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com,lsager@hayessoft.com""";
+else
+    # RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com""";
+fi
 TEXTCONTENT="\nThe $TYPE Integration has completed.\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
 HTMLCONTENT="<br />The $TYPE Integration has completed.<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
 MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
@@ -68,9 +75,15 @@ aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENT
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-echo " #### Launching the EC2 for the shiphing process for template $SHIPPING_TEMPLATE"
-aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$SHIPPING_TEMPLATE;
+if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
+    echo " #### Launching the EC2 for the shiphing process for template $SHIPPING_TEMPLATE"
+    aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$SHIPPING_TEMPLATE;
+fi
 
-echo " #### Terminate instance $INSTANCEID";
-aws ec2 terminate-instances --instance-ids $INSTANCEID
-# aws ec2 stop-instances --instance-ids $INSTANCEID
+if [ ! $DEBUG ]; then
+    echo " #### Terminate instance $INSTANCEID"
+    aws ec2 terminate-instances --instance-ids $INSTANCEID
+else
+    echo " #### Stop instance $INSTANCEID"
+    aws ec2 stop-instances --instance-ids $INSTANCEID
+fi

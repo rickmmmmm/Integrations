@@ -22,4 +22,9 @@ BEGIN
         fd.PRODUCT_NAME, fd.PRODUCT_TYPE, fd.MANUFACTURER, fd.MODEL--, fd.PURCHASE_PRICE
 END
 GO
+GRANT EXECUTE
+    ON OBJECT::[dbo].[Integrations_StageProductData] TO [intg-cps]
+    WITH GRANT OPTION
+    AS [dbo];
+GO
 

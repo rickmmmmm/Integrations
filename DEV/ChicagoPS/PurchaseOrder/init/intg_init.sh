@@ -1,10 +1,21 @@
 #!/bin/bash
-
+echo ">>> Setting Script Variables"
+DEBUG=true
+ENVIRONMENT="QA"
 CLIENT="CPS"
 TYPE="PurchaseOrder"
-AWSBUCKET="hssintg-prod"
-FOLDER="intg_prod"
 INTGFILE="intg_data_process.sh"
+if [ $ENVIRONMENT = "Production" ]; then
+    ### PROD
+    AWSBUCKET="hssintg-prod"
+    FOLDER="intg_prod"
+    REGION="us-east-1"
+else
+    ### QA
+    AWSBUCKET="hssintg"
+    FOLDER="intg_test"
+    REGION="us-east-1"
+fi
 
 echo ">>> Creating directory for Hayes DataMapper Application."
 mkdir -p /home/ec2-user/etc
