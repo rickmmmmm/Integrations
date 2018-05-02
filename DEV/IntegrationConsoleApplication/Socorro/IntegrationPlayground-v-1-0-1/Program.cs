@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 using SystemTasks;
 using Model;
 using DataAccess;
+using Serilog;
 using Services;
 using System.Configuration;
 using FileSystemTasks;
+using Newtonsoft.Json;
+
 
 namespace IntegrationPlayground_v_1_0_1
 {
@@ -20,6 +23,13 @@ namespace IntegrationPlayground_v_1_0_1
         //private List<PurchaseOrderFile> _returnFile;
         static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs\\SocorroIntegrations.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            Log.Debug("Beginning of program");
+            Log.Debug($"args length: {args.Length}");
             if (args.Length > 0)
             {
                 ReadOption(args);
@@ -27,10 +37,10 @@ namespace IntegrationPlayground_v_1_0_1
             }
 
             Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
-
+            Log.Debug("after introduction");
             Console.WriteLine("Shall we play a game? (Y)es (N)o");
             string gameplay = Console.ReadLine().ToLower();
-
+            Log.Debug("shall we play game");
             if (gameplay == "n")
             {
                 Environment.Exit(0);
@@ -52,7 +62,7 @@ namespace IntegrationPlayground_v_1_0_1
         private static void ReadOption(string[] args)
         {
             string choice = args[0];
-
+            Log.Debug($"choice: {choice}");
             switch (choice)
             {
                 case "-p":
@@ -226,7 +236,7 @@ namespace IntegrationPlayground_v_1_0_1
         public static void ReadOption()
         {
             string choice = Console.ReadLine().ToLower();
-
+            
             string[] options;
 
             switch (choice)
@@ -362,6 +372,7 @@ namespace IntegrationPlayground_v_1_0_1
         {
             Console.WriteLine("Paste Import File Name below:");
             string file = string.IsNullOrEmpty(options[1]) ? Console.ReadLine() : options[1] ;
+            Log.Debug($"file: {file}");
             FileTasks ft = new FileTasks();
             Repository rep = new Repository();
 
@@ -386,7 +397,7 @@ namespace IntegrationPlayground_v_1_0_1
             else if(!ft.checkFile(file))
             {
                 Console.WriteLine("File does not exist. Please provide a valid file url.");
-
+                
                 if (options[5] == "--batch")
                 {
                     Environment.Exit(0);
@@ -398,10 +409,11 @@ namespace IntegrationPlayground_v_1_0_1
             {
                 try
                 {
-                    var fileData = ft.convertCsvFileToObject(file);
-
+                    //var fileData = ft.convertCsvFileToObject(file);
+                    var fileData = ft.serializeJsonFile(file);
+                    
                     fileData = di.removeBadElements(fileData);
-
+                    
                     if (options[3] == "--add-vendors")
                     {
                         var vendors = fileData.GroupBy(u => u.VendorName);
@@ -424,6 +436,7 @@ namespace IntegrationPlayground_v_1_0_1
 
                     if (options[2] == "--add-items")
                     {
+                        Log.Debug("at --add-items");
                         var rand = new Random();
 
                         foreach (var item in fileData)
@@ -436,13 +449,13 @@ namespace IntegrationPlayground_v_1_0_1
                                 {
                                     ItemNumber = itemNumber,
                                     ItemName = item.ProductName.Replace("'", "''"),
-                                    ItemDescription = item.Description.Replace("'","''"),
+                                    ItemDescription = item.Description != null ? item.Description.Replace("'","''") : item.Description,
                                     ItemType = 0,
                                     ModelNumber = "None",
                                     ManufacturerUID = 0,
                                     ItemSuggestedPrice = item.PurchasePrice,
                                     AreaUID = 0,
-                                    ItemNotes = item.Description.Replace("'","''"),
+                                    ItemNotes = item.Description != null ? item.Description.Replace("'", "''") : item.Description,
                                     SKU = "",
                                     SerialRequired = false,
                                     ProjectedLife = 0,
@@ -461,6 +474,7 @@ namespace IntegrationPlayground_v_1_0_1
 
                     if (options[4] == "--add-funding")
                     {
+                        Log.Debug("at --add-funding");
                         var fundingSources = fileData.GroupBy(u => u.FundingSource);
 
                         foreach (var source in fundingSources)
@@ -473,7 +487,7 @@ namespace IntegrationPlayground_v_1_0_1
                     }
 
                     var outData = new List<PurchaseOrderFile>();
-
+                    
                     foreach (var item in fileData)
                     {
                         if (di.rejectLongRecord(item, true, true, true))
@@ -518,8 +532,8 @@ namespace IntegrationPlayground_v_1_0_1
 
                         outData.Add(item);
                     }
-
-                    if (outData.Count > 0)
+                    
+                    if (outData.Count > 0 || _repo.getRejectionsFromLastImport().Count() > 0)
                     {
                         var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
@@ -533,14 +547,24 @@ namespace IntegrationPlayground_v_1_0_1
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
+                        Console.WriteLine("Where would you like to archive copies of the data files? Enter location below:");
+                        var archiveLocation = string.IsNullOrEmpty(options[8]) ? Console.ReadLine() : options[8];
+
                         var rejects = _repo.getRejectionsFromLastImport();
 
+                        // If Output.txt already exists, move to archive so that new file is written
+                        ft.moveToArchive(rejectFile, archiveLocation);
+
                         ft.createRejectFile(rejectFile, rejects, fileData);
+
+                        // Copy po_data.json and POdata.csv to archive 
+                        ft.copyToArchive(file, archiveLocation);
+
                         _repo.completeIntegration();
 
                         _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
-                        string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
+                        string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Customer Support at 1-800-495-5993 </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
                         string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
 

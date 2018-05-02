@@ -107,7 +107,7 @@ namespace SystemTasks
             {
                 string testItem = _rep.getModelNumberFromProductName(item.ProductName);
 
-                if (testItem.ToLower() != item.Model.ToLower())
+                if (testItem.ToLower().Trim() != item.Model.ToLower().Trim())
                 {
                     throw new Exception();
                 }

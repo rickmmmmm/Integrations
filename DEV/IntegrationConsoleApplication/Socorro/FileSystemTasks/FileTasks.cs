@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Model;
+using Newtonsoft.Json;
 using System.Configuration;
+using Serilog;
 
 namespace SystemTasks
 {
@@ -144,8 +146,53 @@ namespace SystemTasks
                 return payload;
 
             }
+        }
 
+        public List<PurchaseOrderFile> serializeJsonFile(string filename)
+        {
+            using (StreamReader r = new StreamReader(filename))
+            {
+                string json = r.ReadToEnd().Replace("\r\n", "");
+                dynamic array = JsonConvert.DeserializeObject(json);
+                Console.WriteLine("checking");
 
+                List<PurchaseOrderFile> orders = new List<PurchaseOrderFile>();
+
+                foreach (var item in array)
+                {
+                    PurchaseOrderFile order = new PurchaseOrderFile();
+
+                    string quantity = item[ConfigurationManager.AppSettings["Quantity"]].ToString().Trim() == "" ? "0.0" : item[ConfigurationManager.AppSettings["Quantity"]];
+                    string price = item[ConfigurationManager.AppSettings["PurchasePrice"]].ToString().Trim() == "" ? "0.0" : item[ConfigurationManager.AppSettings["PurchasePrice"]];
+                    string desc = ConfigurationManager.AppSettings["ProductName"].IsValidMap() ? item[ConfigurationManager.AppSettings["ProductName"]] : null;
+
+                    order.OrderNumber = item[ConfigurationManager.AppSettings["OrderNumber"]];
+                    order.OrderDate = ConfigurationManager.AppSettings["OrderDate"].IsValidMap() ? item[ConfigurationManager.AppSettings["OrderDate"]] : null;
+                    order.VendorName = ConfigurationManager.AppSettings["VendorName"].IsValidMap() ? item[ConfigurationManager.AppSettings["VendorName"]] : null;
+                    order.ProductName = desc != null && desc.Length > 100 ? desc.Substring(0, 99) : desc;
+                    order.Description = ConfigurationManager.AppSettings["Description"].IsValidMap() ? item[ConfigurationManager.AppSettings["Description"]] : null;
+                    order.ProductType = ConfigurationManager.AppSettings["ProductType"].IsValidMap() ? item[ConfigurationManager.AppSettings["ProductType"]] : ConfigurationManager.AppSettings["ProductTypeDefault"];
+                    order.Model = ConfigurationManager.AppSettings["Model"].IsValidMap() ? item[ConfigurationManager.AppSettings["Model"]] : ConfigurationManager.AppSettings["ModelDefault"];
+                    order.Manufacturer = ConfigurationManager.AppSettings["Manufacturer"].IsValidMap() ? item[ConfigurationManager.AppSettings["Manufacturer"]] : ConfigurationManager.AppSettings["ManufacturerDefault"];
+                    order.Quantity = ConfigurationManager.AppSettings["Quantity"].IsValidMap() ? Convert.ToInt32(Convert.ToDecimal(quantity)) : 0;
+                    order.PurchasePrice = ConfigurationManager.AppSettings["PurchasePrice"].IsValidMap() ? Convert.ToDecimal(price) : 0;
+                    order.FundingSource = ConfigurationManager.AppSettings["FundingSource"].IsValidMap() ? item[ConfigurationManager.AppSettings["FundingSource"]] : null;
+                    order.AccountCode = ConfigurationManager.AppSettings["AccountCode"].IsValidMap() ? item[ConfigurationManager.AppSettings["AccountCode"]] : null;
+                    order.LineNumber = ConfigurationManager.AppSettings["LineNumber"].IsValidMap() && item[ConfigurationManager.AppSettings["LineNumber"]].ToString().Trim() != "" ? item[ConfigurationManager.AppSettings["LineNumber"]] : 0;
+                    order.ShippedToSite = ConfigurationManager.AppSettings["ShippedToSite"].IsValidMap() ? item[ConfigurationManager.AppSettings["ShippedToSite"]] : ConfigurationManager.AppSettings["ShippedToSiteDefault"];
+                    order.QuantityShipped = ConfigurationManager.AppSettings["QuantityShipped"].IsValidMap() ? Convert.ToInt32(Convert.ToDecimal(item[ConfigurationManager.AppSettings["QuantityShipped"]])) : 0;
+                    order.Notes = ConfigurationManager.AppSettings["Notes"].IsValidMap() ? item[ConfigurationManager.AppSettings["Notes"]].ToString().Trim() : "";
+
+                    if (string.IsNullOrEmpty(order.Model))
+                    {
+                        order.Model = "None";
+                    }
+
+                    orders.Add(order);
+                }
+
+                return orders;
+            }
         }
 
         public void createExportFile(List<ReceivedTagsExportFile> results, string fileName)
@@ -229,6 +276,65 @@ namespace SystemTasks
             string newFile = fileName.Replace(".csv", "_processed_" + f + ".txt");
 
             File.Move(fileName, newFile);
+        }
+
+        public void copyToArchive(string file, string archiveLocation)
+        {
+            if (!Directory.Exists(archiveLocation))
+            {
+                Directory.CreateDirectory(archiveLocation);
+            }
+
+            var directory = Path.GetDirectoryName(file);
+
+            var files = Directory.GetFiles(directory);
+
+            if (files != null)
+            {
+                foreach (var archiveFile in files)
+                {
+                    var fileName = Path.GetFileName(archiveFile);
+                    var destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
+                    File.Copy(archiveFile, destination, true);
+                }
+            }
+        }
+
+        public void moveToArchive(string file, string archiveLocation)
+        {
+            var destination = "";
+
+            if (!Directory.Exists(archiveLocation))
+            {
+                Directory.CreateDirectory(archiveLocation);
+            }
+
+            var directory = Path.GetDirectoryName(file);
+
+            var files = Directory.GetFiles(directory);
+
+            if (files != null)
+            {
+                foreach (var archiveFile in files)
+                {
+                    var fileName = Path.GetFileName(archiveFile);
+                    if (fileName == "Output.txt")
+                    {
+                        destination = Path.Combine(archiveLocation, $"{DateTime.Now.AddDays(-1).ToString("yyyyMMdd")}_{fileName}");
+                    }
+                    else
+                    {
+                        destination = Path.Combine(archiveLocation, $"{DateTime.Now.ToString("yyyyMMdd")}_{fileName}");
+                    }
+
+                    if (File.Exists(destination))
+                    {
+                        File.Delete(destination);
+                    }
+
+                    File.Move(archiveFile, destination);
+                }
+            }
         }
 
         public dynamic convertCsvFileToObject(string fileName, ImportType type)
