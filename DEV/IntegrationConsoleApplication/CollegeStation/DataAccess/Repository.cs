@@ -200,7 +200,7 @@ namespace DataAccess
         {
             int vendorId = -1;
 
-            string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower().Replace("'","''") + "'";
+            string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower().Replace("'","''").Trim() + "'";
 
             if (_conn.State == ConnectionState.Open)
             {
