@@ -54,5 +54,6 @@ namespace DataAccess
 
         bool chargeExists(int chargeId);
         Charge getChargeAmountByChargeId(int chargeId);
+        Int64 getUniqueItemNumber();
     }
 }

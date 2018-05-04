@@ -211,5 +211,10 @@ namespace DataAccess
         {
             throw new NotImplementedException();
         }
+
+        public Int64 getUniqueItemNumber()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

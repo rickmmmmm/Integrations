@@ -7,6 +7,7 @@ using Model;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using DataAccess.Enums;
 
 namespace DataAccess
 {
@@ -831,6 +832,149 @@ namespace DataAccess
             _conn.Close();
 
             return rejects;
+        }
+
+        public Int64 getUniqueItemNumber()
+        {
+
+            Int64 itemNumber = 0;
+            var validNumber = false;
+            var checking = true;
+            do
+            {
+                // get next universal item number from tblUnvCounter
+                itemNumber = getNextItemNumber();
+
+                do
+                {
+                    // check if item number already has an item in the database
+                    var itemNumberCount = getItemNumberCount(itemNumber);
+
+                    if (itemNumberCount == 0)
+                    {
+                        validNumber = true;
+                    }
+                    else
+                    {
+                        itemNumber++;
+                    }
+                } while (validNumber == false);
+
+                // update item number in tblUnvCounter for next item that is added
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString))
+                {
+                    string returnQuery = "UPDATE tblUnvCounter SET Value = " + (itemNumber + 1) + " WHERE CounterUID = " + (int)CounterTypesEnum.ProductNumber;
+
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        connection.Close();
+                    }
+
+                    connection.Open();
+
+                    SqlCommand returnCmd = new SqlCommand(returnQuery, connection);
+                    SqlTransaction transaction;
+
+                    transaction = connection.BeginTransaction("UpdateCounterTransaction");
+                    returnCmd.Transaction = transaction;
+                    try
+                    {
+                        returnCmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        checking = false;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
+            } while (checking);
+
+            return itemNumber;
+        }
+
+        public Int64 getNextItemNumber()
+        {
+            Int64 result = 0;
+
+            string returnQuery = "SELECT Value FROM tblUnvCounter WHERE CounterUID = " + (int) CounterTypesEnum.ProductNumber;
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    result = (Int64) reader[0];
+                }
+                catch
+                {
+                    result = -1;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (result == -1)
+            {
+                throw new Exception("Next product number was not found.");
+            }
+            else
+            {
+                return result;
+            }
+        }
+
+        public int getItemNumberCount(Int64 itemNumber)
+        {
+            int result = 0;
+
+            string returnQuery = "SELECT COUNT(*) FROM tblTechItems WHERE ItemNumber = 'H" + itemNumber.ToString() + "'";
+
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
+
+            _conn.Open();
+
+            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            SqlDataReader reader = returnCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                try
+                {
+                    result = (int)reader[0];
+                }
+                catch
+                {
+                    result = -1;
+                }
+            }
+
+            reader.Close();
+            _conn.Close();
+
+            if (result == -1)
+            {
+                throw new Exception("Item number count was not found.");
+            }
+            else
+            {
+                return result;
+            }
         }
 
         public event EventHandler<DbErrorEventArgs> Error;

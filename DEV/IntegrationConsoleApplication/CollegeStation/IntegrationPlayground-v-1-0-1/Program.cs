@@ -430,17 +430,17 @@ namespace IntegrationPlayground_v_1_0_1
                         {
                             if (di.productNotFound(item.ProductName))
                             {
-                                var itemNumber = "H" + rand.Next().ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + DateTime.Now.Millisecond.ToString();
+                                var itemNumber = "H" + _repo.getUniqueItemNumber();
 
                                 Item itemToAdd = new Item
                                 {
                                     ItemNumber = itemNumber,
                                     ItemName = item.ProductName.Replace("'", "''"),
-                                    ItemDescription = item.Description.Replace("'","''"),
+                                    ItemDescription = item.Description.Replace("'", "''"),
                                     ItemType = 1,
                                     ModelNumber = "None",
                                     ManufacturerUID = 0,
-                                    ItemSuggestedPrice = item.PurchasePrice,
+                                    ItemSuggestedPrice = 0,
                                     AreaUID = 0,
                                     ItemNotes = item.Description.Replace("'","''"),
                                     SKU = "",
@@ -550,7 +550,7 @@ namespace IntegrationPlayground_v_1_0_1
                                                                     Body = body,
                                                                     Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                                                                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                                                                    Subject = "Automatic Notification from Hayes Software Systems",
+                                                                    Subject = "Automatic Notification from Hayes Software Systems for College Station ISD",
                                                                     SentDate = DateTime.Now,
                                                                     FileAttachment = rejectFile
                                                                 };
