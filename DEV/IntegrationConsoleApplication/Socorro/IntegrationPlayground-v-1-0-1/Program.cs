@@ -574,7 +574,7 @@ namespace IntegrationPlayground_v_1_0_1
                                                                     Body = body,
                                                                     Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                                                                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                                                                    Subject = "Automatic Notification from Hayes Software Systems",
+                                                                    Subject = "Automatic Notification from Hayes Software Systems for Socorro ISD",
                                                                     SentDate = DateTime.Now,
                                                                     FileAttachment = rejectFile
                                                                 };
