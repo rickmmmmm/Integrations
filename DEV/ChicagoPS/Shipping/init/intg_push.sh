@@ -1,17 +1,18 @@
 #!/bin/bash
 echo ">>> Setting Script Variables"
-DEBUG=true
 ENVIRONMENT="QA"
 CLIENT="CPS"
 TYPE="Shipping"
 INTGFILE="intg_api_transact.sh"
 if [ $ENVIRONMENT = "Production" ]; then
-    ### PROD
+    ### Production
+    DEBUG=false
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
     REGION="us-east-1"
 else
     ### QA
+    DEBUG=true
     AWSBUCKET="hssintg"
     FOLDER="intg_test"
     REGION="us-east-1"

@@ -1,9 +1,7 @@
 #!/bin/bash
 #Integration EC2 Process
 echo " #### Setting Script Variables"
-DEBUG=true
 ENVIRONMENT="QA"
-LAUNCH_NEXT=false
 CHUNK_SIZE=5000
 CLIENT="CPS"
 TYPE="Shipping"
@@ -11,12 +9,16 @@ TEMPLATE="intgCpsPushShipping"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
 if [ $ENVIRONMENT = "Production" ]; then
-    ### PROD
+    ### Production
+    DEBUG=false
+    LAUNCH_NEXT=true
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
     REGION="us-east-1"
 else
     ### QA
+    DEBUG=true
+    LAUNCH_NEXT=false
     AWSBUCKET="hssintg"
     FOLDER="intg_test"
     REGION="us-east-1"
@@ -82,7 +84,8 @@ aws s3 rm "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/run.process"
 echo " #### Converting csv files to JSON..."
 for csvFile in *.csv; do
     echo " #### Converting CSV file $csvFile to json format"
-    csvtojson "$csvFile" > "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
+    hayes-datamapper --csv-to-json -f "$csvFile" -fo "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
+    # csvtojson "$csvFile" > "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
 done
 
 cd "/home/ec2-user/etc/$CLIENT/processing/json/";

@@ -1,9 +1,7 @@
 #!/bin/bash
 #Integration EC2 Process
 echo " #### Setting Script Variables"
-DEBUG=true
 ENVIRONMENT="QA"
-LAUNCH_NEXT=false
 CHUNK_SIZE=5000
 CLIENT="CPS"
 TYPE="PurchaseOrder"
@@ -11,12 +9,16 @@ TEMPLATE="intgCpsPush"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
 if [ $ENVIRONMENT = "Production" ]; then
-    ### PROD
+    ### Production
+    LAUNCH_NEXT=true
+    DEBUG=false
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
     REGION="us-east-1"
 else
     ### QA
+    LAUNCH_NEXT=false
+    DEBUG=true
     AWSBUCKET="hssintg"
     FOLDER="intg_test"
     REGION="us-east-1"
@@ -82,7 +84,8 @@ aws s3 rm "s3://$AWSBUCKET/$FOLDER/$CLIENT/$TYPE/files/run.process"
 echo " #### Converting csv files to JSON..."
 for csvFile in *.csv; do
     echo " #### Converting CSV file $csvFile to json format"
-    csvtojson "$csvFile" > "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
+    hayes-datamapper --csv-to-json -f "$csvFile" -fo "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
+    # csvtojson "$csvFile" > "/home/ec2-user/etc/$CLIENT/processing/json/${csvFile/csv/json}";
 done
 
 cd "/home/ec2-user/etc/$CLIENT/processing/json/";
@@ -117,7 +120,8 @@ for jsonArray in *.json; do
     echo " #### Mapped flat data to database...";
     # hayes-datamapper --vendors -id $INSTANCEID -ids true;
     # echo " #### Mapped new vendors.";
-    hayes-datamapper --stage-headers -id $INSTANCEID;
+    # hayes-datamapper --stage-headers -id $INSTANCEID;
+    hayes-datamapper --headers -id $INSTANCEID;
     echo " #### Mapped headers.";
     hayes-datamapper --details -id $INSTANCEID;
     echo " #### Mapped details.";
@@ -145,8 +149,8 @@ echo " #### Mapped new vendors.";
 hayes-datamapper --products -id $INSTANCEID;
 echo " #### Mapped new products.";
 
-hayes-datamapper --headers -id $INSTANCEID;
-echo " #### Mapped new headers.";
+# hayes-datamapper --headers -id $INSTANCEID;
+# echo " #### Mapped new headers.";
 
 # echo " #### Running custom scripts.";
 # hayes-datamapper -cust

@@ -6,7 +6,7 @@ CLIENT="CPS"
 TYPE="PurchaseOrder"
 INTGFILE="intg_data_process.sh"
 if [ $ENVIRONMENT = "Production" ]; then
-    ### PROD
+    ### Production
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
     REGION="us-east-1"

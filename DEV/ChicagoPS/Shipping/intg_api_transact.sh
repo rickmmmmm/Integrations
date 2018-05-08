@@ -12,13 +12,20 @@
             #Toggle DataProcessedSuccessfully
 ###############################################################################################################################################
 echo " #### Setting Script Variables"
-DEBUG=true
 ENVIRONMENT="QA"
 CLIENT="CPS"
 TYPE="Shipping"
-REGION="us-east-1"
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y-%m-%d %H:%M:%S');
+if [ $ENVIRONMENT = "Production" ]; then
+    ### Production
+    DEBUG=false
+    REGION="us-east-1"
+else
+    ### QA
+    DEBUG=true
+    REGION="us-east-1"
+fi
 
 echo " #### Starting $CLIENT $TYPE API Push Process"
 

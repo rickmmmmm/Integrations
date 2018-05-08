@@ -1,12 +1,9 @@
 module.exports = {
     config: {
-        //"apiUrl":"https://assets.cps.edu/TIPWEBAPI/api",
-        //"apiUrl":"https://www.tipwebintegrationtest.com/TIPWEBAPI/api",
-        //"apiUrl":"http://localhost:55556/TIPWEB_API/api",
-        "apiUrl":"http://www.tipwebittraining.com/TIPWEBAPI5/api",
-        "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
+        "apiUrl":"http://localhost/TIPWebAPI/api",
+        "host":".",
         "database":"IntgAppData",
-        "username":"sa",
+        "username":"",
         "dbType":"mssql",
         "sourceType":"csv",
         "mapType":"purchases",
@@ -24,7 +21,7 @@ module.exports = {
     secrets: {
         "secretkey":"7cd7f145-7989-4866-bd54-f646fa3ef739",
         "passphrase":"632b5da8-2608-4aee-93aa-d2c41be137a9",
-        "password":"gemcap3663"
+        "password":"integration"
     },
     apiConfig: {
         "login" : "/Login/AuthorizeAPI",
