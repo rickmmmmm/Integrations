@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Deactivate"
   DTS:PackageType="5"
-  DTS:VersionBuild="85"
-  DTS:VersionGUID="{604B5D60-514A-479D-B9DA-2326367B7BE9}">
+  DTS:VersionBuild="89"
+  DTS:VersionGUID="{E6ED7BF2-1709-4600-968B-00DB97C6EDB8}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -58,7 +58,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Deactivated\_DeactivatedStaff_IT_05042018.csv">
+          DTS:ConnectionString="\Deactivated\_DeactivatedStaff_IT_05162018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -134,7 +134,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Deactivated\_ITStaff_NotDeactivated_05042018.csv">
+          DTS:ConnectionString="\Deactivated\_ITStaff_NotDeactivated_05162018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -237,7 +237,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Deactivated\_DeactivatedStudents_IT_05042018.csv">
+          DTS:ConnectionString="\Deactivated\_DeactivatedStudents_IT_05162018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -312,7 +312,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Deactivated\_ITStudents_NotDeactivated_05042018.csv">
+          DTS:ConnectionString="\Deactivated\_ITStudents_NotDeactivated_05162018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -509,6 +509,15 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{A3D074F3-530F-4CC2-AE4B-DAF26735AC9A}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="DaysToKeep">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{790C1BE4-8D87-4DB7-BF90-744D8C57A329}"
       DTS:IncludeInDebugDump="6789"
       DTS:Namespace="User"
@@ -534,7 +543,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="Deactivate_IM_Staff_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_DeactivatedStaff_IM_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_DeactivatedStaff_IM_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -563,7 +572,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="Deactivate_IM_Students_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_DeactivatedStudents_IM_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_DeactivatedStudents_IM_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -592,7 +601,34 @@
       DTS:Namespace="User"
       DTS:ObjectName="Deactivate_IT_Staff_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_DeactivatedStaff_IT_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_DeactivatedStaff_IT_05162018.csv</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{A8B0F5CD-F9C2-4EFB-BF52-5AE1E2911834}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;select t.TeacherID, t.CampusID, t.FirstName, t.Middlename, t.LastName, t.TeachersUID&#xA;from tblTeachers t&#xA;left outer join &#xA;&#x9;(&#xA;&#x9;select distinct teachersuid, teacherid, campusid, lastname, firstname&#xA;&#x9;from _IMS_Teachers&#xA;&#x9;union&#xA;&#x9;select distinct teachersuid, staffID, campusID, lastname, firstname&#xA;&#x9;from _IMS_Staff&#xA;&#x9;) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID&#xA;where allStaff.teachersuid is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, &quot;+ (DT_STR, 5, 1252) @[User::DaysToKeep]  +&quot;, t.ModifiedDate)&#xA;and (select count(*) from tblTechInventory where EntityTypeUID = 3 and EntityUID = t.TeachersUID) = 0&#xA;and (select count(*) from tblUnvCharges where EntityTypeUID = 3  and EntityUID = t.TeachersUID and ApplicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0) = 0&#xA;and (select count(*) from tblTechAuditDetails where EntityTypeUID = 3  and EntityUID = t.TeachersUID and statusid &lt;&gt; 56) = 0&#xA;Order By Lastname, Firstname &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IT_Staff_Report">
+      <DTS:VariableValue
+        DTS:DataType="8">select t.TeacherID, t.CampusID, t.FirstName, t.Middlename, t.LastName, t.TeachersUID
+from tblTeachers t
+left outer join 
+	(
+	select distinct teachersuid, teacherid, campusid, lastname, firstname
+	from _IMS_Teachers
+	union
+	select distinct teachersuid, staffID, campusID, lastname, firstname
+	from _IMS_Staff
+	) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID
+where allStaff.teachersuid is null
+and (activeit = 1)
+and getdate() &gt; dateadd(d, 0, t.ModifiedDate)
+and (select count(*) from tblTechInventory where EntityTypeUID = 3 and EntityUID = t.TeachersUID) = 0
+and (select count(*) from tblUnvCharges where EntityTypeUID = 3  and EntityUID = t.TeachersUID and ApplicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0) = 0
+and (select count(*) from tblTechAuditDetails where EntityTypeUID = 3  and EntityUID = t.TeachersUID and statusid &lt;&gt; 56) = 0
+Order By Lastname, Firstname </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -621,7 +657,36 @@
       DTS:Namespace="User"
       DTS:ObjectName="Deactivate_IT_Students_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_DeactivatedStudents_IT_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_DeactivatedStudents_IT_05162018.csv</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{E3FF7294-E793-4C9A-B561-9C987F8CAAC0}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;select s.StudentID, s.CampusID, s.FirstName, s.Middlename, s.LastName, s.StudentsUID&#xA;&#xA;from tblStudents s&#xA;&#xA;left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID&#xA;&#xA;where st.IMS_StudentID is null&#xA;&#xA;and (activeit = 1)&#xA;&#xA;and getdate() &gt; dateadd(d, &quot;+ (DT_STR,5,1252) @[User::DaysToKeep]   +&quot;, s.ModifiedDate)&#xA;&#xA;and (select count(*) from tblTechInventory where EntityTypeUID = 4 and EntityUID = s.StudentsUID) = 0&#xA;&#xA;and (select count(*) from tblUnvCharges where EntityTypeUID = 4 and EntityUID = s.StudentsUID and ApplicationUID =2 and ChargeAmount &gt; 0 and DateSatisfied is null and void = 0) = 0&#xA;&#xA;and (select count(*) from tblTechAuditDetails where EntityTypeUID = 4  and EntityUID = s.StudentsUID and statusid &lt;&gt; 56) = 0&#xA;&#xA;order by lastname, firstname &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="Deactivate_IT_Students_Report">
+      <DTS:VariableValue
+        DTS:DataType="8">select s.StudentID, s.CampusID, s.FirstName, s.Middlename, s.LastName, s.StudentsUID
+
+from tblStudents s
+
+left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID
+
+where st.IMS_StudentID is null
+
+and (activeit = 1)
+
+and getdate() &gt; dateadd(d, 0, s.ModifiedDate)
+
+and (select count(*) from tblTechInventory where EntityTypeUID = 4 and EntityUID = s.StudentsUID) = 0
+
+and (select count(*) from tblUnvCharges where EntityTypeUID = 4 and EntityUID = s.StudentsUID and ApplicationUID =2 and ChargeAmount &gt; 0 and DateSatisfied is null and void = 0) = 0
+
+and (select count(*) from tblTechAuditDetails where EntityTypeUID = 4  and EntityUID = s.StudentsUID and statusid &lt;&gt; 56) = 0
+
+order by lastname, firstname </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -631,6 +696,64 @@
       DTS:ObjectName="EmailAttachment">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{048A8327-2FFE-487D-9FAB-959797D9DD5C}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;select t.TeacherID, t.CampusID, t.FirstName, t.Middlename, t.LastName, t.teachersuid,&#xA;&#x9;(select count(*) from tblTechInventory where entityTypeUID = 3 and entityuid = t.teachersuid) as InventoryCount,&#xA;&#x9;(select count(*) from tblUnvCharges where entityTypeUID = 3 and ApplicationUID = 2 and entityuid = t.teachersuid) as ChargesCount,&#xA;&#x9;(select count(*) from tblTechAuditDetails where entityTypeUID = 3 and entityuid = t.teachersuid) as ActiveAuditCount&#xA;from tblTeachers t&#xA;left outer join &#xA;&#x9;(&#xA;&#x9;select distinct teachersuid, teacherid, campusid, lastname, firstname&#xA;&#x9;from _IMS_Teachers&#xA;&#x9;union&#xA;&#x9;select distinct teachersuid, staffID, campusID, lastname, firstname&#xA;&#x9;from _IMS_Staff&#xA;&#x9;) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID&#xA;where allStaff.teachersuid is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, &quot;+ (DT_STR, 5,1252) @[User::DaysToKeep]   +&quot;, t.ModifiedDate)&#xA;and (&#xA;&#x9;t.teachersuid  in (select EntityUID from tblTechInventory where EntityTypeUID = 3)&#xA;&#x9;or t.teachersuid  in (select EntityUID from tblUnvCharges where EntityTypeUID = 3 and applicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0)&#xA;&#x9;or t.teachersuid  in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 3 and statusid &lt;&gt; 56)&#xA;&#x9;)&#xA;order by InventoryCount desc, ChargesCount desc, ActiveAuditCount desc, LastName, FirstName &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="NotDeactivated_IT_Staff_Report">
+      <DTS:VariableValue
+        DTS:DataType="8">select t.TeacherID, t.CampusID, t.FirstName, t.Middlename, t.LastName, t.teachersuid,
+	(select count(*) from tblTechInventory where entityTypeUID = 3 and entityuid = t.teachersuid) as InventoryCount,
+	(select count(*) from tblUnvCharges where entityTypeUID = 3 and ApplicationUID = 2 and entityuid = t.teachersuid) as ChargesCount,
+	(select count(*) from tblTechAuditDetails where entityTypeUID = 3 and entityuid = t.teachersuid) as ActiveAuditCount
+from tblTeachers t
+left outer join 
+	(
+	select distinct teachersuid, teacherid, campusid, lastname, firstname
+	from _IMS_Teachers
+	union
+	select distinct teachersuid, staffID, campusID, lastname, firstname
+	from _IMS_Staff
+	) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID
+where allStaff.teachersuid is null
+and (activeit = 1)
+and getdate() &gt; dateadd(d, 0, t.ModifiedDate)
+and (
+	t.teachersuid  in (select EntityUID from tblTechInventory where EntityTypeUID = 3)
+	or t.teachersuid  in (select EntityUID from tblUnvCharges where EntityTypeUID = 3 and applicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0)
+	or t.teachersuid  in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 3 and statusid &lt;&gt; 56)
+	)
+order by InventoryCount desc, ChargesCount desc, ActiveAuditCount desc, LastName, FirstName </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{AF4672AA-6F63-44B2-A99D-D4F8E45B6015}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot;select s.StudentID, s.CampusID, s.FirstName, s.Middlename, s.LastName, s.StudentsUID,&#xA;&#x9;(select count(*) from tblTechInventory where entityTypeUID = 4  and entityuid = s.studentsuid) as InventoryCount,&#xA;&#x9;(select count(*) from tblUnvCharges where entityTypeUID = 4 and ApplicationUID = 2 and entityuid = s.studentsuid and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0) as ChargesCount,&#xA;&#x9;(select count(*) from tblTechAuditDetails where entityTypeUID = 4 and entityuid = s.studentsuid) as ActiveAuditCount&#xA;&#xA;from tblStudents s&#xA;left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID&#xA;where st.IMS_StudentID is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, &quot;+ (DT_STR, 10, 1252) @[User::DaysToKeep]   +&quot;, s.ModifiedDate)&#xA;and (&#xA;&#x9;s.StudentsUID  in (select EntityUID from tblTechInventory where EntityTypeUID = 4)&#xA;&#x9;or s.StudentsUID  in (select EntityUID from tblUnvCharges where EntityTypeUID = 4  and ApplicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null and void = 0)&#xA;&#x9;or s.StudentsUID  in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 4 and statusid &lt;&gt; 56)&#xA;&#x9;)&#xA;order by InventoryCount Desc, LastName, FirstName &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="NotDeactivated_IT_Student_Report">
+      <DTS:VariableValue
+        DTS:DataType="8">select s.StudentID, s.CampusID, s.FirstName, s.Middlename, s.LastName, s.StudentsUID,
+	(select count(*) from tblTechInventory where entityTypeUID = 4  and entityuid = s.studentsuid) as InventoryCount,
+	(select count(*) from tblUnvCharges where entityTypeUID = 4 and ApplicationUID = 2 and entityuid = s.studentsuid and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0) as ChargesCount,
+	(select count(*) from tblTechAuditDetails where entityTypeUID = 4 and entityuid = s.studentsuid) as ActiveAuditCount
+
+from tblStudents s
+left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID
+where st.IMS_StudentID is null
+and (activeit = 1)
+and getdate() &gt; dateadd(d, 0, s.ModifiedDate)
+and (
+	s.StudentsUID  in (select EntityUID from tblTechInventory where EntityTypeUID = 4)
+	or s.StudentsUID  in (select EntityUID from tblUnvCharges where EntityTypeUID = 4  and ApplicationUID = 2 and ChargeAmount &gt; 0 and DateSatisfied is null and void = 0)
+	or s.StudentsUID  in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 4 and statusid &lt;&gt; 56)
+	)
+order by InventoryCount Desc, LastName, FirstName </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -650,7 +773,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="NotDeactived_IM_Staff_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_IMStaff_NotDeactivated_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_IMStaff_NotDeactivated_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -670,7 +793,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="NotDeactived_IM_Students_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_IMStudents_NotDeactivated_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_IMStudents_NotDeactivated_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -690,7 +813,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="NotDeactived_IT_Staff_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_ITStaff_NotDeactivated_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_ITStaff_NotDeactivated_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -710,7 +833,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="NotDeactived_IT_Students_File">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_ITStudents_NotDeactivated_05042018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_ITStudents_NotDeactivated_05162018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -750,7 +873,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ZipFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Deactivated\_DeactivateReports_05042018.zip</DTS:VariableValue>
+        DTS:DataType="8">\Deactivated\_DeactivateReports_05162018.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -826,36 +949,6 @@
                   VSTAMinorVersion="0"
                   Language="CSharp"
                   ReadOnlyVariables="User::thisFile">
-                  <ProjectItem
-                    Name="Properties\AssemblyInfo.cs"
-                    Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_e09bf7574ee0461fa2fe3b81de42f736")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_e09bf7574ee0461fa2fe3b81de42f736")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -975,6 +1068,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_e09bf7574ee0461fa2fe3b81de42f736.Properties.Settings.get_Default():ST_e09bf7574ee0461fa2fe3b81de42f736.Properties.Sett" +
+    "ings")]
+
+namespace ST_e09bf7574ee0461fa2fe3b81de42f736.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ST_e09bf7574ee0461fa2fe3b81de42f736.csproj"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1213,34 +1335,35 @@ namespace ST_e09bf7574ee0461fa2fe3b81de42f736
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                    Name="Properties\AssemblyInfo.cs"
+                    Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_e09bf7574ee0461fa2fe3b81de42f736")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_e09bf7574ee0461fa2fe3b81de42f736")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_e09bf7574ee0461fa2fe3b81de42f736.Properties.Settings.get_Default():ST_e09bf7574ee0461fa2fe3b81de42f736.Properties.Sett" +
-    "ings")]
-
-namespace ST_e09bf7574ee0461fa2fe3b81de42f736.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Settings.settings"
                     Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -1837,7 +1960,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
-              SQLTask:SqlStatementSource="--select allStaff.*, t.* &#xA;Update t set activeIT = 0, userID = 0, ModifiedDate = getdate()&#xA;,   NotesIT = &#xA;&#x9;case when ltrim(rtrim(isNull(NotesIT, ''))) = '' then 'Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101)&#xA;&#x9;else NotesIT + '; Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101) end&#xA;from tblTeachers t&#xA;left outer join &#xA;&#x9;(&#xA;&#x9;select distinct teachersuid, teacherid, campusid, lastname, firstname&#xA;&#x9;from _IMS_Teachers&#xA;&#x9;union&#xA;&#x9;select distinct teachersuid, staffID, campusID, lastname, firstname&#xA;&#x9;from _IMS_Staff&#xA;&#x9;) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID&#xA;where allStaff.teachersuid is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, 7, t.ModifiedDate)&#xA;and t.TeachersUID not in (select EntityUID from tblTechInventory where EntityTypeUID = 3)&#xA;and t.TeachersUID not in (select EntityUID from tblUnvCharges where EntityTypeUID = 3 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0)&#xA;and t.TeachersUID not in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 3 and statusid &lt;&gt; 56)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="declare @numDays int&#xA;set @numDays = ?&#xA;&#xA;&#xA;--select allStaff.*, t.* &#xA;Update t set activeIT = 0, userID = 0, ModifiedDate = getdate()&#xA;,   NotesIT = &#xA;&#x9;case when ltrim(rtrim(isNull(NotesIT, ''))) = '' then 'Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101)&#xA;&#x9;else NotesIT + '; Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101) end&#xA;from tblTeachers t&#xA;left outer join &#xA;&#x9;(&#xA;&#x9;select distinct teachersuid, teacherid, campusid, lastname, firstname&#xA;&#x9;from _IMS_Teachers&#xA;&#x9;union&#xA;&#x9;select distinct teachersuid, staffID, campusID, lastname, firstname&#xA;&#x9;from _IMS_Staff&#xA;&#x9;) allStaff on t.teacherid = allStaff.teacherid and t.CampusID = allStaff.CampusID&#xA;where allStaff.teachersuid is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, @numDays , t.ModifiedDate)&#xA;and t.TeachersUID not in (select EntityUID from tblTechInventory where EntityTypeUID = 3)&#xA;and t.TeachersUID not in (select EntityUID from tblUnvCharges where EntityTypeUID = 3 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0)&#xA;and t.TeachersUID not in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 3 and statusid &lt;&gt; 56)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@numDays"
+                SQLTask:DtsVariableName="User::DaysToKeep"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -2190,7 +2320,7 @@ and t.TeachersUID not in (select EntityUID from tblTechAuditDetails where Entity
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::Deactivate_IT_Staff_Report</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -2203,7 +2333,7 @@ and t.TeachersUID not in (select EntityUID from tblTechAuditDetails where Entity
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -2436,7 +2566,7 @@ and (
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::NotDeactivated_IT_Staff_Report</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -2449,7 +2579,7 @@ and (
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -2797,7 +2927,14 @@ and (
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{72C950EE-B92B-4E79-A3C2-46960363F371}"
-              SQLTask:SqlStatementSource="&#xA;--select s.* &#xA;Update s set activeIT = 0, userID = 0, ModifiedDate = getdate()&#xA;,   NotesIT = &#xA;&#x9;case when ltrim(rtrim(isNull(NotesIT, ''))) = '' then 'Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101)&#xA;&#x9;else NotesIT + '; Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101) end&#xA;from tblStudents s&#xA;left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID&#xA;where st.IMS_StudentID is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, 7, s.ModifiedDate)&#xA;and s.StudentsUID not in (select EntityUID from tblTechInventory where EntityTypeUID = 4)&#xA;and s.StudentsUID not in (select EntityUID from tblUnvCharges where EntityTypeUID = 4 and ChargeAmount &gt; 0 and DateSatisfied is null  and void = 0)&#xA;and s.StudentsUID not in (select EntityUID from tblTechAuditDetails where EntityTypeUID = 4 and statusid &lt;&gt; 56)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="&#xA;declare @numDays int&#xA;set @numDays = ?&#xA;&#xA;--select s.* &#xA;Update s set activeIT = 0, userID = 0, ModifiedDate = getdate()&#xA;,   NotesIT = &#xA;&#x9;case when ltrim(rtrim(isNull(NotesIT, ''))) = '' then 'Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101)&#xA;&#x9;else NotesIT + '; Deactivated in TIPWeb-IT via import process: ' + convert(varchar(10), getdate(), 101) end&#xA;from tblStudents s&#xA;left outer join _IMS_Students st on s.StudentID = st.StudentID and s.CampusID = st.CampusID&#xA;where st.IMS_StudentID is null&#xA;and (activeit = 1)&#xA;and getdate() &gt; dateadd(d, @numDays, s.ModifiedDate)&#xA;and (select count(*) from tblTechInventory where EntityTypeUID = 4 and EntityUID = s.StudentsUID) = 0&#xA;and (select count(*) from tblUnvCharges where EntityTypeUID = 4 and EntityUID = s.StudentsUID and ApplicationUID =2 and ChargeAmount &gt; 0 and DateSatisfied is null and void = 0) = 0&#xA;and (select count(*) from tblTechAuditDetails where EntityTypeUID = 4  and EntityUID = s.StudentsUID and statusid &lt;&gt; 56) = 0" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@numDays"
+                SQLTask:DtsVariableName="User::DaysToKeep"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="3"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -3133,7 +3270,7 @@ and s.StudentsUID not in (select EntityUID from tblTechAuditDetails where Entity
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::Deactivate_IT_Students_Report</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -3146,7 +3283,7 @@ and s.StudentsUID not in (select EntityUID from tblTechAuditDetails where Entity
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -3373,7 +3510,7 @@ and (
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::NotDeactivated_IT_Student_Report</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -3386,7 +3523,7 @@ and (
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -3686,7 +3823,7 @@ and (
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F76EA7AB-7628-4C10-BE10-04E7A79D2F62}"
-          SQLTask:SqlStatementSource="declare @customeruid int&#xA;&#xA;set @customeruid = ?&#xA;&#xA;select IT_Students, IT_Staff, IM_Students, IM_Staff&#xA;from CustomerConfiguration&#xA;where CustomersUID = @customeruid "
+          SQLTask:SqlStatementSource="declare @customeruid int&#xA;&#xA;set @customeruid = ?&#xA;&#xA;select IT_Students, IT_Staff, IM_Students, IM_Staff, DaysToKeep&#xA;from CustomerConfiguration&#xA;where CustomersUID = @customeruid "
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="IT_Students"
@@ -3700,6 +3837,9 @@ and (
           <SQLTask:ResultBinding
             SQLTask:ResultName="IM_Staff"
             SQLTask:DtsVariableName="User::Deactivate_IM_Staff" />
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="DaysToKeep"
+            SQLTask:DtsVariableName="User::DaysToKeep" />
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="@customeruid"
             SQLTask:DtsVariableName="$Package::CustomerUID"
@@ -3818,7 +3958,7 @@ and (
           <DTS:ObjectData>
             <ExecuteProcessData
               Executable="E:\Integration\7z.exe"
-              Arguments="a -tzip  &quot;\Deactivated\_DeactivateReports_05042018.zip&quot; &quot;filename&quot;"
+              Arguments="a -tzip  &quot;\Deactivated\_DeactivateReports_05162018.zip&quot; &quot;filename&quot;"
               WorkingDirectory="\Deactivated\" />
           </DTS:ObjectData>
         </DTS:Executable>
@@ -3880,36 +4020,6 @@ and (
           Language="CSharp"
           ReadOnlyVariables="User::ZipFileName"
           ReadWriteVariables="User::ZipFileExists,User::ZipFileSize">
-          <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_14d42a79f5b34e468116d5a92f37f784")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_14d42a79f5b34e468116d5a92f37f784")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.resx"
             Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -4029,6 +4139,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+          <ProjectItem
+            Name="Properties\Settings.Designer.cs"
+            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_14d42a79f5b34e468116d5a92f37f784.Properties.Settings.get_Default():ST_14d42a79f5b34e468116d5a92f37f784.Properties.Sett" +
+    "ings")]
+
+namespace ST_14d42a79f5b34e468116d5a92f37f784.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
           <ProjectItem
             Name="ScriptMain.cs"
             Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -4269,34 +4408,35 @@ namespace ST_14d42a79f5b34e468116d5a92f37f784
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
           <ProjectItem
-            Name="Properties\Settings.Designer.cs"
-            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_14d42a79f5b34e468116d5a92f37f784")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_14d42a79f5b34e468116d5a92f37f784")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_14d42a79f5b34e468116d5a92f37f784.Properties.Settings.get_Default():ST_14d42a79f5b34e468116d5a92f37f784.Properties.Sett" +
-    "ings")]
-
-namespace ST_14d42a79f5b34e468116d5a92f37f784.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="Properties\Settings.settings"
             Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
