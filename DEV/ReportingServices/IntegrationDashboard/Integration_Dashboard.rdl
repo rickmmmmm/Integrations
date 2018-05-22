@@ -4338,30 +4338,7 @@ from (
 		left outer join [TipWebHostedGarlandISD].[dbo].[_ETL_ActivityMonitor] am on lastrun.ImportCode = am.ImportDataID
 		order by [ActivityMonitorID] desc
 ) a
-UNION
 
-select ImportCode, Client, Job_Name, filecheck, sfilename, filesize, file_recvd_date, check_time, category, filecheck2
-from (
-	select top 1  lastrun.[ImportCode], 'Mesa PS' as client, 
-	'INTG_MesaPS_Charges' as job_name, 
-	case when [ActivityMessage] like '%no file%' then 0 else 1 end as filecheck,
-	'E:\EZImportFiles\MesaPS_SFTP_User\Integration\Data\Imports\finepayments.txt' as sfilename,
-	 -1 as filesize,
-	[ImportDateTime] as file_recvd_date,
-	[ImportDateTime] as check_time, 
-	'Payments' as category,
-	case when [ActivityMessage] like '%no file%' then 'NO' 
-	when ActivityMonitorID is null then 'Unknown' else 'YES' end as filecheck2
-	 from (
-
-		SELECT TOP 1 [ImportCode] ,[ImportDateTime],[ImportUserId],[ImportCompleted]
-		FROM TipWebHostedMesaPS.[dbo].[_ETL_ImportData] 
-	 	order by importcode desc
-		)  lastrun
-	left outer join TipWebHostedMesaPS.[dbo].[_ETL_ActivityMonitor] am on lastrun.ImportCode = am.ImportDataID
-
-	order by [ActivityMonitorID] desc
-) b
 
 Order by Client</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
