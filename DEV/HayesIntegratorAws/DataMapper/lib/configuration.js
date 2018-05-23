@@ -6,7 +6,7 @@ module.exports = {
         "username":"",
         "dbType":"mssql",
         "sourceType":"csv",
-        "mapType":"purchases",
+        "mapType":"shipments", // "mapType":"purchases",
         "client":"CPS",
         "idFileLoc":"/home/ec2-user/",
         "typeDesc":"Invoice Detail Integration for Chicago Public Schools sourced from Oracle Purchasing",
@@ -45,7 +45,7 @@ module.exports = {
             "payments":"0",
             "inventory": "0"
         },
-        flatDataTable: "PurchaseOrderIntegrationFlatData" //"Shipments"
+        flatDataTable: "ShipmentIntegrationFlatData", // flatDataTable: "PurchaseOrderIntegrationFlatData"
     }
 }
 // still need to add configurations for client data. I'm thinking each integration will have an object in this configuration file

@@ -5,13 +5,14 @@ module.exports = {
         "apiUrl":"https://www.tipwebintegrationtest.com/IntgCPSTIPWebAPI/api",
         "host":"integrations-qa.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
         // "apiUrl":"https://www.tipwebintegrationtest.com/IntgCPSTIPWebAPI_TW/api",
+        // "host":"integration-qa-test.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
         // "host":"chicago-etl.cd3gpflcjjp7.us-east-1.rds.amazonaws.com",
         "database":"IntgAppData",
         "username":"intg-cps",
         "dbType":"mssql",
         "sourceFile":"/home/",
         "sourceType":"csv",
-        "mapType":"shipping",
+        "mapType":"shipments",
         "idFileLoc":"/home/ec2-user/",
         "client":"CPS",
         "typeDesc":"Shipping Integration for Chicago Public Schools sourced from Oracle Purchasing",
@@ -48,7 +49,7 @@ module.exports = {
             "payments":"0",
             "inventory": "0"
         },
-        flatDataTable: "Shipments"
+        flatDataTable: "ShipmentIntegrationFlatData"
     }
 }
 // still need to add configurations for client data. I'm thinking each integration will have an object in this configuration file

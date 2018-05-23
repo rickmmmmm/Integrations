@@ -118,6 +118,8 @@ for jsonArray in *.json; do
     echo " #### Mapping Array chunks of file: $jsonArray";
     hayes-datamapper --mapflat -f "/home/ec2-user/etc/$CLIENT/processing/json/arrays/$jsonArray" -id $INSTANCEID ;
     echo " #### Mapped flat data to database...";
+    hayes-datamapper --shipments -id $INSTANCEID;
+    echo " #### Mapped shipments.";
     hayes-datamapper -chu -id $INSTANCEID;
     echo " #### Next chunk";
 done
@@ -153,10 +155,10 @@ fi
 
 if [ ! $DEBUG ]; then
     echo " #### Terminate instance $INSTANCEID"
-    aws ec2 terminate-instances --instance-ids $INSTANCEID
+    aws ec2 terminate-instances --instance-ids $INSTANCEID;
 else
     echo " #### Stop instance $INSTANCEID"
-    aws ec2 stop-instances --instance-ids $INSTANCEID
+    aws ec2 stop-instances --instance-ids $INSTANCEID;
 fi
 ###############################################################################################################################################
 #DONE!

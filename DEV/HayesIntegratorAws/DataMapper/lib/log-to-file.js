@@ -1,5 +1,5 @@
 var fs = require('fs');
-var errorFile = "./errors/log.json"
+var errorFile = './errors/log.json';
 
 module.exports = {
 
@@ -8,4 +8,4 @@ module.exports = {
         fs.createWriteStream(errorFile).write(error);
     }
 
-}
+};

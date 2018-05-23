@@ -10,7 +10,9 @@ CREATE PROCEDURE [dbo].[GetErrorsReport] (
     @Offset AS INT = NULL,
     @Limit AS INT = NULL,
     @StartDate AS DATETIME = NULL,
-    @EndDate AS DATETIME = NULL)
+    @EndDate AS DATETIME = NULL,
+    @ErrorName AS VARCHAR(500) = NULL,
+    @ErrorObjectSearch AS VARCHAR(500) = NULL)
 AS
     BEGIN
         DECLARE @DataIntegrations AS TABLE (DataIntegrationsID VARCHAR(100) NOT NULL)
@@ -31,7 +33,9 @@ AS
                         SET @EndDate = DATEADD(HOUR, -24, @StartDate)
                     END
             END
-        ELSE -- IF(@StartDate IS NULL AND @EndDate IS NULL)
+        ELSE IF(@StartDate IS NOT NULL AND @EndDate IS NULL)
+            SET @EndDate = GETDATE()
+        ELSE
             BEGIN
                 SELECT @StartDate = DATEADD(HOUR, -24, GETDATE()),
                        @EndDate = GETDATE()
@@ -87,20 +91,17 @@ AS
         WHERE 
             DataIntegrationsID IN (SELECT DataIntegrationsID FROM @DataIntegrations)
             AND (
-                 ErrorName = 'Bad Record' OR
-                 ErrorName = 'Purchase Rejected' OR
-                 ErrorName = 'Detail Record Rejected' OR
-                 ErrorName = 'Shipment Rejected' OR
-                 ErrorName = 'Vendor Rejected' OR
-                 ErrorName = 'Product Rejected'
-                 )
+                (@ErrorName IS NOT NULL AND ErrorName = @ErrorName) OR
+                (@ErrorObjectSearch IS NOT NULL AND ErrorObject LIKE '%' + @ErrorObjectSearch + '%') OR 
+                (@ErrorName IS NULL AND @ErrorObjectSearch IS NULL )
+            )
         ORDER BY AddedDate
         OFFSET @Offset ROWS
         FETCH NEXT @LIMIT ROWS ONLY;
 
         PRINT N''
         PRINT N'Showing Errors ' + CAST((@Offset + 1) AS VARCHAR) + ' to ' + CAST((@Limit + 1) AS VARCHAR) + ' recorded between ' + CONVERT(VARCHAR, @StartDate, 101) + ' ' + CONVERT(VARCHAR, @StartDate, 108) + ' and ' + CONVERT(VARCHAR, @EndDate, 101) + ' '+ CONVERT(VARCHAR, @EndDate, 108)
-
+        PRINT N'With Search String: @ErrorName = ''' + ISNULL(@ErrorName, 'NULL') + ''', @ErrorObjectSearch = ''' + '%' + ISNULL(@ErrorObjectSearch, 'NULL') + '%' + '''.'
     END
 GO
 GRANT EXECUTE

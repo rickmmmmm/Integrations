@@ -14,3 +14,4 @@
     [Submitted]       BIT           CONSTRAINT [DF_Shipments_Submitted] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Shipments] PRIMARY KEY CLUSTERED ([OrderNumber] ASC, [LineNumber] ASC, [SiteID] ASC, [IntegrationsID] ASC)
 );
+
