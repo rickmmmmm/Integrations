@@ -26,7 +26,7 @@
     [EntityName]               VARCHAR (50)   NOT NULL,
     [EntityTypeUID]            INT            NOT NULL,
     [EntityTypeName]           VARCHAR (100)  NOT NULL,
-    [StatusUID]                INT            NOT NULL,
+    [StatusID]                 INT            NOT NULL,
     [Status]                   VARCHAR (50)   NULL,
     [TechDepartmentUID]        INT            NULL,
     [DepartmentName]           VARCHAR (50)   NULL,

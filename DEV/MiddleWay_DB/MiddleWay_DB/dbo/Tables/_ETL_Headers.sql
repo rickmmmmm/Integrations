@@ -3,7 +3,7 @@
     [ProcessUid]            INT            NOT NULL,
     [PurchaseUID]           INT            NOT NULL,
     [OrderNumber]           VARCHAR (50)   NOT NULL,
-    [StatusUID]             INT            NOT NULL,
+    [StatusID]              INT            NOT NULL,
     [Status]                VARCHAR (50)   NULL,
     [VendorUID]             INT            NOT NULL,
     [VendorName]            VARCHAR (100)  NULL,

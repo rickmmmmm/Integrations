@@ -5,7 +5,7 @@
     [PurchaseUID]              INT            NOT NULL,
     [OrderNumber]              VARCHAR (50)   NOT NULL,
     [LineNumber]               INT            NOT NULL,
-    [StatusUID]                INT            NOT NULL,
+    [StatusID]                 INT            NOT NULL,
     [Status]                   VARCHAR (50)   NULL,
     [SiteAddedSiteUID]         INT            NOT NULL,
     [SiteID]                   VARCHAR (100)  NULL,

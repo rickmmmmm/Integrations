@@ -12,7 +12,7 @@
     [TicketedByUserID]        INT           NULL,
     [TicketedBy]              VARCHAR (50)  NULL,
     [TicketedDate]            DATETIME      NULL,
-    [StatusUID]               INT           NOT NULL,
+    [StatusID]                INT           NOT NULL,
     [Status]                  VARCHAR (50)  NULL,
     [InvoiceNumber]           VARCHAR (25)  NULL,
     [InvoiceDate]             DATE          NULL,
