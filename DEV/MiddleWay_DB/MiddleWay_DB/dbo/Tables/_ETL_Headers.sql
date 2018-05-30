@@ -1,0 +1,23 @@
+﻿CREATE TABLE [dbo].[_ETL_Headers] (
+    [_ETL_HeaderUID]        INT            IDENTITY (1, 1) NOT NULL,
+    [ProcessUid]            INT            NOT NULL,
+    [PurchaseUID]           INT            NOT NULL,
+    [OrderNumber]           VARCHAR (50)   NOT NULL,
+    [StatusUID]             INT            NOT NULL,
+    [Status]                VARCHAR (50)   NULL,
+    [VendorUID]             INT            NOT NULL,
+    [VendorName]            VARCHAR (100)  NULL,
+    [VendorAccountNumber]   VARCHAR (50)   NULL,
+    [SiteUID]               INT            NOT NULL,
+    [SiteID]                VARCHAR (100)  NULL,
+    [PurchaseDate]          DATETIME       NULL,
+    [EstimatedDeliveryDate] DATETIME       NULL,
+    [Notes]                 VARCHAR (1000) NULL,
+    [Other1]                VARCHAR (100)  NULL,
+    [FRN]                   VARCHAR (50)   NULL,
+    CONSTRAINT [PK__ETL_Headers] PRIMARY KEY CLUSTERED ([_ETL_HeaderUID] ASC),
+    CONSTRAINT [FK__ETL_Headers_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+);
+
+
+
