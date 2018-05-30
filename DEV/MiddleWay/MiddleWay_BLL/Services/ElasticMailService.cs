@@ -1,45 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MiddleWay_DTO.Models;
+using System;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
 using System.Net;
-using System.Threading.Tasks;
-using Model;
-using System.Configuration;
+using System.Text;
 
 namespace Services
 {
     public class ElasticMailService : ISender
     {
-        public void send(IMessage message)
+        public void send(MessageModel message)
         {
-            NameValueCollection values = new NameValueCollection();
-            values.Add("apikey", ConfigurationManager.AppSettings["apikey"]);
-            values.Add("from", message.Sender);
-            values.Add("fromName", ConfigurationManager.AppSettings["fromName"]);
-            values.Add("to", string.Join(",",message.Receivers.ToArray()));
-            values.Add("subject", message.Subject);
-            values.Add("bodyHtml", message.Body);
-            values.Add("isTransactional", "true");
+            var apiKey = ConfigurationManager.AppSettings["apikey"];
+            var fromName = ConfigurationManager.AppSettings["fromName"];
+            string address = ConfigurationManager.AppSettings["ElasticAPI"];
 
-            using (WebClient client = new WebClient())
+            var toRecipients = string.Join(",", message.Recipients.ToArray());
+
+            if (message is EmailMessageModel)
             {
-                try
-                {
-                    string address = ConfigurationManager.AppSettings["ElasticAPI"];
-                    byte[] apiResponse = client.UploadValues(address, values);
+                var emailMessage = (EmailMessageModel)message;
+                NameValueCollection values = new NameValueCollection();
+                values.Add("apikey", apiKey);
+                values.Add("from", emailMessage.Sender);
+                values.Add("fromName", fromName);
+                values.Add("to", toRecipients);
+                values.Add("subject", emailMessage.Subject);
+                values.Add("bodyHtml", emailMessage.Body);
+                values.Add("isTransactional", "true");
 
-                    Console.WriteLine(Encoding.UTF8.GetString(apiResponse));
-                }
-                catch (Exception e)
+                using (WebClient client = new WebClient())
                 {
-                    Console.WriteLine("Error sending email. Error Message: " + e.Message);
+                    try
+                    {
+                        byte[] apiResponse = client.UploadValues(address, values);
+
+                        Console.WriteLine(Encoding.UTF8.GetString(apiResponse));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error sending email. Error Message: " + e.Message);
+                    }
                 }
             }
         }
 
-        public void sendAsync(IMessage message)
+        public void sendAsync(MessageModel message)
         {
             throw new NotImplementedException();
         }

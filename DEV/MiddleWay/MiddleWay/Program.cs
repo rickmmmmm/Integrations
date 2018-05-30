@@ -44,17 +44,29 @@ namespace MiddleWay
         private static void startup()
         {
 
+            var connectionString = ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString;
+
             //setup our DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging()
                 //.AddSingleton<IFooService, FooService>()
                 //.AddSingleton<IBarService, BarService>()
+                .AddSingleton<IConfigurationService, ConfigurationService>()
+                .AddDbContext
                 .BuildServiceProvider();
+
+
+            services.Configure<DatabaseConfigurationOptions>(Configuration.GetSection("ConnectionStrings"));
+
+            var connection = Configuration.GetConnectionString("TranslationDatabase");
 
             //configure console logging
             //serviceProvider
             //    .GetService<ILoggerFactory>();
-                //.AddConsole(LogLevel.Debug);
+            //.AddConsole(LogLevel.Debug);
+
+
+
 
             var logger = serviceProvider.GetService<ILoggerFactory>()
                 .CreateLogger<Program>();

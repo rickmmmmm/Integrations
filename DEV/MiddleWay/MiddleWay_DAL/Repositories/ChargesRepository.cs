@@ -1,5 +1,5 @@
 ﻿using MiddleWay_DAL.EF_DAL;
-using MiddleWay_DTO.Interfaces;
+using MiddleWay_DTO.RepositoryInterfaces;
 using MiddleWay_DTO.Models;
 using System;
 using System.Collections.Generic;
@@ -137,7 +137,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Update Functions
 
-        public void voidCharges(List<ChargePayments> voidedCharges)
+        public void voidCharges(List<ChargePaymentsModel> voidedCharges)
         {
             string query = "UPDATE tblUnvCharges ";
             query += "SET Void = 1 ";

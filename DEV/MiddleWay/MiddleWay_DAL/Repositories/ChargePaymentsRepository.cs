@@ -1,4 +1,5 @@
 ﻿using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,9 +25,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public Charge getChargeAmountByChargeId(int chargeId)
+        public ChargesModel getChargeAmountByChargeId(int chargeId)
         {
-            Charge returnCharge = new Charge();
+            ChargesModel returnCharge = new ChargesModel();
 
             string query = "SELECT chg.ChargeAmount, ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as PaidAmount FROM tblUnvCharges chg WHERE ChargeUID = " + chargeId.ToString();
 
@@ -50,9 +51,9 @@ namespace MiddleWay_DAL.Repositories
             return returnCharge;
         }
 
-        private List<ChargePayments> getPaymentsByChargeId(int chargeId)
+        private List<ChargePaymentsModel> getPaymentsByChargeId(int chargeId)
         {
-            var payments = new List<ChargePayments>();
+            var payments = new List<ChargePaymentsModel>();
 
             string query = " WHERE ChargeUID = " + chargeId.ToString();
 
@@ -68,7 +69,7 @@ namespace MiddleWay_DAL.Repositories
 
             while (reader.Read())
             {
-                var payment = new ChargePayments();
+                var payment = new ChargePaymentsModel();
 
                 payment.ParentCharge.ChargeUID = chargeId;
                 payment.ChargeAmount = (decimal)reader[1];
@@ -82,7 +83,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Insert Functions
 
-        public void insertPaymentDetails(List<ChargePayments> imports)
+        public void insertPaymentDetails(List<ChargePaymentsModel> imports)
         {
             foreach (var import in imports)
             {
@@ -90,7 +91,7 @@ namespace MiddleWay_DAL.Repositories
             }
         }
 
-        public void insertPaymentDetail(ChargePayments import)
+        public void insertPaymentDetail(ChargePaymentsModel import)
         {
 
             string query = "INSERT INTO tblUnvChargePayments (ApplicationUID, ChargeUID, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";

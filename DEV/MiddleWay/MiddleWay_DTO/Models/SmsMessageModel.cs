@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MiddleWay_DTO.Models
 {
-    public class SmsMessage : MessageModel
+    public class SmsMessageModel : MessageModel
     {
         /// <summary>
         /// Alias property for the Body property of the MessageModel

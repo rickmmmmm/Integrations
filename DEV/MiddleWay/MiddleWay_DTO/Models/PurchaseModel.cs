@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiddleWay_DTO.Models
 {
-    public class PurchaseOrderHeader
+    public class PurchaseModel
     {
         public int StatusUID { get; set; }
         public int VendorUID { get; set; }
@@ -20,6 +20,6 @@ namespace MiddleWay_DTO.Models
         public int LastModifiedByUserId { get; set; }
         public DateTime LastModifiedDate { get; set; }
         public string Other1 { get; set; }
-        public ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
+        public ICollection<PurchaseItemDetailModel> PurchaseOrderDetails { get; set; }
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiddleWay_DTO.Models
 {
-    public class Charge
+    public class ChargesModel
     {
         public int ChargeUID { get; set; }
         public decimal? ChargeAmount { get; set; }
-        public ICollection<ChargePayments> Payments { get; set; }
+        public ICollection<ChargePaymentsModel> Payments { get; set; }
     }
 
     public class ChargeExportFile
@@ -27,11 +24,4 @@ namespace MiddleWay_DTO.Models
 
     }
 
-    public class ChargePayments
-    {
-        public Charge ParentCharge { get; set; }
-        public decimal ChargeAmount { get; set; }
-        public bool Void { get; set; }
-        public DateTime PaymentDate { get; set; }
-    }
 }

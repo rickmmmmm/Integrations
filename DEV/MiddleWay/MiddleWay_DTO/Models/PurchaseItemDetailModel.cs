@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MiddleWay_DTO.Models
 {
-    public class PurchaseOrderDetail
+    public class PurchaseItemDetailModel
     {
-        public PurchaseOrderHeader ParentPurchase { get; set; }
+        public PurchaseModel ParentPurchase { get; set; }
         public int ItemUID { get; set; }
         public int FundingSourceUID { get; set; }
         public int StatusUID { get; set; }

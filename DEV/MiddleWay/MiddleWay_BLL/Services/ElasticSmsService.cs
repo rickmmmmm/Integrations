@@ -1,32 +1,48 @@
-﻿using System;
+﻿using MiddleWay_DTO.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
 using System.Net;
-using System.Threading.Tasks;
-using Model;
-using System.Configuration;
+using System.Text;
 
 namespace Services
 {
     public class ElasticSmsService : ISender
     {
-        public void send(IMessage message)
+        #region Private Variables and Properties
+        #endregion Private Variables and Properties
+
+        #region Constructor
+        #endregion Constructor
+
+        #region Send Functions
+
+        public void send(MessageModel message)
         {
-            NameValueCollection values = new NameValueCollection();
-            values.Add("apikey", ConfigurationManager.AppSettings["apikey"]);
-            values.Add("to", message.Sender);
-            values.Add("body", message.Body);
+            var apiKey = ConfigurationManager.AppSettings["apikey"];
+            string address = ConfigurationManager.AppSettings["SMSAPI"];
+
+            List<NameValueCollection> messageList = new List<NameValueCollection>();
+
+            foreach (var recipient in message.Recipients)
+            {
+                NameValueCollection values = new NameValueCollection();
+                values.Add("apikey", apiKey);
+                values.Add("to", recipient);
+                values.Add("body", message.Body);
+                messageList.Add(values);
+            }
 
             using (WebClient client = new WebClient())
             {
                 try
                 {
-                    string address = ConfigurationManager.AppSettings["SMSAPI"];
-                    byte[] apiResponse = client.UploadValues(address, values);
+                    foreach (var smsMessage in messageList)
+                    {
+                        byte[] apiResponse = client.UploadValues(address, smsMessage);
 
-                    Console.WriteLine(Encoding.UTF8.GetString(apiResponse));
+                        Console.WriteLine(Encoding.UTF8.GetString(apiResponse));
+                    }
                 }
                 catch (Exception e)
                 {
@@ -35,9 +51,11 @@ namespace Services
             }
         }
 
-        public void sendAsync(IMessage message)
+        public void sendAsync(MessageModel message)
         {
             throw new NotImplementedException();
         }
+
+        #endregion Send Functions
     }
 }

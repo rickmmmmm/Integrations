@@ -1,4 +1,5 @@
 ﻿using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +25,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public List<RejectedRecord> getRejectionsFromLastImport()
+        public List<RejectedRecord> getRejectionsFromLastImport() //TODO: THIS MOVES TO THE Centralized integration Database
         {
             List<RejectedRecord> rejects = new List<RejectedRecord>();
 
@@ -83,7 +84,7 @@ namespace MiddleWay_DAL.Repositories
             }
 
         }
-        public void logRejectRecord(RejectedRecord rejection)
+        public void logRejectRecord(RejectedRecord rejection)//TODO: THIS MOVES TO THE Centralized integration Database
         {
             string query = "INSERT INTO _ETL_Rejects (ImportCode, Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber)";
             query += " VALUES (" + _importCode.ToString() + ",'" + rejection.orderNumber + "','" + rejection.rejectReason + "','" + rejection.rejectValue.Replace("'", "") + "','" + rejection.exceptionMessage.Replace("'", "") + "'," + rejection.LineNumber.ToString() + ")";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace MiddleWay_DTO.Enumerations
@@ -34,5 +35,29 @@ namespace MiddleWay_DTO.Enumerations
         UTF8,
         GSM,
         UCS2
+    }
+
+    public enum InventoryTypeEnum
+    {
+        Tagged = 1,
+        Untagged = 2
+    }
+
+    public enum EntityTypeEnum
+    {
+        Site = 1,
+        Room = 2,
+        Staff = 3,
+        Student = 4,
+        Hardware = 5,
+        Transfer = 6,
+        Purchase = 7
+    }
+
+    public enum ImportType
+    {
+        PurchaseOrder,
+        MobileDeviceManagement,
+        InTouchPayments
     }
 }

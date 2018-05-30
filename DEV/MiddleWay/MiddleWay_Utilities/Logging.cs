@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Model;
-using DataAccess;
+//using Model;
+//using DataAccess;
 
 namespace SystemTasks
 {
     public class Logging
     {
-        private IRepository _repo;
+        //private IRepository _repo;
 
-        public Logging(IRepository repo)
-        {
-            _repo = repo;
-        }
+        //public Logging(IRepository repo)
+        //{
+        //    _repo = repo;
+        //}
 
         public enum ChangeType { Error, Activity, RejectRecord }
         public void log(string message, string actionName, ChangeType type)
@@ -23,10 +23,10 @@ namespace SystemTasks
 
             if (type == ChangeType.Error)
             {
-                _repo.logError(message, actionName);
+                //_repo.logError(message, actionName);
             }
 
-            _repo.logAction(actionName, message);
+            //_repo.logAction(actionName, message);
         }
 
     }

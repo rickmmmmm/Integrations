@@ -9,12 +9,12 @@ using SystemTasks;
 
 namespace SystemTasks
 {
-    public class PurchaseOrderMapping
+    public class PurchaseOrderService : IPurchaseOrderService
     {
-        private IRepository _repo;
-        public PurchaseOrderMapping(IRepository repo)
+        private IPurchaseOrderRepository _purchaseOrderRepository;
+        public PurchaseOrderService(IPurchaseOrderRepository purchaseOrderRepository)
         {
-            _repo = repo;
+            _purchaseOrderRepository = purchaseOrderRepository;
         } 
 
         public List<Item> mapToItems(List<PurchaseOrderFile> payload)

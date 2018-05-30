@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MiddleWay_DTO.Enumerations;
 
 namespace MiddleWay_DTO.Models
 {
-    public class InventoryHeader
+    public class InventoryModel
     {
-        public InventoryType InventoryTypeUID { get; set; }
-        public Item SiblingItem { get; set; }
+        public InventoryTypeEnum InventoryTypeUID { get; set; }
+        public ItemsModel SiblingItem { get; set; }
         public int SiteUID { get; set; }
         public int EntityUID { get; set; }
-        public EntityType EntityTypeUID { get; set; }
+        public EntityTypeEnum EntityTypeUID { get; set; }
         public int StatusUID { get; set; }
         public int TechDepartmentUID { get; set; }
         public string Tag { get; set; }
@@ -35,6 +36,4 @@ namespace MiddleWay_DTO.Models
 
     }
 
-    public enum InventoryType { Tagged, Untagged }
-    public enum EntityType { Blank, Site, Room, Staff, Student, Hardware, Transfer, Purchase }
 }

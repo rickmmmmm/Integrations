@@ -1,11 +1,12 @@
 ﻿using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MiddleWay_DAL.Repositories
 {
-    public class EmailRepository
+    public class EmailRepository : IEmailRepository
     {
         #region Private Variables and Properties
 
@@ -48,6 +49,7 @@ namespace MiddleWay_DAL.Repositories
 
             _conn.Close();
         }
+
         #endregion Insert Functions
 
         #region Update Functions

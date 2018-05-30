@@ -1,4 +1,5 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DTO.Models;
+using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,7 +59,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Insert Functions
 
-        public void addOrderDetails(List<PurchaseOrderDetail> details)
+        public void addOrderDetails(List<PurchaseItemDetailModel> details)
         {
             string detailQuery;
 

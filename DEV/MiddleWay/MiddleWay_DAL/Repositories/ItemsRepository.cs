@@ -1,4 +1,5 @@
 ﻿using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -129,7 +130,7 @@ namespace MiddleWay_DAL.Repositories
             }
         }
 
-        public Item getItemFromName(string productName)
+        public ItemsModel getItemFromName(string productName)
         {
             Item newItem = new Item();
 

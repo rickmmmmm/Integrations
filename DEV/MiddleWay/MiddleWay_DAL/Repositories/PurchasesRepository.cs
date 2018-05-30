@@ -1,4 +1,5 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DTO.Models;
+using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -160,7 +161,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Insert Functions
 
-        public void addOrderHeaders(List<PurchaseOrderHeader> orders)
+        public void addOrderHeaders(List<PurchaseModel> orders)
         {
 
             foreach (var order in orders)
