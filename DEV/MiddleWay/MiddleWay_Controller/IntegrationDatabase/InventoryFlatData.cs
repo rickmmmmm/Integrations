@@ -7,45 +7,114 @@ namespace MiddleWay_Controller.IntegrationDatabase
 {
     public class InventoryFlatData
     {
-        //[MaxLength( , ErrorMessage = "")]
-        public bla InventoryFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
-        public bla ProcessUid { get; set; } // INT NOT NULL,
-        public bla AssetID { get; set; } // VARCHAR(100) NULL,
-        public bla Tag { get; set; } // VARCHAR(50) NULL,
-        public bla Serial { get; set; } // VARCHAR(50) NULL,
-        public bla SiteID { get; set; } // VARCHAR(100) NULL,
-        public bla SiteName { get; set; } // VARCHAR(100) NULL,
-        public bla Location { get; set; } // VARCHAR(50) NULL,
-        public bla Status { get; set; } // VARCHAR(50) NULL,
-        public bla DepartmentName { get; set; } //VARCHAR(50) NULL,
-        public bla DepartmentID { get; set; } //VARCHAR(50) NULL,
-        public bla FundingSource { get; set; } //VARCHAR(500) NULL,
-        public bla FundingSourceDescription { get; set; } //VARCHAR(500) NULL,
-        public bla PurchasePrice { get; set; } //DECIMAL NULL,
-        public bla PurchaseDate { get; set; } //DATETIME NULL,
-        public bla ExpirationDate { get; set; } // DATETIME NULL,
-        public bla InventoryNotes { get; set; } // VARCHAR(3000) NULL,
-        public bla OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
-        public bla VendorName { get; set; } // VARCHAR(100) NULL,
-        public bla VendorAccountNumber { get; set; } // VARCHAR(50) NULL,
-        public bla ParentTag { get; set; } //VARCHAR(50) NULL,
-        public bla ProductName { get; set; } // VARCHAR(100) NULL,
-        public bla ProductDescription { get; set; } // VARCHAR(1000) NULL,
-        public bla ProductByNumber { get; set; } //VARCHAR(50) NULL,
-        public bla ProductTypeName { get; set; } // VARCHAR(50) NULL,
-        public bla ProductTypeDescription { get; set; } // VARCHAR(1000) NULL,
-        public bla ModelNumber { get; set; } // VARCHAR(100) NULL,
-        public bla ManufacturerName { get; set; } // VARCHAR(100) NULL,
-        public bla AreaName { get; set; } // VARCHAR(100) NULL,
-        public bla CustomField1Value { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField1Label { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField2Value { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField2Label { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField3Value { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField3Label { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField4Value { get; set; } // VARCHAR(50) NULL,
-        public bla CustomField4Label { get; set; } // VARCHAR(50) NULL,
-        public bla InvoiceNumber { get; set; } // VARCHAR(25) NULL,
-        public bla InvoiceDate { get; set; } //DATE NULL
+        public int InventoryFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
+        public int ProcessUid { get; set; } // INT NOT NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string AssetID { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Tag { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Serial { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string SiteID { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string SiteName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Location { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Status { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string DepartmentName { get; set; } //VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string DepartmentID { get; set; } //VARCHAR(50) NULL,
+
+        [MaxLength(500, ErrorMessage = "")]
+        public string FundingSource { get; set; } //VARCHAR(500) NULL,
+
+        [MaxLength(500, ErrorMessage = "")]
+        public string FundingSourceDescription { get; set; } //VARCHAR(500) NULL,
+
+        public decimal? PurchasePrice { get; set; } //DECIMAL NULL,
+
+        public DateTime? PurchaseDate { get; set; } //DATETIME NULL,
+
+        public DateTime? ExpirationDate { get; set; } // DATETIME NULL,
+
+        [MaxLength(3000, ErrorMessage = "")]
+        public string InventoryNotes { get; set; } // VARCHAR(3000) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string VendorName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string VendorAccountNumber { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ParentTag { get; set; } //VARCHAR(50) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ProductName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(1000, ErrorMessage = "")]
+        public string ProductDescription { get; set; } // VARCHAR(1000) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ProductByNumber { get; set; } //VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ProductTypeName { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(1000, ErrorMessage = "")]
+        public string ProductTypeDescription { get; set; } // VARCHAR(1000) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ModelNumber { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ManufacturerName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string AreaName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField1Value { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField1Label { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField2Value { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField2Label { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField3Value { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField3Label { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField4Value { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string CustomField4Label { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(25, ErrorMessage = "")]
+        public string InvoiceNumber { get; set; } // VARCHAR(25) NULL,
+
+        public DateTime? InvoiceDate { get; set; } //DATE NULL
     }
 }

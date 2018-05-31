@@ -7,15 +7,16 @@ namespace MiddleWay_Controller.IntegrationDatabase
 {
     public class Mappings
     {
-        //[MaxLength( , ErrorMessage = "")]
-        //public bla   { get; set; } // 
-        public bla MappingsUid INT IDENTITY(1, 1) NOT NULL,
+        public int MappingsUid { get; set; } // INT IDENTITY(1, 1) NOT NULL,
 
-public bla ProcessUid        INT NOT NULL,
-    public bla SourceColumn VARCHAR(100) NOT NULL,
+        public int ProcessUid { get; set; } // INT NOT NULL,
 
-public bla DestinationColumn VARCHAR(100) NOT NULL,
+        [MaxLength(100, ErrorMessage = "")]
+        public string SourceColumn { get; set; } // VARCHAR(100) NOT NULL,
 
-public bla Enabled           BIT
+        [MaxLength(100, ErrorMessage = "")]
+        public string DestinationColumn { get; set; } // VARCHAR(100) NOT NULL,
+
+        public bool Enabled { get; set; } // BIT
     }
 }

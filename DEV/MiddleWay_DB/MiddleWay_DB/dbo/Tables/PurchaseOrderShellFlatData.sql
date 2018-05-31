@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[PurchaseOrderShellFlatData] (
     [PurchaseOrderShellFlatDataUID] INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]                    INT            NOT NULL,
-    [OrderNumber]                   VARCHAR (50)   NOT NULL,
+    [OrderNumber]                   VARCHAR (50)   NULL,
     [PurchaseDate]                  DATETIME       NULL,
     [Status]                        VARCHAR (50)   NULL,
     [VendorName]                    VARCHAR (100)  NULL,

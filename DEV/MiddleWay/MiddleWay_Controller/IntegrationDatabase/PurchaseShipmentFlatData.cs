@@ -8,22 +8,48 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public class PurchaseShipmentFlatData
     {
         //[MaxLength( , ErrorMessage = "")]
-        public bla PurchaseShipmentFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
-    public bla ProcessUid { get; set; } // INT NOT NULL,
-public bla OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
-    public bla LineNumber { get; set; } // INT NULL,
-    public bla ShippedToSiteID { get; set; } // VARCHAR(100) NULL,
-    public bla ShippedToSiteName { get; set; } // VARCHAR(100) NULL,
-    public bla ShippedToSiteAddress { get; set; } // VARCHAR(100) NULL,
-    public bla ShippedToSiteCity { get; set; } // VARCHAR(50) NULL,
-    public bla ShippedToSiteState { get; set; } // VARCHAR(50) NULL,
-    public bla ShippedToSiteZip { get; set; } // VARCHAR(50) NULL,
-    public bla TicketNumber { get; set; } // INT NULL,
-    public bla QuantityShipped { get; set; } // INT NULL,
-    public bla TicketedBy { get; set; } // VARCHAR(50) NULL,
-    public bla TicketedDate { get; set; } // DATETIME NULL,
-    public bla Status { get; set; } // VARCHAR(50) NULL,
-    public bla InvoiceNumber { get; set; } // VARCHAR(25) NULL,
-    public bla InvoiceDate { get; set; } // DATETIME NULL
+        public int PurchaseShipmentFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
+
+        public int ProcessUid { get; set; } // INT NOT NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
+
+        public int? LineNumber { get; set; } // INT NOT NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ShippedToSiteID { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ShippedToSiteName { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string ShippedToSiteAddress { get; set; } // VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ShippedToSiteCity { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ShippedToSiteState { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string ShippedToSiteZip { get; set; } // VARCHAR(50) NULL,
+
+        public int? TicketNumber { get; set; } // INT NULL,
+
+        public int? QuantityShipped { get; set; } // INT NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string TicketedBy { get; set; } // VARCHAR(50) NULL,
+
+        public DateTime? TicketedDate { get; set; } // DATETIME NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Status { get; set; } // VARCHAR(50) NULL,
+
+        [MaxLength(25, ErrorMessage = "")]
+        public string InvoiceNumber { get; set; } // VARCHAR(25) NULL,
+
+        public DateTime? InvoiceDate { get; set; } // DATETIME NULL
     }
 }

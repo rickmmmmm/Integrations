@@ -8,21 +8,44 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public class _ETL_Headers
     {
         //[MaxLength( , ErrorMessage = "")]
-        public bla _ETL_HeaderUid { get; set; } //INT IDENTITY(1,1) NOT NULL,
-        public bla ProcessUid { get; set; } //INT NOT NULL,
-        public bla PurchaseUid { get; set; } //INT NOT NULL,
-        public bla OrderNumber { get; set; } //VARCHAR(50) NOT NULL,
-        public bla StatusID { get; set; } //INT NOT NULL,
-        public bla Status { get; set; } //VARCHAR(50) NULL,
-        public bla VendorUid { get; set; } //INT NOT NULL,
-        public bla VendorName { get; set; } //VARCHAR(100) NULL,
-        public bla VendorAccountNumber { get; set; } //VARCHAR(50) NULL,
-        public bla SiteUid { get; set; } //INT NOT NULL,
-        public bla SiteID { get; set; } //VARCHAR(100) NULL,
-        public bla PurchaseDate { get; set; } //DATETIME NULL,
-        public bla EstimatedDeliveryDate { get; set; } //DATETIME NULL,
-        public bla Notes { get; set; } //VARCHAR(1000) NULL,
-        public bla Other1 { get; set; } //VARCHAR(100) NULL,
-        public bla FRN { get; set; } //VARCHAR(50)
+        public int _ETL_HeaderUid { get; set; } //INT IDENTITY(1,1) NOT NULL,
+
+        public int ProcessUid { get; set; } //INT NOT NULL,
+
+        public int PurchaseUid { get; set; } //INT NOT NULL
+
+        [Required, MaxLength(50, ErrorMessage = "")]
+        public string OrderNumber { get; set; } //VARCHAR(50) NOT NULL,
+
+        public int StatusID { get; set; } //INT NOT NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string Status { get; set; } //VARCHAR(50) NULL,
+
+        public int VendorUid { get; set; } //INT NOT NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string VendorName { get; set; } //VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string VendorAccountNumber { get; set; } //VARCHAR(50) NULL,
+
+        public int SiteUid { get; set; } //INT NOT NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string SiteID { get; set; } //VARCHAR(100) NULL,
+
+        public DateTime? PurchaseDate { get; set; } //DATETIME NULL,
+
+        public DateTime? EstimatedDeliveryDate { get; set; } //DATETIME NULL,
+
+        [MaxLength(1000, ErrorMessage = "")]
+        public string Notes { get; set; } //VARCHAR(1000) NULL,
+
+        [MaxLength(100, ErrorMessage = "")]
+        public string Other1 { get; set; } //VARCHAR(100) NULL,
+
+        [MaxLength(50, ErrorMessage = "")]
+        public string FRN { get; set; } //VARCHAR(50)
     }
 }

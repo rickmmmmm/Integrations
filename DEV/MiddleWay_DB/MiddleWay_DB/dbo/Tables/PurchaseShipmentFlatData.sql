@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[PurchaseShipmentFlatData] (
     [PurchaseShipmentFlatDataUID] INT           IDENTITY (1, 1) NOT NULL,
     [ProcessUid]                  INT           NOT NULL,
-    [OrderNumber]                 VARCHAR (50)  NOT NULL,
+    [OrderNumber]                 VARCHAR (50)  NULL,
     [LineNumber]                  INT           NULL,
     [ShippedToSiteID]             VARCHAR (100) NULL,
     [ShippedToSiteName]           VARCHAR (100) NULL,
