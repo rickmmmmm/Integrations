@@ -1,44 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class PurchaseInvoiceFlatData
-    {//[MaxLength(100, ErrorMessage = "")]
-        public int PurchaseInvoiceFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
+    public partial class PurchaseInvoiceFlatData
+    {
+        public int PurchaseInvoiceFlatDataUid { get; set; }
 
-        public int ProcessUid { get; set; } // INT NOT NULL,
+        public int ProcessUid { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
+        public string OrderNumber { get; set; }
 
-        public int? LineNumber { get; set; } // INT NULL,
+        public int? LineNumber { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string InvoiceNumber { get; set; } // VARCHAR(100) NULL,
+        public string InvoiceNumber { get; set; }
 
-        public DateTime? InvoiceDate { get; set; } // DATETIME NULL,
+        public DateTime? InvoiceDate { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string InvoiceStatus { get; set; } // VARCHAR(50) NULL,
+        public string InvoiceStatus { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string AuthorizationStatus { get; set; } // VARCHAR(50) NULL,
+        public string AuthorizationStatus { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string AccountingDate { get; set; } // VARCHAR(50) NULL,
+        public string AccountingDate { get; set; }
 
-        [MaxLength(1000, ErrorMessage = "")]
-        public string LineDescription { get; set; } // VARCHAR(1000) NULL,
+        public string LineDescription { get; set; }
 
-        public decimal? AssetPrice { get; set; } // DECIMAL NULL,
+        public decimal? AssetPrice { get; set; }
 
-        public decimal? InvoicePrice { get; set; } // DECIMAL NULL,
+        public decimal? InvoicePrice { get; set; }
 
-        public int? Quantity { get; set; } // INT NULL,
+        public int? Quantity { get; set; }
 
-        public decimal? LineAmount { get; set; } // DECIMAL
+        public decimal? LineAmount { get; set; }
+
+        public Processes ProcessU { get; set; }
     }
 }

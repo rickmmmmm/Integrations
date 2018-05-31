@@ -1,81 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class PurchaseOrderFlatData
+    public partial class PurchaseOrderFlatData
     {
-        //[MaxLength( , ErrorMessage = "")]
-        public int PurchaseOrderFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
+        public int PurchaseOrderFlatDataUid { get; set; }
 
-        public int ProcessUid { get; set; } // INT NOT NULL,
+        public int ProcessUid { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
+        public string OrderNumber { get; set; }
 
-        public DateTime? PurchaseDate { get; set; } // DATETIME NULL,
+        public DateTime? PurchaseDate { get; set; }
 
-        public int? LineNumber { get; set; } // INT NULL,
+        public int? LineNumber { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string Status { get; set; } // VARCHAR(50) NULL,
+        public string Status { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string VendorName { get; set; } // VARCHAR(100) NULL,
+        public string VendorName { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string VendorAccountNumber { get; set; } // VARCHAR(50) NULL,
+        public string VendorAccountNumber { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string SiteID { get; set; } // VARCHAR(100) NULL,
+        public string SiteId { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string SiteName { get; set; } // VARCHAR(100) NULL,
+        public string SiteName { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string ProductName { get; set; } // VARCHAR(100) NULL,
+        public string ProductName { get; set; }
 
-        [MaxLength(1000, ErrorMessage = "")]
-        public string ProductDescription { get; set; } // VARCHAR(1000) NULL,
+        public string ProductDescription { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string ProductTypeName { get; set; } // VARCHAR(50) NULL,
+        public string ProductTypeName { get; set; }
 
-        [MaxLength(1000, ErrorMessage = "")]
-        public string ProductTypeDescription { get; set; } // VARCHAR(1000) NULL,
+        public string ProductTypeDescription { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string SiteAddedSiteID { get; set; } // VARCHAR(100) NULL,
+        public string SiteAddedSiteId { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string SiteAddedSiteName { get; set; } // VARCHAR(100) NULL,
+        public string SiteAddedSiteName { get; set; }
 
-        [MaxLength(500, ErrorMessage = "")]
-        public string FundingSource { get; set; } // VARCHAR(500) NULL,
+        public string FundingSource { get; set; }
 
-        [MaxLength(500, ErrorMessage = "")]
-        public string FundingSourceDescription { get; set; } // VARCHAR(500) NULL,
+        public string FundingSourceDescription { get; set; }
 
-        public int? QuantityOrdered { get; set; } // INT NULL,
+        public int? QuantityOrdered { get; set; }
 
-        public int? QuantityReceived { get; set; } // INT NULL,
+        public int? QuantityReceived { get; set; }
 
-        public decimal? PurchasePrice { get; set; } // DECIMAL NULL,
+        public decimal? PurchasePrice { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string AccountCode { get; set; } // VARCHAR(100) NULL,
+        public string AccountCode { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string DepartmentName { get; set; } // VARCHAR(50) NULL,
+        public string DepartmentName { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string DepartmentID { get; set; } // VARCHAR(50) NULL,
+        public string DepartmentId { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string CFDA { get; set; } // VARCHAR(50) NULL,
+        public string Cfda { get; set; }
 
-        public bool? IsAssociated { get; set; } // BIT NULL,
+        public bool? IsAssociated { get; set; }
+
+        public Processes ProcessU { get; set; }
     }
 }

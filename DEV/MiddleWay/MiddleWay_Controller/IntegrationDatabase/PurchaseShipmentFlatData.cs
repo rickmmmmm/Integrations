@@ -1,55 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class PurchaseShipmentFlatData
+    public partial class PurchaseShipmentFlatData
     {
-        //[MaxLength( , ErrorMessage = "")]
-        public int PurchaseShipmentFlatDataUid { get; set; } // INT IDENTITY(1,1) NOT NULL,
+        public int PurchaseShipmentFlatDataUid { get; set; }
 
-        public int ProcessUid { get; set; } // INT NOT NULL,
+        public int ProcessUid { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string OrderNumber { get; set; } // VARCHAR(50) NOT NULL,
+        public string OrderNumber { get; set; }
 
-        public int? LineNumber { get; set; } // INT NOT NULL,
+        public int? LineNumber { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string ShippedToSiteID { get; set; } // VARCHAR(100) NULL,
+        public string ShippedToSiteId { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string ShippedToSiteName { get; set; } // VARCHAR(100) NULL,
+        public string ShippedToSiteName { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string ShippedToSiteAddress { get; set; } // VARCHAR(100) NULL,
+        public string ShippedToSiteAddress { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string ShippedToSiteCity { get; set; } // VARCHAR(50) NULL,
+        public string ShippedToSiteCity { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string ShippedToSiteState { get; set; } // VARCHAR(50) NULL,
+        public string ShippedToSiteState { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string ShippedToSiteZip { get; set; } // VARCHAR(50) NULL,
+        public string ShippedToSiteZip { get; set; }
 
-        public int? TicketNumber { get; set; } // INT NULL,
+        public int? TicketNumber { get; set; }
 
-        public int? QuantityShipped { get; set; } // INT NULL,
+        public int? QuantityShipped { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string TicketedBy { get; set; } // VARCHAR(50) NULL,
+        public string TicketedBy { get; set; }
 
-        public DateTime? TicketedDate { get; set; } // DATETIME NULL,
+        public DateTime? TicketedDate { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string Status { get; set; } // VARCHAR(50) NULL,
+        public string Status { get; set; }
 
-        [MaxLength(25, ErrorMessage = "")]
-        public string InvoiceNumber { get; set; } // VARCHAR(25) NULL,
+        public string InvoiceNumber { get; set; }
 
-        public DateTime? InvoiceDate { get; set; } // DATETIME NULL
+        public DateTime? InvoiceDate { get; set; }
+
+        public Processes ProcessU { get; set; }
     }
 }

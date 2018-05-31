@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class ProcessErrors
+    public partial class ProcessErrors
     {
-        public int ProcessErrorUid { get; set; } // INT IDENTITY(1, 1) NOT NULL,
+        public int ProcessErrorUid { get; set; }
 
-        public int ProcessUid { get; set; } // INT NOT NULL,
+        public int ProcessUid { get; set; }
 
-        public int ErrorNumber { get; set; } // INT NULL,
+        public int? ErrorNumber { get; set; }
 
-        [MaxLength(250, ErrorMessage = "")]
-        public string ErrorDescription { get; set; } // VARCHAR(250)  NOT NULL,
+        public string ErrorDescription { get; set; }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string ErrorField { get; set; } // VARCHAR(100) NULL,
+        public string ErrorField { get; set; }
 
-        public DateTime CreatedDate { get; set; } // DATE
+        public DateTime CreatedDate { get; set; }
+
+        public Processes ProcessU { get; set; }
     }
 }

@@ -1,19 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class IntegrationMiddleWayContext : DbContext
+    public partial class IntegrationMiddleWayContext : DbContext
     {
-        public virtual DbSet<_ETL_Details> _ETL_Details { get; set; }
-        public virtual DbSet<_ETL_Headers> _ETL_Headers { get; set; }
-        public virtual DbSet<_ETL_Inventory> _ETL_Inventory { get; set; }
-        public virtual DbSet<_ETL_Products> _ETL_Products { get; set; }
-        public virtual DbSet<_ETL_Shipments> _ETL_Shipments { get; set; }
+        public IntegrationMiddleWayContext()
+        {
+        }
+
+        public IntegrationMiddleWayContext(DbContextOptions<IntegrationMiddleWayContext> options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<Configurations> Configurations { get; set; }
-        public virtual DbSet<InventoryFlatData> FlatData { get; set; }
+        public virtual DbSet<EtlDetails> EtlDetails { get; set; }
+        public virtual DbSet<EtlHeaders> EtlHeaders { get; set; }
+        public virtual DbSet<EtlInventory> EtlInventory { get; set; }
+        public virtual DbSet<EtlProducts> EtlProducts { get; set; }
+        public virtual DbSet<EtlShipments> EtlShipments { get; set; }
+        public virtual DbSet<InventoryFlatData> InventoryFlatData { get; set; }
         public virtual DbSet<Mappings> Mappings { get; set; }
         public virtual DbSet<ProcessErrors> ProcessErrors { get; set; }
         public virtual DbSet<Processes> Processes { get; set; }
@@ -25,591 +33,1253 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public virtual DbSet<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
         public virtual DbSet<Transformations> Transformations { get; set; }
 
-        public IntegrationMiddleWayContext(DbContextOptions<IntegrationMiddleWayContext> options) : base(options)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.;Database=IntegrationMiddleWay;Trusted_Connection=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<_ETL_Details>(entity =>
-            {
-                entity.HasKey(e => e._ETL_DetailUid)
-                    .HasName("PK__ETL_Details");
-
-                entity.Property(e => e.OrderNumber) // .HasColumnName("")
-                    .HasColumnType("varchar(50)");
-
-                entity.Property(e => e.SiteID)
-                    .HasColumnType("varchar(100)");
-
-                entity.Property(e => e.FundingSource)
-                    .HasColumnType("varchar(500)");
-
-                entity.Property(e => e.FundingSourceDescription)
-                    .HasColumnType("varchar(500)");
-
-                entity.Property(e => e.ProductName)
-                    .HasColumnType("varchar(100)");
-
-                entity.Property(e => e.ProductDescription)
-                    .HasColumnType("varchar(1000)");
-
-                entity.Property(e => e.ProductTypeName)
-                    .HasColumnType("varchar(50)");
-
-                entity.Property(e => e.ProductTypeDescription)
-                    .HasColumnType("varchar(100)");
-
-                entity.Property(e => e.AccountCode)
-                    .HasColumnType("varchar(100)");
-
-                entity.Property(e => e.DepartmentName)
-                    .HasColumnType("varchar(50)");
-
-                entity.Property(e => e.DepartmentID)
-                    .HasColumnType("varchar(50)");
-
-                entity.Property(e => e.CFDA)
-                    .HasColumnType("varchar(50)");
-
-            });
-
-            modelBuilder.Entity<_ETL_Headers>(entity =>
-            {
-                entity.HasKey(e => e._ETL_HeaderUid).HasName("PK__ETL_Headers"); // { get; set; } //INT IDENTITY(1,1) NOT NULL,
-
-                entity.Property(e => e.ProcessUid).HasColumnType("INT"); // { get; set; } //INT NOT NULL,
-
-                entity.Property(e => e.PurchaseUid).HasColumnType("INT"); //  { get; set; } //INT NOT NULL
-
-                entity.Property(e => e.OrderNumber).HasColumnType("VARCHAR(50)"); //  { get; set; } //VARCHAR(50) NOT NULL,
-
-                entity.Property(e => e.StatusID).HasColumnType("DATETIME"); // { get; set; } //INT NOT NULL,
-
-                entity.Property(e => e.Status).HasColumnType("VARCHAR(50)"); //  { get; set; } //VARCHAR(50) NULL,
-
-                entity.Property(e => e.VendorUid).HasColumnType("DATETIME"); //  { get; set; } //INT NOT NULL,
-
-                entity.Property(e => e.VendorName).HasColumnType("VARCHAR(100)"); //  { get; set; } //VARCHAR(100) NULL,
-
-                entity.Property(e => e.VendorAccountNumber).HasColumnType("VARCHAR(50)"); // { get; set; } //VARCHAR(50) NULL,
-
-                entity.Property(e => e.SiteUid).HasColumnType("DATETIME"); // { get; set; } //INT NOT NULL,
-
-                entity.Property(e => e.SiteID).HasColumnType("VARCHAR(100)"); // { get; set; } //VARCHAR(100) NULL,
-
-                entity.Property(e => e.PurchaseDate).HasColumnType("DATETIME"); //  { get; set; } //DATETIME NULL,
-
-                entity.Property(e => e.EstimatedDeliveryDate).HasColumnType("DATETIME"); //  { get; set; } //DATETIME NULL,
-
-                entity.Property(e => e.Notes).HasColumnType("VARCHAR(1000)"); //  { get; set; } //VARCHAR(1000) NULL,
-
-                entity.Property(e => e.Other1).HasColumnType("VARCHAR(100)"); //  { get; set; } //VARCHAR(100) NULL,
-
-                entity.Property(e => e.FRN).HasColumnType("VARCHAR(50)"); // { get; set; } //VARCHAR(50)
-            });
-
-            modelBuilder.Entity<_ETL_Inventory>(entity =>
-            {
-                entity.HasKey(e => e._ETL_InventoryUid).HasName("PK__ETL_InventoryUid");
-
-                entity.Property(e => e.ProcessUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.InventoryUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.AssetID).HasColumnType("varchar( )");//VARCHAR(100) NULL,
-
-                entity.Property(e => e.Tag).HasColumnType("varchar( )");//VARCHAR(50) NOT NULL,
-
-
-
-                entity.Property(e => e.Serial).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.InventoryTypeUid).HasColumnType("INT"); //INT NOT NULL,
-
-
-                entity.Property(e => e.InventoryTypeName).HasColumnType("varchar( )"); //VARCHAR(100) NOT NULL,
-
-                entity.Property(e => e.ItemUid).HasColumnType("INT").IsRequired(); //INT NOT NULL,
-
-
-                entity.Property(e => e.ProductName).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.ProductDescription).HasColumnType("varchar( )"); //VARCHAR(1000) NULL,
-
-
-                entity.Property(e => e.ProductByNumber).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.ItemTypeUid).HasColumnType("INT");//INT NOT NULL,
-
-                entity.Property(e => e.ProductTypeName).HasColumnType("varchar( )");//VARCHAR(50) NOT NULL,
-
-
-                entity.Property(e => e.ProductTypeDescription).HasColumnType("varchar( )"); //VARCHAR(1000) NULL,
-
-                entity.Property(e => e.ModelNumber).HasColumnType("varchar( )");//VARCHAR(100) NULL,
-
-                entity.Property(e => e.ManufacturerUid).HasColumnType("INT");//INT NULL,
-
-
-                entity.Property(e => e.ManufacturerName).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.AreaUid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.AreaName).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.SiteUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.SiteID).HasColumnType("varchar( )");//VARCHAR(100) NULL,
-
-                entity.Property(e => e.SiteName).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.EntityUid).HasColumnType("INT");//INT NOT NULL,
-
-                entity.Property(e => e.EntityName).HasColumnType("varchar( )"); //VARCHAR(50) NOT NULL,
-
-                entity.Property(e => e.EntityTypeUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.EntityTypeName).HasColumnType("varchar( )");//VARCHAR(100) NOT NULL,
-
-                entity.Property(e => e.StatusID).HasColumnType("INT");//INT NOT NULL,
-
-                entity.Property(e => e.Status).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-                entity.Property(e => e.TechDepartmentUid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.DepartmentName).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.DepartmentID).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-                entity.Property(e => e.FundingSourceUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.FundingSource).HasColumnType("varchar( )");//VARCHAR(500) NULL,
-
-                entity.Property(e => e.FundingSourceDescription).HasColumnType("varchar( )"); //VARCHAR(500) NULL,
-
-                entity.Property(e => e.PurchasePrice).HasColumnType("varchar( )"); //DECIMAL NULL,
-
-                entity.Property(e => e.PurchaseDate).HasColumnType("varchar( )"); //DATETIME NULL,
-
-                entity.Property(e => e.ExpirationDate).HasColumnType("varchar( )"); //DATETIME NULL,
-
-                entity.Property(e => e.InventoryNotes).HasColumnType("varchar( )"); //VARCHAR(3000) NULL,
-
-                entity.Property(e => e.ParentInventoryUid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.ParentTag).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.InventorySourceUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.InventorySourceName).HasColumnType("varchar( )"); //VARCHAR(100),
-
-                entity.Property(e => e.PurchaseUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.OrderNumber).HasColumnType("varchar( )"); //VARCHAR(50) NOT NULL,
-
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.LineNumber).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.AccountCode).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.VendorUid).HasColumnType("INT");//INT NOT NULL,
-
-                entity.Property(e => e.VendorName).HasColumnType("varchar( )");//VARCHAR(100) NULL,
-
-                entity.Property(e => e.VendorAccountNumber).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnType("INT");//INT NOT NULL,
-
-                entity.Property(e => e.InvoiceNumber).HasColumnType("varchar( )"); //VARCHAR(25) NULL,
-
-                entity.Property(e => e.InvoiceDate).HasColumnType("varchar( )");//DATE NULL,
-
-                entity.Property(e => e.InventoryExt1Uid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.InventoryMeta1Uid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.CustomField1Label).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.CustomField1Value).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.InventoryExt2Uid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.InventoryMeta2Uid).HasColumnType("INT"); //INT NULL,
-
-                entity.Property(e => e.CustomField2Label).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.CustomField2Value).HasColumnType("varchar( )");//VARCHAR(50) NULL,
-
-                entity.Property(e => e.InventoryExt3Uid).HasColumnType("INT");// //INT NULL,
-
-                entity.Property(e => e.InventoryMeta3Uid).HasColumnType("INT");// //INT NULL,
-
-                entity.Property(e => e.CustomField3Label).HasColumnType("varchar( )");////VARCHAR(50) NULL,
-
-                entity.Property(e => e.CustomField3Value).HasColumnType("varchar( )");// //VARCHAR(50) NULL,
-
-                entity.Property(e => e.InventoryExt4Uid).HasColumnType("INT");// //INT NULL,
-
-                entity.Property(e => e.InventoryMeta4Uid).HasColumnType("INT");// //INT NULL,
-
-                entity.Property(e => e.CustomField4Label).HasColumnType("varchar( )");////VARCHAR(50) NULL,
-
-                entity.Property(e => e.CustomField4Value).HasColumnType("varchar( )");// //VARCHAR(50) NULL
-            });
-
-            modelBuilder.Entity<_ETL_Products>(entity =>
-            {
-                entity.HasKey(e => e._ETL_ProductsUid).HasName("PK__ETL_Products"); //INT IDENTITY(1,1) NOT NULL,
-
-                entity.Property(e => e.ProcessUid).HasColumnType("INT"); //INT NOT NULL,
-
-                entity.Property(e => e.ProductUid).HasColumnType("INT");  //INT NOT NULL,
-
-
-                entity.Property(e => e.ProductNumber).HasColumnType("varchar( )");  //VARCHAR(50) NOT NULL,
-
-
-
-                entity.Property(e => e.ProductName).HasColumnType("varchar( )"); //VARCHAR(100) NOT NULL,
-
-
-                entity.Property(e => e.ProductDescription).HasColumnType("varchar( )");//VARCHAR(1000) NOT NULL,
-
-                entity.Property(e => e.ItemTypeUid).HasColumnType("INT"); //INT NOT NULL,
-
-
-                entity.Property(e => e.ProductTypeName).HasColumnType("varchar( )"); //VARCHAR(50) NOT NULL,
-
-
-
-                entity.Property(e => e.ProductTypeDescription).HasColumnType("varchar( )");  //VARCHAR(1000) NULL,
-
-
-                entity.Property(e => e.ModelNumber).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.ManufacturerUid).HasColumnType("INT");  //INT NOT NULL,
-
-
-                entity.Property(e => e.ManufacturerName).HasColumnType("varchar( )"); //VARCHAR(100) NOT NULL,
-
-                entity.Property(e => e.SuggestedPrice).HasColumnType("DECIMAL(18)"); //DECIMAL NULL,
-
-                entity.Property(e => e.AreaUid).HasColumnType("INT");//INT NOT NULL,
-
-
-
-                entity.Property(e => e.AreaName).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.ItemNotes).HasColumnType("varchar( )"); //VARCHAR(8000) NULL,
-
-
-
-                entity.Property(e => e.SKU).HasColumnType("varchar( )");  //VARCHAR(50) NULL,
-
-                entity.Property(e => e.SerialRequired).HasColumnType("varchar( )");  //BIT NOT NULL,
-
-                entity.Property(e => e.ProjectedLife).HasColumnType("INT"); //INT NOT NULL,
-
-
-                entity.Property(e => e.CustomField1).HasColumnType("varchar( )");  //VARCHAR(1000) NULL,
-
-
-
-                entity.Property(e => e.CustomField2).HasColumnType("varchar( )"); //VARCHAR(1000) NULL,
-
-
-                entity.Property(e => e.CustomField3).HasColumnType("varchar( )"); //VARCHAR(1000) NULL,
-
-                entity.Property(e => e.Active).HasColumnType("BIT"); //BIT NOT NULL,
-
-                entity.Property(e => e.AllowUntagged).HasColumnType("BIT"); //BIT NOT NULL
-
-            });
-
-            modelBuilder.Entity<_ETL_Shipments>(entity =>
-            {
-                entity.HasKey(e => e._ETL_ShipmentsUid).HasName("PK__ETL_ShipmentsUid"); //INT IDENTITY(1,1) NOT NULL,
-
-                entity.Property(e => e.ProcessUid).HasColumnType("varchar( )"); //INT NOT NULL,
-
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnType("varchar( )"); // INT NOT NULL,
-
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnType("varchar( )"); //INT NOT NULL,
-
-                entity.Property(e => e.OrderNumber).HasColumnType("varchar( )"); //VARCHAR(50) NOT NULL,
-
-                entity.Property(e => e.LineNumber).HasColumnType("varchar( )"); //INT NOT NULL,
-
-                entity.Property(e => e.ShippedToSiteUid).HasColumnType("varchar( )"); // INT NOT NULL,
-
-                entity.Property(e => e.SiteID).HasColumnType("varchar( )"); //VARCHAR(100) NULL,
-
-                entity.Property(e => e.TicketNumber).HasColumnType("varchar( )"); // INT NULL,
-
-                entity.Property(e => e.QuantityShipped).HasColumnType("varchar( )"); //INT NOT NULL,
-
-                entity.Property(e => e.TicketedByUserID).HasColumnType("varchar( )"); //INT NULL,
-
-                entity.Property(e => e.TicketedBy).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-                entity.Property(e => e.TicketedDate).HasColumnType("varchar( )"); //DATETIME NULL,
-
-                entity.Property(e => e.StatusID).HasColumnType("varchar( )"); // INT NOT NULL,
-
-                entity.Property(e => e.Status).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-                entity.Property(e => e.InvoiceNumber).HasColumnType("varchar( )"); //VARCHAR(25) NULL,
-
-                entity.Property(e => e.InvoiceDate).HasColumnType("varchar( )"); //DATE NULL
-
-            });
-
             modelBuilder.Entity<Configurations>(entity =>
             {
-                entity.HasKey(e => e.ConfigurationUid).HasName("PK_Configurations");
+                entity.HasKey(e => e.ConfigurationUid);
 
-                entity.Property(e => e.ProcessUid).HasColumnType("varchar( )"); // INT NOT NULL,
+                entity.Property(e => e.ConfigurationUid).ValueGeneratedNever();
 
-                entity.Property(e => e.ConfigurationName).HasColumnType("varchar( )"); // VARCHAR(100) NOT NULL,
+                entity.Property(e => e.ConfigurationName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ConfigurationValue).HasColumnType("varchar( )"); // VARCHAR(250) NOT NULL,
+                entity.Property(e => e.ConfigurationValue)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Enabled).HasColumnType("varchar( )"); // BIT NOT NULL,
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.Configurations)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Configurations_Processes");
+            });
 
+            modelBuilder.Entity<EtlDetails>(entity =>
+            {
+                entity.HasKey(e => e.EtlDetailUid);
+
+                entity.ToTable("_ETL_Details");
+
+                entity.Property(e => e.EtlDetailUid).HasColumnName("_ETL_DetailUID");
+
+                entity.Property(e => e.AccountCode)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Cfda)
+                    .HasColumnName("CFDA")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnName("DepartmentID")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSource)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceDescription)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+
+                entity.Property(e => e.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+
+                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+
+                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUID");
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StatusId).HasColumnName("StatusID");
+
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.EtlDetails)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_Details_Processes");
+            });
+
+            modelBuilder.Entity<EtlHeaders>(entity =>
+            {
+                entity.HasKey(e => e.EtlHeaderUid);
+
+                entity.ToTable("_ETL_Headers");
+
+                entity.Property(e => e.EtlHeaderUid).HasColumnName("_ETL_HeaderUID");
+
+                entity.Property(e => e.EstimatedDeliveryDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Frn)
+                    .HasColumnName("FRN")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Other1)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StatusId).HasColumnName("StatusID");
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.EtlHeaders)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_Headers_Processes");
+            });
+
+            modelBuilder.Entity<EtlInventory>(entity =>
+            {
+                entity.HasKey(e => e.EtlInventoryUid);
+
+                entity.ToTable("_ETL_Inventory");
+
+                entity.Property(e => e.EtlInventoryUid).HasColumnName("_ETL_InventoryUID");
+
+                entity.Property(e => e.AccountCode)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AreaName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+
+                entity.Property(e => e.AssetId)
+                    .HasColumnName("AssetID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField1Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField1Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField2Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField2Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField3Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField3Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField4Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField4Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnName("DepartmentID")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EntityName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EntityTypeName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.FundingSource)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceDescription)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+
+                entity.Property(e => e.InventoryExt1Uid).HasColumnName("InventoryExt1UID");
+
+                entity.Property(e => e.InventoryExt2Uid).HasColumnName("InventoryExt2UID");
+
+                entity.Property(e => e.InventoryExt3Uid).HasColumnName("InventoryExt3UID");
+
+                entity.Property(e => e.InventoryExt4Uid).HasColumnName("InventoryExt4UID");
+
+                entity.Property(e => e.InventoryMeta1Uid).HasColumnName("InventoryMeta1UID");
+
+                entity.Property(e => e.InventoryMeta2Uid).HasColumnName("InventoryMeta2UID");
+
+                entity.Property(e => e.InventoryMeta3Uid).HasColumnName("InventoryMeta3UID");
+
+                entity.Property(e => e.InventoryMeta4Uid).HasColumnName("InventoryMeta4UID");
+
+                entity.Property(e => e.InventoryNotes)
+                    .HasMaxLength(3000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InventorySourceName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+
+                entity.Property(e => e.InventoryTypeName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+
+                entity.Property(e => e.InvoiceDate).HasColumnType("date");
+
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+
+                entity.Property(e => e.ManufacturerName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+
+                entity.Property(e => e.ModelNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUID");
+
+                entity.Property(e => e.ParentTag)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductByNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+
+                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+
+                entity.Property(e => e.Serial)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StatusId).HasColumnName("StatusID");
+
+                entity.Property(e => e.Tag)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.EtlInventory)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_Inventory_Processes");
+            });
+
+            modelBuilder.Entity<EtlProducts>(entity =>
+            {
+                entity.HasKey(e => e.EtlProductsUid);
+
+                entity.ToTable("_ETL_Products");
+
+                entity.Property(e => e.EtlProductsUid).HasColumnName("_ETL_ProductsUID");
+
+                entity.Property(e => e.AreaName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+
+                entity.Property(e => e.CustomField1)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField2)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomField3)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ItemNotes)
+                    .HasMaxLength(8000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+
+                entity.Property(e => e.ManufacturerName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+
+                entity.Property(e => e.ModelNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductUid).HasColumnName("ProductUID");
+
+                entity.Property(e => e.Sku)
+                    .HasColumnName("SKU")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SuggestedPrice).HasColumnType("decimal(18, 0)");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.EtlProducts)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_Products_Processes");
+            });
+
+            modelBuilder.Entity<EtlShipments>(entity =>
+            {
+                entity.HasKey(e => e.EtlShipmentsUid);
+
+                entity.ToTable("_ETL_Shipments");
+
+                entity.Property(e => e.EtlShipmentsUid).HasColumnName("_ETL_ShipmentsUID");
+
+                entity.Property(e => e.InvoiceDate).HasColumnType("date");
+
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+
+                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StatusId).HasColumnName("StatusID");
+
+                entity.Property(e => e.TicketedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TicketedByUserId).HasColumnName("TicketedByUserID");
+
+                entity.Property(e => e.TicketedDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.EtlShipments)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_Shipments_Processes");
             });
 
             modelBuilder.Entity<InventoryFlatData>(entity =>
             {
-                entity.HasKey(e => e.InventoryFlatDataUid).HasName("PK_Configurations"); // INT IDENTITY(1,1) NOT NULL,
+                entity.HasKey(e => e.InventoryFlatDataUid);
 
-                entity.Property(e => e.ProcessUid).HasColumnType("varchar( )"); // INT NOT NULL,
+                entity.Property(e => e.InventoryFlatDataUid).HasColumnName("InventoryFlatDataUID");
 
+                entity.Property(e => e.AreaName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.AssetID).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
+                entity.Property(e => e.AssetId)
+                    .HasColumnName("AssetID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.CustomField1Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Tag).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
+                entity.Property(e => e.CustomField1Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.CustomField2Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Serial).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
+                entity.Property(e => e.CustomField2Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.CustomField3Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.SiteID).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
+                entity.Property(e => e.CustomField3Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.CustomField4Label)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.SiteName).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
+                entity.Property(e => e.CustomField4Value)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnName("DepartmentID")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Location).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
+                entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Status).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
+                entity.Property(e => e.FundingSource)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.FundingSourceDescription)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.DepartmentName).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
+                entity.Property(e => e.InventoryNotes)
+                    .HasMaxLength(3000)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.InvoiceDate).HasColumnType("date");
 
-                entity.Property(e => e.DepartmentID).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.Location)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.FundingSource).HasColumnType("varchar( )"); //VARCHAR(500) NULL,
+                entity.Property(e => e.ManufacturerName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
+                entity.Property(e => e.ModelNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.FundingSourceDescription).HasColumnType("varchar( )"); //VARCHAR(500) NULL,
+                entity.Property(e => e.OrderNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.PurchasePrice).HasColumnType("varchar( )"); //DECIMAL NULL,
+                entity.Property(e => e.ParentTag)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.PurchaseDate).HasColumnType("varchar( )"); //DATETIME NULL,
+                entity.Property(e => e.ProductByNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ExpirationDate).HasColumnType("varchar( )"); // DATETIME NULL,
-
-
-                entity.Property(e => e.InventoryNotes).HasColumnType("varchar( )"); // VARCHAR(3000) NULL,
-
-
-                entity.Property(e => e.OrderNumber).HasColumnType("varchar( )"); // VARCHAR(50) NOT NULL,
-
-
-                entity.Property(e => e.VendorName).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.VendorAccountNumber).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.ParentTag).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.ProductName).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.ProductDescription).HasColumnType("varchar( )"); // VARCHAR(1000) NULL,
-
-
-                entity.Property(e => e.ProductByNumber).HasColumnType("varchar( )"); //VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.ProductTypeName).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.ProductTypeDescription).HasColumnType("varchar( )"); // VARCHAR(1000) NULL,
-
-
-                entity.Property(e => e.ModelNumber).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.ManufacturerName).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.AreaName).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-
-                entity.Property(e => e.CustomField1Value).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField1Label).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField2Value).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField2Label).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField3Value).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField3Label).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField4Value).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.CustomField4Label).HasColumnType("varchar( )"); // VARCHAR(50) NULL,
-
-
-                entity.Property(e => e.InvoiceNumber).HasColumnType("varchar( )"); // VARCHAR(25) NULL,
-
-                entity.Property(e => e.InvoiceDate).HasColumnType("varchar( )"); //DATE NULL
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Serial)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Tag)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.InventoryFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_InventoryFlatData_Processes");
             });
 
             modelBuilder.Entity<Mappings>(entity =>
             {
-                entity.HasKey(e => e.MappingsUid).HasName("PK_Mappings"); // INT IDENTITY(1, 1) NOT NULL,
+                entity.HasKey(e => e.MappingsUid);
 
-                entity.Property(e => e.ProcessUid).HasColumnType("varchar( )"); // INT NOT NULL,
+                entity.Property(e => e.DestinationColumn)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.SourceColumn).HasColumnType("varchar( )"); // VARCHAR(100) NOT NULL,
+                entity.Property(e => e.SourceColumn)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.DestinationColumn).HasColumnType("varchar( )"); // VARCHAR(100) NOT NULL,
-
-                entity.Property(e => e.Enabled).HasColumnType("varchar( )"); // BIT
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.Mappings)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Mappings_Processes");
             });
 
             modelBuilder.Entity<ProcessErrors>(entity =>
             {
-                entity.HasKey(e => e.ProcessErrorUid).HasName("PK_ProcessErrors"); // INT IDENTITY(1, 1) NOT NULL,
+                entity.HasKey(e => e.ProcessErrorUid);
 
-                entity.Property(e => e.ProcessUid).HasColumnType("varchar( )"); // INT NOT NULL,
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getutcdate())");
 
-                entity.Property(e => e.ErrorNumber).HasColumnType("varchar( )"); // INT NULL,
+                entity.Property(e => e.ErrorDescription)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ErrorDescription).HasColumnType("varchar( )"); // VARCHAR(250)  NOT NULL,
+                entity.Property(e => e.ErrorField)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.ErrorField).HasColumnType("varchar( )"); // VARCHAR(100) NULL,
-
-                entity.Property(e => e.CreatedDate).HasColumnType("varchar( )"); // DATE
-
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.ProcessErrors)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProcessErrors_Processes");
             });
 
             modelBuilder.Entity<Processes>(entity =>
             {
-                entity.HasKey(e => e.)
-                      .HasName("PK_");
+                entity.HasKey(e => e.ProcessUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.Client)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("date")
+                    .HasDefaultValueSql("(getutcdate())");
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProcessName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<ProductsFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                      .HasName("PK_");
+                entity.HasKey(e => e.ProductsFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.ProductsFlatDataUid).HasColumnName("ProductsFlatDataUID");
+
+                entity.Property(e => e.AreaName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ManufacturerName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ModelNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(8000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OtherField1)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OtherField2)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OtherField3)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Sku)
+                    .HasColumnName("SKU")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SuggestedPrice).HasColumnType("decimal(18, 0)");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.ProductsFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductsFlatData_Processes");
             });
 
             modelBuilder.Entity<PurchaseInvoiceFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                       .HasName("PK_");
+                entity.HasKey(e => e.PurchaseInvoiceFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.PurchaseInvoiceFlatDataUid).HasColumnName("PurchaseInvoiceFlatDataUID");
+
+                entity.Property(e => e.AccountingDate)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AssetPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.AuthorizationStatus)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InvoiceDate).HasColumnType("datetime");
+
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InvoicePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.InvoiceStatus)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LineAmount).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.LineDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.PurchaseInvoiceFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseInvoiceFlatData_Processes");
             });
 
             modelBuilder.Entity<PurchaseOrderDetailShipmentFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                        .HasName("PK_");
+                entity.HasKey(e => e.PurchaseOrderDetailShipmentFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.PurchaseOrderDetailShipmentFlatDataUid).HasColumnName("PurchaseOrderDetailShipmentFlatDataUID");
+
+                entity.Property(e => e.AccountCode)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Cfda)
+                    .HasColumnName("CFDA")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnName("DepartmentID")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSource)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceDescription)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InvoiceDate).HasColumnType("datetime");
+
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.ShippedToSiteAddress)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteCity)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteId)
+                    .HasColumnName("ShippedToSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteState)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteZip)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteId)
+                    .HasColumnName("SiteAddedSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TicketedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TicketedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.PurchaseOrderDetailShipmentFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseOrderDetailShipmentFlatData_Processes");
             });
 
             modelBuilder.Entity<PurchaseOrderFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                        .HasName("PK_");
+                entity.HasKey(e => e.PurchaseOrderFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.PurchaseOrderFlatDataUid).HasColumnName("PurchaseOrderFlatDataUID");
+
+                entity.Property(e => e.AccountCode)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Cfda)
+                    .HasColumnName("CFDA")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnName("DepartmentID")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSource)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FundingSourceDescription)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeDescription)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductTypeName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.SiteAddedSiteId)
+                    .HasColumnName("SiteAddedSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.PurchaseOrderFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseOrderFlatData_Processes");
             });
 
             modelBuilder.Entity<PurchaseOrderShellFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                       .HasName("PK_");
+                entity.HasKey(e => e.PurchaseOrderShellFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.PurchaseOrderShellFlatDataUid).HasColumnName("PurchaseOrderShellFlatDataUID");
+
+                entity.Property(e => e.EstimatedDeliveryDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Frn)
+                    .HasColumnName("FRN")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Notes)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Other1)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SiteId)
+                    .HasColumnName("SiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorAccountNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.VendorName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.PurchaseOrderShellFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseOrderShellFlatData_Processes");
             });
 
             modelBuilder.Entity<PurchaseShipmentFlatData>(entity =>
             {
-                entity.HasKey(e => e.)
-                      .HasName("PK_");
+                entity.HasKey(e => e.PurchaseShipmentFlatDataUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.PurchaseShipmentFlatDataUid).HasColumnName("PurchaseShipmentFlatDataUID");
+
+                entity.Property(e => e.InvoiceDate).HasColumnType("datetime");
+
+                entity.Property(e => e.InvoiceNumber)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteAddress)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteCity)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteId)
+                    .HasColumnName("ShippedToSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteState)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteZip)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TicketedBy)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TicketedDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.PurchaseShipmentFlatData)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PurchaseShipmentFlatData_Processes");
             });
 
             modelBuilder.Entity<Transformations>(entity =>
             {
-                entity.HasKey(e => e.)
-                       .HasName("PK_");
+                entity.HasKey(e => e.TransformationUid);
 
-                entity.Property(e => e.)
-                                   .HasColumnName("")
-                                   .HasColumnType("varchar( )")
-                                   .HasDefaultValueSql("");
+                entity.Property(e => e.TransformationUid).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.DestinationColumn)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Function)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SourceColumn)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.TransformationU)
+                    .WithOne(p => p.Transformations)
+                    .HasForeignKey<Transformations>(d => d.TransformationUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transformations_Processes");
             });
         }
     }

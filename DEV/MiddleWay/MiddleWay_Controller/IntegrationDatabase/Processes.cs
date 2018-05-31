@@ -1,27 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace MiddleWay_Controller.IntegrationDatabase
 {
-    public class Processes
+    public partial class Processes
     {
-        //[MaxLength( , ErrorMessage = "")]
-        //public    { get; set; } // 
-        public int ProcessUid { get; set; } // INT IDENTITY(1, 1) NOT NULL,
+        public Processes()
+        {
+            Configurations = new HashSet<Configurations>();
+            EtlDetails = new HashSet<EtlDetails>();
+            EtlHeaders = new HashSet<EtlHeaders>();
+            EtlInventory = new HashSet<EtlInventory>();
+            EtlProducts = new HashSet<EtlProducts>();
+            EtlShipments = new HashSet<EtlShipments>();
+            InventoryFlatData = new HashSet<InventoryFlatData>();
+            Mappings = new HashSet<Mappings>();
+            ProcessErrors = new HashSet<ProcessErrors>();
+            ProductsFlatData = new HashSet<ProductsFlatData>();
+            PurchaseInvoiceFlatData = new HashSet<PurchaseInvoiceFlatData>();
+            PurchaseOrderDetailShipmentFlatData = new HashSet<PurchaseOrderDetailShipmentFlatData>();
+            PurchaseOrderFlatData = new HashSet<PurchaseOrderFlatData>();
+            PurchaseOrderShellFlatData = new HashSet<PurchaseOrderShellFlatData>();
+            PurchaseShipmentFlatData = new HashSet<PurchaseShipmentFlatData>();
+        }
 
-        [MaxLength(100, ErrorMessage = "")]
-        public string Client { get; set; } // VARCHAR(100) NOT NULL,
+        public int ProcessUid { get; set; }
 
-        [MaxLength(50, ErrorMessage = "")]
-        public string ProcessName { get; set; } // VARCHAR(50)  NOT NULL,
+        public string Client { get; set; }
 
-        [MaxLength(250, ErrorMessage = "")]
-        public string Description { get; set; } // VARCHAR(250) NOT NULL,
+        public string ProcessName { get; set; }
 
-        public bool Enabled { get; set; } // BIT CONSTRAINT[DF_Processes_Enabled] DEFAULT((0)) NOT NULL,
+        public string Description { get; set; }
 
-        public DateTime CreatedDate { get; set; } // DATE
+        public bool Enabled { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public Transformations Transformations { get; set; }
+
+        public ICollection<Configurations> Configurations { get; set; }
+
+        public ICollection<EtlDetails> EtlDetails { get; set; }
+
+        public ICollection<EtlHeaders> EtlHeaders { get; set; }
+
+        public ICollection<EtlInventory> EtlInventory { get; set; }
+
+        public ICollection<EtlProducts> EtlProducts { get; set; }
+
+        public ICollection<EtlShipments> EtlShipments { get; set; }
+
+        public ICollection<InventoryFlatData> InventoryFlatData { get; set; }
+
+        public ICollection<Mappings> Mappings { get; set; }
+
+        public ICollection<ProcessErrors> ProcessErrors { get; set; }
+
+        public ICollection<ProductsFlatData> ProductsFlatData { get; set; }
+
+        public ICollection<PurchaseInvoiceFlatData> PurchaseInvoiceFlatData { get; set; }
+
+        public ICollection<PurchaseOrderDetailShipmentFlatData> PurchaseOrderDetailShipmentFlatData { get; set; }
+
+        public ICollection<PurchaseOrderFlatData> PurchaseOrderFlatData { get; set; }
+
+        public ICollection<PurchaseOrderShellFlatData> PurchaseOrderShellFlatData { get; set; }
+
+        public ICollection<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
     }
 }
