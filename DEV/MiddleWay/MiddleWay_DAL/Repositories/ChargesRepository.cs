@@ -1,9 +1,11 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using MiddleWay_DTO.RepositoryInterfaces;
 using MiddleWay_DTO.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MiddleWay_DTO.TIPWeb_Models;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -17,9 +19,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public ChargesRepository(TIPWebContext context)
+        public ChargesRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -39,15 +41,15 @@ namespace MiddleWay_DAL.Repositories
             //returnQuery += "JOIN tblTechInventory inv on inv.ItemUID = items.ItemUID ";
             returnQuery += "WHERE chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) > 0 ";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -91,8 +93,8 @@ namespace MiddleWay_DAL.Repositories
                 }
             }
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             return charges;
         }
@@ -103,15 +105,15 @@ namespace MiddleWay_DAL.Repositories
 
             string query = "SELECT count(ChargeUID) FROM tblUnvCharges WHERE ChargeUID = " + chargeId.ToString();
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(query, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(query, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -143,18 +145,18 @@ namespace MiddleWay_DAL.Repositories
             query += "SET Void = 1 ";
             query += "WHERE ChargeUID = {0}";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
-            _conn.Open();
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+            //_conn.Open();
 
             foreach (var charge in voidedCharges)
             {
                 try
                 {
-                    SqlCommand cmd = new SqlCommand(string.Format(query, charge.ParentCharge.ChargeUID.ToString()), _conn);
-                    cmd.ExecuteNonQuery();
+                    //SqlCommand cmd = new SqlCommand(string.Format(query, charge.ParentCharge.ChargeUID.ToString()), _conn);
+                    //cmd.ExecuteNonQuery();
                 }
                 catch (Exception e)
                 {
@@ -164,7 +166,7 @@ namespace MiddleWay_DAL.Repositories
                     continue;
                 }
             }
-            _conn.Close();
+            //_conn.Close();
         }
 
         #endregion Update Functions

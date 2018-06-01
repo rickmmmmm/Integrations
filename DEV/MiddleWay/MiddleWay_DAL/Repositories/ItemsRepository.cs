@@ -1,5 +1,7 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using MiddleWay_DTO.Models;
+using MiddleWay_DTO.TIPWeb_Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +18,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public ItemsRepository(TIPWebContext context)
+        public ItemsRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -136,15 +138,15 @@ namespace MiddleWay_DAL.Repositories
 
             string returnQuery = "SELECT [ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU],[SerialRequired],[ProjectedLife],[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],[AllowUntagged] FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -155,8 +157,8 @@ namespace MiddleWay_DAL.Repositories
                 newItem.ModelNumber = (string)reader[4];
             }
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             return newItem;
         }

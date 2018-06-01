@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SystemTasks
+namespace MiddleWay_Utilities
 {
     public static class Extensions
     {

@@ -1,4 +1,5 @@
-﻿using MiddleWay_DTO.Models;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DTO.Models;
 using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public PurchaseItemDetailsRepository(TIPWebContext context)
+        public PurchaseItemDetailsRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor

@@ -5,9 +5,9 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
-namespace Services
+namespace MiddleWay_Utilities
 {
-    public class ElasticSmsService : ISender
+    public class ElasticSmsService // : ISender
     {
         #region Private Variables and Properties
         #endregion Private Variables and Properties
@@ -17,10 +17,10 @@ namespace Services
 
         #region Send Functions
 
-        public void send(MessageModel message)
+        public void send(MessageModel message, string apiKey, string address)
         {
-            var apiKey = ConfigurationManager.AppSettings["apikey"];
-            string address = ConfigurationManager.AppSettings["SMSAPI"];
+            //var apiKey = ConfigurationManager.AppSettings["apikey"];
+            //string address = ConfigurationManager.AppSettings["SMSAPI"];
 
             List<NameValueCollection> messageList = new List<NameValueCollection>();
 

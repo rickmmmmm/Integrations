@@ -1,5 +1,7 @@
-﻿using MiddleWay_DAL.EF_DAL;
-using MiddleWay_DTO.Models;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.TIPWeb_Models;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +18,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public ChargePaymentsRepository(TIPWebContext context)
+        public ChargePaymentsRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -31,15 +33,15 @@ namespace MiddleWay_DAL.Repositories
 
             string query = "SELECT chg.ChargeAmount, ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as PaidAmount FROM tblUnvCharges chg WHERE ChargeUID = " + chargeId.ToString();
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(query, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(query, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -57,15 +59,15 @@ namespace MiddleWay_DAL.Repositories
 
             string query = " WHERE ChargeUID = " + chargeId.ToString();
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(query, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(query, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
             while (reader.Read())
             {
@@ -97,16 +99,16 @@ namespace MiddleWay_DAL.Repositories
             string query = "INSERT INTO tblUnvChargePayments (ApplicationUID, ChargeUID, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";
             query += "VALUES ({0}, {1}, {2}, '{3}', {4}, '{5}', {6})";
 
-            SqlCommand cmd = new SqlCommand(string.Format(query, 2, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
+            //SqlCommand cmd = new SqlCommand(string.Format(query, 2, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            cmd.ExecuteNonQuery();
-            _conn.Close();
+            //_conn.Open();
+            //cmd.ExecuteNonQuery();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

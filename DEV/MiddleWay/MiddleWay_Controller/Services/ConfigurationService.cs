@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MiddleWay_Controller.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
-    public class ConfigurationService
+    public class ConfigurationService : IConfigurationService
     {
         private Dictionary<string, string> configuration { get; set; }
 
@@ -27,6 +28,8 @@ namespace MiddleWay_Controller.Services
         public string SMSAPI { get { return GetConfigurationByName("SMSAPI"); } }
         public string SqlServerDbMailProfileName { get { return GetConfigurationByName("SqlServerDbMailProfileName"); } }
         public string TextQualifier { get { return GetConfigurationByName("TextQualifier"); } }
+
+        public string TIPWebConnection { get { return GetConfigurationByName("TIPWebConnection"); } }
 
         public string GetConfigurationByName(string name)
         {

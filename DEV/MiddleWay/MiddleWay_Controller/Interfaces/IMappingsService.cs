@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Utilities
+namespace MiddleWay_Controller.Interfaces
 {
-    public class ConfigurationReader
+    public interface IMappingsService
     {
     }
 }

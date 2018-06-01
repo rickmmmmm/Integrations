@@ -1,4 +1,5 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,9 +16,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public FundingSourcesRepository(TIPWebContext context)
+        public FundingSourcesRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor

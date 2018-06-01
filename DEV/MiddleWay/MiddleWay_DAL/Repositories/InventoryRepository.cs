@@ -1,11 +1,13 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DTO.RepositoryInterfaces;
+using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_DAL.Repositories
 {
-    public class InventoryRepository
+    public class InventoryRepository : IInventoryRepository
     {
         #region Private Variables and Properties
 
@@ -15,9 +17,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public InventoryRepository(TIPWebContext context)
+        public InventoryRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -34,29 +36,43 @@ namespace MiddleWay_DAL.Repositories
 
         public void updateFixedAssetIds()
         {
-            string query = "UPDATE tblTechInventory ";
-            query += "SET AssetID = 'FA' + Convert(varchar(50), InventoryUID) ";
-            query += "FROM tblTechInventory inv ";
-            query += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
-            query += "WHERE item.ItemSuggestedPrice >= 5000 AND AssetID IS NULL";
-
-            if (_conn.State == ConnectionState.Closed)
-            {
-                _conn.Open();
-            }
-
             try
             {
-                SqlCommand cmd = new SqlCommand(query, _conn);
-                cmd.ExecuteNonQuery();
-                _conn.Close();
+                //string query = "UPDATE tblTechInventory ";
+                //query += "SET AssetID = 'FA' + Convert(varchar(50), InventoryUID) ";
+                //query += "FROM tblTechInventory inv ";
+                //query += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
+                //query += "WHERE item.ItemSuggestedPrice >= 5000 AND AssetID IS NULL";
+
+                var assetsToUpdate = (from inventory in _context.TblTechInventory
+                                      join items in _context.TblTechItems
+                                        on inventory.ItemUid equals items.ItemUid
+                                      where items.ItemSuggestedPrice >= 5000 &&
+                                      inventory.AssetId == null
+                                      select inventory).ToList();
+
+                assetsToUpdate.ForEach(inv => inv.AssetId = "FA" + inv.InventoryUid);
+
+                _context.TblTechInventory.UpdateRange(assetsToUpdate);
+
+                _context.SaveChanges();
+
+                //if (_conn.State == ConnectionState.Closed)
+                //{
+                //    _conn.Open();
+                //}
+
+                //SqlCommand cmd = new SqlCommand(query, _conn);
+                //cmd.ExecuteNonQuery();
+                //_conn.Close();
             }
-            catch (Exception e)
+            catch// (Exception e)
             {
-                DbErrorEventArgs args = new DbErrorEventArgs();
-                args.InterfaceMessage = "ERROR updating fixed asset information.";
-                args.ExceptionMessage = e.Message;
-                OnError(args);
+                //DbErrorEventArgs args = new DbErrorEventArgs();
+                //args.InterfaceMessage = "ERROR updating fixed asset information.";
+                //args.ExceptionMessage = e.Message;
+                //OnError(args);
+                throw;
             }
         }
 

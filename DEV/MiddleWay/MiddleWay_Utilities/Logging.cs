@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 //using Model;
 //using DataAccess;
 
-namespace SystemTasks
+namespace MiddleWay_Utilities
 {
     public class Logging
     {

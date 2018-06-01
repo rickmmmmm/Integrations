@@ -1,7 +1,7 @@
-﻿using MiddleWay_DAL.EF_DAL;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.TIPWeb_Models;
+using System.Linq;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -15,18 +15,57 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public AreasRepository(TIPWebContext context)
+        public AreasRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
 
         #region Select Functions
+
         public int getAreaUIDFromName(string areaName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var area = areaName.Trim().ToLower();
+                return (from areas in _context.TblUnvAreas
+                        where areas.AreaName.Trim().ToLower() == area
+                        select areas.AreaUid).FirstOrDefault();
+            }
+            catch
+            {
+                throw;
+            }
         }
+
+        public AreasModel getArea(string areaName)
+        {
+            try
+            {
+                var area = areaName.Trim().ToLower();
+                return (from areas in _context.TblUnvAreas
+                        join createdBy in _context.TblUser
+                            on areas.CreatedByUserId equals createdBy.UserId
+                        join modifiedBy in _context.TblUser
+                            on areas.LastModifiedByUserId equals modifiedBy.UserId
+                        where areas.AreaName.Trim().ToLower() == area
+                        select new AreasModel
+                        {
+                            AreaID = areas.AreaUid,
+                            AreaName = areas.AreaName,
+                            CreatedByUser = createdBy.RealName,
+                            CreatedDate = areas.CreatedDate,
+                            LastModifiedByUser = modifiedBy.RealName,
+                            LastModifiedDate = areas.LastModifiedDate
+                        }).FirstOrDefault();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         #endregion Select Functions
 
         #region Insert Functions

@@ -1,4 +1,5 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using MiddleWay_DTO.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public EmailRepository(TIPWebContext context)
+        public EmailRepository(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -29,25 +30,25 @@ namespace MiddleWay_DAL.Repositories
 
         #region Insert Functions
 
-        public void sendEmail(string ProfileName, string Recipients, string Subject, string Body, string Attachment = null)
+        public void sendEmail(string profileName, string recipients, string subject, string body, string attachment = null)
         {
-            string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + ProfileName + "', @recipients='" + Recipients + "', @subject='" + Subject + "', @body='" + Body + "', @body_format='HTML'";
+            string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + profileName + "', @recipients='" + recipients + "', @subject='" + subject + "', @body='" + body + "', @body_format='HTML'";
 
-            if (!string.IsNullOrEmpty(Attachment))
+            if (!string.IsNullOrEmpty(attachment))
             {
-                query += " , @file_attachments = '" + Attachment + "'";
+                query += " , @file_attachments = '" + attachment + "'";
             }
 
-            if (_conn.State == ConnectionState.Closed)
-            {
-                _conn.Open();
-            }
+            //if (_conn.State == ConnectionState.Closed)
+            //{
+            //    _conn.Open();
+            //}
 
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            //SqlCommand cmd = new SqlCommand(query, _conn);
 
-            cmd.ExecuteNonQuery();
+            //cmd.ExecuteNonQuery();
 
-            _conn.Close();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

@@ -1,4 +1,5 @@
-﻿using MiddleWay_DAL.EF_DAL;
+﻿using MiddleWay_DAL.DataProvider;
+using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,9 +16,9 @@ namespace MiddleWay_DAL.Repositories
 
         #region Constructor
 
-        public ETLActivityMonitor(TIPWebContext context)
+        public ETLActivityMonitor(IDataProviderFactory dataProvider)
         {
-            _context = context;
+            _context = dataProvider.GetContext();
         }
 
         #endregion Constructor
@@ -31,16 +32,16 @@ namespace MiddleWay_DAL.Repositories
         {
             string query = "INSERT INTO _ETL_ActivityMonitor (ActivityStep, ActivityMessage, ImportDataID) VALUES ('" + actionName + "','" + actionDescription + "','" + _importCode.ToString() + "')";
 
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            //SqlCommand cmd = new SqlCommand(query, _conn);
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            cmd.ExecuteNonQuery();
-            _conn.Close();
+            //_conn.Open();
+            //cmd.ExecuteNonQuery();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

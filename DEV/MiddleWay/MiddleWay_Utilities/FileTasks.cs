@@ -12,7 +12,7 @@ using MiddleWay_DTO.Models;
 using PapaParse.Net;
 using System.Diagnostics;
 
-namespace SystemTasks
+namespace MiddleWay_Utilities
 {
     public class FileTasks
     {
@@ -100,13 +100,13 @@ namespace SystemTasks
         }
 
         // Received Tags Export.... (Read Option e)
-        public void createExportFile(List<ReceivedTagsExportFile> results, string fileName)
+        public void createExportFile(List<ReceivedTagsExportFile> results, string fileName, string delimiter, char textQualifier)
         {
             using (StreamWriter writer = File.AppendText(fileName))
             {
                 var csv = new CsvWriter(writer);
-                csv.Configuration.Delimiter = ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+                csv.Configuration.Delimiter = delimiter; // ConfigurationManager.AppSettings["delimiter"];
+                csv.Configuration.Quote = textQualifier; //  ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
                 csv.Configuration.QuoteAllFields = true;
 
                 csv.WriteRecords(results);
