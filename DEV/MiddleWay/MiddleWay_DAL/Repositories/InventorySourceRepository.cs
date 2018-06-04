@@ -25,7 +25,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getInventorySourceUID(string name)
+        public int GetInventorySourceUID(string name)
         {
             throw new NotImplementedException();
         }

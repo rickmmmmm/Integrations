@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace MiddleWay_DTO.TIPWeb_Models
+namespace MiddleWay_DTO.Models
 {
-    public class PurchaseItemDetailModel
+    public class PurchaseItemDetailDto
     {
-        public PurchaseModel ParentPurchase { get; set; }
-        public int ItemUID { get; set; }
-        public int FundingSourceUID { get; set; }
-        public int StatusUID { get; set; }
-        public int SiteAddedSiteUID { get; set; }
+        public string OrderNumber { get; set; }
+        public int ItemID { get; set; }
+        public int FundingSourceID { get; set; }
+        public int StatusID { get; set; }
+        public string SiteAddedSiteID { get; set; }
         public int QuantityOrdered { get; set; }
         public int QuantityReceived { get; set; }
         public decimal PurchasePrice { get; set; }
         public string AccountCode { get; set; }
-        public int TechDepartmentUID { get; set; }
+        public int DepartmentID { get; set; }
         public int LineNumber { get; set; }
         public string CFDA { get; set; }
         public bool IsAssociated { get; set; }
-        public int CreatedByUserID { get; set; }
+        public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int LastModifiedByUserID { get; set; }
+        public string LastModifiedBy { get; set; }
         public DateTime LastModifiedDate { get; set; }
     }
 }

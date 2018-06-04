@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MiddleWay_DTO.Models;
 //using DataAccess;
 using System.Configuration;
-using MiddleWay_DAL.Repositories;
 using MiddleWay_DTO.RepositoryInterfaces;
 using MiddleWay_DTO.ServiceInterfaces;
 using MiddleWay_Controller.Interfaces;

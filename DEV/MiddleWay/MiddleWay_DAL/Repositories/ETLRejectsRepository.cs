@@ -26,49 +26,49 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public List<RejectedRecord> getRejectionsFromLastImport() //TODO: THIS MOVES TO THE Centralized integration Database
+        public List<RejectedRecord> getRejectionsFromLastImport(int importCode) //TODO: THIS MOVES TO THE Centralized integration Database
         {
             List<RejectedRecord> rejects = new List<RejectedRecord>();
 
-            string returnQuery = "SELECT Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber FROM _ETL_Rejects WHERE ImportCode = " + _importCode.ToString();
+            string returnQuery = "SELECT Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber FROM _ETL_Rejects WHERE ImportCode = " + importCode.ToString();
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
+            //_conn.Open();
 
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                try
-                {
-                    rejects.Add(new RejectedRecord
-                    {
-                        orderNumber = (string)reader[0],
-                        rejectReason = (string)reader[1],
-                        rejectValue = (string)reader[2],
-                        exceptionMessage = (string)reader[3],
-                        LineNumber = (int)reader[4]
-                    });
-                }
+            //while (reader.Read())
+            //{
+            //    try
+            //    {
+            //        rejects.Add(new RejectedRecord
+            //        {
+            //            orderNumber = (string)reader[0],
+            //            rejectReason = (string)reader[1],
+            //            rejectValue = (string)reader[2],
+            //            exceptionMessage = (string)reader[3],
+            //            LineNumber = (int)reader[4]
+            //        });
+            //    }
 
-                catch (Exception e)
-                {
-                    DbErrorEventArgs args = new DbErrorEventArgs();
-                    args.InterfaceMessage = "Unable to get list of rejected records.";
-                    args.ExceptionMessage = e.Message;
-                    OnError(args);
-                    break;
-                }
-            }
+            //    catch (Exception e)
+            //    {
+            //        //DbErrorEventArgs args = new DbErrorEventArgs();
+            //        //args.InterfaceMessage = "Unable to get list of rejected records.";
+            //        //args.ExceptionMessage = e.Message;
+            //        //OnError(args);
+            //        break;
+            //    }
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             return rejects;
         }
@@ -77,28 +77,49 @@ namespace MiddleWay_DAL.Repositories
 
         #region Insert Functions
 
-        public void logRejectRecord(List<RejectedRecord> rejections)
+        public void logRejectRecord(int importCode, List<RejectedRecord> rejections)
         {
             foreach (RejectedRecord rejection in rejections)
             {
-                logRejectRecord(rejection);
+                logRejectRecord(importCode, rejection);
             }
-
         }
-        public void logRejectRecord(RejectedRecord rejection)//TODO: THIS MOVES TO THE Centralized integration Database
-        {
-            string query = "INSERT INTO _ETL_Rejects (ImportCode, Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber)";
-            query += " VALUES (" + _importCode.ToString() + ",'" + rejection.orderNumber + "','" + rejection.rejectReason + "','" + rejection.rejectValue.Replace("'", "") + "','" + rejection.exceptionMessage.Replace("'", "") + "'," + rejection.LineNumber.ToString() + ")";
-            SqlCommand cmd = new SqlCommand(query, _conn);
 
-            if (_conn.State == ConnectionState.Open)
+        public void logRejectRecord(int importCode, RejectedRecord rejection)//TODO: THIS MOVES TO THE Centralized integration Database
+        {
+            try
             {
-                _conn.Close();
+                var reject = new EtlRejects()
+                {
+                    ImportCode = importCode,
+                    Reference = rejection.OrderNumber,
+                    RejectReason = rejection.RejectReason,
+                    RejectedValue = rejection.RejectValue.Replace("'", "''"),
+                    ExceptionMessage = rejection.ExceptionMessage.Replace("'", "''"),
+                    LineNumber = rejection.LineNumber
+                };
+
+                _context.EtlRejects.Add(reject);
+                _context.SaveChanges();
+
+            }
+            catch
+            {
+                throw;
             }
 
-            _conn.Open();
-            cmd.ExecuteNonQuery();
-            _conn.Close();
+            //string query = "INSERT INTO _ETL_Rejects (ImportCode, Reference, RejectReason, RejectedValue, ExceptionMessage, LineNumber)";
+            //query += " VALUES (" + importCode.ToString() + ",'" + rejection.orderNumber + "','" + rejection.rejectReason + "','" + rejection.rejectValue.Replace("'", "") + "','" + rejection.exceptionMessage.Replace("'", "") + "'," + rejection.LineNumber.ToString() + ")";
+            //SqlCommand cmd = new SqlCommand(query, _conn);
+
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+
+            //_conn.Open();
+            //cmd.ExecuteNonQuery();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

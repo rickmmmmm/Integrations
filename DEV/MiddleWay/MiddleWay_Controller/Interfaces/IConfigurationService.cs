@@ -15,7 +15,6 @@ namespace MiddleWay_Controller.Interfaces
         string SMSAPI { get; }
         string SqlServerDbMailProfileName { get; }
         string TextQualifier { get; }
-
         string TIPWebConnection { get; }
 
         string GetConfigurationByName(string name);

@@ -6,6 +6,7 @@ using MiddleWay_DTO.Models;
 using MiddleWay_Controller.IntegrationDatabase;
 using Microsoft.EntityFrameworkCore;
 using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DAL.DataProvider;
 using MiddleWay_Controller.Interfaces;
 using System.Linq;
 using MiddleWay_Utilities;
@@ -343,7 +344,7 @@ namespace MiddleWay
                     {
                         Console.WriteLine("There was an error processing the import. Exception: ");
                         Console.WriteLine(e.Message);
-                        _repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
+                        //_repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
 
                         if (args[3] == "--batch")
                         {
@@ -369,26 +370,26 @@ namespace MiddleWay
                     fileTasks.archiveFile(exportFileName);
                 }
 
-                var outData = _repo.exportChargesToInTouch();
-                fileTasks.createExportFile(outData, exportFileName);
+                //var outData = _repo.exportChargesToInTouch();
+                //fileTasks.createExportFile(outData, exportFileName);
 
                 string bodyMovement = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data export successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>       </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
-                string body = string.Format(bodyMovement, outData.Count);
+                //string body = string.Format(bodyMovement, outData.Count);
 
-                SqlDbMailService mailer = new SqlDbMailService(_repo);
+                //SqlDbMailService mailer = new SqlDbMailService(_repo);
                 var notification = new EmailMessageModel
                 {
-                    Body = body,
-                    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                    //Body = body,
+                    Recipients = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                     Sender = ConfigurationManager.AppSettings["notificationFrom"],
                     Subject = "Automatic Notification from Hayes Software Systems",
                     SentDate = DateTime.Now,
                     FileAttachment = exportFileName
                 };
 
-                mailer.send(notification);
-                _repo.completeIntegration();
+                //mailer.send(notification);
+                //_repo.completeIntegration();
 
                 if (args[3] == "--batch")
                 {
@@ -447,11 +448,11 @@ namespace MiddleWay
             //_repo = rep;
 
             inventoryService.updateFixedAssetIds();
-            List<ReceivedTagsExportFile> results = inventoryService.exportReceivedTags();
-            if (results.Count > 0)
-            {
-                fileTasks.createExportFile(results, file);
-            }
+            //List<ReceivedTagsExportFile> results = inventoryService.exportReceivedTags();
+            //if (results.Count > 0)
+            //{
+            //    fileTasks.createExportFile(results, file);
+            //}
 
             Console.WriteLine("Completed...");
             Environment.Exit(0);
@@ -503,169 +504,169 @@ namespace MiddleWay
             {
                 try
                 {
-                    var fileData = fileTasks.convertCsvFileToObject(file);
+                    //var fileData = fileTasks.convertCsvFileToObject(file);
 
-                    fileData = di.removeBadElements(fileData);
+                    //fileData = di.removeBadElements(fileData);
 
                     if (options[3] == "--add-vendors")
                     {
-                        var vendors = fileData.GroupBy(u => u.VendorName);
+                        //var vendors = fileData.GroupBy(u => u.VendorName);
 
-                        foreach (var item in vendors)
-                        {
-                            if (di.vendorNotFound(item.Key))
-                            {
-                                if (item.Key.Length <= 100)
-                                {
-                                    _repo.addVendor(item.Key.Replace("'", "''"));
-                                }
-                                else
-                                {
+                        //foreach (var item in vendors)
+                        //{
+                        //    if (di.vendorNotFound(item.Key))
+                        //    {
+                        //        if (item.Key.Length <= 100)
+                        //        {
+                        //            _repo.addVendor(item.Key.Replace("'", "''"));
+                        //        }
+                        //        else
+                        //        {
 
-                                }
-                            }
-                        }
+                        //        }
+                        //    }
+                        //}
                     }
 
                     if (options[2] == "--add-items")
                     {
-                        var rand = new Random();
+                        //var rand = new Random();
 
-                        foreach (var item in fileData)
-                        {
-                            if (di.productNotFound(item.ProductName))
-                            {
-                                var itemNumber = "H" + _repo.getUniqueItemNumber();
+                        //foreach (var item in fileData)
+                        //{
+                        //    if (di.productNotFound(item.ProductName))
+                        //    {
+                        //        var itemNumber = "H" + _repo.getUniqueItemNumber();
 
-                                Item itemToAdd = new Item
-                                {
-                                    ItemNumber = itemNumber,
-                                    ItemName = item.ProductName.Replace("'", "''"),
-                                    ItemDescription = item.Description.Replace("'", "''"),
-                                    ItemType = 1,
-                                    ModelNumber = "None",
-                                    ManufacturerUID = 0,
-                                    ItemSuggestedPrice = 0,
-                                    AreaUID = 0,
-                                    ItemNotes = item.Description.Replace("'", "''"),
-                                    SKU = "",
-                                    SerialRequired = false,
-                                    ProjectedLife = 0,
-                                    Active = true,
-                                    CreatedByUserId = 0,
-                                    CreatedDate = DateTime.Now,
-                                    LastModifiedByUserID = 0,
-                                    LastModifiedDate = DateTime.Now,
-                                    AllowUntagged = true
-                                };
+                        //        Item itemToAdd = new Item
+                        //        {
+                        //            ItemNumber = itemNumber,
+                        //            ItemName = item.ProductName.Replace("'", "''"),
+                        //            ItemDescription = item.Description.Replace("'", "''"),
+                        //            ItemType = 1,
+                        //            ModelNumber = "None",
+                        //            ManufacturerUID = 0,
+                        //            ItemSuggestedPrice = 0,
+                        //            AreaUID = 0,
+                        //            ItemNotes = item.Description.Replace("'", "''"),
+                        //            SKU = "",
+                        //            SerialRequired = false,
+                        //            ProjectedLife = 0,
+                        //            Active = true,
+                        //            CreatedByUserId = 0,
+                        //            CreatedDate = DateTime.Now,
+                        //            LastModifiedByUserID = 0,
+                        //            LastModifiedDate = DateTime.Now,
+                        //            AllowUntagged = true
+                        //        };
 
-                                _repo.addItems(itemToAdd);
-                            }
-                        }
+                        //        _repo.addItems(itemToAdd);
+                        //    }
+                        //}
                     }
 
                     if (options[4] == "--add-funding")
                     {
-                        var fundingSources = fileData.GroupBy(u => u.FundingSource);
+                        //var fundingSources = fileData.GroupBy(u => u.FundingSource);
 
-                        foreach (var source in fundingSources)
-                        {
-                            if (di.missingFundingSource(source.Key))
-                            {
-                                _repo.addFundingSource(source.Key);
-                            }
-                        }
+                        //foreach (var source in fundingSources)
+                        //{
+                        //    if (di.missingFundingSource(source.Key))
+                        //    {
+                        //        _repo.addFundingSource(source.Key);
+                        //    }
+                        //}
                     }
 
-                    var outData = new List<PurchaseOrderFile>();
+                    var outData = new List<PurchaseOrderDto>();
 
-                    foreach (var item in fileData)
-                    {
-                        if (di.rejectLongRecord(item, true, true, true))
-                        {
-                            continue;
-                        }
+                    //foreach (var item in fileData)
+                    //{
+                    //    if (di.rejectLongRecord(item, true, true, true))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (!di.siteNotFound(item))
-                        {
-                            continue;
-                        }
+                    //    if (!di.siteNotFound(item))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (!di.productNotFound(item))
-                        {
-                            continue;
-                        }
+                    //    if (!di.productNotFound(item))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (!di.modelNotFound(item)) //need to add option for adding model numbers
-                        {
-                            continue;
-                        }
+                    //    if (!di.modelNotFound(item)) //need to add option for adding model numbers
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (!di.vendorNotFound(item)) //need to add option for adding vendors
-                        {
-                            continue;
-                        }
+                    //    if (!di.vendorNotFound(item)) //need to add option for adding vendors
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (!di.purchaseDateMissingOrInvalid(item))
-                        {
-                            continue;
-                        }
+                    //    if (!di.purchaseDateMissingOrInvalid(item))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (di.invalidLineNumber(item))
-                        {
-                            continue;
-                        }
+                    //    if (di.invalidLineNumber(item))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        if (di.missingFundingSource(item))
-                        {
-                            continue;
-                        }
+                    //    if (di.missingFundingSource(item))
+                    //    {
+                    //        continue;
+                    //    }
 
-                        outData.Add(item);
-                    }
+                    //    outData.Add(item);
+                    //}
 
                     if (outData.Count > 0)
                     {
-                        var mappedItems = map.mapPurchaseOrderHeaders(outData);
+                        //var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
-                        _repo.addOrderHeaders(mappedItems);
+                        //_repo.addOrderHeaders(mappedItems);
 
                         if (options[6] == "--add-shipments")
                         {
-                            _repo.addShipmentInfo();
+                            //_repo.addShipmentInfo();
                         }
 
                         Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
                         string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
-                        var rejects = _repo.getRejectionsFromLastImport();
+                        //var rejects = _repo.getRejectionsFromLastImport();
 
-                        ft.createRejectFile(rejectFile, rejects, fileData);
-                        _repo.completeIntegration();
+                        //ft.createRejectFile(rejectFile, rejects, fileData);
+                        //_repo.completeIntegration();
 
-                        _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
+                        //_repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
                         string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
-                        string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
+                        //string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
 
-                        SqlDbMailService mailer = new SqlDbMailService(_repo);
-                        EmailMessage notification = new EmailMessage
-                        {
-                            Body = body,
-                            Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
-                            Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                            Subject = "Automatic Notification from Hayes Software Systems for College Station ISD",
-                            SentDate = DateTime.Now,
-                            FileAttachment = rejectFile
-                        };
+                        //SqlDbMailService mailer = new SqlDbMailService(_repo);
+                        //EmailMessage notification = new EmailMessage
+                        //{
+                        //    Body = body,
+                        //    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                        //    Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                        //    Subject = "Automatic Notification from Hayes Software Systems for College Station ISD",
+                        //    SentDate = DateTime.Now,
+                        //    FileAttachment = rejectFile
+                        //};
 
-                        mailer.send(notification);
+                        //mailer.send(notification);
 
                         try
                         {
-                            ft.archiveFile(file);
-                            ft.archiveFile(rejectFile);
+                            //ft.archiveFile(file);
+                            //ft.archiveFile(rejectFile);
                         }
                         catch (Exception e)
                         {

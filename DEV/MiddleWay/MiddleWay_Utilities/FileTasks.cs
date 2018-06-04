@@ -158,7 +158,7 @@ namespace MiddleWay_Utilities
         //
     }
 
-    public sealed class PurchaseOrderClassMap : ClassMap<PurchaseOrderFile>
+    public sealed class PurchaseOrderClassMap : ClassMap<PurchaseOrderDto>
     {
         public PurchaseOrderClassMap()
         {

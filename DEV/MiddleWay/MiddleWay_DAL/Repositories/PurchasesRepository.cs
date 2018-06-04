@@ -3,7 +3,8 @@ using MiddleWay_DTO.Models;
 using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using MiddleWay_DTO.TIPWeb_Models;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -38,48 +39,48 @@ namespace MiddleWay_DAL.Repositories
             returnQuery += "JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUID = ship.PurchaseItemDetailUID ";
             returnQuery += "JOIN tblTechPurchases p on p.PurchaseUID = det.PurchaseUID";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
+            //_conn.Open();
 
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                try
-                {
-                    export.Add(new ReceivedTagsExportFile
-                    {
-                        POR_REF_NO = (string)reader[0], //OrderNumber
-                        POR_AMOUNT = (string)reader[1], //0
-                        POR_DT = (string)reader[2], //PurchaseDate
-                        POR_ENTRY_DT = (string)reader[3], //PurchaseDate
-                        POR_ITEM = (string)reader[4], //ItemCode
-                        POR_QTY = (string)reader[5], //Quantity
-                        POR_QTY_DAM = (string)reader[6], //0
-                        POR_SEQ = (string)reader[7], //LineNumber
-                        POR_TAG = (string)reader[8], //AssetID or blank
-                        POR_TYPE = (string)reader[9] //R
-                    });
-                }
+            //while (reader.Read())
+            //{
+            //    try
+            //    {
+            //        export.Add(new ReceivedTagsExportFile
+            //        {
+            //            POR_REF_NO = (string)reader[0], //OrderNumber
+            //            POR_AMOUNT = (string)reader[1], //0
+            //            POR_DT = (string)reader[2], //PurchaseDate
+            //            POR_ENTRY_DT = (string)reader[3], //PurchaseDate
+            //            POR_ITEM = (string)reader[4], //ItemCode
+            //            POR_QTY = (string)reader[5], //Quantity
+            //            POR_QTY_DAM = (string)reader[6], //0
+            //            POR_SEQ = (string)reader[7], //LineNumber
+            //            POR_TAG = (string)reader[8], //AssetID or blank
+            //            POR_TYPE = (string)reader[9] //R
+            //        });
+            //    }
 
-                catch (Exception e)
-                {
-                    DbErrorEventArgs args = new DbErrorEventArgs();
-                    args.InterfaceMessage = "Unable to export received tags.";
-                    args.ExceptionMessage = e.Message;
-                    OnError(args);
-                    break;
-                }
-            }
+            //    catch (Exception e)
+            //    {
+            //        //DbErrorEventArgs args = new DbErrorEventArgs();
+            //        //args.InterfaceMessage = "Unable to export received tags.";
+            //        //args.ExceptionMessage = e.Message;
+            //        //OnError(args);
+            //        break;
+            //    }
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             return export;
 
@@ -89,29 +90,30 @@ namespace MiddleWay_DAL.Repositories
         {
 
             string returnQuery = "SELECT OrderNumber FROM tblTechPurchases WHERE OrderNumber = '" + orderNumber + "'";
+            return false;
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            if (reader.HasRows)
-            {
-                reader.Close();
-                _conn.Close();
-                return true;
-            }
-            else
-            {
-                reader.Close();
-                _conn.Close();
-                return false;
-            }
+            //if (reader.HasRows)
+            //{
+            //    //reader.Close();
+            //    //_conn.Close();
+            //    return true;
+            //}
+            //else
+            //{
+            //    //reader.Close();
+            //    //_conn.Close();
+            //    return false;
+            //}
 
 
         }
@@ -123,30 +125,30 @@ namespace MiddleWay_DAL.Repositories
 
             string returnQuery = "SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber = '" + orderNumber + "'";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                try
-                {
-                    purchaseUid = (int)reader[0];
-                }
+            //while (reader.Read())
+            //{
+            //    try
+            //    {
+            //        purchaseUid = (int)reader[0];
+            //    }
 
-                catch
-                {
-                    purchaseUid = -1;
-                }
-            }
+            //    catch
+            //    {
+            //        purchaseUid = -1;
+            //    }
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             if (purchaseUid == -1)
             {
@@ -197,31 +199,31 @@ namespace MiddleWay_DAL.Repositories
                         message = "Successfully added header for order number " + order.PurchaseOrderNumber;
                     }
 
-                    if (_conn.State == ConnectionState.Open)
-                    {
-                        _conn.Close();
-                    }
+                    //if (_conn.State == ConnectionState.Open)
+                    //{
+                    //    _conn.Close();
+                    //}
 
-                    _conn.Open();
-                    SqlCommand cmd = new SqlCommand(headerQuery, _conn);
+                    //_conn.Open();
+                    //SqlCommand cmd = new SqlCommand(headerQuery, _conn);
 
-                    cmd.ExecuteNonQuery();
+                    //cmd.ExecuteNonQuery();
 
-                    DbActivityEventArgs args = new DbActivityEventArgs();
-                    args.ActivityStep = "Add Header and Detail Data";
-                    args.ActivityMessage = message;
-                    OnAction(args);
+                    //DbActivityEventArgs args = new DbActivityEventArgs();
+                    //args.ActivityStep = "Add Header and Detail Data";
+                    //args.ActivityMessage = message;
+                    //OnAction(args);
 
-                    addOrderDetails(order.PurchaseOrderDetails.ToList());
+                    //addOrderDetails(order.PurchaseOrderDetails.ToList());
 
-                    _conn.Close();
+                    //_conn.Close();
                 }
                 catch (Exception e)
                 {
-                    DbErrorEventArgs args = new DbErrorEventArgs();
-                    args.InterfaceMessage = "Error adding product headers or details for order number " + order.PurchaseOrderNumber;
-                    args.ExceptionMessage = e.Message;
-                    OnError(args);
+                    //DbErrorEventArgs args = new DbErrorEventArgs();
+                    //args.InterfaceMessage = "Error adding product headers or details for order number " + order.PurchaseOrderNumber;
+                    //args.ExceptionMessage = e.Message;
+                    //OnError(args);
                     continue;
                 }
             }

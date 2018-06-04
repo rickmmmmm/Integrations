@@ -10,6 +10,7 @@ namespace MiddleWay_DAL.EF_DAL
         public string PoliceReportNumber { get; set; }
         public int? AssetConditionUid { get; set; }
         public string Cfda { get; set; }
+        public decimal? SalePrice { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public int LastModifiedByUserId { get; set; }

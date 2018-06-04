@@ -6,6 +6,28 @@ using System.Threading.Tasks;
 
 namespace MiddleWay_DTO.Models
 {
+    public class PurchaseOrderDto
+    {
+        public string OrderNumber { get; set; }
+        public int StatusID { get; set; }
+        public int VendorID { get; set; }
+        public string VendorName { get; set; }
+        public string SiteID { get; set; }
+        public DateTime PurchaseDate { get; set; }
+        public DateTime EstimatedDeliveryDate { get; set; }
+        public string Notes { get; set; }
+        public string Other1 { get; set; }
+        public string FRN { get; set; }
+        public decimal StateFunding { get; set; }
+        public decimal FederalFunding { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string LastModifiedBy { get; set; }
+        public DateTime LastModifiedDate { get; set; }
+        
+        public ICollection<PurchaseItemDetailDto> PurchaseOrderDetails { get; set; }
+    }
+
     public class PurchaseOrderFile
     {
         public string OrderNumber { get; set; }

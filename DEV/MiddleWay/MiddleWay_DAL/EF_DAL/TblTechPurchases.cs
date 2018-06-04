@@ -25,7 +25,10 @@ namespace MiddleWay_DAL.EF_DAL
         public DateTime LastModifiedDate { get; set; }
         public string Other1 { get; set; }
         public string Frn { get; set; }
+        public decimal? StateFunding { get; set; }
+        public decimal? FederalFunding { get; set; }
 
+        public TblUser CreatedByUser { get; set; }
         public TblTechSites SiteU { get; set; }
         public TblStatus StatusU { get; set; }
         public TblVendor VendorU { get; set; }

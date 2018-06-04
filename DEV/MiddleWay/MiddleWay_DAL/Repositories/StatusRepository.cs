@@ -1,8 +1,9 @@
 ﻿using MiddleWay_DAL.DataProvider;
 using MiddleWay_DAL.EF_DAL;
-using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using MiddleWay_DTO.Enumerations;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -25,9 +26,21 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getStatusUID(string status)
+        public int GetStatusUID(string statusName, StatusTypes statusTypeID)
         {
-            //return 32;
+            try
+            {
+                var statusID = (from status in _context.TblStatus
+                                where status.StatusDesc == statusName
+                                   && status.StatusTypeUid == (int)statusTypeID
+                                select status.StatusId).FirstOrDefault();
+
+                return statusID;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         #endregion Select Functions

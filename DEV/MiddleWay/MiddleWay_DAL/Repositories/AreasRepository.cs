@@ -1,5 +1,6 @@
 ﻿using MiddleWay_DAL.DataProvider;
 using MiddleWay_DAL.EF_DAL;
+using MiddleWay_DTO.Models;
 using MiddleWay_DTO.TIPWeb_Models;
 using System.Linq;
 
@@ -39,7 +40,7 @@ namespace MiddleWay_DAL.Repositories
             }
         }
 
-        public AreasModel getArea(string areaName)
+        public AreasDto getArea(string areaName)
         {
             try
             {
@@ -50,7 +51,7 @@ namespace MiddleWay_DAL.Repositories
                         join modifiedBy in _context.TblUser
                             on areas.LastModifiedByUserId equals modifiedBy.UserId
                         where areas.AreaName.Trim().ToLower() == area
-                        select new AreasModel
+                        select new AreasDto
                         {
                             AreaID = areas.AreaUid,
                             AreaName = areas.AreaName,

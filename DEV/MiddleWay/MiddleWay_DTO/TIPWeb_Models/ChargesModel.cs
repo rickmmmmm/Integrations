@@ -3,25 +3,25 @@ using System.Collections.Generic;
 
 namespace MiddleWay_DTO.TIPWeb_Models
 {
-    public class ChargesModel
+    public class ChargeModel
     {
         public int ChargeUID { get; set; }
-        public decimal? ChargeAmount { get; set; }
-        public ICollection<ChargePaymentsModel> Payments { get; set; }
+        public int ChargeTypeUID { get; set; }
+        public int EntityUID { get; set; }
+        public int EntityTypeUID { get; set; }
+        public int ChargeSiteUID { get; set; }
+        public decimal ChargeAmount { get; set; }
+        public bool Void { get; set; }
+        public string Description { get; set; }
+        public string Notes { get; set; }
+        public string UniversalID { get; set; }
+        public int ItemUID { get; set; }
+        public int ItemTypeUID { get; set; }
+        public DateTime DateSatisfied { get; set; }
+        public int ApplicationUID { get; set; }
+        public int CreatedByUserID { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int LastModifiedByUserID { get; set; }
+        public DateTime LastModifiedDate { get; set; }
     }
-
-    public class ChargeExportFile
-    {
-        public int FineId { get; set; }
-        public string StudentId { get; set; }
-        public string ItemTitle { get; set; }
-        public string ItemBarcode { get; set; }
-        public string ItemCollection { get; set; }
-        public string FineLocationCode { get; set; }
-        public string FineDescription { get; set; }
-        public DateTime FineCreatedDate { get; set; }
-        public decimal FineAmount { get; set; }
-
-    }
-
 }

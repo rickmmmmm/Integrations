@@ -28,20 +28,36 @@ namespace MiddleWay_DAL.Repositories
         #endregion Select Functions
 
         #region Insert Functions
-        public void logError(string message, string exceptionMessage)
+        public void logError(int importCode, string message, string exceptionMessage)
         {
-            string query = "INSERT INTO _ETL_Errors (InterfaceMessage, ExceptionMessage, ImportDataID) VALUES ('" + message + "','" + exceptionMessage + "','" + _importCode.ToString() + "')";
-
-            SqlCommand cmd = new SqlCommand(query, _conn);
-
-            if (_conn.State == ConnectionState.Open)
+            try
             {
-                _conn.Close();
-            }
+                var etlError = new EtlErrors()
+                {
+                    ImportDataId = importCode,
+                    InterfaceMessage = message,
+                    ExceptionMessage = exceptionMessage
+                };
 
-            _conn.Open();
-            cmd.ExecuteNonQuery();
-            _conn.Close();
+                _context.EtlErrors.Add(etlError);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+            //string query = "INSERT INTO _ETL_Errors (InterfaceMessage, ExceptionMessage, ImportDataID) VALUES ('" + message + "','" + exceptionMessage + "','" + importCode.ToString() + "')";
+
+            //SqlCommand cmd = new SqlCommand(query, _conn);
+
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+
+            //_conn.Open();
+            //cmd.ExecuteNonQuery();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

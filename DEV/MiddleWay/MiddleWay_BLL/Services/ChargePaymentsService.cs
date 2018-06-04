@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MiddleWay_DTO.Models;
-using MiddleWay_DTO.TIPWeb_Models;
+using MiddleWay_DTO.View_Models;
 
 namespace FileSystemTasks
 {
@@ -29,16 +29,15 @@ namespace FileSystemTasks
 
         #region Functions
 
-        public List<ChargePaymentsModel> mapPaymentDetails(List<PaymentImportFile> imports)
+        public List<ChargePaymentsViewModel> mapPaymentDetails(List<PaymentImportFile> imports)
         {
-            List<ChargePaymentsModel> payload = new List<ChargePaymentsModel>();
+            var payload = new List<ChargePaymentsViewModel>();
 
             foreach (var import in imports)
             {
-
-                ChargePaymentsModel payment = new ChargePaymentsModel
+                var payment = new ChargePaymentsViewModel
                 {
-                    ParentCharge = new Charge { ChargeUID = import.FineId },
+                    ChargeUID = import.FineId,
                     ChargeAmount = Convert.ToDecimal(import.Amount),
                     PaymentDate = import.Date,
                     Void = import.Type.ToLower() == "adjustment" ? true : false
@@ -53,32 +52,33 @@ namespace FileSystemTasks
 
         public List<PaymentImportFile> serializeChargePaymentsFile(string fileName, string delimiter)
         {
-            using (StreamReader reader = File.OpenText(fileName))
-            {
-                var payload = new List<PaymentImportFile>();
-                var csv = new CsvReader(reader);
+            return null;
+            //using (StreamReader reader = File.OpenText(fileName))
+            //{
+            //    var payload = new List<PaymentImportFile>();
+            //    var csv = new CsvReader(reader);
 
-                csv.Configuration.Delimiter = delimiter; // ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.HasHeaderRecord = false;
-                //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
-                csv.Configuration.IgnoreQuotes = true;
+            //    csv.Configuration.Delimiter = delimiter; // ConfigurationManager.AppSettings["delimiter"];
+            //    csv.Configuration.HasHeaderRecord = false;
+            //    //csv.Configuration.Quote = ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+            //    csv.Configuration.IgnoreQuotes = true;
 
-                while (csv.Read())
-                {
+            //    while (csv.Read())
+            //    {
 
-                    PaymentImportFile newLine = new PaymentImportFile
-                    {
-                        FineId = csv.GetField<int>(Convert.ToInt32(ConfigurationManager.AppSettings["FineId"])),
-                        Amount = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentAmount"])),
-                        Type = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentType"])),
-                        Date = csv.GetField<DateTime>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentDate"]))
-                    };
+            //        PaymentImportFile newLine = new PaymentImportFile
+            //        {
+            //            FineId = csv.GetField<int>(Convert.ToInt32(ConfigurationManager.AppSettings["FineId"])),
+            //            Amount = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentAmount"])),
+            //            Type = csv.GetField<string>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentType"])),
+            //            Date = csv.GetField<DateTime>(Convert.ToInt32(ConfigurationManager.AppSettings["PaymentDate"]))
+            //        };
 
-                    payload.Add(newLine);
-                }
+            //        payload.Add(newLine);
+            //    }
 
-                return payload;
-            }
+            //    return payload;
+            //}
         }
 
         #endregion Functions

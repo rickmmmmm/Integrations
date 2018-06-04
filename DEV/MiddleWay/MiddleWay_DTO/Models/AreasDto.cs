@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.TIPWeb_Models
+namespace MiddleWay_DTO.Models
 {
-    public class AreasModel
+    public class AreasDto
     {
-        public int AreaUID { get; set; }
+        public int AreaID { get; set; }
         public string AreaName { get; set; }
-        public int CreatedByUserID { get; set; }
+        public string CreatedByUser { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int LastModifiedByUserID { get; set; }
+        public string LastModifiedByUser { get; set; }
         public DateTime LastModifiedDate { get; set; }
     }
 }

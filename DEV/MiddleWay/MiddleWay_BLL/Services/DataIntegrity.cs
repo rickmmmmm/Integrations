@@ -3,57 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 //using Model;
 //using DataAccess;
-using SystemTasks;
+using MiddleWay_Utilities;
+using MiddleWay_DTO.Models;
 
 namespace SystemTasks
 {
     public class DataIntegrity
     {
-        private IRepository _rep;
-        public DataIntegrity(IRepository rep)
-        {
-            _rep = rep;
-        }
+        //private IRepository _rep;
+
+        public DataIntegrity()
+        { }
+
+        //public DataIntegrity(IRepository rep)
+        //{
+        //    _rep = rep;
+        //}
 
         #region Purchase Orders
-        public List<PurchaseOrderFile> removeBadElements(List<PurchaseOrderFile> payload)
+        public List<PurchaseOrderDto> removeBadElements(List<PurchaseOrderDto> payload)
         {
 
-            int badItems = payload.Where(it => it.OrderNumber.Trim() == "" || it.OrderNumber == null).Count();
+            //int badItems = payload.Where(it => it.OrderNumber.Trim() == "" || it.OrderNumber == null).Count();
 
-            ErrorEventArgs args = new ErrorEventArgs();
-            args.message = badItems.ToString() + " elements missing Order Numbers were removed.";
-            args.actionName = "Data Integrity";
-            args.type = Logging.ChangeType.Activity;
-            OnAction(args);
+            //ErrorEventArgs args = new ErrorEventArgs();
+            //args.message = badItems.ToString() + " elements missing Order Numbers were removed.";
+            //args.actionName = "Data Integrity";
+            //args.type = Logging.ChangeType.Activity;
+            //OnAction(args);
 
             return payload.Where(items => items.OrderNumber.Trim() != "" && items.OrderNumber != null).ToList();
         }
 
         //site not found
-        public bool siteNotFound(PurchaseOrderFile item)
+        public bool siteNotFound(PurchaseOrderDto item)
         {
             try
             {
-                int testItem = _rep.getSiteUIDFromName(item.ShippedToSite);
+                //int testItem = _rep.getSiteUIDFromName(item.ShippedToSite);
                 return true;
             }
 
-            catch(Exception e)
+            catch (Exception e)
             {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Site not found.",
-                    ExceptionMessage = e.Message,
-                    RejectedValue = item.ShippedToSite.ToString(),
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+                //ErrorEventArgs args = new ErrorEventArgs();
+                //args.message = "Record Rejected";
+                //args.actionName = "Data Integrity";
+                //args.type = Logging.ChangeType.RejectRecord;
+                //args.Data = new ErrorData
+                //{
+                //    Reference = item.OrderNumber,
+                //    Reason = "Site not found.",
+                //    ExceptionMessage = e.Message,
+                //    RejectedValue = item.ShippedToSite.ToString(),
+                //    LineNumber = item.LineNumber
+                //};
+                //OnRejectRecord(args);
 
                 return false;
             }
@@ -63,7 +68,7 @@ namespace SystemTasks
         {
             try
             {
-                int testItem = _rep.getItemUIDFromName(productName);
+                //int testItem = _rep.getItemUIDFromName(productName);
                 return false;
             }
             catch
@@ -73,63 +78,63 @@ namespace SystemTasks
         }
 
         //product not found in catalog
-        public bool productNotFound(PurchaseOrderFile item)
+        public bool productNotFound(PurchaseOrderDto item)
         {
             try
             {
-                int testItem = _rep.getItemUIDFromName(item.ProductName);
+                //int testItem = _rep.getItemUIDFromName(item.ProductName);
                 return true;
             }
 
             catch (Exception e)
             {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Product not found in TIPWeb-IT catalog",
-                    ExceptionMessage = e.Message,
-                    RejectedValue = item.ProductName,
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+                //ErrorEventArgs args = new ErrorEventArgs();
+                //args.message = "Record Rejected";
+                //args.actionName = "Data Integrity";
+                //args.type = Logging.ChangeType.RejectRecord;
+                //args.Data = new ErrorData
+                //{
+                //    Reference = item.OrderNumber,
+                //    Reason = "Product not found in TIPWeb-IT catalog",
+                //    ExceptionMessage = e.Message,
+                //    RejectedValue = item.ProductName,
+                //    LineNumber = item.LineNumber
+                //};
+                //OnRejectRecord(args);
                 return false;
             }
         }
 
         //model does not match existing product
-        public bool modelNotFound(PurchaseOrderFile item)
+        public bool modelNotFound(PurchaseOrderDto item)
         {
             try
             {
-                string testItem = _rep.getModelNumberFromProductName(item.ProductName);
+                //string testItem = _rep.getModelNumberFromProductName(item.ProductName);
 
-                if (testItem.ToLower() != item.Model.ToLower())
-                {
-                    throw new Exception();
-                }
+                //if (testItem.ToLower() != item.Model.ToLower())
+                //{
+                //    throw new Exception();
+                //}
 
                 return true;
             }
 
             catch (Exception e)
             {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Model does not match existing product in TIPWeb-IT catalog",
-                    ExceptionMessage = e.Message,
-                    RejectedValue = item.Model,
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+                //ErrorEventArgs args = new ErrorEventArgs();
+                //args.message = "Record Rejected";
+                //args.actionName = "Data Integrity";
+                //args.type = Logging.ChangeType.RejectRecord;
+                //args.Data = new ErrorData
+                //{
+                //    Reference = item.OrderNumber,
+                //    Reason = "Model does not match existing product in TIPWeb-IT catalog",
+                //    ExceptionMessage = e.Message,
+                //    RejectedValue = item.Model,
+                //    LineNumber = item.LineNumber
+                //};
+                //OnRejectRecord(args);
                 return false;
             }
         }
@@ -138,7 +143,7 @@ namespace SystemTasks
         {
             try
             {
-                int testItem = _rep.getVendorUIDFromName(vendorName);
+                //int testItem = _rep.getVendorUIDFromName(vendorName);
                 return false;
             }
             catch
@@ -147,197 +152,199 @@ namespace SystemTasks
             }
         }
 
-        public bool rejectLongRecord(PurchaseOrderFile record, bool vendorCheck = false, bool productCheck = false, bool fundingSourceCheck = false)
+        public bool rejectLongRecord(PurchaseOrderDto record, bool vendorCheck = false, bool productCheck = false, bool fundingSourceCheck = false)
         {
-            if (record.OrderNumber.Length >= 50)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = record.OrderNumber,
-                    Reason = "Order Number Exceeds 50 ASCII Characters",
-                    ExceptionMessage = "No Exception Message",
-                    RejectedValue = record.VendorName,
-                    LineNumber = record.LineNumber
-                };
+            throw new NotImplementedException();
+            //if (record.OrderNumber.Length >= 50)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = record.OrderNumber,
+            //    //    Reason = "Order Number Exceeds 50 ASCII Characters",
+            //    //    ExceptionMessage = "No Exception Message",
+            //    //    RejectedValue = record.VendorName,
+            //    //    LineNumber = record.LineNumber
+            //    //};
 
-                OnRejectRecord(args);
-                return true;
-            }
+            //    //OnRejectRecord(args);
+            //    return true;
+            //}
 
-            else if (vendorCheck && record.VendorName.Length >= 100)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = record.OrderNumber,
-                    Reason = "Vendor Name Exceeds 100 ASCII Characters",
-                    ExceptionMessage = "No Exception Message",
-                    RejectedValue = record.VendorName,
-                    LineNumber = record.LineNumber
-                };
+            //else if (vendorCheck && record.VendorName.Length >= 100)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = record.OrderNumber,
+            //    //    Reason = "Vendor Name Exceeds 100 ASCII Characters",
+            //    //    ExceptionMessage = "No Exception Message",
+            //    //    RejectedValue = record.VendorName,
+            //    //    LineNumber = record.LineNumber
+            //    //};
 
-                OnRejectRecord(args);
-                return true;
-            }
+            //    //OnRejectRecord(args);
+            //    return true;
+            //}
 
-            else if (productCheck && record.ProductName.Length >= 100)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = record.OrderNumber,
-                    Reason = "Product Name Exceeds 100 ASCII Characters.",
-                    ExceptionMessage = "No Exception Message",
-                    RejectedValue = record.VendorName,
-                    LineNumber = record.LineNumber
-                };
+            //else if (productCheck && record.ProductName.Length >= 100)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = record.OrderNumber,
+            //    //    Reason = "Product Name Exceeds 100 ASCII Characters.",
+            //    //    ExceptionMessage = "No Exception Message",
+            //    //    RejectedValue = record.VendorName,
+            //    //    LineNumber = record.LineNumber
+            //    //};
 
-                OnRejectRecord(args);
-                return true;
-            }
+            //    //OnRejectRecord(args);
+            //    return true;
+            //}
 
-            else if (fundingSourceCheck && record.FundingSource.Length >= 50)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = record.OrderNumber,
-                    Reason = "Funding Source Name Exceeds 50 ASCII Characters.",
-                    ExceptionMessage = "No Exception Message",
-                    RejectedValue = record.VendorName,
-                    LineNumber = record.LineNumber
-                };
+            //else if (fundingSourceCheck && record.FundingSource.Length >= 50)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = record.OrderNumber,
+            //    //    Reason = "Funding Source Name Exceeds 50 ASCII Characters.",
+            //    //    ExceptionMessage = "No Exception Message",
+            //    //    RejectedValue = record.VendorName,
+            //    //    LineNumber = record.LineNumber
+            //    //};
 
-                OnRejectRecord(args);
-                return true;
-            }
+            //    //OnRejectRecord(args);
+            //    return true;
+            //}
 
-            else
-            {
-                return false;
-            }
-            
+            //else
+            //{
+            //    return false;
+            //}
         }
 
         //vendor not found
-        public bool vendorNotFound(PurchaseOrderFile item)
+        public bool vendorNotFound(PurchaseOrderDto item)
         {
             try
             {
-                int testItem = _rep.getVendorUIDFromName(item.VendorName);
+                //int testItem = _rep.getVendorUIDFromName(item.VendorName);
 
                 return true;
             }
 
             catch (Exception e)
             {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Vendor not found in TIPWeb-IT.",
-                    ExceptionMessage = e.Message,
-                    RejectedValue = item.VendorName,
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+                //ErrorEventArgs args = new ErrorEventArgs();
+                //args.message = "Record Rejected";
+                //args.actionName = "Data Integrity";
+                //args.type = Logging.ChangeType.RejectRecord;
+                //args.Data = new ErrorData
+                //{
+                //    Reference = item.OrderNumber,
+                //    Reason = "Vendor not found in TIPWeb-IT.",
+                //    ExceptionMessage = e.Message,
+                //    RejectedValue = item.VendorName,
+                //    LineNumber = item.LineNumber
+                //};
+                //OnRejectRecord(args);
                 return false;
             }
         }
 
         //purchase date missing or invalid
-        public bool purchaseDateMissingOrInvalid(PurchaseOrderFile item)
+        public bool purchaseDateMissingOrInvalid(PurchaseOrderDto item)
         {
-            if (!item.OrderDate.IsValidDateFromString(true))
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Purchase Date missing or invalid.",
-                    ExceptionMessage = "",
-                    RejectedValue = item.OrderDate,
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+            throw new NotImplementedException();
+            //if (!item.OrderDate.IsValidDateFromString(true))
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = item.OrderNumber,
+            //    //    Reason = "Purchase Date missing or invalid.",
+            //    //    ExceptionMessage = "",
+            //    //    RejectedValue = item.OrderDate,
+            //    //    LineNumber = item.LineNumber
+            //    //};
+            //    //OnRejectRecord(args);
 
-                return false;
-            }
+            //    return false;
+            //}
 
-            else if (Convert.ToDateTime(item.OrderDate).Year <= 1960)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Purchase Date year less than 1960.",
-                    ExceptionMessage = "",
-                    RejectedValue = item.OrderDate,
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
-                return false;
-            }
-            
-            else
-            {
-                return true;
-            }         
+            //else if (Convert.ToDateTime(item.OrderDate).Year <= 1960)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = item.OrderNumber,
+            //    //    Reason = "Purchase Date year less than 1960.",
+            //    //    ExceptionMessage = "",
+            //    //    RejectedValue = item.OrderDate,
+            //    //    LineNumber = item.LineNumber
+            //    //};
+            //    //OnRejectRecord(args);
+            //    return false;
+            //}
+
+            //else
+            //{
+            //    return true;
+            //}
         }
 
         //invalid quantity
 
         //invalid quantity shipped
-        
+
         //invalid purchase price
 
         //invalid line number
-        public bool invalidLineNumber(PurchaseOrderFile item)
+        public bool invalidLineNumber(PurchaseOrderDto item)
         {
-            if (item.LineNumber <= 0)
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Invalid Line Number",
-                    ExceptionMessage = "",
-                    RejectedValue = item.LineNumber.ToString(),
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+            throw new NotImplementedException();
+            //if (item.LineNumber <= 0)
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = item.OrderNumber,
+            //    //    Reason = "Invalid Line Number",
+            //    //    ExceptionMessage = "",
+            //    //    RejectedValue = item.LineNumber.ToString(),
+            //    //    LineNumber = item.LineNumber
+            //    //};
+            //    //OnRejectRecord(args);
 
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
 
@@ -345,7 +352,8 @@ namespace SystemTasks
         {
             try
             {
-                _rep.getFundingSourceUIDFromName(fundingSource);
+                throw new NotImplementedException();
+                //_rep.getFundingSourceUIDFromName(fundingSource);
                 return false;
             }
             catch
@@ -354,54 +362,54 @@ namespace SystemTasks
             }
         }
         //no funding source
-        public bool missingFundingSource(PurchaseOrderFile item)
+        public bool missingFundingSource(PurchaseOrderDto item)
         {
-            if (string.IsNullOrEmpty(item.FundingSource.Trim()))
-            {
-                ErrorEventArgs args = new ErrorEventArgs();
-                args.message = "Record Rejected";
-                args.actionName = "Data Integrity";
-                args.type = Logging.ChangeType.RejectRecord;
-                args.Data = new ErrorData
-                {
-                    Reference = item.OrderNumber,
-                    Reason = "Missing Funding Source",
-                    ExceptionMessage = "",
-                    RejectedValue = item.FundingSource.ToString(),
-                    LineNumber = item.LineNumber
-                };
-                OnRejectRecord(args);
+            throw new NotImplementedException();
+            //if (string.IsNullOrEmpty(item.FundingSource.Trim()))
+            //{
+            //    //ErrorEventArgs args = new ErrorEventArgs();
+            //    //args.message = "Record Rejected";
+            //    //args.actionName = "Data Integrity";
+            //    //args.type = Logging.ChangeType.RejectRecord;
+            //    //args.Data = new ErrorData
+            //    //{
+            //    //    Reference = item.OrderNumber,
+            //    //    Reason = "Missing Funding Source",
+            //    //    ExceptionMessage = "",
+            //    //    RejectedValue = item.FundingSource.ToString(),
+            //    //    LineNumber = item.LineNumber
+            //    //};
+            //    //OnRejectRecord(args);
 
-                return true;
-            }
-            else
-            {
-                try
-                {
-                    _rep.getFundingSourceUIDFromName(item.FundingSource);
-                    return false;
-                }
-                catch(Exception e)
-                {
-                    ErrorEventArgs args = new ErrorEventArgs();
-                    args.message = "Record Rejected";
-                    args.actionName = "Data Integrity";
-                    args.type = Logging.ChangeType.RejectRecord;
-                    args.Data = new ErrorData
-                    {
-                        Reference = item.OrderNumber,
-                        Reason = "Missing Funding Source",
-                        ExceptionMessage = "",
-                        RejectedValue = item.FundingSource.ToString(),
-                        LineNumber = item.LineNumber
-                    };
-                    OnRejectRecord(args);
-                    return true;
-                }
-                
-            }
+            //    return true;
+            //}
+            //else
+            //{
+            //    try
+            //    {
+            //        //_rep.getFundingSourceUIDFromName(item.FundingSource);
+            //        return false;
+            //    }
+            //    catch(Exception e)
+            //    {
+            //        //ErrorEventArgs args = new ErrorEventArgs();
+            //        //args.message = "Record Rejected";
+            //        //args.actionName = "Data Integrity";
+            //        //args.type = Logging.ChangeType.RejectRecord;
+            //        //args.Data = new ErrorData
+            //        //{
+            //        //    Reference = item.OrderNumber,
+            //        //    Reason = "Missing Funding Source",
+            //        //    ExceptionMessage = "",
+            //        //    RejectedValue = item.FundingSource.ToString(),
+            //        //    LineNumber = item.LineNumber
+            //        //};
+            //        //OnRejectRecord(args);
+            //        return true;
+            //    }
+
+            //}
         }
-        //
 
         public bool checkMissingDataElement(string item)
         {
@@ -422,30 +430,30 @@ namespace SystemTasks
         #endregion
 
 
-        public event EventHandler<ErrorEventArgs> Error;
-        public event EventHandler<ErrorEventArgs> Action;
-        public event EventHandler<ErrorEventArgs> Reject;
+        //public event EventHandler<ErrorEventArgs> Error;
+        //public event EventHandler<ErrorEventArgs> Action;
+        //public event EventHandler<ErrorEventArgs> Reject;
 
-        protected virtual void OnRejectRecord(ErrorEventArgs e)
-        {
-            EventHandler<ErrorEventArgs> handler = Reject;
+        //protected virtual void OnRejectRecord(ErrorEventArgs e)
+        //{
+        //    EventHandler<ErrorEventArgs> handler = Reject;
 
-            handler(this, e);
-        }
+        //    handler(this, e);
+        //}
 
-        protected virtual void OnError(ErrorEventArgs e)
-        {
-            EventHandler<ErrorEventArgs> handler = Error;
+        //protected virtual void OnError(ErrorEventArgs e)
+        //{
+        //    EventHandler<ErrorEventArgs> handler = Error;
 
-            handler(this, e);
-        }
+        //    handler(this, e);
+        //}
 
-        public virtual void OnAction(ErrorEventArgs e)
-        {
-            EventHandler<ErrorEventArgs> handler = Action;
+        //public virtual void OnAction(ErrorEventArgs e)
+        //{
+        //    EventHandler<ErrorEventArgs> handler = Action;
 
-            handler(this, e);
-        }
+        //    handler(this, e);
+        //}
 
         //static void OnError(object sender, ErrorEventArgs e)
         //{

@@ -25,7 +25,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getContainerUID(string name)
+        public int GetContainerUID(string name)
         {
             throw new NotImplementedException();
         }

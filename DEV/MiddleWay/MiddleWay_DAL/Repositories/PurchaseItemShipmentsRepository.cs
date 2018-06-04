@@ -48,21 +48,21 @@ namespace MiddleWay_DAL.Repositories
             query += "RIGHT JOIN tblTechPurchaseItemDetails ttpid on ttpis.[PurchaseItemDetailUID] = ttpid.[PurchaseItemDetailUID] ";
             query += "WHERE ttpis.PurchaseItemDetailUID is null";
 
-            if (_conn.State == ConnectionState.Closed)
-            {
-                _conn.Open();
-            }
+            //if (_conn.State == ConnectionState.Closed)
+            //{
+            //    _conn.Open();
+            //}
 
             try
             {
-                SqlCommand cmd = new SqlCommand(query, _conn);
-                cmd.ExecuteNonQuery();
+                //SqlCommand cmd = new SqlCommand(query, _conn);
+                //cmd.ExecuteNonQuery();
             }
             catch (Exception e)
             {
-                DbErrorEventArgs args = new DbErrorEventArgs();
-                args.InterfaceMessage = "ERROR adding shipment information.";
-                args.ExceptionMessage = e.Message;
+                //DbErrorEventArgs args = new DbErrorEventArgs();
+                //args.InterfaceMessage = "ERROR adding shipment information.";
+                //args.ExceptionMessage = e.Message;
             }
 
 

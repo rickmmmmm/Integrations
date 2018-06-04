@@ -7,17 +7,23 @@ namespace MiddleWay_Controller.Services
 {
     public class ConfigurationService : IConfigurationService
     {
+        #region Private Variables
+
+        private IConfigurationRepository _configurationRepository;
         private Dictionary<string, string> configuration { get; set; }
 
-        public ConfigurationService()
-        {
+        #endregion Private Variables and Properties
 
+        #region Constructor
+
+        public ConfigurationService(IConfigurationRepository configurationRepository)
+        {
+            _configurationRepository = configurationRepository;
         }
 
-        public void ReadConfiguration()
-        {
+        #endregion Constructor
 
-        }
+        #region Properties
 
         public string ApiKey { get { return GetConfigurationByName("ApiKey"); } }
         public string Delimiter { get { return GetConfigurationByName("Delimiter"); } }
@@ -28,20 +34,41 @@ namespace MiddleWay_Controller.Services
         public string SMSAPI { get { return GetConfigurationByName("SMSAPI"); } }
         public string SqlServerDbMailProfileName { get { return GetConfigurationByName("SqlServerDbMailProfileName"); } }
         public string TextQualifier { get { return GetConfigurationByName("TextQualifier"); } }
-
         public string TIPWebConnection { get { return GetConfigurationByName("TIPWebConnection"); } }
 
-        public string GetConfigurationByName(string name)
+        #endregion Properties
+
+        #region Get Methods
+
+        public void ReadConfiguration()
         {
-            if (configuration.ContainsKey(name))
+            var configurations = _configurationRepository.GetConfiguration();
+
+            foreach (var config in configurations)
             {
-                return configuration[name];
-            }
-            else
-            {
-                return null;
+                configuration.Add(config.ConfigurationName, config.ConfigurationValue);
             }
         }
 
+        public string GetConfigurationByName(string name)
+        {
+            if (configuration.Count > 0)
+            {
+                if (configuration.ContainsKey(name))
+                {
+                    return configuration[name];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Configuration not loaded");
+            }
+        }
+
+        #endregion Get Methods
     }
 }

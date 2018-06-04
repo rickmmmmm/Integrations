@@ -11,9 +11,13 @@ namespace MiddleWay_DAL.EF_DAL
         public virtual DbSet<CurrentStudentList> CurrentStudentList { get; set; }
         public virtual DbSet<DownloadDataTypes> DownloadDataTypes { get; set; }
         public virtual DbSet<DownloadedData> DownloadedData { get; set; }
+        public virtual DbSet<EtlActivityMonitor> EtlActivityMonitor { get; set; }
+        public virtual DbSet<EtlErrors> EtlErrors { get; set; }
+        public virtual DbSet<EtlImportData> EtlImportData { get; set; }
         public virtual DbSet<EtlInventory> EtlInventory { get; set; }
         public virtual DbSet<EtlItems> EtlItems { get; set; }
         public virtual DbSet<EtlPurchases> EtlPurchases { get; set; }
+        public virtual DbSet<EtlRejects> EtlRejects { get; set; }
         public virtual DbSet<EtlSettings> EtlSettings { get; set; }
         public virtual DbSet<FoundAdjustmentVendorOrders> FoundAdjustmentVendorOrders { get; set; }
         public virtual DbSet<IitInventoryImportProcess> IitInventoryImportProcess { get; set; }
@@ -378,9 +382,11 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
 
+                entity.Property(e => e.DefaultImage).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.EnteredByCampus).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.FileType).HasColumnType("nchar(4)");
+                entity.Property(e => e.FileType).HasMaxLength(4);
 
                 entity.Property(e => e.ImageDescription)
                     .HasMaxLength(200)
@@ -469,6 +475,64 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnName("SD")
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<EtlActivityMonitor>(entity =>
+            {
+                entity.HasKey(e => e.ActivityMonitorId);
+
+                entity.ToTable("_ETL_ActivityMonitor");
+
+                entity.Property(e => e.ActivityMonitorId).HasColumnName("ActivityMonitorID");
+
+                entity.Property(e => e.ActivityDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ActivityMessage).IsUnicode(false);
+
+                entity.Property(e => e.ActivityStep)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImportDataId).HasColumnName("ImportDataID");
+            });
+
+            modelBuilder.Entity<EtlErrors>(entity =>
+            {
+                entity.HasKey(e => e.ErrorUid);
+
+                entity.ToTable("_ETL_Errors");
+
+                entity.Property(e => e.ErrorUid).HasColumnName("ErrorUID");
+
+                entity.Property(e => e.ErrorDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ExceptionMessage).IsUnicode(false);
+
+                entity.Property(e => e.ImportDataId).HasColumnName("ImportDataID");
+
+                entity.Property(e => e.InterfaceMessage).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<EtlImportData>(entity =>
+            {
+                entity.HasKey(e => e.ImportCode);
+
+                entity.ToTable("_ETL_ImportData");
+
+                entity.Property(e => e.ImportCompleted).HasDefaultValueSql("('False')");
+
+                entity.Property(e => e.ImportDateTime)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ImportUserId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasDefaultValueSql("(suser_sname())");
             });
 
             modelBuilder.Entity<EtlInventory>(entity =>
@@ -765,8 +829,6 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LineNumber).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.Manufacturer)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -850,6 +912,31 @@ namespace MiddleWay_DAL.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+            });
+
+            modelBuilder.Entity<EtlRejects>(entity =>
+            {
+                entity.HasKey(e => e.RejectUid);
+
+                entity.ToTable("_ETL_Rejects");
+
+                entity.Property(e => e.RejectUid).HasColumnName("RejectUID");
+
+                entity.Property(e => e.ExceptionMessage).IsUnicode(false);
+
+                entity.Property(e => e.Reference)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RejectDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.RejectReason)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RejectedValue).IsUnicode(false);
             });
 
             modelBuilder.Entity<EtlSettings>(entity =>
@@ -1152,6 +1239,14 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.CustomFieldRequired1).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CustomFieldRequired2).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CustomFieldRequired3).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CustomFieldRequired4).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.InventoryMetaUid1).HasColumnName("InventoryMetaUID1");
 
                 entity.Property(e => e.InventoryMetaUid2).HasColumnName("InventoryMetaUID2");
@@ -1235,7 +1330,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
 
@@ -1262,7 +1359,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ImsLocationId).HasColumnName("IMS_LocationID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.AltLocationId)
                     .HasColumnName("AltLocationID")
@@ -1296,7 +1395,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
 
@@ -1344,7 +1445,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(50)
@@ -1391,7 +1494,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
 
@@ -1533,7 +1638,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(50)
@@ -1563,7 +1670,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.StudentId)
                     .HasColumnName("StudentID")
@@ -1600,7 +1709,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
 
@@ -1677,7 +1788,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(50)
@@ -1705,7 +1818,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TeacherId)
                     .HasColumnName("TeacherID")
@@ -1748,7 +1863,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Import).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Import)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
 
@@ -1931,9 +2048,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.SecretKey).IsUnicode(false);
 
-                entity.Property(e => e.SettingsApirolesId)
-                    .HasColumnName("SettingsAPIRolesID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.SettingsApirolesId).HasColumnName("SettingsAPIRolesID");
 
                 entity.Property(e => e.ValidFromDate).HasColumnType("datetime");
 
@@ -1985,7 +2100,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.ToTable("tblAdjustmentDetails");
 
-                entity.HasIndex(e => new { e.CopiesToAdjust, e.Posted, e.AdjustmentDetailsUid, e.AdjustmentId, e.Isbn })
+                entity.HasIndex(e => new { e.CopiesToAdjust, e.AdjustmentDetailsUid, e.Posted, e.AdjustmentId, e.Isbn })
                     .HasName("_dta_index_tblAdjustmentDetails_8_1264879723__K1_K2_3_4_8");
 
                 entity.Property(e => e.AdjustmentDetailsUid).HasColumnName("AdjustmentDetailsUID");
@@ -2027,6 +2142,8 @@ namespace MiddleWay_DAL.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.AlertDate).HasColumnType("datetime");
+
+                entity.Property(e => e.AlertRead).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ToUserId).HasColumnName("ToUserID");
             });
@@ -2711,7 +2828,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.StudentId)
                     .IsRequired()
@@ -2719,9 +2838,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid)
-                    .HasColumnName("StudentsUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -2784,9 +2901,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid)
-                    .HasColumnName("StudentsUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
             });
@@ -2850,9 +2965,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid)
-                    .HasColumnName("StudentsUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
 
                 entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
 
@@ -2941,7 +3054,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.TeacherId)
                     .IsRequired()
@@ -3576,16 +3691,18 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.Title, e.Isbn, e.BookInventoryUid })
                     .HasName("_dta_index_tblBookInventory_8_672877614__K1_K26_4");
 
-                entity.HasIndex(e => new { e.Slc, e.Title, e.Price, e.Publisher, e.Grade, e.Expire, e.CampusAdded, e.Active, e.Isbn, e.BookInventoryUid })
+                entity.HasIndex(e => new { e.Expire, e.Grade, e.Slc, e.Price, e.Publisher, e.Active, e.CampusAdded, e.Title, e.Isbn, e.BookInventoryUid })
                     .HasName("_dta_index_tblBookInventory_8_672877614__K1_K26_2_4_5_6_7_10_22_25");
 
-                entity.HasIndex(e => new { e.Slc, e.GroupCode, e.Title, e.Price, e.Publisher, e.Grade, e.Adopt, e.DistReqCode, e.Expire, e.Copyright, e.SetIsbn, e.BookSet, e.LeftInStorage, e.DistrictOnOrder, e.StateOnOrder, e.OnOrder, e.ShowOnReports, e.BinId, e.UserId, e.ModifiedDate, e.CampusAdded, e.Notes, e.Udf, e.Active, e.Isbn, e.BookInventoryUid })
+                entity.HasIndex(e => new { e.CampusAdded, e.Adopt, e.BookSet, e.BinId, e.Expire, e.DistReqCode, e.DistrictOnOrder, e.GroupCode, e.Grade, e.Copyright, e.Active, e.Publisher, e.OnOrder, e.Price, e.ModifiedDate, e.LeftInStorage, e.Notes, e.SetIsbn, e.ShowOnReports, e.Slc, e.Udf, e.UserId, e.Title, e.StateOnOrder, e.Isbn, e.BookInventoryUid })
                     .HasName("_dta_index_tblBookInventory_8_672877614__K1_K26_2_3_4_5_6_7_8_9")
                     .IsUnique();
 
                 entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Adopt)
                     .HasMaxLength(50)
@@ -3595,6 +3712,10 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnName("BinID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.BookSet).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.CampusAdded).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Copyright)
                     .HasMaxLength(50)
@@ -3641,6 +3762,8 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.SetIsbn).HasColumnName("SetISBN");
 
+                entity.Property(e => e.ShowOnReports).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.Slc)
                     .HasColumnName("SLC")
                     .HasMaxLength(50)
@@ -3680,19 +3803,19 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => e.Status)
                     .HasName("IDX_Status");
 
-                entity.HasIndex(e => new { e.Isbn, e.BackOrders, e.VendorOrder, e.RequisitionUid, e.Status, e.BookOrdersUid })
+                entity.HasIndex(e => new { e.VendorOrder, e.Isbn, e.BackOrders, e.RequisitionUid, e.Status, e.BookOrdersUid })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K2_K16_K1_3_18_25");
 
-                entity.HasIndex(e => new { e.Ordered, e.Received, e.CopiesToSend, e.CopiesApproved, e.Isbn, e.RequisitionUid, e.BookOrdersUid })
+                entity.HasIndex(e => new { e.CopiesApproved, e.Received, e.CopiesToSend, e.Ordered, e.Isbn, e.RequisitionUid, e.BookOrdersUid })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K3_K2_K1_5_8_20_23");
 
                 entity.HasIndex(e => new { e.Ordered, e.RequisitionUid, e.BookOrdersUid, e.Isbn, e.VendorOrder, e.FundingSource, e.OrderNumber })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K2_K1_K3_K25_K4_K10_5");
 
-                entity.HasIndex(e => new { e.Ordered, e.BackOrders, e.CopiesOnHand, e.CopiesToSend, e.CopiesSent, e.CopiesApproved, e.Denied, e.RequisitionUid, e.Status, e.Isbn, e.BookOrdersUid })
+                entity.HasIndex(e => new { e.CopiesOnHand, e.CopiesApproved, e.BackOrders, e.Ordered, e.CopiesSent, e.CopiesToSend, e.Denied, e.RequisitionUid, e.Status, e.Isbn, e.BookOrdersUid })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K2_K16_K3_K1_5_18_19_20_21_23_24");
 
-                entity.HasIndex(e => new { e.Ordered, e.Received, e.BackOrders, e.CopiesOnHand, e.CopiesToSend, e.CopiesSent, e.CopiesApproved, e.Denied, e.VendorOrder, e.Status, e.Isbn, e.RequisitionUid, e.BookOrdersUid })
+                entity.HasIndex(e => new { e.VendorOrder, e.Received, e.Ordered, e.CopiesToSend, e.CopiesSent, e.CopiesApproved, e.CopiesOnHand, e.BackOrders, e.Denied, e.Status, e.Isbn, e.RequisitionUid, e.BookOrdersUid })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K16_K3_K2_K1_5_8_18_19_20_21_23_24_25");
 
                 entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUID");
@@ -3779,19 +3902,13 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => e.RequisitionUid)
                     .HasName("idx_RequisitionUID");
 
-                entity.HasIndex(e => new { e.CopiesSent, e.DateCopiesSent, e.TicketDate, e.CopiesToShip, e.CopiesReceived, e.Isbn, e.RequisitionUid, e.BookOrdersHistoryDistUid })
+                entity.HasIndex(e => new { e.CopiesSent, e.CopiesToShip, e.CopiesReceived, e.TicketDate, e.DateCopiesSent, e.Isbn, e.RequisitionUid, e.BookOrdersHistoryDistUid })
                     .HasName("_dta_index_tblBookOrdersHistoryDist_8_1586976880__K3_K2_K1_4_5_6_7_8");
 
-                entity.HasIndex(e => new { e.DateCopiesSent, e.TicketDate, e.CopiesToShip, e.UserId, e.RandomReq, e.ModifiedDate, e.RequisitionUid, e.Isbn, e.BookOrdersHistoryDistUid, e.CopiesReceived, e.CopiesSent })
+                entity.HasIndex(e => new { e.UserId, e.ModifiedDate, e.RandomReq, e.TicketDate, e.CopiesToShip, e.DateCopiesSent, e.RequisitionUid, e.Isbn, e.BookOrdersHistoryDistUid, e.CopiesReceived, e.CopiesSent })
                     .HasName("_dta_index_tblBookOrdersHistoryDist_8_1586976880__K2_K3_K1_K8_K4_5_6_7_9_10_11");
 
                 entity.Property(e => e.BookOrdersHistoryDistUid).HasColumnName("BookOrdersHistoryDistUID");
-
-                entity.Property(e => e.CopiesReceived).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.CopiesSent).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.CopiesToShip).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.DateCopiesSent).HasColumnType("datetime");
 
@@ -3830,9 +3947,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.EventDate)
                     .HasColumnType("datetime")
@@ -3859,7 +3974,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.ToTable("tblBooksCourses");
 
-                entity.HasIndex(e => new { e.MasterCourseUid, e.Students, e.Teachers, e.BookInventoryUid, e.CampusUid })
+                entity.HasIndex(e => new { e.MasterCourseUid, e.Teachers, e.Students, e.BookInventoryUid, e.CampusUid })
                     .HasName("_dta_index_tblBooksCourses_8_429400749__K3_K2_4_5_6");
 
                 entity.Property(e => e.BooksCoursesUid).HasColumnName("BooksCoursesUID");
@@ -4033,13 +4148,13 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => e.MasterCourseUid)
                     .HasName("MasterCoursesAssigned_Index");
 
-                entity.HasIndex(e => new { e.StudentEnrollment, e.TeacherEnrollment, e.MaxStudentEnrollment, e.MaxTeacherEnrollment, e.CampusUid, e.CampusCoursesAssignedUid, e.MasterCourseUid })
-                    .HasName("_dta_index_tblCampusCoursesAssigned_8_1552880749__K2_K1_K3_4_5_6_7");
-
-                entity.HasIndex(e => new { e.StudentEnrollment, e.TeacherEnrollment, e.MaxStudentEnrollment, e.MaxTeacherEnrollment, e.MasterCourseUid, e.CampusUid, e.CampusCoursesAssignedUid })
+                entity.HasIndex(e => new { e.MaxTeacherEnrollment, e.StudentEnrollment, e.MaxStudentEnrollment, e.TeacherEnrollment, e.MasterCourseUid, e.CampusUid, e.CampusCoursesAssignedUid })
                     .HasName("_dta_index_tblCampusCoursesAssigned_8_1552880749__K3_K2_K1_4_5_6_7");
 
-                entity.HasIndex(e => new { e.StudentEnrollment, e.TeacherEnrollment, e.MaxStudentEnrollment, e.MaxTeacherEnrollment, e.CourseSifguid, e.MasterCourseUid, e.CampusUid, e.CampusCoursesAssignedUid })
+                entity.HasIndex(e => new { e.TeacherEnrollment, e.StudentEnrollment, e.MaxTeacherEnrollment, e.MaxStudentEnrollment, e.CampusUid, e.CampusCoursesAssignedUid, e.MasterCourseUid })
+                    .HasName("_dta_index_tblCampusCoursesAssigned_8_1552880749__K2_K1_K3_4_5_6_7");
+
+                entity.HasIndex(e => new { e.MaxTeacherEnrollment, e.StudentEnrollment, e.MaxStudentEnrollment, e.TeacherEnrollment, e.CourseSifguid, e.MasterCourseUid, e.CampusUid, e.CampusCoursesAssignedUid })
                     .HasName("_dta_index_tblCampusCoursesAssigned_8_1552880749__K3_K2_K1_4_5_6_7_8");
 
                 entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUID");
@@ -4097,7 +4212,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.Copies, e.Code, e.CampusId, e.Isbn, e.DistributionId })
                     .HasName("_dta_index_tblCampusDistribution_8_532353111__K4_K2_K3_K1_7");
 
-                entity.HasIndex(e => new { e.Copies, e.DistributionId, e.CampusId, e.Isbn, e.ModifiedDate, e.Code, e.Reference })
+                entity.HasIndex(e => new { e.DistributionId, e.Copies, e.CampusId, e.Isbn, e.ModifiedDate, e.Code, e.Reference })
                     .HasName("_dta_index_tblCampusDistribution_8_532353111__K2_K3_K10_K4_K11_1_7");
 
                 entity.Property(e => e.DistributionId).HasColumnName("DistributionID");
@@ -4221,7 +4336,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.BillState).HasColumnType("char(2)");
+                entity.Property(e => e.BillState)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.BillZip)
                     .HasMaxLength(15)
@@ -4278,7 +4395,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ShipState).HasColumnType("char(2)");
+                entity.Property(e => e.ShipState)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ShipZip)
                     .HasMaxLength(15)
@@ -4504,7 +4623,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AccLimitMin).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.AllowSound).HasDefaultValueSql("((1))");
+                entity.Property(e => e.AllowSound)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.DateCreated)
                     .HasColumnType("datetime")
@@ -4515,8 +4636,6 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.DistrictLogo).HasColumnType("image");
-
-                entity.Property(e => e.ForecastPercent).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.IsbnlimitMax)
                     .HasColumnName("ISBNLimitMax")
@@ -4535,6 +4654,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.RowsDisplayed).HasDefaultValueSql("((100))");
 
                 entity.Property(e => e.ShowId)
+                    .IsRequired()
                     .HasColumnName("ShowID")
                     .HasDefaultValueSql("((1))");
 
@@ -4685,15 +4805,15 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.ApplicationUid)
                     .HasColumnName("ApplicationUID")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -4708,9 +4828,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -4773,6 +4891,10 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.RecordId).HasColumnName("RecordID");
 
+                entity.Property(e => e.Aid).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Consumable).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.Copyright)
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -4802,7 +4924,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.StudentPercent).HasColumnName("Student_Percent");
 
@@ -4894,6 +5018,8 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.Message)
                     .HasMaxLength(7000)
                     .IsUnicode(false);
+
+                entity.Property(e => e.MessageRead).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ReadDate).HasColumnType("datetime");
 
@@ -5316,21 +5442,27 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.CampusId, e.ReqStatus })
                     .HasName("_dta_index_tblRequisitions_8_1330975968__K10_K4");
 
-                entity.HasIndex(e => new { e.RequisitionUid, e.RequisitionId, e.ReqStatus, e.CampusId, e.DateCreatedOrSent })
+                entity.HasIndex(e => new { e.RequisitionUid, e.ReqStatus, e.RequisitionId, e.CampusId, e.DateCreatedOrSent })
                     .HasName("_dta_index_tblRequisitions_8_1330975968__K13D_1_2_4_10");
 
                 entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+
+                entity.Property(e => e.Approved).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.CampusReq).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.DateCreatedOrSent).HasColumnType("datetime");
 
                 entity.Property(e => e.DateReqApproved).HasColumnType("datetime");
 
                 entity.Property(e => e.DateSubmittedByCampus).HasColumnType("datetime");
+
+                entity.Property(e => e.DistrictCreatedCampusReq).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ModifiedDate)
                     .HasColumnType("datetime")
@@ -5403,13 +5535,17 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.BillingState).HasColumnType("char(2)");
+                entity.Property(e => e.BillingState)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.BillingTitle)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.BillingZip).HasColumnType("char(10)");
+                entity.Property(e => e.BillingZip)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.DistrictName)
                     .HasMaxLength(500)
@@ -5443,13 +5579,17 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ShippingState).HasColumnType("char(2)");
+                entity.Property(e => e.ShippingState)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ShippingTitle)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ShippingZip).HasColumnType("char(10)");
+                entity.Property(e => e.ShippingZip)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<TblStates>(entity =>
@@ -5462,7 +5602,8 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StateAbbr)
                     .IsRequired()
-                    .HasColumnType("char(2)");
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.StateDesc)
                     .IsRequired()
@@ -5544,16 +5685,16 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.CampusId, e.StudentsUid, e.LastName, e.StudentId, e.FullName, e.Grade, e.HomeRoom, e.FirstName })
                     .HasName("_dta_index_tblStudents_8_1360880065__K2_K22_K5_K1_K6_K7_K8_K3");
 
-                entity.HasIndex(e => new { e.FullName, e.Grade, e.HomeRoom, e.StudentId, e.CampusId, e.Status, e.StudentsUid, e.LastName })
+                entity.HasIndex(e => new { e.Grade, e.FullName, e.HomeRoom, e.StudentId, e.CampusId, e.Status, e.StudentsUid, e.LastName })
                     .HasName("_dta_index_tblStudents_8_1360880065__K2_K21_K22_K5_1_6_7_8");
 
                 entity.HasIndex(e => new { e.StudentsUid, e.CampusId, e.LastName, e.StudentId, e.FullName, e.Grade, e.HomeRoom, e.FirstName })
                     .HasName("_dta_index_tblStudents_8_1360880065__K2_K5_K1_K6_K7_K8_K3_22");
 
-                entity.HasIndex(e => new { e.FirstName, e.MiddleName, e.LastName, e.FullName, e.Grade, e.HomeRoom, e.Address, e.Address2, e.City, e.State, e.Zip, e.Phone, e.Race, e.Gender, e.Notes, e.ParentEmail, e.UserId, e.ModifiedDate, e.StudentSifguid, e.StudentId, e.StudentsUid, e.CampusId })
+                entity.HasIndex(e => new { e.FirstName, e.FullName, e.Grade, e.HomeRoom, e.Gender, e.City, e.Address, e.Address2, e.ModifiedDate, e.LastName, e.Notes, e.MiddleName, e.StudentSifguid, e.Zip, e.UserId, e.State, e.ParentEmail, e.Phone, e.Race, e.StudentId, e.StudentsUid, e.CampusId })
                     .HasName("_dta_index_tblStudents_8_1360880065__K1_K22_K2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19_20_23");
 
-                entity.HasIndex(e => new { e.MiddleName, e.FullName, e.HomeRoom, e.Address, e.Address2, e.City, e.State, e.Zip, e.Phone, e.Race, e.Gender, e.Notes, e.ParentEmail, e.UserId, e.ModifiedDate, e.StudentsUid, e.StudentSifguid, e.CampusId, e.StudentId, e.FirstName, e.LastName, e.Grade })
+                entity.HasIndex(e => new { e.HomeRoom, e.Address2, e.Address, e.City, e.Gender, e.FullName, e.StudentsUid, e.ModifiedDate, e.MiddleName, e.Notes, e.State, e.UserId, e.Zip, e.StudentSifguid, e.Race, e.Phone, e.ParentEmail, e.CampusId, e.StudentId, e.FirstName, e.LastName, e.Grade })
                     .HasName("_dta_index_tblStudents_8_1360880065__K2_K1_K3_K5_K7_4_6_8_9_10_11_12_13_14_15_16_17_18_19_20_22_23");
 
                 entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
@@ -5612,7 +5753,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.New).HasDefaultValueSql("((1))");
+                entity.Property(e => e.New)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(6000)
@@ -5635,7 +5778,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Status).HasDefaultValueSql("((1))");
 
@@ -5688,7 +5833,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.Copies, e.Reconciled, e.Code, e.DistributionId, e.Isbn, e.StudentsUid })
                     .HasName("_dta_index_tblStudentsDistribution_8_1216879552__K13_K5_K1_K3_K2_9");
 
-                entity.HasIndex(e => new { e.DistributionId, e.Accession, e.Copies, e.ModifiedDate, e.Reconciled, e.Isbn, e.Code, e.StudentsUid })
+                entity.HasIndex(e => new { e.ModifiedDate, e.Reconciled, e.Accession, e.DistributionId, e.Copies, e.Isbn, e.Code, e.StudentsUid })
                     .HasName("_dta_index_tblStudentsDistribution_8_1216879552__K3_K5_K2_1_4_9_12_13");
 
                 entity.Property(e => e.DistributionId).HasColumnName("DistributionID");
@@ -5736,7 +5881,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => e.DistributionId)
                     .HasName("IDX_StudentsDistribution_ForClosing");
 
-                entity.HasIndex(e => new { e.TransactionId, e.Code, e.StudentsUid, e.Isbn, e.Accession, e.ModifiedDate })
+                entity.HasIndex(e => new { e.Code, e.TransactionId, e.StudentsUid, e.Isbn, e.Accession, e.ModifiedDate })
                     .HasName("_dta_index_tblStudentsDistribution_tx_8_772353966__K3_K4_K5_K13_1_6");
 
                 entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
@@ -5947,7 +6092,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.StaffTypeUid, e.TeachersUid, e.Grade })
                     .HasName("IX_tblTeachers_StaffTypeUID");
 
-                entity.HasIndex(e => new { e.TeacherId, e.FullName, e.CampusId, e.LastName, e.Status, e.TeachersUid })
+                entity.HasIndex(e => new { e.FullName, e.TeacherId, e.CampusId, e.LastName, e.Status, e.TeachersUid })
                     .HasName("_dta_index_tblTeachers_8_740353852__K2_K5_K23_K22_1_6");
 
                 entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
@@ -6031,11 +6176,11 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StaffTypeUid)
-                    .HasColumnName("StaffTypeUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Status).HasDefaultValueSql("((1))");
 
@@ -6091,7 +6236,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.Copies, e.Isbn, e.Code, e.TeachersUid })
                     .HasName("_dta_index_tblTeachersDistribution_8_624877443__K3_K5_K2_9");
 
-                entity.HasIndex(e => new { e.Accession, e.Copies, e.ModifiedDate, e.Code, e.Reconciled, e.Isbn, e.DistributionId, e.TeachersUid })
+                entity.HasIndex(e => new { e.ModifiedDate, e.Accession, e.Copies, e.Code, e.Reconciled, e.Isbn, e.DistributionId, e.TeachersUid })
                     .HasName("_dta_index_tblTeachersDistribution_8_624877443__K5_K13_K3_K1_K2_4_9_12");
 
                 entity.Property(e => e.DistributionId).HasColumnName("DistributionID");
@@ -6142,7 +6287,7 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.Code, e.TeachersUid, e.Isbn, e.Source, e.SourceType })
                     .HasName("_dta_index_tblTeachersDistribution_tx_8_1300355847__K6_K3_K4_K8_K7");
 
-                entity.HasIndex(e => new { e.Copies, e.ModifiedDate, e.TeachersUid, e.Isbn, e.Code, e.Source })
+                entity.HasIndex(e => new { e.ModifiedDate, e.Copies, e.TeachersUid, e.Isbn, e.Code, e.Source })
                     .HasName("_dta_index_tblTeachersDistribution_tx_8_1300355847__K3_K4_K6_K8_10_13");
 
                 entity.HasIndex(e => new { e.SourceType, e.Copies, e.ModifiedDate, e.Source, e.Isbn, e.Code, e.TeachersUid })
@@ -6255,7 +6400,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TeacherStatusUid).HasColumnName("TeacherStatusUID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -6304,17 +6451,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AccessoryPrice).HasColumnType("money");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -6385,11 +6528,11 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -6399,9 +6542,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -6458,9 +6599,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AttachmentUid).HasColumnName("AttachmentUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -6537,9 +6676,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AuditDetailInventoryCountUid).HasColumnName("AuditDetailInventoryCountUID");
 
-                entity.Property(e => e.ActionUid)
-                    .HasColumnName("ActionUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ActionUid).HasColumnName("ActionUID");
 
                 entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUID");
 
@@ -6827,9 +6964,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -6867,9 +7002,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ContainerTypeUid).HasColumnName("ContainerTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -6879,9 +7012,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -6923,17 +7054,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7032,9 +7159,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ImageUid).HasColumnName("ImageUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7057,9 +7182,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7128,22 +7251,16 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
 
-                entity.Property(e => e.ArchiveUid)
-                    .HasColumnName("ArchiveUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUID");
 
                 entity.Property(e => e.AssetId)
                     .HasColumnName("AssetID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ContainerUid)
-                    .HasColumnName("ContainerUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7161,17 +7278,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(3000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventorySourceUid)
-                    .HasColumnName("InventorySourceUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
 
                 entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7196,9 +7309,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TechDepartmentUid)
-                    .HasColumnName("TechDepartmentUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
 
                 entity.HasOne(d => d.ArchiveU)
                     .WithMany(p => p.TblTechInventory)
@@ -7351,9 +7462,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.InventoryDetailSettingUid).HasColumnName("InventoryDetailSettingUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7364,15 +7473,15 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ShowField).HasDefaultValueSql("((1))");
+                entity.Property(e => e.ShowField)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
             });
 
             modelBuilder.Entity<TblTechInventoryDueDates>(entity =>
@@ -7472,29 +7581,21 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.HasIndex(e => new { e.InventoryHistoryUid, e.InventoryUid, e.CreatedDate })
                     .HasName("IX_tblTechInventoryHistory_CD_IUID_iIHUID");
 
-                entity.HasIndex(e => new { e.CreatedDate, e.InventoryHistoryNotes, e.InventoryUid, e.CreatedByUserId, e.InventoryHistoryUid })
-                    .HasName("_dta_index_tblTechInventoryHistory_8_2062018477__K2_K13_K1_12_14");
-
                 entity.HasIndex(e => new { e.InventoryHistoryNotes, e.CreatedDate, e.InventoryHistoryUid, e.InventoryUid, e.CreatedByUserId })
                     .HasName("_dta_index_tblTechInventoryHistory_8_2062018477__K1_K2_K13_12_14");
 
+                entity.HasIndex(e => new { e.InventoryHistoryNotes, e.CreatedDate, e.InventoryUid, e.CreatedByUserId, e.InventoryHistoryUid })
+                    .HasName("_dta_index_tblTechInventoryHistory_8_2062018477__K2_K13_K1_12_14");
+
                 entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
 
-                entity.Property(e => e.ArchiveUid)
-                    .HasColumnName("ArchiveUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUID");
 
-                entity.Property(e => e.BulkEditUid)
-                    .HasColumnName("BulkEditUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUID");
 
-                entity.Property(e => e.ContainerUid)
-                    .HasColumnName("ContainerUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7508,33 +7609,23 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventorySourceUid)
-                    .HasColumnName("InventorySourceUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
 
                 entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
 
                 entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.OperationUid)
-                    .HasColumnName("OperationUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.OperationUid).HasColumnName("OperationUID");
 
-                entity.Property(e => e.OriginArchiveUid)
-                    .HasColumnName("OriginArchiveUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.OriginArchiveUid).HasColumnName("OriginArchiveUID");
 
-                entity.Property(e => e.OriginContainerUid)
-                    .HasColumnName("OriginContainerUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.OriginContainerUid).HasColumnName("OriginContainerUID");
 
                 entity.Property(e => e.OriginEntityTypeUid).HasColumnName("OriginEntityTypeUID");
 
@@ -7676,8 +7767,6 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventoryMetaOrder).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.InventoryMetaType)
                     .IsRequired()
                     .HasMaxLength(50)
@@ -7741,9 +7830,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7754,9 +7841,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7818,9 +7903,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7831,9 +7914,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7850,9 +7931,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7860,9 +7939,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7889,9 +7966,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemImageUid).HasColumnName("ItemImageUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7899,13 +7974,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ImageUid).HasColumnName("ImageUID");
 
-                entity.Property(e => e.IsPrimary).HasDefaultValueSql("((1))");
+                entity.Property(e => e.IsPrimary)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -7939,13 +8014,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.AreaUid)
-                    .HasColumnName("AreaUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -7988,9 +8059,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8034,9 +8103,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8051,9 +8118,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8124,9 +8189,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.PurchaseAttachmentUid).HasColumnName("PurchaseAttachmentUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8142,15 +8205,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FileSize).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.MarkedForDeletion).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(500)
@@ -8182,9 +8243,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8192,9 +8251,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8231,8 +8288,6 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedBy).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -8248,8 +8303,6 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.InvoiceStatus)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.LastModifiedBy).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasMaxLength(50)
@@ -8276,8 +8329,6 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedBy).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -8285,8 +8336,6 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.InvoicePrice)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.LastModifiedBy).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8351,8 +8400,6 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LineNumber).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.PurchasePrice).HasDefaultValueSql("((0.00))");
 
                 entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
@@ -8363,9 +8410,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
 
-                entity.Property(e => e.TechDepartmentUid)
-                    .HasColumnName("TechDepartmentUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
 
                 entity.HasOne(d => d.FundingSourceU)
                     .WithMany(p => p.TblTechPurchaseItemDetails)
@@ -8474,9 +8519,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8484,14 +8527,14 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.EstimatedDeliveryDate).HasColumnType("datetime");
 
+                entity.Property(e => e.FederalFunding).HasColumnType("decimal(5, 2)");
+
                 entity.Property(e => e.Frn)
                     .HasColumnName("FRN")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8518,11 +8561,17 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnName("SiteUID")
                     .HasDefaultValueSql("((1))");
 
+                entity.Property(e => e.StateFunding).HasColumnType("decimal(5, 2)");
+
                 entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
 
-                entity.Property(e => e.VendorUid)
-                    .HasColumnName("VendorUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.TblTechPurchases)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_tblTechPurchases_tblUser");
 
                 entity.HasOne(d => d.SiteU)
                     .WithMany(p => p.TblTechPurchases)
@@ -8588,9 +8637,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ScheduleReportUid).HasColumnName("ScheduleReportUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8695,9 +8742,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8712,11 +8757,11 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IsDesignatedTransferSite).HasDefaultValueSql("((1))");
+                entity.Property(e => e.IsDesignatedTransferSite)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8785,9 +8830,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.SiteTypeUid).HasColumnName("SiteTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8798,9 +8841,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -8820,9 +8861,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StaffAttachmentUid).HasColumnName("StaffAttachmentUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -8838,15 +8877,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FileSize).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.MarkedForDeletion).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(500)
@@ -9016,9 +9053,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StudentAttachmentUid).HasColumnName("StudentAttachmentUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -9034,15 +9069,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FileSize).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.MarkedForDeletion).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(500)
@@ -9118,9 +9151,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TagAttachmentUid).HasColumnName("TagAttachmentUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -9136,13 +9167,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FileSize).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9171,9 +9198,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TagEpcUid).HasColumnName("TagEpcUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -9183,9 +9208,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9309,8 +9332,6 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
 
-                entity.Property(e => e.CreatedBy).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
@@ -9331,17 +9352,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9390,9 +9407,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferHistoryUid).HasColumnName("TransferHistoryUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -9402,9 +9417,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9449,9 +9462,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferInventoryUid).HasColumnName("TransferInventoryUID");
 
-                entity.Property(e => e.ContainerUid)
-                    .HasColumnName("ContainerUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9459,9 +9470,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.FundingSourceApproved).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.InventoryUid)
-                    .HasColumnName("InventoryUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -9475,13 +9484,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnName("OriginStatusUID")
                     .HasDefaultValueSql("((26))");
 
-                entity.Property(e => e.ReceivedQuantity).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
 
-                entity.Property(e => e.UntaggedInventoryUid)
-                    .HasColumnName("UntaggedInventoryUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUID");
 
                 entity.HasOne(d => d.ContainerU)
                     .WithMany(p => p.TblTechTransferInventory)
@@ -9567,10 +9572,6 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.QuantityToFulfill).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.RequestedQuantity).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
 
                 entity.HasOne(d => d.InventoryTypeU)
@@ -9603,10 +9604,6 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.QuantityToFulfill).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.RequestedQuantity).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.TransferRequestDetailsUid).HasColumnName("TransferRequestDetailsUID");
 
@@ -9666,13 +9663,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
 
-                entity.Property(e => e.DestinationSiteUid)
-                    .HasColumnName("DestinationSiteUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.DestinationSiteUid).HasColumnName("DestinationSiteUID");
 
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 
-                entity.Property(e => e.DriverRequired).HasDefaultValueSql("((1))");
+                entity.Property(e => e.DriverRequired)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.LastEditByUserId).HasColumnName("LastEditByUserID");
 
@@ -9757,17 +9754,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferStatusWorkflowSettingUid).HasColumnName("TransferStatusWorkflowSettingUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9856,17 +9849,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApproverUserId).HasColumnName("ApproverUserID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -9908,9 +9897,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid)
-                    .HasColumnName("ApprovalUserTypeUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
 
                 entity.Property(e => e.ApprovedByName)
                     .HasMaxLength(150)
@@ -10028,9 +10015,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid)
-                    .HasColumnName("ApprovalUserTypeUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
 
                 entity.Property(e => e.ApprovedByName)
                     .HasMaxLength(150)
@@ -10074,9 +10059,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
 
-                entity.Property(e => e.UserId)
-                    .HasColumnName("UserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.UserId).HasColumnName("UserID");
 
                 entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
 
@@ -10119,9 +10102,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -10137,9 +10118,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -10172,9 +10151,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UntaggedInventoryHistoryUid).HasColumnName("UntaggedInventoryHistoryUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -10209,7 +10186,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.ViewActive).HasDefaultValueSql("('1')");
+                entity.Property(e => e.ViewActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("('1')");
 
                 entity.HasOne(d => d.TechDepartmentU)
                     .WithMany(p => p.TblTechUserDepartments)
@@ -10331,9 +10310,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid)
-                    .HasColumnName("ApprovalUserTypeUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10345,9 +10322,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUID");
 
-                entity.Property(e => e.UserId)
-                    .HasColumnName("UserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.UserId).HasColumnName("UserID");
 
                 entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
 
@@ -10447,9 +10422,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.ApplicationUid)
-                    .HasColumnName("ApplicationUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
                 entity.Property(e => e.Description).HasMaxLength(500);
 
@@ -10464,7 +10437,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.RecordId).HasColumnName("RecordID");
 
-                entity.Property(e => e.Code).HasColumnType("char(10)");
+                entity.Property(e => e.Code)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(50)
@@ -10479,7 +10454,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.TransferId).HasColumnName("TransferID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.DateCreated).HasColumnType("datetime");
 
@@ -10512,8 +10489,6 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.ToTable("tblTransferDetails");
 
                 entity.Property(e => e.RecordId).HasColumnName("RecordID");
-
-                entity.Property(e => e.CopiesSent).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Isbn)
                     .IsRequired()
@@ -10574,7 +10549,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Enabled).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Enabled)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -10664,17 +10641,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -10705,9 +10678,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ArchiveUserId)
-                    .HasColumnName("ArchiveUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.ArchiveUserId).HasColumnName("ArchiveUserID");
             });
 
             modelBuilder.Entity<TblUnvAreas>(entity =>
@@ -10723,17 +10694,13 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -10807,9 +10774,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -10817,9 +10782,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.Description).IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -10851,9 +10814,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -10871,9 +10832,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -10959,7 +10918,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
@@ -11066,9 +11027,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11086,9 +11045,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .IsUnicode(false)
                     .HasDefaultValueSql("('No Value Set')");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11111,9 +11068,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11129,9 +11084,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11155,9 +11108,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11172,9 +11123,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11191,9 +11140,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.GradeUid).HasColumnName("GradeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11208,15 +11155,11 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.SortOrder).HasDefaultValueSql("((0))");
             });
 
             modelBuilder.Entity<TblUnvImportTypes>(entity =>
@@ -11242,9 +11185,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11260,9 +11201,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11333,17 +11272,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11365,9 +11300,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11404,9 +11337,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11461,9 +11392,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11498,17 +11427,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11550,17 +11475,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11583,9 +11504,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.SavedActivityUid).HasColumnName("SavedActivityUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11597,9 +11516,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11629,9 +11546,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11691,9 +11606,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ScheduleDayUid).HasColumnName("ScheduleDayUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11727,9 +11640,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ScheduleDayAssignedUid).HasColumnName("ScheduleDayAssignedUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11785,9 +11696,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11819,9 +11728,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -11893,17 +11800,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -11960,17 +11863,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserPreferenceUid).HasColumnName("UserPreferenceUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -12006,17 +11905,13 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -12122,7 +12017,9 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(500)
@@ -12142,9 +12039,7 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -12164,9 +12059,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.GroupId).HasColumnName("GroupID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -12213,15 +12106,15 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasColumnName("SiteUID")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.State).HasColumnType("char(2)");
+                entity.Property(e => e.State)
+                    .HasMaxLength(2)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UserRoleUid)
                     .HasColumnName("UserRoleUID")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.UserTypeUid)
-                    .HasColumnName("UserTypeUID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUID");
 
                 entity.Property(e => e.Zip)
                     .HasMaxLength(10)
@@ -12289,9 +12182,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserFunctionUid).HasColumnName("UserFunctionUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -12299,9 +12190,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -12466,9 +12355,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserRoleFunctionUid).HasColumnName("UserRoleFunctionUID");
 
-                entity.Property(e => e.CreatedByUserId)
-                    .HasColumnName("CreatedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -12476,9 +12363,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
 
-                entity.Property(e => e.LastModifiedByUserId)
-                    .HasColumnName("LastModifiedByUserID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
@@ -12514,7 +12399,9 @@ namespace MiddleWay_DAL.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Address)
                     .HasMaxLength(500)
@@ -12611,7 +12498,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.ToTable("tblVendorOrderDetails");
 
-                entity.HasIndex(e => new { e.Ordered, e.Received, e.Price, e.BookInventoryUid, e.StatusId, e.VendorOrderUid })
+                entity.HasIndex(e => new { e.Received, e.Price, e.Ordered, e.BookInventoryUid, e.StatusId, e.VendorOrderUid })
                     .HasName("_dta_index_tblVendorOrderDetails_8_1140355277__K3_K9_K2_5_7_10");
 
                 entity.Property(e => e.VendorOrderDetailsUid).HasColumnName("VendorOrderDetailsUID");
@@ -12701,9 +12588,7 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.VendorId)
-                    .HasColumnName("VendorID")
-                    .HasDefaultValueSql("((0))");
+                entity.Property(e => e.VendorId).HasColumnName("VendorID");
 
                 entity.Property(e => e.VendorOrderId)
                     .HasColumnName("VendorOrderID")
@@ -12726,8 +12611,6 @@ namespace MiddleWay_DAL.EF_DAL
 
                 entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
 
-                entity.Property(e => e.Build).HasDefaultValueSql("((0))");
-
                 entity.Property(e => e.CombinedVersion)
                     .IsRequired()
                     .HasMaxLength(30)
@@ -12738,12 +12621,6 @@ namespace MiddleWay_DAL.EF_DAL
                 entity.Property(e => e.Informational)
                     .HasMaxLength(100)
                     .IsUnicode(false);
-
-                entity.Property(e => e.Major).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.Minor).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.Revision).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Version)
                     .IsRequired()

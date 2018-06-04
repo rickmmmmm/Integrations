@@ -25,7 +25,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getTechDepartmentUIDFromName(string name)
+        public int GetDepartmentUIDFromName(string departmentName)
         {
             throw new NotImplementedException();
         }

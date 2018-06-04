@@ -31,39 +31,39 @@ namespace MiddleWay_DAL.Repositories
 
             string returnQuery = "SELECT SiteUID FROM tblTechSites WHERE LOWER(SiteID) = '" + siteName.ToLower() + "'";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                try
-                {
-                    siteId = (int)reader[0];
-                }
+            //while (reader.Read())
+            //{
+            //    try
+            //    {
+            //        siteId = (int)reader[0];
+            //    }
 
-                catch
-                {
-                    siteId = -1;
-                }
-            }
+            //    catch
+            //    {
+            //        siteId = -1;
+            //    }
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
-            if (siteId == -1)
-            {
-                throw new Exception("The specified Item Type was not found.");
-            }
-            else
-            {
+            //if (siteId == -1)
+            //{
+            //    throw new Exception("The specified Item Type was not found.");
+            //}
+            //else
+            //{
                 return siteId;
-            }
+            //}
         }
 
         #endregion Select Functions

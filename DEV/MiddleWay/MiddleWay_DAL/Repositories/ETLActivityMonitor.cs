@@ -28,9 +28,26 @@ namespace MiddleWay_DAL.Repositories
         #endregion Select Functions
 
         #region Insert Functions
-        public void logAction(string actionName, string actionDescription)
+        public void logAction(int importCode, string actionName, string actionDescription)
         {
-            string query = "INSERT INTO _ETL_ActivityMonitor (ActivityStep, ActivityMessage, ImportDataID) VALUES ('" + actionName + "','" + actionDescription + "','" + _importCode.ToString() + "')";
+            try
+            {
+                var activity = new EtlActivityMonitor
+                {
+                    ImportDataId = importCode,
+                    ActivityStep = actionName,
+                    ActivityMessage = actionDescription
+
+                };
+
+                _context.EtlActivityMonitor.Add(activity);
+                _context.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+            //string query = "INSERT INTO _ETL_ActivityMonitor (ActivityStep, ActivityMessage, ImportDataID) VALUES ('" + actionName + "','" + actionDescription + "','" + importCode.ToString() + "')";
 
             //SqlCommand cmd = new SqlCommand(query, _conn);
 

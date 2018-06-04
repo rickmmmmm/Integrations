@@ -3,6 +3,7 @@ using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -25,58 +26,78 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getFundingSourceUIDFromName(string sourceName)
+        public int GetFundingSourceUIDFromName(string fundingSourceName)
         {
-            int fundingSource = -1;
-
-            string returnQuery = "SELECT FundingSourceUID FROM tblFundingSources WHERE LOWER(FundingSource) = '" + sourceName.ToLower() + "'";
-
-            if (_conn.State == ConnectionState.Open)
+            try
             {
-                _conn.Close();
+                var fundingSourceID = (from fundingSources in _context.TblFundingSources
+                                       where fundingSources.FundingSource == fundingSourceName
+                                       select fundingSources.FundingSourceUid).FirstOrDefault();
+
+                return fundingSourceID;
             }
-
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
-
-            SqlDataReader reader = returnCmd.ExecuteReader();
-
-            while (reader.Read())
+            catch
             {
-                fundingSource = (int)reader[0];
+                throw;
             }
+            //int fundingSource = -1;
 
-            reader.Close();
-            _conn.Close();
+            //string returnQuery = "SELECT FundingSourceUID FROM tblFundingSources WHERE LOWER(FundingSource) = '" + sourceName.ToLower() + "'";
 
-            if (fundingSource == -1)
-            {
-                throw new Exception("The specified Funding Source Name was not found.");
-            }
-            else
-            {
-                return fundingSource;
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+
+            //SqlDataReader reader = returnCmd.ExecuteReader();
+
+            //while (reader.Read())
+            //{
+            //    fundingSource = (int)reader[0];
+            //}
+
+            //reader.Close();
+            //_conn.Close();
+
+            //if (fundingSource == -1)
+            //{
+            //    throw new Exception("The specified Funding Source Name was not found.");
+            //}
+            //else
+            //{
+            //    return fundingSource;
+            //}
         }
 
         #endregion Select Functions
 
         #region Insert Functions
 
-        public void addFundingSource(string source)
+        public void AddFundingSource(string source)
         {
+            try
+            {
+                
+            }
+            catch
+            {
+                throw;
+            }
             string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUID) VALUES ('" + source + "',1,0,2)";
 
-            if (_conn.State == ConnectionState.Closed)
-            {
-                _conn.Open();
-            }
+            //if (_conn.State == ConnectionState.Closed)
+            //{
+            //    _conn.Open();
+            //}
 
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            //SqlCommand cmd = new SqlCommand(query, _conn);
 
-            cmd.ExecuteNonQuery();
+            //cmd.ExecuteNonQuery();
 
-            _conn.Close();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

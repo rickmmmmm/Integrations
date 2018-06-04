@@ -11,6 +11,7 @@ namespace MiddleWay_DAL.EF_DAL
             TblTechFundingSourceUsers = new HashSet<TblTechFundingSourceUsers>();
             TblTechInventoryDueDatesCreatedByUser = new HashSet<TblTechInventoryDueDates>();
             TblTechInventoryDueDatesLastModifiedByUser = new HashSet<TblTechInventoryDueDates>();
+            TblTechPurchases = new HashSet<TblTechPurchases>();
             TblTechScheduleReportCreatedByUser = new HashSet<TblTechScheduleReport>();
             TblTechScheduleReportLastModifiedByUser = new HashSet<TblTechScheduleReport>();
             TblTechTagHistory = new HashSet<TblTechTagHistory>();
@@ -93,6 +94,7 @@ namespace MiddleWay_DAL.EF_DAL
         public ICollection<TblTechFundingSourceUsers> TblTechFundingSourceUsers { get; set; }
         public ICollection<TblTechInventoryDueDates> TblTechInventoryDueDatesCreatedByUser { get; set; }
         public ICollection<TblTechInventoryDueDates> TblTechInventoryDueDatesLastModifiedByUser { get; set; }
+        public ICollection<TblTechPurchases> TblTechPurchases { get; set; }
         public ICollection<TblTechScheduleReport> TblTechScheduleReportCreatedByUser { get; set; }
         public ICollection<TblTechScheduleReport> TblTechScheduleReportLastModifiedByUser { get; set; }
         public ICollection<TblTechTagHistory> TblTechTagHistory { get; set; }

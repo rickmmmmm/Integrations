@@ -9,11 +9,12 @@ namespace MiddleWay_DTO.TIPWeb_Models
 {
     public class InventoryModel
     {
-        public InventoryTypeEnum InventoryTypeUID { get; set; }
-        public ItemsModel SiblingItem { get; set; }
+        public int InventoryUID { get; set; }
+        public int InventoryTypeUID { get; set; }
+        public int ItemUID { get; set; }
         public int SiteUID { get; set; }
         public int EntityUID { get; set; }
-        public EntityTypeEnum EntityTypeUID { get; set; }
+        public int EntityTypeUID { get; set; }
         public int StatusUID { get; set; }
         public int TechDepartmentUID { get; set; }
         public string Tag { get; set; }

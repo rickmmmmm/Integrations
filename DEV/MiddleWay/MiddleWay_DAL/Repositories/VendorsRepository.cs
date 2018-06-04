@@ -31,30 +31,30 @@ namespace MiddleWay_DAL.Repositories
 
             string returnQuery = "SELECT VendorID FROM tblVendor WHERE LOWER(VendorName) = '" + vendorName.ToLower().Replace("'", "''").Trim() + "'";
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
-            _conn.Open();
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+            //_conn.Open();
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
+            //SqlDataReader reader = returnCmd.ExecuteReader();
 
-            while (reader.Read())
-            {
-                try
-                {
-                    vendorId = (int)reader[0];
-                }
+            //while (reader.Read())
+            //{
+            //    try
+            //    {
+            //        vendorId = (int)reader[0];
+            //    }
 
-                catch
-                {
-                    vendorId = -1;
-                }
-            }
+            //    catch
+            //    {
+            //        vendorId = -1;
+            //    }
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             if (vendorId == -1)
             {
@@ -74,25 +74,25 @@ namespace MiddleWay_DAL.Repositories
         {
             string query = "INSERT INTO tblVendor (VendorName, Active, UserID, ApplicationUID, ModifiedDate) VALUES ('" + vendorName + "',1,0,2,getdate())";
 
-            if (_conn.State == ConnectionState.Closed)
-            {
-                _conn.Open();
-            }
+            //if (_conn.State == ConnectionState.Closed)
+            //{
+            //    _conn.Open();
+            //}
 
             try
             {
-                SqlCommand cmd = new SqlCommand(query, _conn);
+                //SqlCommand cmd = new SqlCommand(query, _conn);
 
-                cmd.ExecuteNonQuery();
+                //cmd.ExecuteNonQuery();
             }
             catch (Exception e)
             {
-                DbErrorEventArgs args = new DbErrorEventArgs();
-                args.InterfaceMessage = "ERROR adding new vendor information.";
-                args.ExceptionMessage = e.Message;
-                OnError(args);
+                //DbErrorEventArgs args = new DbErrorEventArgs();
+                //args.InterfaceMessage = "ERROR adding new vendor information.";
+                //args.ExceptionMessage = e.Message;
+                //OnError(args);
             }
-            _conn.Close();
+            //_conn.Close();
         }
 
         #endregion Insert Functions

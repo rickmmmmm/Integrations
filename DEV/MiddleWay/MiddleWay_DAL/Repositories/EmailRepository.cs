@@ -32,6 +32,7 @@ namespace MiddleWay_DAL.Repositories
 
         public void sendEmail(string profileName, string recipients, string subject, string body, string attachment = null)
         {
+            //TODO: Send DBMail
             string query = "EXEC msdb.dbo.sp_send_dbmail @profile_name = '" + profileName + "', @recipients='" + recipients + "', @subject='" + subject + "', @body='" + body + "', @body_format='HTML'";
 
             if (!string.IsNullOrEmpty(attachment))

@@ -2,7 +2,7 @@
 using MiddleWay_DAL.EF_DAL;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_DAL.Repositories
 {
@@ -36,27 +36,27 @@ namespace MiddleWay_DAL.Repositories
 
             string query = "INSERT INTO _ETL_ImportData(ImportUserId) ";
             query += " VALUES ('IntegrationTool')";
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            //SqlCommand cmd = new SqlCommand(query, _conn);
 
-            if (_conn.State == ConnectionState.Open)
-            {
-                _conn.Close();
-            }
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
 
-            _conn.Open();
-            cmd.ExecuteNonQuery();
+            //_conn.Open();
+            //cmd.ExecuteNonQuery();
 
             string returnQuery = "SELECT MAX(ImportCode) FROM _ETL_ImportData";
-            SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
+            //SqlCommand returnCmd = new SqlCommand(returnQuery, _conn);
 
-            SqlDataReader reader = returnCmd.ExecuteReader();
-            while (reader.Read())
-            {
-                importCode = (int)reader[0];
-            }
+            //SqlDataReader reader = returnCmd.ExecuteReader();
+            //while (reader.Read())
+            //{
+            //    importCode = (int)reader[0];
+            //}
 
-            reader.Close();
-            _conn.Close();
+            //reader.Close();
+            //_conn.Close();
 
             Console.WriteLine("Import Code is " + importCode.ToString());
 
@@ -67,21 +67,33 @@ namespace MiddleWay_DAL.Repositories
 
         #region Update Functions
 
-        public void completeIntegration()
+        public void completeIntegration(int importCode)
         {
-            string query = "UPDATE _ETL_ImportData SET ImportCompleted = 'True' WHERE ImportCode = " + _importCode.ToString();
+            var importData = (from import in _context.EtlImportData
+                              where import.ImportCode == importCode
+                              select import);
 
-            if (_conn.State == ConnectionState.Open)
+            foreach(var import in importData)
             {
-                _conn.Close();
+                import.ImportCompleted = true;
             }
 
-            _conn.Open();
-            SqlCommand cmd = new SqlCommand(query, _conn);
+            _context.EtlImportData.UpdateRange(importData);
+            _context.SaveChanges();
 
-            cmd.ExecuteNonQuery();
+            //string query = "UPDATE _ETL_ImportData SET ImportCompleted = 'True' WHERE ImportCode = " + importCode.ToString();
 
-            _conn.Close();
+            //if (_conn.State == ConnectionState.Open)
+            //{
+            //    _conn.Close();
+            //}
+
+            //_conn.Open();
+            //SqlCommand cmd = new SqlCommand(query, _conn);
+
+            //cmd.ExecuteNonQuery();
+
+            //_conn.Close();
         }
 
         #endregion Update Functions

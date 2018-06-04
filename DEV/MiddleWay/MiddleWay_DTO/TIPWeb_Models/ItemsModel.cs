@@ -14,12 +14,15 @@ namespace MiddleWay_DTO.TIPWeb_Models
         public int ItemType { get; set; }
         public string ModelNumber { get; set; }
         public int ManufacturerUID { get; set; }
-        public decimal ItemSuggestedPrice { get; set; }
+        public decimal? ItemSuggestedPrice { get; set; }
         public int AreaUID { get; set; }
         public string ItemNotes { get; set; }
         public string SKU { get; set; }
         public bool SerialRequired { get; set; }
         public int ProjectedLife { get; set; }
+        public string CustomField1 { get; set; }
+        public string CustomField2 { get; set; }
+        public string CustomField3 { get; set; }
         public bool Active { get; set; }
         public int CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }

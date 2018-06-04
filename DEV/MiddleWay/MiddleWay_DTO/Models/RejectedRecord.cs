@@ -8,10 +8,10 @@ namespace MiddleWay_DTO.Models
 {
     public class RejectedRecord
     {
-        public string orderNumber { get; set; }
-        public string rejectReason { get; set; }
-        public string rejectValue { get; set; }
-        public string exceptionMessage { get; set; }
+        public string OrderNumber { get; set; }
+        public string RejectReason { get; set; }
+        public string RejectValue { get; set; }
+        public string ExceptionMessage { get; set; }
         public int LineNumber { get; set; }
     }
 }

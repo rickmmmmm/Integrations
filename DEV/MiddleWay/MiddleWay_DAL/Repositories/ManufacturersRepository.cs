@@ -25,7 +25,7 @@ namespace MiddleWay_DAL.Repositories
 
         #region Select Functions
 
-        public int getManufacturerUIDFromName(string manufacturerName)
+        public int GetManufacturerUIDFromName(string manufacturerName)
         {
             throw new NotImplementedException();
         }
