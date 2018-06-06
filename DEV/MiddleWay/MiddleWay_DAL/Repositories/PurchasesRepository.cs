@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MiddleWay_DTO.TIPWeb_Models;
+using MiddleWay_DTO.RepositoryInterfaces;
 
 namespace MiddleWay_DAL.Repositories
 {
-    public class PurchasesRepository
+    public class PurchasesRepository : IPurchasesRepository
     {
         #region Private Variables and Properties
 

@@ -10,9 +10,9 @@ using MiddleWay_DTO.RepositoryInterfaces;
 using MiddleWay_DTO.ServiceInterfaces;
 using MiddleWay_Controller.Interfaces;
 
-namespace Services
+namespace MiddleWay_BLL.Services
 {
-    public class MailService : IMailService
+    public class NotificationsService : INotificationsService
     {
         #region Private Variables and Properties
 
@@ -25,7 +25,7 @@ namespace Services
 
         #region Constructor
 
-        public MailService(IEmailRepository emailRepository, IConfigurationService configurationService, IElasticMailService elasticMailService)
+        public NotificationsService(IEmailRepository emailRepository, IConfigurationService configurationService, IElasticMailService elasticMailService)
         {
             _configurationService = configurationService;
             _elasticMailService = elasticMailService;

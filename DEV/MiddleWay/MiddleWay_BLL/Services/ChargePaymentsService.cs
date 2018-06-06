@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using MiddleWay_DTO.Models;
 using MiddleWay_DTO.View_Models;
 
-namespace FileSystemTasks
+namespace MiddleWay_BLL.Services
 {
     public class ChargePaymentsService : IChargePaymentsService
     {

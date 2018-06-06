@@ -6,7 +6,7 @@ using System.Linq;
 using MiddleWay_Utilities;
 using MiddleWay_DTO.Models;
 
-namespace SystemTasks
+namespace MiddleWay_BLL.Services
 {
     public class DataIntegrity
     {

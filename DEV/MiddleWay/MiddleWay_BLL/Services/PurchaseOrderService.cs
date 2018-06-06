@@ -5,25 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 //using Model;
 //using DataAccess;
-using SystemTasks;
+//using SystemTasks;
 using MiddleWay_DTO.Models;
 using MiddleWay_DTO.ServiceInterfaces;
 using MiddleWay_DTO.RepositoryInterfaces;
 
-namespace SystemTasks
+namespace MiddleWay_BLL.Services
 {
     public class PurchaseOrderService : IPurchaseOrderService
     {
 
         #region Private Variables and Properties
 
-        private IPurchaseOrderRepository _purchaseOrderRepository;
+        private IPurchasesRepository _purchaseOrderRepository;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public PurchaseOrderService(IPurchaseOrderRepository purchaseOrderRepository)
+        public PurchaseOrderService(IPurchasesRepository purchaseOrderRepository)
         {
             _purchaseOrderRepository = purchaseOrderRepository;
         }

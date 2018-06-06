@@ -2,7 +2,7 @@
 
 namespace MiddleWay_DTO.RepositoryInterfaces
 {
-    public interface IMailService
+    public interface INotificationsService
     {
         void send(EmailMessageModel message);
         void sendAsync(EmailMessageModel message);

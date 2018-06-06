@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.RepositoryInterfaces
+namespace MiddleWay_Controller.Interfaces
 {
-    public interface IPurchaseOrderRepository
+    public interface IProcessErrorsRepository
     {
     }
 }

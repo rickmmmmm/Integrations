@@ -12,6 +12,12 @@ using System.Linq;
 using MiddleWay_Utilities;
 using System.Collections.Generic;
 using MiddleWay_DTO.ServiceInterfaces;
+using MiddleWay_EDS.Services;
+using MiddleWay_BLL.Services;
+using MiddleWay_DTO.RepositoryInterfaces;
+using MiddleWay_DAL.Repositories;
+using MiddleWay_Controller.Repositories;
+using MiddleWay_Controller.Services;
 
 namespace MiddleWay
 {
@@ -29,7 +35,7 @@ namespace MiddleWay
 
                 serviceProvider = services.BuildServiceProvider();
 
-                RunProcess(args);
+                RunProcess(args.ToList());
             }
             catch (Exception ex)
             {
@@ -56,9 +62,6 @@ namespace MiddleWay
                 //        //    .GetService<ILoggerFactory>();
                 //        //.AddConsole(LogLevel.Debug);
 
-
-
-
                 //        var logger = serviceProvider.GetService<ILoggerFactory>()
                 //            .CreateLogger<Program>();
                 //        //logger.LogDebug("Starting application");
@@ -77,31 +80,32 @@ namespace MiddleWay
             }
         }
 
-
         public static void InjectDataDependencies(IServiceCollection services)
         {
-            try
+            var connectionString = ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString;
+
+            if (!string.IsNullOrEmpty(connectionString))
             {
-                //Create and configure the DB Context to use
-
-                var connectionString = ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString;
-
-                if (string.IsNullOrEmpty(connectionString))
+                try
                 {
+                    //Create and configure the DB Context to use
+
                     services.AddSingleton<IDataProviderFactory, DataProviderFactory>();  // AddSingleton Works but is too broad
+                    services.AddSingleton<ExternalDataSource>();
+
                     //services.Configure<DatabaseConfigurationOptions>(connectionString);
                     services.AddDbContext<IntegrationMiddleWayContext>(options => options.UseSqlServer(connectionString));
                     services.AddDbContext<TIPWebContext>();
-
-                    if (string.IsNullOrEmpty(connectionString))
-                    {
-                        throw new ArgumentNullException("No database connection is configured");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Exception caught in InjectDataDependencies...", ex);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                throw new Exception("Exception caught in InjectDataDependencies...", ex);
+                Console.WriteLine("No database connection is configured");
+                throw new ArgumentNullException("No database connection is configured");
             }
         }
 
@@ -109,8 +113,18 @@ namespace MiddleWay
         {
             try
             {
-                // implementations of the configured service
-                //services.AddScoped<I Repository, Repository>();
+                //Integration Services
+                services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+                services.AddScoped<IMappingsRepository, MappingsRepository>();
+                //services.AddScoped < I , > ();
+
+                //TIPWeb Repositories
+                services.AddScoped<IChargePaymentsRepository, ChargePaymentsRepository>();
+                services.AddScoped<IChargesRepository, ChargesRepository>();
+                services.AddScoped<IEmailRepository, EmailRepository>();
+                services.AddScoped<IInventoryRepository, InventoryRepository>();
+                services.AddScoped<IPurchasesRepository, PurchasesRepository>();
+                //services.AddScoped<I , >();
             }
             catch (Exception ex)
             {
@@ -122,7 +136,17 @@ namespace MiddleWay
         {
             try
             {
-                //services.AddScoped<I Service, Service>();
+                //Integration Services
+                services.AddScoped<IConfigurationService, ConfigurationService>();
+                services.AddScoped<IMappingsService, MappingsService>();
+                //services.AddScoped < I , > ();
+
+                //TIPWeb Services
+                services.AddScoped<IChargePaymentsService, ChargePaymentsService>();
+                services.AddScoped<IChargesService, ChargesService>();
+                services.AddScoped<IInventoryService, InventoryService>();
+                services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+                //services.AddScoped < I , > ();
             }
             catch (Exception ex)
             {
@@ -149,29 +173,42 @@ namespace MiddleWay
             }
         }
 
-        protected static void RunProcess(string[] args)
+        protected static void RunProcess(List<string> args)
         {
+            //Read configuration, if no configuration stop processing and log error
+            var configurationService = serviceProvider.GetService<IConfigurationService>();
+            configurationService.ReadConfiguration();
 
-            if (args.Length > 0)
+            if (!configurationService.IsConfigurationLoaded)
             {
-                ReadParameters(args);
+                // Configuration Not Loaded
+                Console.WriteLine("Configuration Not Loaded");
                 Environment.Exit(0);
             }
-
-            Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
-
-            Console.WriteLine("Shall we play a game? (Y)es (N)o");
-            string gameplay = Console.ReadLine().ToLower();
-
-            if (gameplay == "n")
+            else
             {
-                Environment.Exit(0);
+                if (args.Count > 0)
+                {
+                    ReadParameters(args);
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
+
+                    Console.WriteLine("Shall we play a game? (Y)es (N)o");
+                    string gameplay = Console.ReadLine().ToLower();
+
+                    if (gameplay == "n")
+                    {
+                        Environment.Exit(0);
+                    }
+
+                    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
+
+                    ReadInput();
+                }
             }
-
-            Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
-
-            ReadInput();
-
             //Remove "bad" data
             //log actions to console
             //Map file import objects to model objects
@@ -181,7 +218,7 @@ namespace MiddleWay
             //Dispose of remaining objects
         }
 
-        private static void ReadParameters(string[] args)
+        private static void ReadParameters(List<string> args)
         {
             string choice = args[0];
 
@@ -196,9 +233,11 @@ namespace MiddleWay
                 case "-c":
                     ChargesMenu(args);
                     break;
-                case "-m":
-                    Console.WriteLine("Mobile Device Management not implemented yet.");
-                    Console.ReadLine();
+                case "m":
+                    MobileDeviceManagementMenu();
+                    break;
+                case "a":
+                    AssetsMenu(args);
                     break;
                 default:
                     break;
@@ -209,7 +248,7 @@ namespace MiddleWay
         {
             string choice = Console.ReadLine().ToLower();
 
-            string[] options;
+            List<string> options;
 
             switch (choice)
             {
@@ -219,14 +258,19 @@ namespace MiddleWay
                     break;
                 case "m":
                     MobileDeviceManagementMenu();
+                    ReadInput();
                     break;
                 case "e":
                     options = GetExportOptions();
                     ExportFileOptions(options);
                     break;
                 case "c":
-                    options = new string[10];
+                    options = new List<string>();
                     ChargesMenu(options);
+                    break;
+                case "a":
+                    options = new List<string>();
+                    AssetsMenu(options);
                     break;
                 case "q":
                     Environment.Exit(0);
@@ -241,9 +285,10 @@ namespace MiddleWay
             }
         }
 
-        public static string[] GetOptions()
+        public static List<string> GetOptions()
         {
-            string[] options = new string[10];
+            //string[] options = new string[10];
+            var options = new List<string>();
 
             Console.WriteLine("Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
             string response = Console.ReadLine().ToLower();
@@ -251,11 +296,12 @@ namespace MiddleWay
             switch (response)
             {
                 case "y":
-                    options[2] = "--add-items";
+                    //options[2] = "--add-items";
+                    options.Add("--add-items");
                     break;
-                case "n":
-                    options[2] = "";
-                    break;
+                //case "n":
+                //    options[2] = "";
+                //    break;
                 default:
                     break;
             }
@@ -266,10 +312,11 @@ namespace MiddleWay
             switch (response)
             {
                 case "y":
-                    options[3] = "--add-vendors";
+                    //options[3] = "--add-vendors";
+                    options.Add("--add-vendors");
                     break;
-                case "n":
-                    break;
+                //case "n":
+                //    break;
                 default:
                     break;
             }
@@ -280,11 +327,12 @@ namespace MiddleWay
             switch (response)
             {
                 case "y":
-                    options[4] = "--add-funding";
+                    //options[4] = "--add-funding";
+                    options.Add("--add-funding");
                     break;
-                case "n":
-                    options[4] = "";
-                    break;
+                //case "n":
+                //    options[4] = "";
+                //    break;
                 default:
                     break;
             }
@@ -292,14 +340,14 @@ namespace MiddleWay
             return options;
         }
 
-        private static void ChargesMenu(string[] args)
+        private static void ChargesMenu(List<string> args)
         {
             //Is this an import or export?
-            Console.WriteLine("Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
-            string choice = string.IsNullOrEmpty(args[1]) ? Console.ReadLine().ToLower() : args[1];
+            //Console.WriteLine("Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
+            //string choice = string.IsNullOrEmpty(args[1]) ? Console.ReadLine().ToLower() : args[1];
 
-            var chargesService = serviceProvider.GetService<IChargesService>();
-            FileTasks fileTasks = new FileTasks();
+            //var chargesService = serviceProvider.GetService<IChargesService>();
+            //FileTasks fileTasks = new FileTasks();
 
             //FileTasks ft = new FileTasks();
             //Repository rep = new Repository();
@@ -317,94 +365,94 @@ namespace MiddleWay
             //_repo.Error += OnError;
 
 
-            if (choice == "i")
-            {
-                Console.WriteLine("Paste import filename below:");
-                string importFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
+            //if (choice == "i")
+            //{
+            //    Console.WriteLine("Paste import filename below:");
+            //    string importFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
 
-                if (!fileTasks.checkFile(importFileName))
-                {
-                    Console.WriteLine("File not valid.");
+            //    if (!fileTasks.checkFile(importFileName))
+            //    {
+            //        Console.WriteLine("File not valid.");
 
-                    if (args[3] == "--batch")
-                    {
-                        Environment.Exit(0);
-                    }
+            //        if (args[3] == "--batch")
+            //        {
+            //            Environment.Exit(0);
+            //        }
 
-                    ChargesMenu(args);
-                }
-                else
-                {
-                    try
-                    {
-                        chargesService.ProcessCharges(importFileName);
-                        Environment.Exit(0);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("There was an error processing the import. Exception: ");
-                        Console.WriteLine(e.Message);
-                        //_repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
+            //        ChargesMenu(args);
+            //    }
+            //    else
+            //    {
+            //        try
+            //        {
+            //            chargesService.ProcessCharges(importFileName);
+            //            Environment.Exit(0);
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            Console.WriteLine("There was an error processing the import. Exception: ");
+            //            Console.WriteLine(e.Message);
+            //            //_repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
 
-                        if (args[3] == "--batch")
-                        {
-                            Environment.Exit(0);
-                        }
-                        Console.ReadLine();
-                    }
+            //            if (args[3] == "--batch")
+            //            {
+            //                Environment.Exit(0);
+            //            }
+            //            Console.ReadLine();
+            //        }
 
-                }
+            //    }
 
-                //map incoming file to file model
-                //run import data integrity
-                //map file model to data model
-                //send email confirming import and showing rejects
-            }
-            else if (choice == "e")
-            {
-                Console.WriteLine("Paste export filename below:");
-                string exportFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
+            //    //map incoming file to file model
+            //    //run import data integrity
+            //    //map file model to data model
+            //    //send email confirming import and showing rejects
+            //}
+            //else if (choice == "e")
+            //{
+            //    Console.WriteLine("Paste export filename below:");
+            //    string exportFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
 
-                if (fileTasks.checkFile(exportFileName))
-                {
-                    fileTasks.archiveFile(exportFileName);
-                }
+            //    if (fileTasks.checkFile(exportFileName))
+            //    {
+            //        fileTasks.archiveFile(exportFileName);
+            //    }
 
-                //var outData = _repo.exportChargesToInTouch();
-                //fileTasks.createExportFile(outData, exportFileName);
+            //    //var outData = _repo.exportChargesToInTouch();
+            //    //fileTasks.createExportFile(outData, exportFileName);
 
-                string bodyMovement = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data export successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>       </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
+            //    string bodyMovement = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data export successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>       </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
-                //string body = string.Format(bodyMovement, outData.Count);
+            //    //string body = string.Format(bodyMovement, outData.Count);
 
-                //SqlDbMailService mailer = new SqlDbMailService(_repo);
-                var notification = new EmailMessageModel
-                {
-                    //Body = body,
-                    Recipients = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
-                    Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                    Subject = "Automatic Notification from Hayes Software Systems",
-                    SentDate = DateTime.Now,
-                    FileAttachment = exportFileName
-                };
+            //    //SqlDbMailService mailer = new SqlDbMailService(_repo);
+            //    var notification = new EmailMessageModel
+            //    {
+            //        //Body = body,
+            //        Recipients = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+            //        Sender = ConfigurationManager.AppSettings["notificationFrom"],
+            //        Subject = "Automatic Notification from Hayes Software Systems",
+            //        SentDate = DateTime.Now,
+            //        FileAttachment = exportFileName
+            //    };
 
-                //mailer.send(notification);
-                //_repo.completeIntegration();
+            //    //mailer.send(notification);
+            //    //_repo.completeIntegration();
 
-                if (args[3] == "--batch")
-                {
-                    Environment.Exit(0);
-                }
+            //    if (args[3] == "--batch")
+            //    {
+            //        Environment.Exit(0);
+            //    }
 
-            }
-            else if (args[3] == "--batch")
-            {
-                Environment.Exit(0);
-            }
-            else
-            {
-                Console.WriteLine(choice + " is not a valid choice. Please make a valid selection from the menu...");
-            }
+            //}
+            //else if (args[3] == "--batch")
+            //{
+            //    Environment.Exit(0);
+            //}
+            //else
+            //{
+            //    Console.WriteLine(choice + " is not a valid choice. Please make a valid selection from the menu...");
+            //}
 
             //If Import what is file name to import?
 
@@ -413,41 +461,41 @@ namespace MiddleWay
             //save file with data   
         }
 
-        public static string[] GetExportOptions()
+        public static List<string> GetExportOptions()
         {
-            var options = new string[10];
+            var options = new List<string>();
             return options;
         }
 
-        public static void ExportFileOptions(string[] options)
+        public static void ExportFileOptions(List<string> options)
         {
-            Console.WriteLine("Which export option would you like to do? (R)eceived Tags");
-            string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
+            //Console.WriteLine("Which export option would you like to do? (R)eceived Tags");
+            //string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
 
-            switch (response)
-            {
-                case "r":
-                    ProcessReceivedTagsExport(options);
-                    break;
-                case "q":
-                    Environment.Exit(0);
-                    break;
-            }
+            //switch (response)
+            //{
+            //    case "r":
+            //        ProcessReceivedTagsExport(options);
+            //        break;
+            //    case "q":
+            //        Environment.Exit(0);
+            //        break;
+            //}
         }
 
         private static void ProcessReceivedTagsExport(string[] options)
         {
-            Console.WriteLine("Paste Export File Name below:");
-            string file = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
+            //Console.WriteLine("Paste Export File Name below:");
+            //string file = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
-            var inventoryService = serviceProvider.GetService<IInventoryService>();
-            FileTasks fileTasks = new FileTasks();
+            //var inventoryService = serviceProvider.GetService<IInventoryService>();
+            //FileTasks fileTasks = new FileTasks();
 
             //Repository rep = new Repository();
 
             //_repo = rep;
 
-            inventoryService.updateFixedAssetIds();
+            //inventoryService.updateFixedAssetIds();
             //List<ReceivedTagsExportFile> results = inventoryService.exportReceivedTags();
             //if (results.Count > 0)
             //{
@@ -461,14 +509,15 @@ namespace MiddleWay
 
         public static void MobileDeviceManagementMenu()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Mobile Device Management not implemented yet.");
+            //throw new NotImplementedException();
         }
 
-        public static void PurchaseOrderMenu(string[] options)
+        public static void PurchaseOrderMenu(List<string> options)
         {
-            Console.WriteLine("Paste Import File Name below:");
-            string file = string.IsNullOrEmpty(options[1]) ? Console.ReadLine() : options[1];
-            FileTasks fileTasks = new FileTasks();
+            //create necessary objects
+
+            //FileTasks fileTasks = new FileTasks();
             //Repository rep = new Repository();
 
             //_repo = rep;
@@ -483,232 +532,263 @@ namespace MiddleWay
             //_repo.Action += OnAction;
             //_repo.Error += OnError;
 
-            if (file == "quit")
-            {
-                ReadInput();
-            }
-            //create necessary objects
+            //string file = string.Empty;
+            //if (options.Contains("--file"))
+            //{
+            //    var fileIndex = options.IndexOf("--file") + 1;
+            //    file = options[fileIndex];
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Paste Import File Name below:");
+            //    file = Console.ReadLine();
+            //}
 
-            else if (!fileTasks.checkFile(file))
-            {
-                Console.WriteLine("File does not exist. Please provide a valid file url.");
 
-                if (options[5] == "--batch")
-                {
-                    Environment.Exit(0);
-                }
+            //if (file == "quit")
+            //{
+            //    ReadInput();
+            //}
+            //else if (!fileTasks.checkFile(file))
+            //{
+            //    Console.WriteLine("File does not exist. Please provide a valid file url.");
+            //    if (options[5] == "--batch")
+            //    {
+            //        Environment.Exit(0);
+            //    }
+            //    else
+            //    {
+            //        PurchaseOrderMenu(options);
+            //    }
+            //}
+            //else
+            //{
+            //    try
+            //    {
+            //        Read input file into PurchaseOrderFile format
+            //        var fileData = fileTasks.convertCsvFileToObject(file);
 
-                PurchaseOrderMenu(options);
-            }
-            else
-            {
-                try
-                {
-                    //var fileData = fileTasks.convertCsvFileToObject(file);
+            //        fileData = di.removeBadElements(fileData);
 
-                    //fileData = di.removeBadElements(fileData);
+            //        if (options[3] == "--add-vendors")
+            //        {
+            //            var vendors = fileData.GroupBy(u => u.VendorName);
 
-                    if (options[3] == "--add-vendors")
-                    {
-                        //var vendors = fileData.GroupBy(u => u.VendorName);
+            //            foreach (var item in vendors)
+            //            {
+            //                if (di.vendorNotFound(item.Key))
+            //                {
+            //                    if (item.Key.Length <= 100)
+            //                    {
+            //                        _repo.addVendor(item.Key.Replace("'", "''"));
+            //                    }
+            //                    else
+            //                    {
 
-                        //foreach (var item in vendors)
-                        //{
-                        //    if (di.vendorNotFound(item.Key))
-                        //    {
-                        //        if (item.Key.Length <= 100)
-                        //        {
-                        //            _repo.addVendor(item.Key.Replace("'", "''"));
-                        //        }
-                        //        else
-                        //        {
+            //                    }
+            //                }
+            //            }
+            //        }
 
-                        //        }
-                        //    }
-                        //}
-                    }
+            //        if (options[2] == "--add-items")
+            //        {
+            //            var rand = new Random();
 
-                    if (options[2] == "--add-items")
-                    {
-                        //var rand = new Random();
+            //            foreach (var item in fileData)
+            //            {
+            //                if (di.productNotFound(item.ProductName))
+            //                {
+            //                    var itemNumber = "H" + _repo.getUniqueItemNumber();
 
-                        //foreach (var item in fileData)
-                        //{
-                        //    if (di.productNotFound(item.ProductName))
-                        //    {
-                        //        var itemNumber = "H" + _repo.getUniqueItemNumber();
+            //                    Item itemToAdd = new Item
+            //                    {
+            //                        ItemNumber = itemNumber,
+            //                        ItemName = item.ProductName.Replace("'", "''"),
+            //                        ItemDescription = item.Description.Replace("'", "''"),
+            //                        ItemType = 1,
+            //                        ModelNumber = "None",
+            //                        ManufacturerUID = 0,
+            //                        ItemSuggestedPrice = 0,
+            //                        AreaUID = 0,
+            //                        ItemNotes = item.Description.Replace("'", "''"),
+            //                        SKU = "",
+            //                        SerialRequired = false,
+            //                        ProjectedLife = 0,
+            //                        Active = true,
+            //                        CreatedByUserId = 0,
+            //                        CreatedDate = DateTime.Now,
+            //                        LastModifiedByUserID = 0,
+            //                        LastModifiedDate = DateTime.Now,
+            //                        AllowUntagged = true
+            //                    };
 
-                        //        Item itemToAdd = new Item
-                        //        {
-                        //            ItemNumber = itemNumber,
-                        //            ItemName = item.ProductName.Replace("'", "''"),
-                        //            ItemDescription = item.Description.Replace("'", "''"),
-                        //            ItemType = 1,
-                        //            ModelNumber = "None",
-                        //            ManufacturerUID = 0,
-                        //            ItemSuggestedPrice = 0,
-                        //            AreaUID = 0,
-                        //            ItemNotes = item.Description.Replace("'", "''"),
-                        //            SKU = "",
-                        //            SerialRequired = false,
-                        //            ProjectedLife = 0,
-                        //            Active = true,
-                        //            CreatedByUserId = 0,
-                        //            CreatedDate = DateTime.Now,
-                        //            LastModifiedByUserID = 0,
-                        //            LastModifiedDate = DateTime.Now,
-                        //            AllowUntagged = true
-                        //        };
+            //                    _repo.addItems(itemToAdd);
+            //                }
+            //            }
+            //        }
 
-                        //        _repo.addItems(itemToAdd);
-                        //    }
-                        //}
-                    }
+            //        if (options[4] == "--add-funding")
+            //        {
+            //            var fundingSources = fileData.GroupBy(u => u.FundingSource);
 
-                    if (options[4] == "--add-funding")
-                    {
-                        //var fundingSources = fileData.GroupBy(u => u.FundingSource);
+            //            foreach (var source in fundingSources)
+            //            {
+            //                if (di.missingFundingSource(source.Key))
+            //                {
+            //                    _repo.addFundingSource(source.Key);
+            //                }
+            //            }
+            //        }
 
-                        //foreach (var source in fundingSources)
-                        //{
-                        //    if (di.missingFundingSource(source.Key))
-                        //    {
-                        //        _repo.addFundingSource(source.Key);
-                        //    }
-                        //}
-                    }
+            //        var outData = new List<PurchaseOrderDto>();
 
-                    var outData = new List<PurchaseOrderDto>();
+            //        foreach (var item in fileData)
+            //        {
+            //            if (di.rejectLongRecord(item, true, true, true))
+            //            {
+            //                continue;
+            //            }
 
-                    //foreach (var item in fileData)
-                    //{
-                    //    if (di.rejectLongRecord(item, true, true, true))
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (!di.siteNotFound(item))
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (!di.siteNotFound(item))
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (!di.productNotFound(item))
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (!di.productNotFound(item))
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (!di.modelNotFound(item)) //need to add option for adding model numbers
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (!di.modelNotFound(item)) //need to add option for adding model numbers
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (!di.vendorNotFound(item)) //need to add option for adding vendors
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (!di.vendorNotFound(item)) //need to add option for adding vendors
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (!di.purchaseDateMissingOrInvalid(item))
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (!di.purchaseDateMissingOrInvalid(item))
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (di.invalidLineNumber(item))
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (di.invalidLineNumber(item))
-                    //    {
-                    //        continue;
-                    //    }
+            //            if (di.missingFundingSource(item))
+            //            {
+            //                continue;
+            //            }
 
-                    //    if (di.missingFundingSource(item))
-                    //    {
-                    //        continue;
-                    //    }
+            //            outData.Add(item);
+            //        }
 
-                    //    outData.Add(item);
-                    //}
+            //        if (outData.Count > 0)
+            //        {
+            //            var mappedItems = map.mapPurchaseOrderHeaders(outData);
 
-                    if (outData.Count > 0)
-                    {
-                        //var mappedItems = map.mapPurchaseOrderHeaders(outData);
+            //            _repo.addOrderHeaders(mappedItems);
 
-                        //_repo.addOrderHeaders(mappedItems);
+            //            if (options[6] == "--add-shipments")
+            //            {
+            //                _repo.addShipmentInfo();
+            //            }
 
-                        if (options[6] == "--add-shipments")
-                        {
-                            //_repo.addShipmentInfo();
-                        }
+            //            Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
+            //            string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
-                        Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
-                        string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
+            //            var rejects = _repo.getRejectionsFromLastImport();
 
-                        //var rejects = _repo.getRejectionsFromLastImport();
+            //            ft.createRejectFile(rejectFile, rejects, fileData);
+            //            _repo.completeIntegration();
 
-                        //ft.createRejectFile(rejectFile, rejects, fileData);
-                        //_repo.completeIntegration();
+            //            _repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
 
-                        //_repo.logAction("Completed.", "Process completed successfully. Press Any Key to Continue...");
+            //            string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
 
-                        string readBody = "<!DOCTYPE html>  <html> <body>     <div>         <h1>Hayes Software Systems</h1>         <h4 style=\"padding-bottom:20px;\">Automatic Notification from Hayes Software Systems</h4>     </div>     <div style=\"margin-left:5%;\">         <p>Data integration successful!</p>         <ul style=\"list-style:none;\">               <li>Records Processed: {0}</li>             <li>Records Accepted: {1}</li>             <li>Records Rejected: {2}</li>         </ul>     </div>     <div style=\"margin-left:3%;\">  <p> Please do not reply to this email.If you have any questions or concerns, please contact Dan Cathcart at dcathcart@hayessoft.com </p>          <p> Have a wonderful day,</p>         <p> The Hayes Software Team </p> </div> </body> </html> ";
+            //            string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
 
-                        //string body = string.Format(readBody, fileData.Count.ToString(), outData.Count.ToString(), rejects.Count.ToString());
+            //            SqlDbMailService mailer = new SqlDbMailService(_repo);
+            //            EmailMessage notification = new EmailMessage
+            //            {
+            //                Body = body,
+            //                Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+            //                Sender = ConfigurationManager.AppSettings["notificationFrom"],
+            //                Subject = "Automatic Notification from Hayes Software Systems for College Station ISD",
+            //                SentDate = DateTime.Now,
+            //                FileAttachment = rejectFile
+            //            };
 
-                        //SqlDbMailService mailer = new SqlDbMailService(_repo);
-                        //EmailMessage notification = new EmailMessage
-                        //{
-                        //    Body = body,
-                        //    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
-                        //    Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                        //    Subject = "Automatic Notification from Hayes Software Systems for College Station ISD",
-                        //    SentDate = DateTime.Now,
-                        //    FileAttachment = rejectFile
-                        //};
+            //            mailer.send(notification);
 
-                        //mailer.send(notification);
+            //            try
+            //            {
+            //                ft.archiveFile(file);
+            //                ft.archiveFile(rejectFile);
+            //            }
+            //            catch (Exception e)
+            //            {
+            //                Console.WriteLine("Error cleaning up data file info. Exception Message: " + e.Message);
+            //            }
 
-                        try
-                        {
-                            //ft.archiveFile(file);
-                            //ft.archiveFile(rejectFile);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Error cleaning up data file info. Exception Message: " + e.Message);
-                        }
+            //            Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
 
-                        Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
+            //            if (options[5] == "--batch")
+            //            {
+            //                Environment.Exit(0);
+            //            }
 
-                        if (options[5] == "--batch")
-                        {
-                            Environment.Exit(0);
-                        }
+            //            Console.ReadLine();
+            //        }
+            //        else
+            //        {
+            //            Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
+            //            Console.WriteLine("Press Any Key To Continue...");
+            //            if (options[5] == "--batch")
+            //            {
+            //                Environment.Exit(0);
+            //            }
+            //            Console.ReadLine();
+            //        }
+            //    }
 
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
-                        Console.WriteLine("Press Any Key To Continue...");
-                        if (options[5] == "--batch")
-                        {
-                            Environment.Exit(0);
-                        }
-                        Console.ReadLine();
-                    }
-                }
+            //    catch (Exception e)
+            //    {
 
-                catch (Exception e)
-                {
+            //        Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
+            //        Console.WriteLine("Press Any Key To Continue...");
 
-                    Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
-                    Console.WriteLine("Press Any Key To Continue...");
+            //        if (options[5] == "--batch")
+            //        {
+            //            Environment.Exit(0);
+            //        }
 
-                    if (options[5] == "--batch")
-                    {
-                        Environment.Exit(0);
-                    }
+            //        Console.ReadLine();
+            //    }
+            //}
+        }
 
-                    Console.ReadLine();
-                }
-            }
+        public static void AssetsMenu(List<string> options)
+        {
+            //Create necessary objects (dependencies)
+            //  Mailservice
+            //  InventoryFlatDataService
+            //  
+            
+            //Truncate flat table
+            //  
 
+            //Send start process email
+            //  
+
+            //Read data from source (in batches)
+            //  PER BATCH
+            //      Apply mappings and move to flat tables
+            //      Apply transformations and move to stage tables
         }
 
         /*
