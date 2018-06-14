@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.Interfaces
+namespace MiddleWay_Controller.ServiceInterfaces
 {
-    public interface ITransformationsRepository
+    public interface IProcessesService
     {
     }
 }

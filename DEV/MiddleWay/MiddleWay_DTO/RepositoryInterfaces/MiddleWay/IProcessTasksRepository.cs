@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.Interfaces
+namespace MiddleWay_DTO.RepositoryInterfaces
 {
-    public interface IProcessesService
+public     interface IProcessTasksRepository
     {
     }
 }

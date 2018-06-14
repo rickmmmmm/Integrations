@@ -1,4 +1,6 @@
-﻿using MiddleWay_Controller.Interfaces;
+﻿using MiddleWay_Controller.ServiceInterfaces;
+using MiddleWay_Controller.RepositoryInterfaces;
+using MiddleWay_DTO.MiddleWay_Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,73 +12,76 @@ namespace MiddleWay_Controller.Services
         #region Private Variables
 
         private IConfigurationRepository _configurationRepository;
-        private Dictionary<string, string> configuration { get; set; }
+        private IClientConfiguration _clientConfiguration;
+        //private Dictionary<string, string> configuration { get; set; }
 
         #endregion Private Variables
 
         #region Constructor
 
-        public ConfigurationService(IConfigurationRepository configurationRepository)
+        public ConfigurationService(IConfigurationRepository configurationRepository, IClientConfiguration clientConfiguration)
         {
             _configurationRepository = configurationRepository;
+            _clientConfiguration = clientConfiguration;
         }
 
         #endregion Constructor
 
         #region Properties
-        public bool IsConfigurationLoaded { get { return configuration != null && configuration.Count > 0; } }
+        public bool HasConfiguration { get { return this._configurationRepository.HasConfigurations(_clientConfiguration.Client, _clientConfiguration.ProcessName); } }
 
-        public string NotificationType { get { return GetConfigurationByName("NotificationType"); } }
-        public string ElasticEmailApiKey { get { return GetConfigurationByName("ElasticEmailApiKey"); } }
-        public string ElasticEmailAPIUrl { get { return GetConfigurationByName("ElasticEmailAPIUrl"); } }
-        public string ElasticSMSAPIUrl { get { return GetConfigurationByName("ElasticSMSAPIUrl"); } }
-        public string SqlServerDbMailProfileName { get { return GetConfigurationByName("SqlServerDbMailProfileName"); } }
-        public string FromName { get { return GetConfigurationByName("FromName"); } }
-        public string NotificationFrom { get { return GetConfigurationByName("NotificationFrom"); } }
-        public string NotificationSentTo { get { return GetConfigurationByName("NotificationSentTo"); } }
-        public string TIPWebConnection { get { return GetConfigurationByName("TIPWebConnection"); } }
-        public string DataSourceType { get { return GetConfigurationByName("DataSourceType"); } }
-        public string DataSourcePath { get { return GetConfigurationByName("DataSourcePath"); } }
-        public string TextQualifier { get { return GetConfigurationByName("TextQualifier"); } }
-        public string Delimiter { get { return GetConfigurationByName("Delimiter"); } }
-        public string ExternalDataSourceConnection { get { return GetConfigurationByName("ExternalDataSourceConnection"); } }
-        public string ReadBatchSize { get { return GetConfigurationByName("ReadBatchSize"); } }
-        public string ExternalDataSourceQuerySelect { get { return GetConfigurationByName("ExternalDataSourceQuerySelect"); } }
-        public string ExternalDataSourceQueryBody { get { return GetConfigurationByName("ExternalDataSourceQueryBody"); } }
-        public string ExternalDataSourceQueryWhere { get { return GetConfigurationByName("ExternalDataSourceQueryWhere"); } }
+        public string NotificationType { get { return GetConfigurationValueByName("NotificationType"); } }
+        public string ElasticEmailApiKey { get { return GetConfigurationValueByName("ElasticEmailApiKey"); } }
+        public string ElasticEmailAPIUrl { get { return GetConfigurationValueByName("ElasticEmailAPIUrl"); } }
+        public string ElasticSMSAPIUrl { get { return GetConfigurationValueByName("ElasticSMSAPIUrl"); } }
+        public string SqlServerDbMailProfileName { get { return GetConfigurationValueByName("SqlServerDbMailProfileName"); } }
+        public string FromName { get { return GetConfigurationValueByName("FromName"); } }
+        public string NotificationFrom { get { return GetConfigurationValueByName("NotificationFrom"); } }
+        public string NotificationSentTo { get { return GetConfigurationValueByName("NotificationSentTo"); } }
+        public string TIPWebConnection { get { return GetConfigurationValueByName("TIPWebConnection"); } }
+        public string DataSourceType { get { return GetConfigurationValueByName("DataSourceType"); } }
+        public string DataSourcePath { get { return GetConfigurationValueByName("DataSourcePath"); } }
+        public string TextQualifier { get { return GetConfigurationValueByName("TextQualifier"); } }
+        public string Delimiter { get { return GetConfigurationValueByName("Delimiter"); } }
+        public string ExternalDataSourceConnection { get { return GetConfigurationValueByName("ExternalDataSourceConnection"); } }
+        public string ReadBatchSize { get { return GetConfigurationValueByName("ReadBatchSize"); } }
+        public string ExternalDataSourceQuerySelect { get { return GetConfigurationValueByName("ExternalDataSourceQuerySelect"); } }
+        public string ExternalDataSourceQueryBody { get { return GetConfigurationValueByName("ExternalDataSourceQueryBody"); } }
+        public string ExternalDataSourceQueryWhere { get { return GetConfigurationValueByName("ExternalDataSourceQueryWhere"); } }
+
         //public string  { get { return GetConfigurationByName(""); } }
 
         #endregion Properties
 
         #region Get Methods
 
-        public void ReadConfiguration()
-        {
-            var configurations = _configurationRepository.GetConfiguration();
+        //public void ReadConfiguration()
+        //{
+        //    var configurations = _configurationRepository.GetConfiguration();
 
-            foreach (var config in configurations)
+        //    foreach (var config in configurations)
+        //    {
+        //        configuration.Add(config.ConfigurationName, config.ConfigurationValue);
+        //    }
+        //}
+
+        public ConfigurationsModel GetConfigurationByName(string name)
+        {
+            try
             {
-                configuration.Add(config.ConfigurationName, config.ConfigurationValue);
+                var configuration = this._configurationRepository.SelectConfigurationByName(_clientConfiguration.Client, _clientConfiguration.ProcessName, name);
+                return configuration;
+            }
+            catch
+            {
+                throw;
             }
         }
 
-        public string GetConfigurationByName(string name)
+        public string GetConfigurationValueByName(string name)
         {
-            if (configuration.Count > 0)
-            {
-                if (configuration.ContainsKey(name))
-                {
-                    return configuration[name];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                throw new NotImplementedException("Configuration not loaded");
-            }
+            var configurationValue = this._configurationRepository.SelectConfigurationValueByName(_clientConfiguration.Client, _clientConfiguration.ProcessName, name);
+            return configurationValue;
         }
 
         #endregion Get Methods

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.Interfaces
+namespace MiddleWay_Controller.RepositoryInterfaces
 {
     public interface IConfigurationRepository
     {

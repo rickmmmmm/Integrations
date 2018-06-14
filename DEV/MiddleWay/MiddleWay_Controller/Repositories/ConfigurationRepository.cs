@@ -1,9 +1,10 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_Controller.Interfaces;
+using MiddleWay_Controller.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using MiddleWay_DTO.MiddleWay_Models;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -12,6 +13,7 @@ namespace MiddleWay_Controller.Repositories
         #region Private Variables and Properties
 
         private IntegrationMiddleWayContext _context;
+        //private IClientConfiguration _clientConfiguration;
 
         #endregion Private Variables and Properties
 
@@ -26,15 +28,78 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<Configurations> GetConfiguration()
+        public bool HasConfigurations(string client, string processName)
         {
             try
             {
-                var configurations = (from configuration in _context.Configurations
-                                      where configuration.Enabled
-                                      select configuration).ToList();
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
 
-                return configurations;
+                var configurations = (from configuration in _context.Configurations
+                                      join processes in _context.Processes
+                                        on configuration.ProcessUid equals processes.ProcessUid
+                                      where configuration.Enabled
+                                         && processes.Client.Trim().ToLower() == clientVal
+                                         && processes.ProcessName.Trim().ToLower() == processNameVal
+                                      select 1).Count();
+
+                return configurations > 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public ConfigurationsModel SelectConfigurationByName(string client, string processName, string name)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+                var nameVal = name.Trim().ToLower();
+
+                var config = (from configuration in _context.Configurations
+                              join processes in _context.Processes
+                                on configuration.ProcessUid equals processes.ProcessUid
+                              where configuration.ConfigurationName.Trim().ToLower() == nameVal
+                                 && processes.Client.Trim().ToLower() == clientVal
+                                 && processes.ProcessName.Trim().ToLower() == processNameVal
+                              select new ConfigurationsModel
+                              {
+                                  ConfigurationUid = configuration.ConfigurationUid,
+                                  ProcessUid = configuration.ProcessUid,
+                                  ConfigurationName = configuration.ConfigurationName,
+                                  ConfigurationValue = configuration.ConfigurationValue,
+                                  Enabled = configuration.Enabled
+                              }).FirstOrDefault();
+
+                return config;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string SelectConfigurationValueByName(string client, string processName, string name)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+                var nameVal = name.Trim().ToLower();
+
+                var configurationValue = (from configuration in _context.Configurations
+                                          join processes in _context.Processes
+                                            on configuration.ProcessUid equals processes.ProcessUid
+                                          where configuration.ConfigurationName.Trim().ToLower() == nameVal
+                                             && processes.Client.Trim().ToLower() == clientVal
+                                             && processes.ProcessName.Trim().ToLower() == processNameVal
+                                          select configuration.ConfigurationValue
+                                      ).FirstOrDefault();
+
+                return configurationValue;
             }
             catch
             {

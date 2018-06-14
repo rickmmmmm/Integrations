@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.ServiceInterfaces
+namespace MiddleWay_Controller.ServiceInterfaces
 {
-public    interface IProcessTasksService
+    public interface IProcessErrorsService
     {
     }
 }

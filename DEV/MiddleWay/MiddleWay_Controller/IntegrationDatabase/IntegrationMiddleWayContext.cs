@@ -6,14 +6,44 @@ namespace MiddleWay_Controller.IntegrationDatabase
 {
     public partial class IntegrationMiddleWayContext : DbContext
     {
-        public IntegrationMiddleWayContext()
+
+        private string _connectionString;
+
+        public IntegrationMiddleWayContext(string connectionString) : base()
         {
+            _connectionString = connectionString;
         }
 
         public IntegrationMiddleWayContext(DbContextOptions<IntegrationMiddleWayContext> options)
             : base(options)
         {
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                if (!string.IsNullOrEmpty(this._connectionString))
+                {
+                    optionsBuilder.UseSqlServer(this._connectionString);
+                }
+                else
+                {
+                    //    #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                    //    optionsBuilder.UseSqlServer(@"Server=.;Database=HelpDesk;Trusted_Connection=True;");
+                    throw new ArgumentNullException("ConnectionString", "The Connection string is null or empty");
+                }
+            }
+        }
+
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//                optionsBuilder.UseSqlServer("Server=.;Database=IntegrationMiddleWay;Trusted_Connection=True;");
+//            }
+//        }
 
         public virtual DbSet<Configurations> Configurations { get; set; }
         public virtual DbSet<EtlDetails> EtlDetails { get; set; }
@@ -25,6 +55,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public virtual DbSet<Mappings> Mappings { get; set; }
         public virtual DbSet<ProcessErrors> ProcessErrors { get; set; }
         public virtual DbSet<Processes> Processes { get; set; }
+        public virtual DbSet<ProcessTasks> ProcessTasks { get; set; }
         public virtual DbSet<ProductsFlatData> ProductsFlatData { get; set; }
         public virtual DbSet<PurchaseInvoiceFlatData> PurchaseInvoiceFlatData { get; set; }
         public virtual DbSet<PurchaseOrderDetailShipmentFlatData> PurchaseOrderDetailShipmentFlatData { get; set; }
@@ -33,22 +64,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public virtual DbSet<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
         public virtual DbSet<Transformations> Transformations { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=.;Database=IntegrationMiddleWay;Trusted_Connection=True;");
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Configurations>(entity =>
             {
                 entity.HasKey(e => e.ConfigurationUid);
-
-                entity.Property(e => e.ConfigurationUid).ValueGeneratedNever();
 
                 entity.Property(e => e.ConfigurationName)
                     .IsRequired()
@@ -779,9 +799,9 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.ProcessErrors)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProcessErrors_Processes");
             });
@@ -808,6 +828,26 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ProcessTasks>(entity =>
+            {
+                entity.HasKey(e => e.ProcessTaskUid);
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Parameters)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.ProcessTasks)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProcessTasks_Processes");
             });
 
             modelBuilder.Entity<ProductsFlatData>(entity =>
