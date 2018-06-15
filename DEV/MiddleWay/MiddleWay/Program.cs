@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using System.Configuration;
 using MiddleWay_DTO.Models;
