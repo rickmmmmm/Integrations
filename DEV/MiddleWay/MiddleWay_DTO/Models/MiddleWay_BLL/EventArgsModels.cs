@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using MiddleWay_DTO.Enumerations;
 
-namespace MiddleWay_DTO.Models
+namespace MiddleWay_DTO.Models.MiddleWay_BLL
 {
-
     public class DbErrorEventArgs : EventArgs
     {
         public string InterfaceMessage { get; set; }

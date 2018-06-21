@@ -1,4 +1,4 @@
-﻿using MiddleWay_DTO.Models;
+﻿using MiddleWay_DTO.Models.MiddleWay_BLL;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -17,7 +17,7 @@ namespace MiddleWay_Utilities
 
         #region Send Functions
 
-        public void send(MessageModel message, string apiKey, string address)
+        public void Send(MessageModel message, string apiKey, string address)
         {
             //var apiKey = ConfigurationManager.AppSettings["apikey"];
             //string address = ConfigurationManager.AppSettings["SMSAPI"];
@@ -51,7 +51,7 @@ namespace MiddleWay_Utilities
             }
         }
 
-        public void sendAsync(MessageModel message)
+        public void SendAsync(MessageModel message)
         {
             throw new NotImplementedException();
         }

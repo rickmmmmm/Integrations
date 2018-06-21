@@ -1,4 +1,5 @@
-﻿using MiddleWay_Controller.Interfaces;
+﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,19 +11,50 @@ namespace MiddleWay_Controller.Services
         #region Private Variables and Properties
 
         private IProcessesRepository _processesRepository;
+        private IClientConfiguration _clientConfiguration;
+        private IConfigurationService _configurationService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public ProcessesService(IProcessesRepository processesRepository)
+        public ProcessesService(IProcessesRepository processesRepository, IClientConfiguration clientConfiguration,
+                                IConfigurationService configurationService, IProcessTasksService processTasksService)
         {
             _processesRepository = processesRepository;
+            _clientConfiguration = clientConfiguration;
+            _configurationService = configurationService;
         }
 
         #endregion Constructor
 
         #region Get Methods
+
+        public int GetProcessUid()
+        {
+            try
+            {
+                var process = this._processesRepository.SelectProcess(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                return process.ProcessUid;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int GetProcessUid(string client, string processName)
+        {
+            try
+            {
+                var process = this._processesRepository.SelectProcess(client, processName);
+                return process.ProcessUid;
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Get Methods
 

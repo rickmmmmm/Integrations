@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 //using CsvHelper;
 //using CsvHelper.Configuration;
-using MiddleWay_Controller.Interfaces;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 
 namespace MiddleWay_Controller.Services
 {

@@ -1,9 +1,9 @@
-﻿using MiddleWay_DTO.MiddleWay_Models;
+﻿using MiddleWay_DTO.Models.MiddleWay;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.ServiceInterfaces
+namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
     public interface IConfigurationService
     {
@@ -29,6 +29,9 @@ namespace MiddleWay_Controller.ServiceInterfaces
         string ExternalDataSourceQuerySelect { get; }
         string ExternalDataSourceQueryBody { get; }
         string ExternalDataSourceQueryWhere { get; }
+        string ExternalDataSourceQueryOffset { get; }
+        int ReadOffset { get; }
+        int ReadLimit { get; }
 
         ConfigurationsModel GetConfigurationByName(string name);
         string GetConfigurationValueByName(string name);

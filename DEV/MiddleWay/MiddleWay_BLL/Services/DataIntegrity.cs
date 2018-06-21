@@ -4,7 +4,7 @@ using System.Linq;
 //using Model;
 //using DataAccess;
 using MiddleWay_Utilities;
-using MiddleWay_DTO.Models;
+using MiddleWay_DTO.DTO_Models.TIPWeb;
 
 namespace MiddleWay_BLL.Services
 {

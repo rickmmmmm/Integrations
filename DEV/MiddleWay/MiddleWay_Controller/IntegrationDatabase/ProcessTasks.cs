@@ -15,6 +15,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string Parameters { get; set; }
+        public bool Successful { get; set; }
 
         public Processes ProcessU { get; set; }
         public ICollection<ProcessErrors> ProcessErrors { get; set; }

@@ -22,7 +22,7 @@ namespace MiddleWay_DTO.Enumerations
         ContainerNumber = 6
     }
 
-    public enum MessageType
+    public enum NotificationType
     {
         Email = 1,
         Sms = 2
@@ -35,6 +35,14 @@ namespace MiddleWay_DTO.Enumerations
         UTF8,
         GSM,
         UCS2
+    }
+
+    public enum DataSourceTypes
+    {
+        FlatFile = 0,
+        SQL = 1,
+        MySQL = 2,
+        Other
     }
 
     public enum InventoryTypeEnum

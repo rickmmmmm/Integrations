@@ -1,6 +1,6 @@
-﻿using MiddleWay_Controller.ServiceInterfaces;
-using MiddleWay_Controller.RepositoryInterfaces;
-using MiddleWay_DTO.MiddleWay_Models;
+﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using MiddleWay_DTO.Models.MiddleWay;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,6 +28,7 @@ namespace MiddleWay_Controller.Services
         #endregion Constructor
 
         #region Properties
+
         public bool HasConfiguration { get { return this._configurationRepository.HasConfigurations(_clientConfiguration.Client, _clientConfiguration.ProcessName); } }
 
         public string NotificationType { get { return GetConfigurationValueByName("NotificationType"); } }
@@ -48,6 +49,31 @@ namespace MiddleWay_Controller.Services
         public string ExternalDataSourceQuerySelect { get { return GetConfigurationValueByName("ExternalDataSourceQuerySelect"); } }
         public string ExternalDataSourceQueryBody { get { return GetConfigurationValueByName("ExternalDataSourceQueryBody"); } }
         public string ExternalDataSourceQueryWhere { get { return GetConfigurationValueByName("ExternalDataSourceQueryWhere"); } }
+        public string ExternalDataSourceQueryOffset { get { return GetConfigurationValueByName("ExternalDataSourceQueryOffset"); } }
+        public int ReadOffset {
+            get {
+                var offsetString = GetConfigurationValueByName("ReadOffset");
+                if (!string.IsNullOrEmpty(offsetString) && Int32.TryParse(offsetString, out int offsetVal))
+                {
+                    return offsetVal;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+        public int ReadLimit { get {
+                var limitString = GetConfigurationValueByName("ReadLimit");
+                if(!string.IsNullOrEmpty(limitString) && Int32.TryParse(limitString, out int limitVal))
+                {
+                    return limitVal;
+                }
+                else
+                {
+                    return 500;
+                }
+            } }
 
         //public string  { get { return GetConfigurationByName(""); } }
 

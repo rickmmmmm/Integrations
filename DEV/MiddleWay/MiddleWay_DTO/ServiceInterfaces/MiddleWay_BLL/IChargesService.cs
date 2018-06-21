@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.ServiceInterfaces
+namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL
 {
     public interface IChargesService
     {

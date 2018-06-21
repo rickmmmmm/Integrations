@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.TIPWeb_Models
+namespace MiddleWay_DTO.Models.TIPWeb
 {
     public class AreasModel
     {

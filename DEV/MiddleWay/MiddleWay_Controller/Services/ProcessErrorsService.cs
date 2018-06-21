@@ -1,4 +1,5 @@
-﻿using MiddleWay_Controller.Interfaces;
+﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -22,6 +22,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
             PurchaseOrderFlatData = new HashSet<PurchaseOrderFlatData>();
             PurchaseOrderShellFlatData = new HashSet<PurchaseOrderShellFlatData>();
             PurchaseShipmentFlatData = new HashSet<PurchaseShipmentFlatData>();
+            TransformationLookup = new HashSet<TransformationLookup>();
         }
 
         public int ProcessUid { get; set; }
@@ -47,5 +48,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public ICollection<PurchaseOrderFlatData> PurchaseOrderFlatData { get; set; }
         public ICollection<PurchaseOrderShellFlatData> PurchaseOrderShellFlatData { get; set; }
         public ICollection<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
+        public ICollection<TransformationLookup> TransformationLookup { get; set; }
     }
 }

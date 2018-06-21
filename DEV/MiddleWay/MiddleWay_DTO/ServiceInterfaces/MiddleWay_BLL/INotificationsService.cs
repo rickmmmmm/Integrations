@@ -1,10 +1,10 @@
-﻿using MiddleWay_DTO.Models;
+﻿using MiddleWay_DTO.Models.MiddleWay_BLL;
 
-namespace MiddleWay_DTO.RepositoryInterfaces
+namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL
 {
     public interface INotificationsService
     {
-        void send(EmailMessageModel message);
-        void sendAsync(EmailMessageModel message);
+        void Send(MessageModel message);
+        void SendAsync(MessageModel message);
     }
 }

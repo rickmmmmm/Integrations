@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiddleWay_DTO.Models
+namespace MiddleWay_DTO.Models.MiddleWay_BLL
 {
     public class EmailMessageModel : MessageModel
     {

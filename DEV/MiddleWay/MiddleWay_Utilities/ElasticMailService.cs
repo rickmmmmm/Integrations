@@ -1,5 +1,5 @@
-﻿using MiddleWay_DTO.Models;
-using MiddleWay_DTO.ServiceInterfaces;
+﻿using MiddleWay_DTO.Models.MiddleWay_BLL;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using System;
 using System.Collections.Specialized;
 using System.Net;
@@ -9,7 +9,9 @@ namespace MiddleWay_Utilities
 {
     public class ElasticMailService : IElasticMailService
     {
-        public void send(EmailMessageModel message, string apiKey, string fromName, string address)
+        #region Methods
+
+        public void Send(EmailMessageModel message, string apiKey, string fromName, string address)
         {
             //var apiKey = ConfigurationManager.AppSettings["apikey"];
             //var fromName = ConfigurationManager.AppSettings["fromName"];
@@ -43,9 +45,11 @@ namespace MiddleWay_Utilities
 
         }
 
-        public void sendAsync(EmailMessageModel message, string apiKey, string fromName, string address)
+        public void SendAsync(EmailMessageModel message, string apiKey, string fromName, string address)
         {
             throw new NotImplementedException();
         }
+
+        #endregion Methods
     }
 }

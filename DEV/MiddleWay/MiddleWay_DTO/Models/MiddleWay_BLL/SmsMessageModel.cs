@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace MiddleWay_DTO.Models
+namespace MiddleWay_DTO.Models.MiddleWay_BLL
 {
     public class SmsMessageModel : MessageModel
     {

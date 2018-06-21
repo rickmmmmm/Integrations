@@ -8,9 +8,10 @@ using CsvHelper;
 using CsvHelper.Configuration;
 //using Model;
 using System.Configuration;
-using MiddleWay_DTO.Models;
+using MiddleWay_DTO.DTO_Models.TIPWeb;
 using PapaParse.Net;
 using System.Diagnostics;
+using MiddleWay_DTO.Models.MiddleWay_BLL;
 
 namespace MiddleWay_Utilities
 {

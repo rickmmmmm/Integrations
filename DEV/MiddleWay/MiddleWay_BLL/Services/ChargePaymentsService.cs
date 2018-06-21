@@ -1,11 +1,11 @@
-﻿using MiddleWay_DTO.ServiceInterfaces;
+﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_DTO.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MiddleWay_DTO.Models;
+using MiddleWay_DTO.Models.MiddleWay_BLL;
 using MiddleWay_DTO.View_Models;
 
 namespace MiddleWay_BLL.Services
@@ -14,15 +14,15 @@ namespace MiddleWay_BLL.Services
     {
         #region Private Variables and Properties
 
-        private IChargePaymentsRepository _chargePaymentsRepository;
+        //private IChargePaymentsRepository _chargePaymentsRepository;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public ChargePaymentsService(IChargePaymentsRepository chargePaymentsRepository)
+        public ChargePaymentsService() // IChargePaymentsRepository chargePaymentsRepository)
         {
-            _chargePaymentsRepository = chargePaymentsRepository;
+            //_chargePaymentsRepository = chargePaymentsRepository;
         }
 
         #endregion Constructor

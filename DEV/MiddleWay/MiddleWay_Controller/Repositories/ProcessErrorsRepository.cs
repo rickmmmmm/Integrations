@@ -1,5 +1,5 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_Controller.Interfaces;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
 using System.Text;

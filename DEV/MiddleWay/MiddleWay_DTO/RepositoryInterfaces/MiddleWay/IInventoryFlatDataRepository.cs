@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.RepositoryInterfaces
+namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
     public interface IInventoryFlatDataRepository
     {
+        void ClearData(string client, string processName);
     }
 }

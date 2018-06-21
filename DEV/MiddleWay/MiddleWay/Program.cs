@@ -3,22 +3,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
 using System.Configuration;
-using MiddleWay_DTO.Models;
 using MiddleWay_Controller.IntegrationDatabase;
 using Microsoft.EntityFrameworkCore;
-using MiddleWay_DAL.EF_DAL;
-using MiddleWay_DAL.DataProvider;
-using MiddleWay_Controller.Interfaces;
 using System.Linq;
 using MiddleWay_Utilities;
 using System.Collections.Generic;
-using MiddleWay_DTO.ServiceInterfaces;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_EDS.Services;
 using MiddleWay_BLL.Services;
 using MiddleWay_DTO.RepositoryInterfaces;
-using MiddleWay_DAL.Repositories;
+using TIPWeb_Controller.Repositories;
 using MiddleWay_Controller.Repositories;
 using MiddleWay_Controller.Services;
+using TIPWeb_Controller.EF_DAL;
+using TIPWeb_Controller.DataProvider;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
+using MiddleWay_DTO.Models;
+using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
+using TIPWeb_Controller.Services;
 
 namespace MiddleWay
 {
@@ -31,22 +35,31 @@ namespace MiddleWay
             try
             {
                 var services = new ServiceCollection();
+                var commands = args.ToList();
 
-                ConfigureServices(services);
+                //var inputProcess = new ProcessInput(commands);
 
-                serviceProvider = services.BuildServiceProvider();
+                if (ConfigureServices(services, commands))
+                {
+                    serviceProvider = services.BuildServiceProvider();
 
-                RunProcess(args.ToList());
+                    RunProcess(commands);
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(Utilities.ParseException(ex));
+#if DEBUG
+                Console.Write("Press Enter to quit");
+                Console.Read();
+#else
                 Environment.Exit(0);
+#endif
             }
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public static void ConfigureServices(IServiceCollection services)
+        public static bool ConfigureServices(IServiceCollection services, List<string> commands)
         {
             try
             {
@@ -70,10 +83,23 @@ namespace MiddleWay
 
                 //        //logger.LogDebug("All done!");
 
-                InjectDataDependencies(services);
-                InjectRepositories(services);
-                InjectServices(services);
-                InjectDependencies(services);
+                if (InjectDataDependencies(services, commands))
+                {
+                    InjectRepositories(services);
+                    InjectServices(services);
+                    InjectDependencies(services);
+                    return true;
+                }
+                else
+                {
+#if DEBUG
+                    Console.Write("Press Enter to quit");
+                    Console.Read();
+#else
+                Environment.Exit(0);
+#endif
+                    return false;
+                }
             }
             catch (Exception ex)
             {
@@ -81,32 +107,87 @@ namespace MiddleWay
             }
         }
 
-        public static void InjectDataDependencies(IServiceCollection services)
+        public static bool InjectDataDependencies(IServiceCollection services, List<string> commands)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString;
-
-            if (!string.IsNullOrEmpty(connectionString))
+            try
             {
-                try
+                var connectionString = ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString;
+                //var tipwebConnectionString = ConfigurationManager.ConnectionStrings["TIPWebConnectionString"].ConnectionString;
+
+                var client = "";// ConfigurationManager.AppSettings["Client"];
+                var processName = "";//ConfigurationManager.AppSettings["ProcessName"];
+
+                if (ProcessInput.HasParameter(commands, "Client"))//(!string.IsNullOrEmpty(client))
                 {
-                    //Create and configure the DB Context to use
+                    if (ProcessInput.HasParameter(commands, "ProcessName"))//(!string.IsNullOrEmpty(processName))
+                    {
+                        if (!string.IsNullOrEmpty(connectionString))
+                        {
+                            client = ProcessInput.ReadParameterValue(commands, "Client");
+                            processName = ProcessInput.ReadParameterValue(commands, "ProcessName");
 
-                    services.AddSingleton<IDataProviderFactory, DataProviderFactory>();  // AddSingleton Works but is too broad
-                    services.AddSingleton<ExternalDataSource>();
+                            //Create and configure the DB Context to use
+                            services.AddTransient<IClientConfiguration>(c => new ClientConfiguration(client, processName));
+                            services.AddDbContext<IntegrationMiddleWayContext>(options => options.UseSqlServer(connectionString));
 
-                    //services.Configure<DatabaseConfigurationOptions>(connectionString);
-                    services.AddDbContext<IntegrationMiddleWayContext>(options => options.UseSqlServer(connectionString));
-                    services.AddDbContext<TIPWebContext>();
+                            //var configurationService = serviceProvider.GetService<IConfigurationService>();
+                            //if (configurationService.HasConfiguration)
+                            //{
+                            //    //Get the TIPWebConnectionString
+                            //    var tipwebConnectionString = configurationService.TIPWebConnection;
+
+                            //    if (!string.IsNullOrEmpty(tipwebConnectionString))
+                            //    {
+                            //        //services.Configure<DatabaseConfigurationOptions>(connectionString);
+                            //        services.AddDbContext<TIPWebContext>(options => options.UseSqlServer(tipwebConnectionString));
+                            //services.AddDbContext<TIPWebContext>();
+                            services.AddSingleton<IDataProviderFactory, DataProviderFactory>();  // AddSingleton Works but is too broad
+
+                            services.AddSingleton<ExternalDataSourceService>(); //TODO: Figure out how to configure the external data source and inject
+
+                            return true;
+                            //    }
+                            //    else
+                            //    {
+                            //        Console.WriteLine("The TIPWeb database connection is Not configured");
+                            //        //throw new ArgumentNullException("The TIPWeb database connection is Not configured");
+                            //        return false;
+                            //    }
+
+                            //}
+                            //else
+                            //{
+                            //    Console.WriteLine("Configuration not setup for Client \"" + client + "\" and Process Name \"" + processName + "\"");
+                            //    return false;
+                            //}
+                        }
+                        else
+                        {
+                            Console.WriteLine("The Integration database connection is Not configured");
+                            //throw new ArgumentNullException("The Integration database connection is Not configured");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Process Name value is not configured");
+                        //throw new ArgumentNullException("Process Name value is not configured");
+                        return false;
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    throw new Exception("Exception caught in InjectDataDependencies...", ex);
+                    Console.WriteLine("Client value is not configured");
+                    //throw new ArgumentNullException("Client value is not configured");
+                    return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("No database connection is configured");
-                throw new ArgumentNullException("No database connection is configured");
+                Console.WriteLine("An exception occurred Injecting Data Dependencies");
+                Console.WriteLine(Utilities.ParseException(ex));
+                //throw new Exception("Exception caught in InjectDataDependencies...", ex);
+                return false;
             }
         }
 
@@ -114,10 +195,15 @@ namespace MiddleWay
         {
             try
             {
-                //Integration Services
+                //MiddleWay Repositories
                 services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
                 services.AddScoped<IMappingsRepository, MappingsRepository>();
-                //services.AddScoped < I , > ();
+                services.AddScoped<IProcessErrorsRepository, ProcessErrorsRepository>();
+                services.AddScoped<IProcessesRepository, ProcessesRepository>();
+                services.AddScoped<IProcessTasksRepository, ProcessTasksRepository>();
+                services.AddScoped<ITransformationsRepository, TransformationsRepository>();
+                services.AddScoped<IInventoryFlatDataRepository, InventoryFlatDataRepository>();
+                //services.AddScoped<I Repository, Repository>();
 
                 //TIPWeb Repositories
                 services.AddScoped<IChargePaymentsRepository, ChargePaymentsRepository>();
@@ -125,7 +211,7 @@ namespace MiddleWay
                 services.AddScoped<IEmailRepository, EmailRepository>();
                 services.AddScoped<IInventoryRepository, InventoryRepository>();
                 services.AddScoped<IPurchasesRepository, PurchasesRepository>();
-                //services.AddScoped<I , >();
+                //services.AddScoped<I Repository, Repository>();
             }
             catch (Exception ex)
             {
@@ -137,17 +223,27 @@ namespace MiddleWay
         {
             try
             {
-                //Integration Services
+                //MiddleWay Services
                 services.AddScoped<IConfigurationService, ConfigurationService>();
+                services.AddScoped<IInventoryFlatDataService, InventoryFlatDataService>();
                 services.AddScoped<IMappingsService, MappingsService>();
+                services.AddScoped<IProcessErrorsService, ProcessErrorsService>();
+                services.AddScoped<IProcessesService, ProcessesService>();
+                services.AddScoped<IProcessTasksService, ProcessTasksService>();
+                services.AddScoped<ITransformationsService, TransformationsService>();
+                services.AddScoped<IInventoryFlatDataService, InventoryFlatDataService>();
+                //services.AddScoped < I , > ();
+
+                //MiddleWay_BLL Services
+                services.AddScoped<IChargePaymentsService, ChargePaymentsService>();
+                services.AddScoped<IChargesService, ChargesService>();
+                services.AddScoped<IAssetsService, AssetsService>();
+                services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
                 //services.AddScoped < I , > ();
 
                 //TIPWeb Services
-                services.AddScoped<IChargePaymentsService, ChargePaymentsService>();
-                services.AddScoped<IChargesService, ChargesService>();
+                services.AddScoped<IEmailService, EmailService>();
                 services.AddScoped<IInventoryService, InventoryService>();
-                services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
-                //services.AddScoped < I , > ();
             }
             catch (Exception ex)
             {
@@ -174,13 +270,12 @@ namespace MiddleWay
             }
         }
 
-        protected static void RunProcess(List<string> args)
+        protected static void RunProcess(List<string> commands)
         {
-            //Read configuration, if no configuration stop processing and log error
+            //Get configuration service, if no configuration stop processing and log error
             var configurationService = serviceProvider.GetService<IConfigurationService>();
-            configurationService.ReadConfiguration();
 
-            if (!configurationService.IsConfigurationLoaded)
+            if (!configurationService.HasConfiguration)
             {
                 // Configuration Not Loaded
                 Console.WriteLine("Configuration Not Loaded");
@@ -188,27 +283,27 @@ namespace MiddleWay
             }
             else
             {
-                if (args.Count > 0)
-                {
-                    ReadParameters(args);
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
+                //if (commands.Count > 0)
+                //{
+                ReadParameters(commands);
+                Environment.Exit(0);
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
 
-                    Console.WriteLine("Shall we play a game? (Y)es (N)o");
-                    string gameplay = Console.ReadLine().ToLower();
+                //    Console.WriteLine("Shall we play a game? (Y)es (N)o");
+                //    string gameplay = Console.ReadLine().ToLower();
 
-                    if (gameplay == "n")
-                    {
-                        Environment.Exit(0);
-                    }
+                //    if (gameplay == "n")
+                //    {
+                //        Environment.Exit(0);
+                //    }
 
-                    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
+                //    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
 
-                    ReadInput();
-                }
+                //    ReadInput();
+                //}
             }
             //Remove "bad" data
             //log actions to console
@@ -219,127 +314,129 @@ namespace MiddleWay
             //Dispose of remaining objects
         }
 
-        private static void ReadParameters(List<string> args)
+        private static void ReadParameters(List<string> commands)
         {
-            string choice = args[0];
+            //string choice = args[0];
+            var options = ProcessInput.ReadOptions(commands);
 
-            switch (choice)
+            //foreach(var option in options)
+            switch (options[0])
             {
                 case "-p":
-                    PurchaseOrderMenu(args);
-                    break;
-                case "-e":
-                    ExportFileOptions(args);
-                    break;
-                case "-c":
-                    ChargesMenu(args);
-                    break;
-                case "m":
-                    MobileDeviceManagementMenu();
-                    break;
-                case "a":
-                    AssetsMenu(args);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public static void ReadInput()
-        {
-            string choice = Console.ReadLine().ToLower();
-
-            List<string> options;
-
-            switch (choice)
-            {
-                case "p":
-                    options = GetOptions();
                     PurchaseOrderMenu(options);
                     break;
-                case "m":
-                    MobileDeviceManagementMenu();
-                    ReadInput();
-                    break;
-                case "e":
-                    options = GetExportOptions();
+                case "-e":
                     ExportFileOptions(options);
                     break;
-                case "c":
-                    options = new List<string>();
+                case "-c":
                     ChargesMenu(options);
                     break;
-                case "a":
-                    options = new List<string>();
-                    AssetsMenu(options);
+                case "m":
+                    MobileDeviceManagementMenu();
                     break;
-                case "q":
-                    Environment.Exit(0);
-                    break;
-                case "quit":
-                    Environment.Exit(0);
+                case "-a":
+                    AssetsMenu(commands, "Test"); // commands.GetAllArguments
                     break;
                 default:
-                    Console.WriteLine("Not a recognized option. Please select a valid option. Enter (Q)uit to exit.");
-                    ReadInput();
                     break;
             }
         }
 
-        public static List<string> GetOptions()
-        {
-            //string[] options = new string[10];
-            var options = new List<string>();
+        //public static void ReadInput()
+        //{
+        //    string choice = Console.ReadLine().ToLower();
 
-            Console.WriteLine("Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
-            string response = Console.ReadLine().ToLower();
+        //    List<string> options;
 
-            switch (response)
-            {
-                case "y":
-                    //options[2] = "--add-items";
-                    options.Add("--add-items");
-                    break;
-                //case "n":
-                //    options[2] = "";
-                //    break;
-                default:
-                    break;
-            }
+        //    switch (choice)
+        //    {
+        //        case "p":
+        //            options = GetOptions();
+        //            PurchaseOrderMenu(options);
+        //            break;
+        //        case "m":
+        //            MobileDeviceManagementMenu();
+        //            ReadInput();
+        //            break;
+        //        case "e":
+        //            options = GetExportOptions();
+        //            ExportFileOptions(options);
+        //            break;
+        //        case "c":
+        //            options = new List<string>();
+        //            ChargesMenu(options);
+        //            break;
+        //        case "a":
+        //            options = new List<string>();
+        //            AssetsMenu(options);
+        //            break;
+        //        case "q":
+        //            Environment.Exit(0);
+        //            break;
+        //        case "quit":
+        //            Environment.Exit(0);
+        //            break;
+        //        default:
+        //            Console.WriteLine("Not a recognized option. Please select a valid option. Enter (Q)uit to exit.");
+        //            ReadInput();
+        //            break;
+        //    }
+        //}
 
-            Console.WriteLine("Would you like to add vendors to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
-            response = Console.ReadLine().ToLower();
+        //public static List<string> GetOptions()
+        //{
+        //    //string[] options = new string[10];
+        //    var options = new List<string>();
 
-            switch (response)
-            {
-                case "y":
-                    //options[3] = "--add-vendors";
-                    options.Add("--add-vendors");
-                    break;
-                //case "n":
-                //    break;
-                default:
-                    break;
-            }
+        //    Console.WriteLine("Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
+        //    string response = Console.ReadLine().ToLower();
 
-            Console.WriteLine("Would you like to add funding sources to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
-            response = Console.ReadLine().ToLower();
+        //    switch (response)
+        //    {
+        //        case "y":
+        //            //options[2] = "--add-items";
+        //            options.Add("--add-items");
+        //            break;
+        //        //case "n":
+        //        //    options[2] = "";
+        //        //    break;
+        //        default:
+        //            break;
+        //    }
 
-            switch (response)
-            {
-                case "y":
-                    //options[4] = "--add-funding";
-                    options.Add("--add-funding");
-                    break;
-                //case "n":
-                //    options[4] = "";
-                //    break;
-                default:
-                    break;
-            }
+        //    Console.WriteLine("Would you like to add vendors to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
+        //    response = Console.ReadLine().ToLower();
 
-            return options;
-        }
+        //    switch (response)
+        //    {
+        //        case "y":
+        //            //options[3] = "--add-vendors";
+        //            options.Add("--add-vendors");
+        //            break;
+        //        //case "n":
+        //        //    break;
+        //        default:
+        //            break;
+        //    }
+
+        //    Console.WriteLine("Would you like to add funding sources to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
+        //    response = Console.ReadLine().ToLower();
+
+        //    switch (response)
+        //    {
+        //        case "y":
+        //            //options[4] = "--add-funding";
+        //            options.Add("--add-funding");
+        //            break;
+        //        //case "n":
+        //        //    options[4] = "";
+        //        //    break;
+        //        default:
+        //            break;
+        //    }
+
+        //    return options;
+        //}
 
         private static void ChargesMenu(List<string> args)
         {
@@ -773,23 +870,12 @@ namespace MiddleWay
             //}
         }
 
-        public static void AssetsMenu(List<string> options)
+        public static void AssetsMenu(List<string> commands, string parameters = null) //List<string> options
         {
-            //Create necessary objects (dependencies)
-            //  Mailservice
-            //  InventoryFlatDataService
-            //  
-            
-            //Truncate flat table
-            //  
+            var assetsService = serviceProvider.GetService<IAssetsService>();
 
-            //Send start process email
-            //  
+            assetsService.ProcessAssets(commands, parameters);
 
-            //Read data from source (in batches)
-            //  PER BATCH
-            //      Apply mappings and move to flat tables
-            //      Apply transformations and move to stage tables
         }
 
         /*

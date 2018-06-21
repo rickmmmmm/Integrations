@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 //using Model;
 //using DataAccess;
 //using SystemTasks;
-using MiddleWay_DTO.Models;
-using MiddleWay_DTO.ServiceInterfaces;
+using MiddleWay_DTO.Models.MiddleWay_BLL;
+using MiddleWay_DTO.DTO_Models.TIPWeb;
 using MiddleWay_DTO.RepositoryInterfaces;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 
 namespace MiddleWay_BLL.Services
 {
@@ -17,15 +18,15 @@ namespace MiddleWay_BLL.Services
 
         #region Private Variables and Properties
 
-        private IPurchasesRepository _purchaseOrderRepository;
+        //private IPurchasesRepository _purchaseOrderRepository;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public PurchaseOrderService(IPurchasesRepository purchaseOrderRepository)
+        public PurchaseOrderService() // IPurchasesRepository purchaseOrderRepository)
         {
-            _purchaseOrderRepository = purchaseOrderRepository;
+            //_purchaseOrderRepository = purchaseOrderRepository;
         }
 
         #endregion Constructor

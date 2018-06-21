@@ -1,8 +1,9 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_Controller.Interfaces;
+using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -25,18 +26,92 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
+        public ProcessesModel SelectProcess(int processUid)
+        {
+            try
+            {
+                var process = (from processes in _context.Processes
+                               where processes.ProcessUid == processUid
+                               select new ProcessesModel
+                               {
+                                   ProcessUid = processes.ProcessUid,
+                                   Client = processes.Client,
+                                   ProcessName = processes.ProcessName,
+                                   Description = processes.Description,
+                                   Enabled = processes.Enabled,
+                                   CreatedDate = processes.CreatedDate
+                               }).FirstOrDefault();
+
+                return process;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public ProcessesModel SelectProcess(string client, string processName)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+
+                var process = (from processes in _context.Processes
+                               where processes.Client.Trim().ToLower() == clientVal
+                                  && processes.ProcessName.Trim().ToLower() == processNameVal
+                                  && processes.Enabled
+                               select new ProcessesModel
+                               {
+                                   ProcessUid = processes.ProcessUid,
+                                   Client = processes.Client,
+                                   ProcessName = processes.ProcessName,
+                                   Description = processes.Description,
+                                   Enabled = processes.Enabled,
+                                   CreatedDate = processes.CreatedDate
+                               }).FirstOrDefault();
+
+                return process;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int SelectProcessUid(string client, string processName)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+
+                var processUid = (from processes in _context.Processes
+                                  where processes.Client.Trim().ToLower() == clientVal
+                                     && processes.ProcessName.Trim().ToLower() == processNameVal
+                                     && processes.Enabled
+                                  select processes.ProcessUid).FirstOrDefault();
+
+                return processUid;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         #endregion Select Functions
 
-        #region Insert Functions
+        //#region Insert Functions
 
-        #endregion Insert Functions
+        //#endregion Insert Functions
 
-        #region Update Functions
+        //#region Update Functions
 
-        #endregion Update Functions
+        //#endregion Update Functions
 
-        #region Delete Functions
+        //#region Delete Functions
 
-        #endregion Delete Functions
+        //#endregion Delete Functions
     }
 }

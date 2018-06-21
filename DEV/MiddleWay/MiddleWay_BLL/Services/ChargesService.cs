@@ -1,10 +1,14 @@
-﻿using MiddleWay_Controller.Interfaces;
+﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using MiddleWay_DTO.ServiceInterfaces;
 using MiddleWay_DTO.RepositoryInterfaces;
-using MiddleWay_DTO.Models;
+using MiddleWay_DTO.Models.MiddleWay_BLL;
+using MiddleWay_DTO.View_Models;
 using System.Linq;
 
 namespace MiddleWay_BLL.Services
@@ -14,7 +18,7 @@ namespace MiddleWay_BLL.Services
         #region Private Variables and Properties
 
         private IConfigurationService _configurationService;
-        private IMailService _mailService;
+        private INotificationsService _notificationService;
 
         private IChargesRepository _chargesRepository;
 
@@ -22,11 +26,11 @@ namespace MiddleWay_BLL.Services
 
         #region Constructor
 
-        public ChargesService(IChargesRepository chargesRepository, IConfigurationService configurationService, IMailService mailService)
+        public ChargesService(IChargesRepository chargesRepository, IConfigurationService configurationService, INotificationsService notificationService)
         {
             _chargesRepository = chargesRepository;
             _configurationService = configurationService;
-            _mailService = mailService;
+            _notificationService = notificationService;
         }
 
         #endregion Constructor
@@ -68,7 +72,7 @@ namespace MiddleWay_BLL.Services
                 SentDate = DateTime.Now
             };
 
-            _mailService.send(notification);
+            _notificationService.Send(notification);
 
             //ft.archiveFile(importFileName);
             //_repo.completeIntegration();

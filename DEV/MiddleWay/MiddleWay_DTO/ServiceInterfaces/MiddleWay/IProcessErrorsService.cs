@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_Controller.ServiceInterfaces
+namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
     public interface IProcessErrorsService
     {

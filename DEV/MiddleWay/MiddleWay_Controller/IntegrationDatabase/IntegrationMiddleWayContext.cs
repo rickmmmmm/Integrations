@@ -36,14 +36,14 @@ namespace MiddleWay_Controller.IntegrationDatabase
             }
         }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer("Server=.;Database=IntegrationMiddleWay;Trusted_Connection=True;");
-//            }
-//        }
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+        //                optionsBuilder.UseSqlServer("Server=.;Database=IntegrationMiddleWay;Trusted_Connection=True;");
+        //            }
+        //        }
 
         public virtual DbSet<Configurations> Configurations { get; set; }
         public virtual DbSet<EtlDetails> EtlDetails { get; set; }
@@ -62,6 +62,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public virtual DbSet<PurchaseOrderFlatData> PurchaseOrderFlatData { get; set; }
         public virtual DbSet<PurchaseOrderShellFlatData> PurchaseOrderShellFlatData { get; set; }
         public virtual DbSet<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
+        public virtual DbSet<TransformationLookup> TransformationLookup { get; set; }
         public virtual DbSet<Transformations> Transformations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,7 +78,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.ConfigurationValue)
                     .IsRequired()
-                    .HasMaxLength(250)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.ProcessU)
@@ -1295,6 +1295,34 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasConstraintName("FK_PurchaseShipmentFlatData_Processes");
             });
 
+            modelBuilder.Entity<TransformationLookup>(entity =>
+            {
+                entity.HasKey(e => e.TransformationLookupUid);
+
+                entity.Property(e => e.TransformationLookupUid).HasColumnName("TransformationLookupUID");
+
+                entity.Property(e => e.Key)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TransformationLookupKey)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessU)
+                    .WithMany(p => p.TransformationLookup)
+                    .HasForeignKey(d => d.ProcessUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TransformationLookup_Processes");
+            });
+
             modelBuilder.Entity<Transformations>(entity =>
             {
                 entity.HasKey(e => e.TransformationUid);
@@ -1308,6 +1336,10 @@ namespace MiddleWay_Controller.IntegrationDatabase
                 entity.Property(e => e.Function)
                     .IsRequired()
                     .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Parameters)
+                    .HasMaxLength(500)
                     .IsUnicode(false);
 
                 entity.Property(e => e.SourceColumn)

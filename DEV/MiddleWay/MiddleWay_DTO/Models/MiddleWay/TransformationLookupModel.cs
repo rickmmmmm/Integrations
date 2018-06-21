@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MiddleWay_DTO.Models.MiddleWay
+{
+    public class TransformationLookupModel
+    {
+        public int TransformationLookupUID { get; set; }
+        public int ProcessUid { get; set; }
+        public string TransformationLookupKey { get; set; }
+        public string Key { get; set; }
+        public string Value { get; set; }
+        public bool Enabled { get; set; }
+
+    }
+}

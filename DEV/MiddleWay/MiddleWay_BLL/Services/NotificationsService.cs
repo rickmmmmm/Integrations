@@ -7,8 +7,11 @@ using MiddleWay_DTO.Models;
 //using DataAccess;
 using System.Configuration;
 using MiddleWay_DTO.RepositoryInterfaces;
-using MiddleWay_DTO.ServiceInterfaces;
-using MiddleWay_Controller.Interfaces;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
+using MiddleWay_DTO.Models.MiddleWay_BLL;
+using MiddleWay_DTO.Enumerations;
 
 namespace MiddleWay_BLL.Services
 {
@@ -19,49 +22,67 @@ namespace MiddleWay_BLL.Services
         private IConfigurationService _configurationService;
         private IElasticMailService _elasticMailService;
 
-        private IEmailRepository _emailRepository;
+        private IEmailService _emailService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public NotificationsService(IEmailRepository emailRepository, IConfigurationService configurationService, IElasticMailService elasticMailService)
+        public NotificationsService(IEmailService emailService, IConfigurationService configurationService, IElasticMailService elasticMailService)
         {
             _configurationService = configurationService;
             _elasticMailService = elasticMailService;
-            _emailRepository = emailRepository;
+            _emailService = emailService;
         }
 
         #endregion Constructor
 
         #region Send Functions
 
-        public void send(EmailMessageModel message)
+        public void Send(MessageModel message)
         {
             //    _emailRepository.sendEmail(ConfigurationManager.AppSettings["SqlServerDbMailProfileName"], message.Receivers.First(), message.Subject, message.Body);
+            NotificationType notificationType;
 
-            if (!string.IsNullOrEmpty(_configurationService.SqlServerDbMailProfileName))
+            if (Enum.TryParse(_configurationService.NotificationType, out notificationType))
             {
-                var mailProfileName = _configurationService.SqlServerDbMailProfileName;
+                switch (notificationType)
+                {
+                    case NotificationType.Email:
 
-                var attachment = string.IsNullOrEmpty(message.FileAttachment) ? null : message.FileAttachment;
+                        if (!typeof(EmailMessageModel).IsAssignableFrom(message.GetType()))
+                        {
+                            var email = (EmailMessageModel)message;
 
-                _emailRepository.sendEmail(mailProfileName, string.Join(";", message.Recipients), message.Subject, message.Body, attachment);
+                            if (!string.IsNullOrEmpty(_configurationService.SqlServerDbMailProfileName))
+                            {
+                                var mailProfileName = _configurationService.SqlServerDbMailProfileName;
 
-            }
-            else if (!string.IsNullOrEmpty(_configurationService.ElasticAPI) && !string.IsNullOrEmpty(_configurationService.ApiKey))
-            {
-                var apiKey = _configurationService.ApiKey;
-                var address = _configurationService.ElasticAPI;
-                var fromName = _configurationService.FromName;
-                //var attachment = string.IsNullOrEmpty(message.FileAttachment) ? null : message.FileAttachment;
+                                var attachment = string.IsNullOrEmpty(email.FileAttachment) ? null : email.FileAttachment;
 
-                _elasticMailService.send(message, apiKey, fromName, address);
+                                _emailService.Send(mailProfileName, email);
 
+                            }
+                            else if (!string.IsNullOrEmpty(_configurationService.ElasticEmailAPIUrl) && !string.IsNullOrEmpty(_configurationService.ElasticEmailApiKey))
+                            {
+                                var apiKey = _configurationService.ElasticEmailApiKey;
+                                var address = _configurationService.ElasticEmailAPIUrl;
+                                var fromName = _configurationService.FromName;
+                                //var attachment = string.IsNullOrEmpty(email.FileAttachment) ? null : email.FileAttachment;
+
+                                _elasticMailService.Send(email, apiKey, fromName, address);
+
+                            }
+                        }
+                        break;
+                    case NotificationType.Sms:
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
 
-        public void sendAsync(EmailMessageModel message)
+        public void SendAsync(MessageModel message)
         {
             throw new NotImplementedException();
         }

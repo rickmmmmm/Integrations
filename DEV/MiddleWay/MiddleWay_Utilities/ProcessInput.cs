@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace MiddleWay_Utilities
 {
-    public class ProcessInput
+    public static class ProcessInput
     {
         #region Variables and Properties
 
-        private List<string> _parameters;
+        //private List<string> _parameters;
 
         #endregion Variables and Properties
 
-        #region Constructor
+        //#region Constructor
 
-        public ProcessInput(List<string> parameters)
-        {
-            _parameters = parameters;
-        }
+        //public ProcessInput(List<string> parameters)
+        //{
+        //    _parameters = parameters;
+        //}
 
-        #endregion Constructor
+        //#endregion Constructor
 
         #region Functions
 
@@ -27,12 +27,12 @@ namespace MiddleWay_Utilities
         /// Get all options (single dash) in the parameters
         /// </summary>
         /// <returns></returns>
-        public List<string> ReadOptions()
+        public static List<string> ReadOptions(List<string> options)
         {
-            var data = (from options in _parameters
-                        where options.StartsWith("-") &&
-                              !options.StartsWith("--")
-                        select options).ToList();
+            var data = (from parameters in options
+                        where parameters.StartsWith("-") &&
+                              !parameters.StartsWith("--")
+                        select parameters).ToList();
 
             return data;
         }
@@ -42,16 +42,16 @@ namespace MiddleWay_Utilities
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public bool HasParameter(string parameter)
+        public static bool HasParameter(List<string> options, string parameter)
         {
             if (!parameter.StartsWith("--"))
             {
                 parameter = "--" + parameter;
             }
 
-            var data = (from options in _parameters
-                        where options == parameter
-                        select options).Count();
+            var data = (from parameters in options
+                        where parameters == parameter
+                        select parameters).Count();
 
             return data == 1;
         }
@@ -61,22 +61,22 @@ namespace MiddleWay_Utilities
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public string ReadParameterValue(string parameter)
+        public static string ReadParameterValue(List<string> options, string parameter)
         {
             if (!parameter.StartsWith("--"))
             {
                 parameter = "--" + parameter;
             }
 
-            var indexOfParam = _parameters.IndexOf(parameter);
+            var indexOfParam = options.IndexOf(parameter);
             var value = string.Empty;
             if (indexOfParam >= 0)
             {
                 var startIndex = indexOfParam + 1;
 
-                if (!_parameters[startIndex].StartsWith("-") && !_parameters[startIndex].StartsWith("--"))
+                if (!options[startIndex].StartsWith("-") && !options[startIndex].StartsWith("--"))
                 {
-                    value = _parameters[startIndex];
+                    value = options[startIndex];
                 }
             }
             return value;
@@ -89,26 +89,26 @@ namespace MiddleWay_Utilities
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public List<string> ReadParameterValues(string parameter)
+        public static List<string> ReadParameterValues(List<string> options, string parameter)
         {
             if (!parameter.StartsWith("--"))
             {
                 parameter = "--" + parameter;
             }
 
-            var indexOfParam = _parameters.IndexOf(parameter);
+            var indexOfParam = options.IndexOf(parameter);
             var values = new List<string>();
             if (indexOfParam >= 0)
             {
-                for (var startIndex = indexOfParam + 1; startIndex < _parameters.Count(); startIndex++)
+                for (var startIndex = indexOfParam + 1; startIndex < options.Count(); startIndex++)
                 {
-                    if (_parameters[startIndex].StartsWith("-") || _parameters[startIndex].StartsWith("--"))
+                    if (options[startIndex].StartsWith("-") || options[startIndex].StartsWith("--"))
                     {
                         break;
                     }
                     else
                     {
-                        values.Add(_parameters[startIndex]);
+                        values.Add(options[startIndex]);
                     }
                 }
             }
