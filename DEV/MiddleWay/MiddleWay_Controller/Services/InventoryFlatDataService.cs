@@ -3,7 +3,7 @@ using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_Controller.Services
 {
@@ -13,20 +13,83 @@ namespace MiddleWay_Controller.Services
 
         private IInventoryFlatDataRepository _inventoryFlatDataRepository;
         private IClientConfiguration _clientConfiguration;
+        private IProcessesService _processesService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public InventoryFlatDataService(IInventoryFlatDataRepository inventoryFlatDataRepository, IClientConfiguration clientConfiguration)
+        public InventoryFlatDataService(IInventoryFlatDataRepository inventoryFlatDataRepository, IClientConfiguration clientConfiguration,
+                                        IProcessesService processesService)
         {
             _inventoryFlatDataRepository = inventoryFlatDataRepository;
             _clientConfiguration = clientConfiguration;
+            _processesService = processesService;
         }
 
         #endregion Constructor
 
         #region Get Methods
+
+        public List<InventoryFlatDataModel> Get(int offset, int limit)
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.Select(_clientConfiguration.Client, _clientConfiguration.ProcessName, offset, limit);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public InventoryFlatDataModel Get(int inventoryFlatDataUid)
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.Select(inventoryFlatDataUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public InventoryFlatDataModel GetByAssetID(string assetId)
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.SelectByAssetID(_clientConfiguration.Client, _clientConfiguration.ProcessName, assetId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public InventoryFlatDataModel GetByTag(string tag)
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.SelectByTag(_clientConfiguration.Client, _clientConfiguration.ProcessName, tag);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int GetTotal()
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.GetTotal(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Get Methods
 
@@ -34,26 +97,64 @@ namespace MiddleWay_Controller.Services
 
         public bool Add(InventoryFlatDataModel inventoryFlatData)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var processUid = _processesService.GetProcessUid();
+                inventoryFlatData.ProcessUid = processUid;
+                var inventoryFlatDataUid = _inventoryFlatDataRepository.Insert(inventoryFlatData);
+                return (inventoryFlatDataUid > 0);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public bool AddRange(List<InventoryFlatDataModel> inventoryFlatDataBatch)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var processUid = _processesService.GetProcessUid();
+                inventoryFlatDataBatch.ForEach(row => row.ProcessUid = processUid);
+                return _inventoryFlatDataRepository.InsertRange(inventoryFlatDataBatch);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         #endregion Add Methods
 
         #region Update Methods
 
-        public void ClearData()
+        public bool Change(InventoryFlatDataModel inventoryFlatData)
         {
-            _inventoryFlatDataRepository.ClearData(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+            try
+            {
+                return _inventoryFlatDataRepository.Update(inventoryFlatData);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         #endregion Update Methods
 
         #region Delete Methods
+
+        public void ClearData()
+        {
+            try
+            {
+                _inventoryFlatDataRepository.Delete(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Delete Methods
     }

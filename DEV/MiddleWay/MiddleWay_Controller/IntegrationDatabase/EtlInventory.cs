@@ -21,20 +21,21 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string ProductTypeName { get; set; }
         public string ProductTypeDescription { get; set; }
         public string ModelNumber { get; set; }
-        public int? ManufacturerUid { get; set; }
+        public int ManufacturerUid { get; set; }
         public string ManufacturerName { get; set; }
-        public int? AreaUid { get; set; }
+        public int AreaUid { get; set; }
         public string AreaName { get; set; }
         public int SiteUid { get; set; }
         public string SiteId { get; set; }
         public string SiteName { get; set; }
         public int EntityUid { get; set; }
+        public string EntityId { get; set; }
         public string EntityName { get; set; }
         public int EntityTypeUid { get; set; }
         public string EntityTypeName { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
-        public int? TechDepartmentUid { get; set; }
+        public int TechDepartmentUid { get; set; }
         public string DepartmentName { get; set; }
         public string DepartmentId { get; set; }
         public int FundingSourceUid { get; set; }

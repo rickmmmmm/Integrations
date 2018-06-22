@@ -6,7 +6,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
 {
     public partial class IntegrationMiddleWayContext : DbContext
     {
-
         private string _connectionString;
 
         public IntegrationMiddleWayContext(string connectionString) : base()
@@ -299,6 +298,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsUnicode(false);
 
                 entity.Property(e => e.DepartmentName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EntityId)
+                    .IsRequired()
+                    .HasColumnName("EntityID")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 

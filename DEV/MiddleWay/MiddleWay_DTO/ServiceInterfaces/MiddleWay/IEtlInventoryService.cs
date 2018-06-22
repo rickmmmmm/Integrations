@@ -4,9 +4,7 @@ using System.Text;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
-    public interface IProcessesService
+    public interface IEtlInventoryService
     {
-        int GetProcessUid();
-        int GetProcessUid(string client, string processName);
     }
 }
