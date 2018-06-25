@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="DallasISD_OracleUserImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="575"
-  DTS:VersionGUID="{F8ACAE0E-0509-4E37-A67A-0D4F73D9F9ED}">
+  DTS:VersionBuild="580"
+  DTS:VersionGUID="{2BCDE089-5309-4E8F-A124-7357BD6B4231}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -1219,7 +1219,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{354F08EC-A330-49D2-8896-A71F893662A1}"
-              SQLTask:SqlStatementSource="declare @ApproverUserID int, @ApproverName varchar(100), @ApproverEmail varchar(300)&#xA;&#xA;set @ApproverUserID = ?&#xA;set @ApproverName = ?&#xA;set @ApproverEmail = ?&#xA;&#xA;&#xA;INSERT INTO dbo.tblTechTransferUserWorkflows&#xA;           (UserID, ApproverUserID, ApproverFullName, ApproverEmail, ApproverFlag, ApprovalLevel,&#xA;           CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID)&#xA;&#xA;&#xA;Select UserID, @ApproverUserID, @ApproverName, @ApproverEmail, '', 2,&#xA;&#x9;getdate(), 0, getdate(), 0&#xA;from _ETL_StagingSupervisor etl&#xA;where import = 1&#xA;and userID not in (select UserID from tblTechTransferUserWorkflows where userID = etl.UserID and ApproverUserID = @ApproverUserID and ApprovalLevel = 2)&#xA;&#xA;&#xA;delete wf&#xA;from tblTechTransferUserWorkflows wf&#xA;left outer join _ETL_StagingSupervisor etl on etl.UserID = wf.UserID and etl.Import = 1&#xA;where etl.UserID is null&#xA;and ApproverUserID = @ApproverUserID and wf.ApprovalLevel = 2&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="declare @ApproverUserID int, @ApproverName varchar(100), @ApproverEmail varchar(300)&#xA;&#xA;set @ApproverUserID = ?&#xA;set @ApproverName = ?&#xA;set @ApproverEmail = ?&#xA;&#xA;&#xA;INSERT INTO dbo.tblTechTransferUserWorkflows&#xA;           (UserID, ApproverUserID, ApproverFullName, ApproverEmail, ApproverFlag, ApprovalLevel,&#xA;           CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID)&#xA;&#xA;&#xA;Select Distinct UserID, @ApproverUserID, @ApproverName, @ApproverEmail, '', 2,&#xA;&#x9;getdate(), 0, getdate(), 0&#xA;from _ETL_StagingSupervisor etl&#xA;where import = 1&#xA;and userID not in (select UserID from tblTechTransferUserWorkflows where userID = etl.UserID and ApproverUserID = @ApproverUserID and ApprovalLevel = 2)&#xA;&#xA;&#xA;delete wf&#xA;from tblTechTransferUserWorkflows wf&#xA;left outer join _ETL_StagingSupervisor etl on etl.UserID = wf.UserID and etl.Import = 1&#xA;where etl.UserID is null&#xA;and ApproverUserID = @ApproverUserID and wf.ApprovalLevel = 2&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@ApproverUserID"
                 SQLTask:DtsVariableName="$Project::Level2ApproverUserID"
@@ -1257,7 +1257,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{354F08EC-A330-49D2-8896-A71F893662A1}"
-              SQLTask:SqlStatementSource="&#xA;&#xA;INSERT INTO dbo.tblTechTransferUserWorkflows&#xA;           (UserID, ApproverUserID, ApproverFullName, ApproverEmail, ApproverFlag, ApprovalLevel,&#xA;           CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID)&#xA;&#xA;Select UserID, SupervisorUserID, SupervisorFullName, SupervisorEMail, ApproverFlag, ApprovalLevel,&#xA;&#x9;getdate(), 0, getdate(), 0&#xA;&#xA;from _ETL_StagingSupervisor etl&#xA;where import = 1&#xA;and userID not in (select UserID from tblTechTransferUserWorkflows)&#xA;GO&#xA;&#xA;&#xA;update ufw set ApproverUserID = etl.SupervisorUserID, ApproverFullName = etl.SupervisorFullName, &#xA;&#x9;ApproverEmail = etl.SupervisorEMail, ApproverFlag = etl.ApproverFlag, ApprovalLevel = etl.ApprovalLevel, &#xA;&#x9;LastModifiedDate = getdate(), LastModifiedByUserID = 0&#xA;from _ETL_StagingSupervisor etl&#xA;join tblTechTransferUserWorkflows ufw on etl.UserID = ufw.UserID&#xA;where import = 1&#xA;and etl.SupervisorUserID &lt;&gt; ApproverUserID&#xA;GO&#xA;&#xA;delete wf&#xA;from tblTechTransferUserWorkflows wf&#xA;left outer join _ETL_StagingSupervisor etl on etl.UserID = wf.UserID and etl.Import = 1&#xA;where etl.UserID is null&#xA;GO&#xA;    &#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="&#xA;&#xA;INSERT INTO dbo.tblTechTransferUserWorkflows&#xA;           (UserID, ApproverUserID, ApproverFullName, ApproverEmail, ApproverFlag, ApprovalLevel,&#xA;           CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID)&#xA;&#xA;Select etl.UserID, SupervisorUserID, SupervisorFullName, SupervisorEMail, etl.ApproverFlag, etl.ApprovalLevel,&#xA;&#x9;getdate(), 0, getdate(), 0&#xA;&#xA;from _ETL_StagingSupervisor etl&#xA;left outer join tblTechTransferUserWorkflows wf on etl.UserID = wf.UserID and etl.SupervisorEmail = wf.ApproverEmail&#xA;where import = 1&#xA;and wf.UserID is null&#xA;GO&#xA;&#xA;delete wf&#xA;from tblTechTransferUserWorkflows wf&#xA;left outer join _ETL_StagingSupervisor etl on etl.UserID = wf.UserID and etl.Import = 1 and etl.SupervisorEmail = wf.ApproverEmail&#xA;where etl.UserID is null&#xA;GO&#xA;&#xA;--update ufw set ApproverUserID = etl.SupervisorUserID, ApproverFullName = etl.SupervisorFullName, &#xA;--&#x9;ApproverEmail = etl.SupervisorEMail, ApproverFlag = etl.ApproverFlag, ApprovalLevel = etl.ApprovalLevel, &#xA;--&#x9;LastModifiedDate = getdate(), LastModifiedByUserID = 0&#xA;--from _ETL_StagingSupervisor etl&#xA;--join tblTechTransferUserWorkflows ufw on etl.UserID = ufw.UserID&#xA;--where import = 1&#xA;--and etl.SupervisorUserID &lt;&gt; ApproverUserID&#xA;--GO&#xA;&#xA;--delete wf&#xA;--from tblTechTransferUserWorkflows wf&#xA;--left outer join _ETL_StagingSupervisor etl on etl.UserID = wf.UserID and etl.Import = 1&#xA;--where etl.UserID is null&#xA;--GO&#xA;    &#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
@@ -1933,7 +1933,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             DTS:FilterKind="0" />
           <DTS:ObjectData>
             <FileSystemData
-              TaskOperationType="MoveFile"
+              TaskOperationType="RenameFile"
               TaskOverwriteDestFile="True"
               TaskSourcePath="User::ClientFilePath"
               TaskIsSourceVariable="True"
@@ -1952,11 +1952,12 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:PropertyExpression
-            DTS:Name="Arguments">"x -tzip \"E:\\Dallas Data\\" + @[User::FileNameZip] + "\" -r -y"</DTS:PropertyExpression>
+            DTS:Name="Arguments">"e -tzip " + @[User::FileNameZip] +" -r -y"</DTS:PropertyExpression>
           <DTS:ObjectData>
             <ExecuteProcessData
               Executable="E:\Integration\7z.exe"
-              Arguments="x -tzip &quot;E:\Dallas Data\DISD_UserSupervisor_Export_06252018.zip&quot; -r -y" />
+              Arguments="e -tzip DISD_UserSupervisor_Export_06252018.zip -r -y"
+              WorkingDirectory="E:\Dallas Data" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
