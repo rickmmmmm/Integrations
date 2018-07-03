@@ -13,6 +13,8 @@
     [Notes]                         VARCHAR (1000) NULL,
     [Other1]                        VARCHAR (100)  NULL,
     [FRN]                           VARCHAR (100)  NULL,
+	[Rejected]						BIT			   NOT NULL CONSTRAINT [DF_PurchaseOrderShellFlatData_Rejected] DEFAULT 0,
+	[RejectedNotes]					TEXT		   NULL,
     CONSTRAINT [PK_PurchaseOrderShellFlatData] PRIMARY KEY CLUSTERED ([PurchaseOrderShellFlatDataUID] ASC),
     CONSTRAINT [FK_PurchaseOrderShellFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

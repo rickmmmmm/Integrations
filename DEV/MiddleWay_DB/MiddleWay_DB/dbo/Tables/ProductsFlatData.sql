@@ -18,6 +18,8 @@
     [OtherField2]            VARCHAR (1000) NULL,
     [OtherField3]            VARCHAR (1000) NULL,
     [AllowUntagged]          BIT            NULL,
+ 	[Rejected]               BIT			NOT NULL CONSTRAINT [DF_ProductsFlatData_Rejected] DEFAULT 0,
+	[RejectedNotes]			 TEXT			NULL,
     CONSTRAINT [PK_ProductsFlatData] PRIMARY KEY CLUSTERED ([ProductsFlatDataUID] ASC),
     CONSTRAINT [FK_ProductsFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

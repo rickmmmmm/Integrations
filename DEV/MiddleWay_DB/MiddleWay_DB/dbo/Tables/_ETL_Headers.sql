@@ -15,6 +15,8 @@
     [Notes]                 VARCHAR (1000) NULL,
     [Other1]                VARCHAR (100)  NULL,
     [FRN]                   VARCHAR (50)   NULL,
+	[Rejected]              BIT			   NOT NULL CONSTRAINT [DF__ETL_Headers_Rejected] DEFAULT 0,
+	[RejectedNotes]			TEXT		   NULL,
     CONSTRAINT [PK__ETL_Headers] PRIMARY KEY CLUSTERED ([_ETL_HeaderUID] ASC),
     CONSTRAINT [FK__ETL_Headers_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

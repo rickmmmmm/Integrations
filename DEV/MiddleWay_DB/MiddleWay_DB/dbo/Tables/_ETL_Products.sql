@@ -23,6 +23,8 @@
     [CustomField3]           VARCHAR (1000) NULL,
     [Active]                 BIT            NOT NULL,
     [AllowUntagged]          BIT            NOT NULL,
+ 	[Rejected]               BIT			NOT NULL CONSTRAINT [DF__ETL_Products_Rejected] DEFAULT 0,
+	[RejectedNotes]			 TEXT			NULL
     CONSTRAINT [PK__ETL_Products] PRIMARY KEY CLUSTERED ([_ETL_ProductsUID] ASC),
     CONSTRAINT [FK__ETL_Products_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

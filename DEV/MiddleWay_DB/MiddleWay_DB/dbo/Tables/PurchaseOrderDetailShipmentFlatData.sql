@@ -38,6 +38,8 @@
     [TicketedDate]                           DATETIME       NULL,
     [InvoiceNumber]                          VARCHAR (25)   NULL,
     [InvoiceDate]                            DATETIME       NULL,
+ 	[Rejected]								 BIT	        NOT NULL CONSTRAINT [DF_PurchaseOrderDetailShipmentFlatData_Rejected] DEFAULT 0,
+	[RejectedNotes]							 TEXT			NULL,
     CONSTRAINT [PK_PurchaseOrderDetailShipmentFlatData] PRIMARY KEY CLUSTERED ([PurchaseOrderDetailShipmentFlatDataUID] ASC),
     CONSTRAINT [FK_PurchaseOrderDetailShipmentFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

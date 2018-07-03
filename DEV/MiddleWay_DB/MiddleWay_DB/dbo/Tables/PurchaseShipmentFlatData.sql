@@ -17,6 +17,8 @@
     [Status]                      VARCHAR (50)  NULL,
     [InvoiceNumber]               VARCHAR (25)  NULL,
     [InvoiceDate]                 DATETIME      NULL,
+ 	[Rejected]					  BIT			NOT NULL CONSTRAINT [DF_PurchaseShipmentFlatData_Rejected] DEFAULT 0,
+	[RejectedNotes]			      TEXT			NULL,
     CONSTRAINT [PK_PurchaseShipmentFlatData] PRIMARY KEY CLUSTERED ([PurchaseShipmentFlatDataUID] ASC),
     CONSTRAINT [FK_PurchaseShipmentFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

@@ -70,6 +70,8 @@
     [InventoryMeta4UID]        INT            NULL,
     [CustomField4Label]        VARCHAR (50)   NULL,
     [CustomField4Value]        VARCHAR (50)   NULL,
+ 	[Rejected]                 BIT			  NOT NULL CONSTRAINT [DF__ETL_Inventory_Rejected] DEFAULT 0,
+	[RejectedNotes]			   TEXT			  NULL
     CONSTRAINT [PK__ETL_Inventory] PRIMARY KEY CLUSTERED ([_ETL_InventoryUID] ASC),
     CONSTRAINT [FK__ETL_Inventory_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );
