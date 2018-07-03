@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[PurchaseInvoiceFlatData] (
     [PurchaseInvoiceFlatDataUID] INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]                 INT            NOT NULL,
+	[RowID]						 INT			NOT NULL,
     [OrderNumber]                VARCHAR (50)   NULL,
     [LineNumber]                 INT            NULL,
     [InvoiceNumber]              VARCHAR (100)  NULL,

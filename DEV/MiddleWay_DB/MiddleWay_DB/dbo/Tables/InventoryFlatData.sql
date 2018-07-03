@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[InventoryFlatData] (
     [InventoryFlatDataUID]     INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]               INT            NOT NULL,
+	[RowID]					   INT			  NOT NULL,
     [AssetID]                  VARCHAR (100)  NULL,
     [Tag]                      VARCHAR (50)   NULL,
     [Serial]                   VARCHAR (50)   NULL,

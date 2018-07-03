@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[PurchaseOrderFlatData] (
     [PurchaseOrderFlatDataUID] INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]               INT            NOT NULL,
+	[RowID]					   INT			  NOT NULL,
     [OrderNumber]              VARCHAR (50)   NULL,
     [PurchaseDate]             DATETIME       NULL,
     [LineNumber]               INT            NULL,

@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[ProductsFlatData] (
     [ProductsFlatDataUID]    INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]             INT            NOT NULL,
+	[RowID]					 INT			NOT NULL,
     [ProductName]            VARCHAR (100)  NULL,
     [ProductDescription]     VARCHAR (1000) NULL,
     [ProductTypeName]        VARCHAR (50)   NULL,
