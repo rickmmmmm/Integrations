@@ -7,7 +7,6 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
     public interface IEtlInventoryRepository
     {
-        
         List<EtlInventoryModel> Select(int processUid, int offset, int limit);
         List<EtlInventoryModel> Select(string client, string processName, int offset, int limit);
         EtlInventoryModel Select(int etlInventoryUid);
@@ -17,7 +16,7 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         int GetTotal(int processUid);
         int GetTotal(string client, string processName);
         int Insert(EtlInventoryModel etlInventoryModel);
-        bool InsertRange(EtlInventoryModel etlInventoryModel);
+        bool InsertRange(List<EtlInventoryModel> etlInventoryModel);
         bool Update(EtlInventoryModel etlInventoryModel);
         bool Delete(int processUid);
         bool Delete(string client, string processName);

@@ -30,6 +30,15 @@ namespace MiddleWay
     {
         protected static ServiceProvider serviceProvider;
 
+        /// <summary>
+        /// This program has 3 required parameters
+        ///     -Client "ClientName"
+        ///     -ProcessName "ProcessName"
+        ///     -Task -Must be one of the following values p (Purchase Order), e (Export File), c (Charges), m (Mobile Device Management), a (Assets)
+        /// After these 3 parameters, valid optional parameters are as follows
+        ///     MergeProducts for a
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             try
@@ -198,7 +207,7 @@ namespace MiddleWay
                 //MiddleWay Repositories
                 services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
                 services.AddScoped<IMappingsRepository, MappingsRepository>();
-                services.AddScoped<IProcessErrorsRepository, ProcessErrorsRepository>();
+                services.AddScoped<IProcessTaskErrorsRepository, ProcessTaskErrorsRepository>();
                 services.AddScoped<IProcessesRepository, ProcessesRepository>();
                 services.AddScoped<IProcessTasksRepository, ProcessTasksRepository>();
                 services.AddScoped<ITransformationsRepository, TransformationsRepository>();
@@ -227,7 +236,7 @@ namespace MiddleWay
                 services.AddScoped<IConfigurationService, ConfigurationService>();
                 services.AddScoped<IInventoryFlatDataService, InventoryFlatDataService>();
                 services.AddScoped<IMappingsService, MappingsService>();
-                services.AddScoped<IProcessErrorsService, ProcessErrorsService>();
+                services.AddScoped<IProcessTaskErrorsService, ProcessTaskErrorsService>();
                 services.AddScoped<IProcessesService, ProcessesService>();
                 services.AddScoped<IProcessTasksService, ProcessTasksService>();
                 services.AddScoped<ITransformationsService, TransformationsService>();
@@ -274,6 +283,7 @@ namespace MiddleWay
         {
             //Get configuration service, if no configuration stop processing and log error
             var configurationService = serviceProvider.GetService<IConfigurationService>();
+            var clientConfiguration = serviceProvider.GetService<IClientConfiguration>();  //TODO: Read client/process configuration from parameters not app settings
 
             if (!configurationService.HasConfiguration)
             {
@@ -285,7 +295,31 @@ namespace MiddleWay
             {
                 //if (commands.Count > 0)
                 //{
-                ReadParameters(commands);
+                //ReadParameters(commands);
+                //string choice = args[0];
+                var options = ProcessInput.ReadOptions(commands);
+
+                switch (options[0])
+                {
+                    case "-p":
+                        PurchaseOrderMenu(options);
+                        break;
+                    case "-e":
+                        ExportFileOptions(options);
+                        break;
+                    case "-c":
+                        ChargesMenu(options);
+                        break;
+                    case "-m":
+                        MobileDeviceManagementMenu();
+                        break;
+                    case "-a":
+                        AssetsMenu(commands, "Test"); // commands.GetAllArguments
+                        break;
+                    default:
+                        break;
+                }
+
                 Environment.Exit(0);
                 //}
                 //else
@@ -314,33 +348,32 @@ namespace MiddleWay
             //Dispose of remaining objects
         }
 
-        private static void ReadParameters(List<string> commands)
-        {
-            //string choice = args[0];
-            var options = ProcessInput.ReadOptions(commands);
-
-            //foreach(var option in options)
-            switch (options[0])
-            {
-                case "-p":
-                    PurchaseOrderMenu(options);
-                    break;
-                case "-e":
-                    ExportFileOptions(options);
-                    break;
-                case "-c":
-                    ChargesMenu(options);
-                    break;
-                case "m":
-                    MobileDeviceManagementMenu();
-                    break;
-                case "-a":
-                    AssetsMenu(commands, "Test"); // commands.GetAllArguments
-                    break;
-                default:
-                    break;
-            }
-        }
+        //private static void ReadParameters(List<string> commands)
+        //{
+        //    //string choice = args[0];
+        //    var options = ProcessInput.ReadOptions(commands);
+        //    //foreach(var option in options)
+        //    switch (options[0])
+        //    {
+        //        case "-p":
+        //            PurchaseOrderMenu(options);
+        //            break;
+        //        case "-e":
+        //            ExportFileOptions(options);
+        //            break;
+        //        case "-c":
+        //            ChargesMenu(options);
+        //            break;
+        //        case "m":
+        //            MobileDeviceManagementMenu();
+        //            break;
+        //        case "-a":
+        //            AssetsMenu(commands, "Test"); // commands.GetAllArguments
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
 
         //public static void ReadInput()
         //{

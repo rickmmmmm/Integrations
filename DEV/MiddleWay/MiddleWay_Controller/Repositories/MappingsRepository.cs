@@ -1,8 +1,8 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
+using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -25,18 +25,129 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
+        public List<MappingsModel> SelectMappings(int processUid)
+        {
+            try
+            {
+                var list = (from mappings in _context.Mappings
+                            where mappings.ProcessUid == processUid
+                               && mappings.Enabled
+                            select new MappingsModel
+                            {
+                                MappingsUid = mappings.MappingsUid,
+                                ProcessUid = mappings.ProcessUid,
+                                SourceColumn = mappings.SourceColumn,
+                                DestinationColumn = mappings.DestinationColumn,
+                                Enabled = mappings.Enabled
+                            }).ToList();
+
+                return list;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<MappingsModel> SelectMappings(string client, string processName)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+
+                var list = (from mappings in _context.Mappings
+                            join processes in _context.Processes
+                                on mappings.ProcessUid equals processes.ProcessUid
+                            where processes.Client.Trim().ToLower() == clientVal
+                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                               && mappings.Enabled
+                            select new MappingsModel
+                            {
+                                MappingsUid = mappings.MappingsUid,
+                                ProcessUid = mappings.ProcessUid,
+                                SourceColumn = mappings.SourceColumn,
+                                DestinationColumn = mappings.DestinationColumn,
+                                Enabled = mappings.Enabled
+                            }).ToList();
+
+                return list;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public MappingsModel SelectMappings(int processUid, string sourceColumn)
+        {
+            try
+            {
+                var sourceColumnVal = sourceColumn.Trim().ToLower();
+
+                var data = (from mappings in _context.Mappings
+                            where mappings.ProcessUid == processUid
+                               && mappings.SourceColumn.Trim().ToLower() == sourceColumnVal
+                            select new MappingsModel
+                            {
+                                MappingsUid = mappings.MappingsUid,
+                                ProcessUid = mappings.ProcessUid,
+                                SourceColumn = mappings.SourceColumn,
+                                DestinationColumn = mappings.DestinationColumn,
+                                Enabled = mappings.Enabled
+                            }).FirstOrDefault();
+
+                return data;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public MappingsModel SelectMappings(string client, string processName, string sourceColumn)
+        {
+            try
+            {
+                var clientVal = client.Trim().ToLower();
+                var processNameVal = processName.Trim().ToLower();
+                var sourceColumnVal = sourceColumn.Trim().ToLower();
+
+                var data = (from mappings in _context.Mappings
+                            join processes in _context.Processes
+                                on mappings.ProcessUid equals processes.ProcessUid
+                            where processes.Client.Trim().ToLower() == clientVal
+                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                               && mappings.SourceColumn.Trim().ToLower() == sourceColumnVal
+                            select new MappingsModel
+                            {
+                                MappingsUid = mappings.MappingsUid,
+                                ProcessUid = mappings.ProcessUid,
+                                SourceColumn = mappings.SourceColumn,
+                                DestinationColumn = mappings.DestinationColumn,
+                                Enabled = mappings.Enabled
+                            }).FirstOrDefault();
+
+                return data;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         #endregion Select Functions
 
-        #region Insert Functions
+        //#region Insert Functions
 
-        #endregion Insert Functions
+        //#endregion Insert Functions
 
-        #region Update Functions
+        //#region Update Functions
 
-        #endregion Update Functions
+        //#endregion Update Functions
 
-        #region Delete Functions
+        //#region Delete Functions
 
-        #endregion Delete Functions
+        //#endregion Delete Functions
     }
 }

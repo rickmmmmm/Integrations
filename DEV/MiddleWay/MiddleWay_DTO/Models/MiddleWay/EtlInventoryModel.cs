@@ -77,5 +77,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int? InventoryMeta4UID { get; set; }
         public string CustomField4Label { get; set; }
         public string CustomField4Value { get; set; }
+        public int RowID { get; set; }
+        public bool Rejected { get; set; }
     }
 }

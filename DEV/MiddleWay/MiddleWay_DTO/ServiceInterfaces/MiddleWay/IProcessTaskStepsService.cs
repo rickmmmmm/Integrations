@@ -4,8 +4,7 @@ using System.Text;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
-    public interface IMappingsService
+    public interface IProcessTaskStepsService
     {
-        List<U> Map<T, U>(List<T> item) where U : new();
     }
 }

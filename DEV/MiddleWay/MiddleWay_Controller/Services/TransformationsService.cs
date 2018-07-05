@@ -68,9 +68,6 @@ namespace MiddleWay_Controller.Services
                                     bool hasSourceProperty = (sourceProperty != null);
                                     bool hasDestinationProperty = (destinationProperty != null);
 
-                                    var sourceType = sourceProperty.GetType();
-                                    var destinationType = destinationProperty.GetType();
-
                                     if (hasSourceProperty && hasDestinationProperty)
                                     {
                                         var transformationGroup = (from transforms in transformations
@@ -79,8 +76,11 @@ namespace MiddleWay_Controller.Services
                                                                    orderby transforms.Order ascending
                                                                    select transforms).ToList();
 
+                                        var sourceType = sourceProperty.GetType();
+                                        var destinationType = destinationProperty.GetType();
+
                                         object value = sourceProperty.GetValue(item);
-                                        object result = value;
+                                        object result = value; //Create a copy of the value?
 
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
@@ -120,7 +120,7 @@ namespace MiddleWay_Controller.Services
                     }
                     else
                     {
-                        //TODO: Log message indicating no transformations or convert from T to U?
+                        //TODO: Log message indicating no transformations
                         return null;
                     }
                 }

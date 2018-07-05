@@ -5,7 +5,7 @@ using Xunit;
 
 namespace MiddleWay.Tests.MiddleWay.Repositories
 {
-    public class ProcessErrorsRepositoryTests
+    public class ProcessTaskErrorsRepositoryTests
     {
         [Fact]
         public void Test()

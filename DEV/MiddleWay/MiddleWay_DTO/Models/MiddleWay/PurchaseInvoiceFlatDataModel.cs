@@ -20,5 +20,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int InvoicePrice { get; set; }
         public int Quantity { get; set; }
         public int LineAmount { get; set; }
+        public int RowID { get; set; }
     }
 }

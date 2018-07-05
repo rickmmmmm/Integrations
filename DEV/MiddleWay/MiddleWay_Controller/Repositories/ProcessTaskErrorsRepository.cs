@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MiddleWay_Controller.Repositories
 {
-    public class ProcessErrorsRepository : IProcessErrorsRepository
+    public class ProcessTaskErrorsRepository : IProcessTaskErrorsRepository
     {
         #region Private Variables and Properties
 
@@ -16,7 +16,7 @@ namespace MiddleWay_Controller.Repositories
 
         #region Constructor
 
-        public ProcessErrorsRepository(IntegrationMiddleWayContext context)
+        public ProcessTaskErrorsRepository(IntegrationMiddleWayContext context)
         {
             _context = context;
         }

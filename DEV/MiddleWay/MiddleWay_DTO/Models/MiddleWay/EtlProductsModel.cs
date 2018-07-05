@@ -30,5 +30,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int CustomField3 { get; set; }
         public int Active { get; set; }
         public int AllowUntagged { get; set; }
+        public int RowID { get; set; }
+        public bool Rejected { get; set; }
     }
 }

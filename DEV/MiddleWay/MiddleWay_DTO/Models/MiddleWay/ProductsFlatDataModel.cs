@@ -24,5 +24,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int OtherField2 { get; set; }
         public int OtherField3 { get; set; }
         public int AllowUntagged { get; set; }
+        public int RowID { get; set; }
     }
 }

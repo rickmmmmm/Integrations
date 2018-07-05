@@ -6,19 +6,19 @@ using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
-    public class ProcessErrorsService : IProcessErrorsService
+    public class ProcessTaskErrorsService : IProcessTaskErrorsService
     {
         #region Private Variables and Properties
 
-        private IProcessErrorsRepository _processErrorsRepository;
+        private IProcessTaskErrorsRepository _processTaskErrorsRepository;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public ProcessErrorsService(IProcessErrorsRepository processErrorsRepository)
+        public ProcessTaskErrorsService(IProcessTaskErrorsRepository processTaskErrorsRepository)
         {
-            _processErrorsRepository = processErrorsRepository;
+            _processTaskErrorsRepository = processTaskErrorsRepository;
         }
 
         #endregion Constructor

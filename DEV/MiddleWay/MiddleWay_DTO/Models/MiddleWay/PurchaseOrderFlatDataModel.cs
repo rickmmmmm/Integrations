@@ -32,5 +32,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int DepartmentID { get; set; }
         public int CFDA { get; set; }
         public int IsAssociated { get; set; }
+        public int RowID { get; set; }
     }
 }

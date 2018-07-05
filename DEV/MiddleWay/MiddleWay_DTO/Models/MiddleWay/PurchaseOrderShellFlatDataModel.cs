@@ -19,5 +19,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int Notes { get; set; }
         public int Other1 { get; set; }
         public int FRN { get; set; }
+        public int RowID { get; set; }
     }
 }

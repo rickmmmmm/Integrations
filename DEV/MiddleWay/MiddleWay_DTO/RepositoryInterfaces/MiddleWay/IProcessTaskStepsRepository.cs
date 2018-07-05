@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
-    public interface IProcessErrorsRepository
+    public interface IProcessTaskStepsRepository
     {
     }
 }

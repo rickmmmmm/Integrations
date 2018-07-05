@@ -8,8 +8,8 @@ namespace MiddleWay_DTO.Models.MiddleWay
     {
         public int MappingsUid { get; set; }
         public int ProcessUid { get; set; }
-        public int SourceColumn { get; set; }
-        public int DestinationColumn { get; set; }
-        public int Enabled { get; set; }
+        public string SourceColumn { get; set; }
+        public string DestinationColumn { get; set; }
+        public bool Enabled { get; set; }
     }
 }

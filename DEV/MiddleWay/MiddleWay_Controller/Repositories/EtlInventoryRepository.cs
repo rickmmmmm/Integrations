@@ -643,9 +643,9 @@ namespace MiddleWay_Controller.Repositories
 
         public int Insert(EtlInventoryModel etlInventoryModel)
         {
+            throw new NotImplementedException();
             try
             {
-
             }
             catch
             {
@@ -653,8 +653,9 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public bool InsertRange(EtlInventoryModel etlInventoryModel)
+        public bool InsertRange(List<EtlInventoryModel> etlInventoryModel)
         {
+            throw new NotImplementedException();
             try
             {
 
@@ -671,6 +672,7 @@ namespace MiddleWay_Controller.Repositories
 
         public bool Update(EtlInventoryModel etlInventoryModel)
         {
+            throw new NotImplementedException();
             try
             {
 
@@ -687,6 +689,7 @@ namespace MiddleWay_Controller.Repositories
 
         public bool Delete(int processUid)
         {
+            throw new NotImplementedException();
             try
             {
 
@@ -699,6 +702,7 @@ namespace MiddleWay_Controller.Repositories
 
         public bool Delete(string client, string processName)
         {
+            throw new NotImplementedException();
             try
             {
                 var clientVal = client.Trim().ToLower();

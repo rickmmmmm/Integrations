@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
-    public interface IProcessErrorsService
+    public interface IProcessTaskErrorsService
     {
     }
 }

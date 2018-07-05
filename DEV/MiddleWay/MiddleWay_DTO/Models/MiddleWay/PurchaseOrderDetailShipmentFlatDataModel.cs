@@ -44,5 +44,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int TicketedDate { get; set; }
         public int InvoiceNumber { get; set; }
         public int InvoiceDate { get; set; }
+        public int RowID { get; set; }
     }
 }

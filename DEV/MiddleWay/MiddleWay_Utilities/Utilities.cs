@@ -25,10 +25,31 @@ namespace MiddleWay_Utilities
                 }
             }
 
-            return result.ToString();
+            var res = CleanupHiddenCharacters(result.ToString());
+
+            return res;
 
         }
 
+        public static string CleanupHiddenCharacters(string data)
+        {
+            //NewLine, Carriage return, tabs to spaces, other white space cleanup
+            string result = data;
+            result = result.Replace(System.Environment.NewLine, "\\r\\n");
+            result = result.Replace(((char)13).ToString(), "\\r" );
+            result = result.Replace(((char)12).ToString(), "\\f");
+            result = result.Replace(((char)11).ToString(), "\\v");
+            result = result.Replace(((char)10).ToString(), "\\n");
+            result = result.Replace(((char)9).ToString(), "    ");
+
+            return result;
+        }
+
+        //Cleanup phone number (remove formatting)
+
+        //Clean Zip codes (remove formatting)
+
+        //Standarize dates...Nice to have
 
         /// <summary>
         /// Gets whether or not the <i>expression</i> is numeric

@@ -19,7 +19,7 @@ namespace MiddleWay_BLL.Services
         private IInventoryFlatDataService _inventoryFlatService;
         private IProcessesService _processesService;
         private IProcessTasksService _processTasksService;
-        private IProcessErrorsService _processErrorsService;
+        private IProcessTaskErrorsService _processTaskErrorsService;
         private IMappingsService _mappingsService;
         private ITransformationsService _transformationService;
         private IInputService _inputService;
@@ -31,7 +31,7 @@ namespace MiddleWay_BLL.Services
 
         public AssetsService(INotificationsService notificationService, IConfigurationService configurationService,
                              IInventoryFlatDataService inventoryFlatService, IProcessesService processesService,
-                             IProcessTasksService processTasksService, IProcessErrorsService processErrorsService,
+                             IProcessTasksService processTasksService, IProcessTaskErrorsService processTaskErrorsService,
                              IInputService inputService, ITransformationsService transformationService,
                              IMappingsService mappingsService, IEtlInventoryService etlInventoryService)
         {
@@ -40,7 +40,7 @@ namespace MiddleWay_BLL.Services
             _inventoryFlatService = inventoryFlatService;
             _processesService = processesService;
             _processTasksService = processTasksService;
-            _processErrorsService = processErrorsService;
+            _processTaskErrorsService = processTaskErrorsService;
             _mappingsService = mappingsService;
             _transformationService = transformationService;
             _inputService = inputService;
@@ -106,6 +106,7 @@ namespace MiddleWay_BLL.Services
                     var total = _inputService.GetInputCount();
                     if (total > 0)
                     {
+                        var rowCount = 0;
                         //  PER BATCH
                         //      Apply mappings and move to flat tables, catch and store errors
                         //      Apply transformations and move to stage tables, catch and store errors
@@ -113,6 +114,7 @@ namespace MiddleWay_BLL.Services
                         {
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
 
+                            batch.ForEach(row => row.RowID = rowCount++);
                             //var mappedBatch = _mappingsService.Map(batch);
 
                             //var transformedBatch = _transformationService.Transform(mappedBatch);
@@ -144,11 +146,19 @@ namespace MiddleWay_BLL.Services
                         {
                             var flatData = _inventoryFlatService.Get(currentCount, limit);
 
-                            var mappedData = _mappingsService.Map<EtlInventoryModel>(flatData);
+                            //TODO: Log count of flatdata records returned
 
-                            var transformedData = _transformationService.Transform(mappedData);
+                            var transformedData = _transformationService.Transform<InventoryFlatDataModel, InventoryFlatDataModel>(flatData);
+                            //TODO: Log count of transformed records returned
 
-                            if (!_etlInventoryService.AddRange(transformedData))
+                            var mappedData = _mappingsService.Map<InventoryFlatDataModel, EtlInventoryModel>(flatData);
+                            //TODO: Log count of mapped records returned
+
+                            //var transformedData = _transformationService.Transform<EtlInventoryModel, EtlInventoryModel>(mappedData);
+                            //TODO: Log count of transformed records returned
+
+                            //if (!_etlInventoryService.AddRange(transformedData))
+                            if (!_etlInventoryService.AddRange(mappedData))
                             {
                                 //TODO: Log Error
                             }

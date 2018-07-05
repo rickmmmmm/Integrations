@@ -18,6 +18,7 @@ namespace MiddleWay_Controller.Services
         #region Private Variables and Properties
 
         private IMappingsRepository _mappingsRepository;
+        private IClientConfiguration _clientConfiguration;
 
         #endregion Private Variables and Properties
 
@@ -43,14 +44,82 @@ namespace MiddleWay_Controller.Services
         //    //Map(u => u.Notes).Name(ConfigurationManager.AppSettings["Notes"]);
         //}
 
-        public MappingsService(IMappingsRepository mappingsRepository)
+        public MappingsService(IMappingsRepository mappingsRepository, IClientConfiguration clientConfiguration)
         {
             _mappingsRepository = mappingsRepository;
+            _clientConfiguration = clientConfiguration;
         }
 
         #endregion Constructor
 
         #region Get Methods
+
+        public List<U> Map<T, U>(List<T> items) where U : new()
+        {
+            try
+            {
+                if (items != null && items.Count > 0)
+                {
+                    var mappings = _mappingsRepository.SelectMappings(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+
+                    if (mappings != null)
+                    {
+                        List<U> outputItems = new List<U>();
+
+                        foreach (var item in items)
+                        {
+
+                            U outputItem = new U();
+
+                            foreach (var mapping in mappings)
+                            {
+                                try
+                                {
+                                    var sourceProperty = item.GetType().GetProperty(mapping.SourceColumn);
+                                    var destinationProperty = outputItem.GetType().GetProperty(mapping.DestinationColumn);
+
+                                    bool hasSourceProperty = (sourceProperty != null);
+                                    bool hasDestinationProperty = (destinationProperty != null);
+
+                                    //var sourceType = sourceProperty.GetType();
+                                    //var destinationType = destinationProperty.GetType();
+
+                                    if (hasSourceProperty && hasDestinationProperty)
+                                    {
+                                        var value = sourceProperty.GetValue(item);
+
+                                        destinationProperty.SetValue(outputItem, value);
+                                    }
+                                }
+                                catch
+                                {
+                                    //Log error
+                                    continue;
+                                }
+                            }
+
+                            outputItems.Add(outputItem);
+
+                        }
+
+                        return outputItems;
+                    }
+                    else
+                    {
+                        //TODO: Log message indicating no mappings
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Get Methods
 
