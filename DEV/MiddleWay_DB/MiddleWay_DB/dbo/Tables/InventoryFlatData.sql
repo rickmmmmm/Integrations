@@ -39,6 +39,8 @@
     [CustomField4Label]        VARCHAR (50)   NULL,
     [InvoiceNumber]            VARCHAR (25)   NULL,
     [InvoiceDate]              DATE           NULL,
+ 	[Rejected]                 BIT			  NOT NULL CONSTRAINT [DF_ProductsFlatData_Rejected] DEFAULT 0,
+	[RejectedNotes]			   TEXT			  NULL,
     CONSTRAINT [PK_InventoryFlatData] PRIMARY KEY CLUSTERED ([InventoryFlatDataUID] ASC),
     CONSTRAINT [FK_InventoryFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );
