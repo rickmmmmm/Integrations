@@ -327,14 +327,23 @@ namespace MiddleWay_BLL.Services
                     case DataSourceTypes.SQL:
                     case DataSourceTypes.MySQL:
                         //Read from DB source directly into the expected type (via dapper)
-                        var batch = dataReader.ReadNext<T>();
-                        //Apply tranformations
-                        var transformedBatch = _transformationService.Transform<T, T>(batch); //TODO; Verify this....
-                        return transformedBatch;
+                        var batch = dataReader.ReadInput<T>();
+                        return batch;
+                        ////Apply tranformations
+                        //var transformedBatch = _transformationService.Transform<T>(batch); //TODO; Verify this....
+                        ////Cast dynamic list to type list
+                        //var result = new List<T>();
+                        //foreach (var row in transformedBatch)
+                        //{
+                        //    var cast = (T)row;
+                        //    result.Add(cast);
+                        //}
+                        //return result;
                     //break;
                     case DataSourceTypes.FlatFile:
-                        //var mappedBatch = _mappingsService.Map(batch);
-                        //var transformedBatch = _transformationService.Transform(mappedBatch);
+                        //var batch = fileReader.ReadNext<T>();
+                        //var transformedBatch = _transformationService.Transform(batch);
+                        //var mappedBatch = _mappingsService.Map(transformedBatch);
                         throw new NotImplementedException();
                     //break;
                     case DataSourceTypes.Other:
@@ -359,14 +368,22 @@ namespace MiddleWay_BLL.Services
                     case DataSourceTypes.SQL:
                     case DataSourceTypes.MySQL:
                         var batch = dataReader.ReadNext<T>();
-                        //Apply transformations
-                        var transformedBatch = _transformationService.Transform<T, T>(batch); //TODO; Verify this....
-                        //return
-                        throw new NotImplementedException();
+                        return batch;
+                        ////Apply transformations
+                        //var transformedBatch = _transformationService.Transform(batch); //TODO; Verify this....
+                        ////Cast dynamic list to type list
+                        //var result = new List<T>();
+                        //foreach (var row in transformedBatch)
+                        //{
+                        //    var cast = (T)row;
+                        //    result.Add(cast);
+                        //}
+                        //return result;
                     //break;
                     case DataSourceTypes.FlatFile:
-                        //var mappedBatch = _mappingsService.Map(batch);
-                        //var transformedBatch = _transformationService.Transform(mappedBatch);
+                        //var batch = fileReader.ReadNext<T>();
+                        //var transformedBatch = _transformationService.Transform(batch);
+                        //var mappedBatch = _mappingsService.Map(transformedBatch);
                         throw new NotImplementedException();
                     //break;
                     case DataSourceTypes.Other:

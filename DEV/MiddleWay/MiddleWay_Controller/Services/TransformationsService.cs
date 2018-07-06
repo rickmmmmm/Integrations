@@ -32,7 +32,8 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public List<U> Transform<T, U>(List<T> items) where U : new()
+        //public List<U> Transform<T, U>(List<T> items) where U : new()
+        public List<dynamic> Transform<T>(List<T> items) // where U : new()
         {
             try
             {
@@ -42,58 +43,76 @@ namespace MiddleWay_Controller.Services
 
                     if (transformations != null)
                     {
-                        List<U> outputItems = new List<U>();
+                        List<dynamic> outputItems = new List<dynamic>();
                         //var typeT = typeof(T);
                         //var typeU = typeof(U);
 
                         foreach (var item in items)
                         {
-                            U outputItem = new U();
-
                             var groupedTransformations = (from transform in transformations
                                                           group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
                                                           select new
                                                           {
-                                                              tranformGroup.Key.SourceColumn,
-                                                              tranformGroup.Key.DestinationColumn
+                                                              tranformGroup.Key.SourceColumn //,
+                                                              //tranformGroup.Key.DestinationColumn
                                                           }).ToList();
+
+                            var outputProperties = (from transforms in transformations
+                                                    group transforms by transforms.DestinationColumn into destinationTransforms
+                                                    select destinationTransforms.Key).ToList();
+
+                            //U outputItem = new U();
+                            var outputItem = new System.Dynamic.ExpandoObject();
 
                             foreach (var groupedTransformation in groupedTransformations)
                             {
                                 try
                                 {
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
-                                    var destinationProperty = outputItem.GetType().GetProperty(groupedTransformation.DestinationColumn);
+                                    //var destinationProperty = outputItem.GetType().GetProperty(groupedTransformation.DestinationColumn);
 
                                     bool hasSourceProperty = (sourceProperty != null);
-                                    bool hasDestinationProperty = (destinationProperty != null);
+                                    //bool hasDestinationProperty = (destinationProperty != null);
 
-                                    if (hasSourceProperty && hasDestinationProperty)
+                                    if (hasSourceProperty)//&& hasDestinationProperty
                                     {
                                         var transformationGroup = (from transforms in transformations
                                                                    where transforms.SourceColumn == groupedTransformation.SourceColumn
-                                                                      && transforms.DestinationColumn == groupedTransformation.DestinationColumn
+                                                                      //&& transforms.DestinationColumn == groupedTransformation.DestinationColumn
                                                                    orderby transforms.Order ascending
                                                                    select transforms).ToList();
 
                                         var sourceType = sourceProperty.GetType();
-                                        var destinationType = destinationProperty.GetType();
-
                                         object value = sourceProperty.GetValue(item);
-                                        object result = value; //Create a copy of the value?
+                                        //object result = value; //Create a copy of the value?
+                                        var propertyName = groupedTransformation.SourceColumn;
 
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
                                         {
                                             try
                                             {
+                                                //var destinationType = destinationProperty.GetType();
+
                                                 // perhaps change this to an object <object, Type> to allow post transformation conversion
-                                                var transformedValue = ApplyTransformation(sourceType, destinationType, transformation.Function, transformation.Parameters, result);
+                                                //var transformedValue = ApplyTransformation(sourceType, destinationType, transformation.Function, transformation.Parameters, result);
+                                                var transformedValue = ApplyTransformation(sourceType, typeof(object), transformation.Function, transformation.Parameters, value);
                                                 //if (transformedValue != null)
                                                 //{
                                                 //    destinationProperty.SetValue(outputItem, transformedValue);
-                                                result = transformedValue;
+                                                //result = transformedValue;
                                                 //}
+
+                                                var expandoDict = outputItem as IDictionary<string, object>;
+                                                if (expandoDict.ContainsKey(propertyName))
+                                                {
+                                                    expandoDict[propertyName] = transformedValue;
+                                                }
+                                                else
+                                                {
+                                                    expandoDict.Add(propertyName, transformedValue);
+                                                }
+
                                             }
                                             catch
                                             {
@@ -102,7 +121,7 @@ namespace MiddleWay_Controller.Services
                                             }
                                         }
 
-                                        destinationProperty.SetValue(outputItem, result);
+                                        //destinationProperty.SetValue(outputItem, result);
                                     }
                                 }
                                 catch

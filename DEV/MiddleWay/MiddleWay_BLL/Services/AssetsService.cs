@@ -122,6 +122,33 @@ namespace MiddleWay_BLL.Services
                             _inventoryFlatService.AddRange(batch);
                         }
 
+                        var flatCount = _inventoryFlatService.GetTotal();
+                        var limit = _configurationService.ReadLimit;
+                        var currentCount = 0;
+                        //Perform flat to ETL table mappings, transformations then insert (in a loop)
+                        while (currentCount < flatCount)
+                        {
+                            var flatData = _inventoryFlatService.Get(currentCount, limit);
+
+                            //TODO: Log count of flatdata records returned
+
+                            var transformedData = _transformationService.Transform<InventoryFlatDataModel>(flatData); //<InventoryFlatDataModel, InventoryFlatDataModel>
+                            //TODO: Log count of transformed records returned
+
+                            var mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(transformedData);
+                            //TODO: Log count of mapped records returned
+
+                            //var transformedData = _transformationService.Transform<EtlInventoryModel, EtlInventoryModel>(mappedData);
+                            //TODO: Log count of transformed records returned
+
+                            //if (!_etlInventoryService.AddRange(transformedData))
+                            if (!_etlInventoryService.AddRange(mappedData))
+                            {
+                                //TODO: Log Error
+                            }
+                            currentCount += limit;
+                        }
+
                         // Process options
                         var options = ProcessInput.ReadOptions(commands);
 
@@ -136,33 +163,6 @@ namespace MiddleWay_BLL.Services
                                 default:
                                     break;
                             }
-                        }
-
-                        var flatCount = _inventoryFlatService.GetTotal();
-                        var limit = _configurationService.ReadLimit;
-                        var currentCount = 0;
-                        //Perform flat to ETL table mappings, transformations then insert (in a loop)
-                        while (currentCount < flatCount)
-                        {
-                            var flatData = _inventoryFlatService.Get(currentCount, limit);
-
-                            //TODO: Log count of flatdata records returned
-
-                            var transformedData = _transformationService.Transform<InventoryFlatDataModel, InventoryFlatDataModel>(flatData);
-                            //TODO: Log count of transformed records returned
-
-                            var mappedData = _mappingsService.Map<InventoryFlatDataModel, EtlInventoryModel>(flatData);
-                            //TODO: Log count of mapped records returned
-
-                            //var transformedData = _transformationService.Transform<EtlInventoryModel, EtlInventoryModel>(mappedData);
-                            //TODO: Log count of transformed records returned
-
-                            //if (!_etlInventoryService.AddRange(transformedData))
-                            if (!_etlInventoryService.AddRange(mappedData))
-                            {
-                                //TODO: Log Error
-                            }
-                            currentCount += limit;
                         }
 
                         // Validate ETLInventory data on TIPWeb

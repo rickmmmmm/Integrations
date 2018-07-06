@@ -28,6 +28,66 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
+        public EtlInventoryModel Get(int etlInventoryUid)
+        {
+            try
+            {
+                return _etlInventoryRepository.Select(etlInventoryUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public EtlInventoryModel GetByTag(string client, string processName, string tag)
+        {
+            try
+            {
+                return _etlInventoryRepository.SelectByTag(client, processName, tag);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public EtlInventoryModel GetByAsset(string client, string processName, string assetId)
+        {
+            try
+            {
+                return _etlInventoryRepository.SelectByAssetID(client, processName, assetId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        //public EtlInventoryModel GetBySerial(string client, string processName, string serial)
+        //{
+        //    try
+        //    {
+        //        return _etlInventoryRepository.SelectBySerial(client, processName, serial);
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        public EtlInventoryModel GetByInventoryID(string client, string processName, int inventoryUid)
+        {
+            try
+            {
+                return _etlInventoryRepository.SelectByInventoryUid(client, processName, inventoryUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         #endregion Get Methods
 
         #region Add Methods
@@ -36,7 +96,7 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                                return _etlInventoryRepository.Insert(item);
+                return _etlInventoryRepository.Insert(item);
             }
             catch
             {
@@ -59,11 +119,35 @@ namespace MiddleWay_Controller.Services
 
         #endregion Add Methods
 
-        #region CHange Methods
+        #region Change Methods
+
+        public bool Edit(EtlInventoryModel item)
+        {
+            try
+            {
+                return _etlInventoryRepository.Update(item);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Change Methods
 
         #region Delete Methods
+
+        public bool Remove(int etlInventoryUid)
+        {
+            try
+            {
+                return _etlInventoryRepository.Delete(etlInventoryUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Delete Methods
     }
