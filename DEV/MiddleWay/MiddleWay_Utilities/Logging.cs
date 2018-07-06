@@ -42,6 +42,7 @@ namespace MiddleWay_Utilities
             string LogEntry = "";
 
             // Cleanup message here to remove crt returns, line feeds, and tabs
+            Message=Utilities.CleanupHiddenCharacters(Message);
 
             if (!File.Exists(LogFilePath))
             {
