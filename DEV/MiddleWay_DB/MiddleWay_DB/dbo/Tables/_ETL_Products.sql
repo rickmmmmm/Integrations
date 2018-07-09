@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[_ETL_Products] (
     [_ETL_ProductsUID]       INT            IDENTITY (1, 1) NOT NULL,
-	[RowID]					 AS (_ETL_ProductsUID+1),
+	[RowID]					 INT			NOT NULL,
     [ProcessUid]             INT            NOT NULL,
     [ProductUID]             INT            NOT NULL,
     [ProductNumber]          VARCHAR (50)   NOT NULL,

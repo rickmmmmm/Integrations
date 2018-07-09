@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[_ETL_Inventory] (
     [_ETL_InventoryUID]        INT            IDENTITY (1, 1) NOT NULL,
-	[RowID]				       AS (_ETL_InventoryUID+1),
+	[RowID]				       INT			  NOT NULL,
     [ProcessUid]               INT            NOT NULL,
     [InventoryUID]             INT            CONSTRAINT [DF__ETL_Inventory_InventoryUID] DEFAULT ((0)) NOT NULL,
     [AssetID]                  VARCHAR (100)  NULL,

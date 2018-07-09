@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[_ETL_Headers] (
     [_ETL_HeaderUID]        INT            IDENTITY (1, 1) NOT NULL,
-	[RowID]                 AS (_ETL_HeaderUID+1),
+	[RowID]                 INT			   NOT NULL,
     [ProcessUid]            INT            NOT NULL,
     [PurchaseUID]           INT            NOT NULL,
     [OrderNumber]           VARCHAR (50)   NOT NULL,
