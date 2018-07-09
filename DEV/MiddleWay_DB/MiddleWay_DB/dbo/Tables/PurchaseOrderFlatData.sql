@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[PurchaseOrderFlatData] (
     [PurchaseOrderFlatDataUID] INT            IDENTITY (1, 1) NOT NULL,
     [ProcessUid]               INT            NOT NULL,
-	[RowID]					   INT			  NOT NULL,
+    [RowID]                    INT            NOT NULL,
     [OrderNumber]              VARCHAR (50)   NULL,
     [PurchaseDate]             DATETIME       NULL,
     [LineNumber]               INT            NULL,
@@ -26,8 +26,8 @@
     [DepartmentID]             VARCHAR (50)   NULL,
     [CFDA]                     VARCHAR (50)   NULL,
     [IsAssociated]             BIT            NULL,
- 	[Rejected]                 BIT			  NOT NULL CONSTRAINT [DF_PurchaseOrderFlatData_Rejected] DEFAULT 0,
-	[RejectedNotes]			   TEXT			  NULL
+    [Rejected]                 BIT            NOT NULL CONSTRAINT [DF_PurchaseOrderFlatData_Rejected] DEFAULT 0,
+    [RejectedNotes]            TEXT           NULL
     CONSTRAINT [PK_PurchaseOrderFlatData] PRIMARY KEY CLUSTERED ([PurchaseOrderFlatDataUID] ASC),
     CONSTRAINT [FK_PurchaseOrderFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );

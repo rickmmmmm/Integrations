@@ -1,15 +1,13 @@
-
-
 CREATE TABLE [dbo].[ProcessTaskSteps](
-	[ProcessTaskStepsUid] [int] IDENTITY(1,1) NOT NULL,
-	[ProcessTaskUid] [int] NOT NULL,
-	[StepName] [varchar](200) NOT NULL,
-	[StartDate] [datetime] NOT NULL,
-	[EndDate] [datetime] NULL,
-	[Successful] [bit] NOT NULL,
+    [ProcessTaskStepsUid] [int] IDENTITY(1,1) NOT NULL,
+    [ProcessTaskUid] [int] NOT NULL,
+    [StepName] [varchar](200) NOT NULL,
+    [StartDate] [datetime] NOT NULL,
+    [EndDate] [datetime] NULL,
+    [Successful] [bit] NOT NULL,
  CONSTRAINT [PK_ProcessTaskSteps] PRIMARY KEY CLUSTERED 
 (
-	[ProcessTaskStepsUid] ASC
+    [ProcessTaskStepsUid] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
