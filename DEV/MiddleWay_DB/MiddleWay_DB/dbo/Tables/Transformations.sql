@@ -8,7 +8,7 @@
     [Enabled]           BIT           CONSTRAINT [DF_Transformations_Enabled] DEFAULT ((0)) NOT NULL,
     [Order]             INT           NOT NULL,
     CONSTRAINT [PK_Transformations] PRIMARY KEY CLUSTERED ([TransformationUid] ASC),
-    CONSTRAINT [FK_Transformations_Processes] FOREIGN KEY ([TransformationUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+    CONSTRAINT [FK_Transformations_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
 );
 
 
