@@ -28,17 +28,17 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public List<ReceivedTagsExportFile> exportReceivedTags()
+        public List<ReceivedTagsExportFile> ExportReceivedTags()
         {
             List<ReceivedTagsExportFile> export = new List<ReceivedTagsExportFile>();
 
             string returnQuery = "SELECT DISTINCT p.ordernumber, '0' as AmountAccepted, p.PurchaseDate, p.PurchaseDate as PDate, ItemNumber, det.QuantityOrdered, '0' as AmountDamaged, det.LineNumber, inv.AssetID, 'R' as TypeOfR ";
             returnQuery += "FROM tblTechInventory inv ";
-            returnQuery += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
-            returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUID = inv.InventoryUID ";
-            returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUID = pinv.PurchaseItemShipmentUID ";
-            returnQuery += "JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUID = ship.PurchaseItemDetailUID ";
-            returnQuery += "JOIN tblTechPurchases p on p.PurchaseUID = det.PurchaseUID";
+            returnQuery += "JOIN tblTechItems item on item.ItemUid = inv.ItemUid ";
+            returnQuery += "JOIN tblTechPurchaseInventory pinv on pinv.InventoryUid = inv.InventoryUid ";
+            returnQuery += "JOIN tblTechPurchaseItemShipments ship on ship.PurchaseItemShipmentUid = pinv.PurchaseItemShipmentUid ";
+            returnQuery += "JOIN tblTechPurchaseItemDetails det on det.PurchaseItemDetailUid = ship.PurchaseItemDetailUid ";
+            returnQuery += "JOIN tblTechPurchases p on p.PurchaseUid = det.PurchaseUid";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -87,7 +87,7 @@ namespace TIPWeb_Controller.Repositories
 
         }
 
-        public bool checkOrderExists(string orderNumber)
+        public bool CheckOrderExists(string orderNumber)
         {
 
             string returnQuery = "SELECT OrderNumber FROM tblTechPurchases WHERE OrderNumber = '" + orderNumber + "'";
@@ -120,11 +120,11 @@ namespace TIPWeb_Controller.Repositories
         }
 
 
-        private int getPurchaseUIDFromOrderNumber(string orderNumber)
+        private int GetPurchaseUidFromOrderNumber(string orderNumber)
         {
             int purchaseUid = -1;
 
-            string returnQuery = "SELECT PurchaseUID FROM tblTechPurchases WHERE OrderNumber = '" + orderNumber + "'";
+            string returnQuery = "SELECT PurchaseUid FROM tblTechPurchases WHERE OrderNumber = '" + orderNumber + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -165,7 +165,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Insert Functions
 
-        public void addOrderHeaders(List<PurchaseModel> orders)
+        public void AddOrderHeaders(List<PurchaseModel> orders)
         {
 
             foreach (var order in orders)
@@ -175,14 +175,14 @@ namespace TIPWeb_Controller.Repositories
                     string headerQuery;
                     string message;
 
-                    if (checkOrderExists(order.PurchaseOrderNumber))
+                    if (CheckOrderExists(order.PurchaseOrderNumber))
                     {
                         headerQuery = "UPDATE tblTechPurchases ";
                         headerQuery += "SET PurchaseDate = '" + order.PurchaseDate.ToString() + "', ";
                         headerQuery += "Notes = '" + order.Notes.Replace("'", "") + "', ";
-                        headerQuery += "VendorUID = " + order.VendorUID + ", ";
-                        headerQuery += "SiteUID = " + order.SiteID + ", ";
-                        headerQuery += "StatusUID = 32,";
+                        headerQuery += "VendorUid = " + order.VendorUid + ", ";
+                        headerQuery += "SiteUid = " + order.SiteId + ", ";
+                        headerQuery += "StatusUid = 32,";
                         headerQuery += "LastModifiedByUserId = '0', ";
                         headerQuery += "LastModifiedDate = '" + DateTime.Now.ToString() + "' ";
                         headerQuery += "FROM tblTechPurchases WHERE OrderNumber = '" + order.PurchaseOrderNumber + "'";
@@ -192,8 +192,8 @@ namespace TIPWeb_Controller.Repositories
 
                     else
                     {
-                        headerQuery = "INSERT INTO [dbo].[tblTechPurchases] ([StatusUID],[VendorUID],[SiteUID],[OrderNumber],[PurchaseDate],[Notes],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
-                        headerQuery += "VALUES ('" + order.StatusUID.ToString() + "','" + order.VendorUID.ToString() + "','" + order.SiteID.ToString() + "','" + order.PurchaseOrderNumber + "','";
+                        headerQuery = "INSERT INTO [dbo].[tblTechPurchases] ([StatusUid],[VendorUid],[SiteUid],[OrderNumber],[PurchaseDate],[Notes],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate]) ";
+                        headerQuery += "VALUES ('" + order.StatusUid.ToString() + "','" + order.VendorUid.ToString() + "','" + order.SiteId.ToString() + "','" + order.PurchaseOrderNumber + "','";
                         headerQuery += order.PurchaseDate.ToString() + "','" + order.Notes.Replace("'", "") + "','" + order.CreatedByUserId.ToString() + "','" + order.CreatedDate.ToString() + "','";
                         headerQuery += order.LastModifiedByUserId.ToString() + "','" + order.LastModifiedDate.ToString() + "')";
 

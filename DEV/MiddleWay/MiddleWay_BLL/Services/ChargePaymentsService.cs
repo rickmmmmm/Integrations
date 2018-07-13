@@ -37,7 +37,7 @@ namespace MiddleWay_BLL.Services
             {
                 var payment = new ChargePaymentsViewModel
                 {
-                    ChargeUID = import.FineId,
+                    ChargeUid = import.FineId,
                     ChargeAmount = Convert.ToDecimal(import.Amount),
                     PaymentDate = import.Date,
                     Void = import.Type.ToLower() == "adjustment" ? true : false

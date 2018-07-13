@@ -8,9 +8,9 @@ namespace MiddleWay_DTO.RepositoryInterfaces.TIPWeb
 {
     public interface IChargePaymentsRepository
     {
-        ChargesViewModel GetChargeAmountByChargeID(int chargeID);
+        ChargesViewModel GetChargeAmountByChargeId(int chargeId);
 
-        List<ChargePaymentsViewModel> GetPaymentsByChargeID(int chargeID);
+        List<ChargePaymentsViewModel> GetPaymentsByChargeId(int chargeId);
 
         void insertPaymentDetails(List<ChargePaymentsModel> payments);
 

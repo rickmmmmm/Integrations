@@ -357,13 +357,13 @@ namespace TIPWeb_Controller.EF_DAL
             {
                 entity.HasKey(e => e.AccessionIsbnRelationshipUid);
 
-                entity.Property(e => e.AccessionIsbnRelationshipUid).HasColumnName("AccessionIsbnRelationshipUID");
+                entity.Property(e => e.AccessionIsbnRelationshipUid).HasColumnName("AccessionIsbnRelationshipUid");
 
                 entity.Property(e => e.Accession)
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.HasOne(d => d.BookInventoryU)
                     .WithMany(p => p.AccessionIsbnRelationships)
@@ -376,11 +376,11 @@ namespace TIPWeb_Controller.EF_DAL
             {
                 entity.HasKey(e => e.BookImageUid);
 
-                entity.Property(e => e.BookImageUid).HasColumnName("BookImageUID");
+                entity.Property(e => e.BookImageUid).HasColumnName("BookImageUid");
 
                 entity.Property(e => e.BookImageFile).HasColumnType("image");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.Property(e => e.DefaultImage).HasDefaultValueSql("((0))");
 
@@ -407,14 +407,14 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_StudentID");
 
                 entity.HasIndex(e => e.StudentsUid)
-                    .HasName("IDX_StudentsUID");
+                    .HasName("IDX_StudentsUid");
 
                 entity.Property(e => e.StudentId)
                     .HasColumnName("StudentID")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
             });
 
             modelBuilder.Entity<DownloadDataTypes>(entity =>
@@ -504,7 +504,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_ETL_Errors");
 
-                entity.Property(e => e.ErrorUid).HasColumnName("ErrorUID");
+                entity.Property(e => e.ErrorUid).HasColumnName("ErrorUid");
 
                 entity.Property(e => e.ErrorDate)
                     .HasColumnType("datetime")
@@ -541,7 +541,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_ETL_Inventory");
 
-                entity.Property(e => e.EtlinventoryUid).HasColumnName("ETLInventoryUID");
+                entity.Property(e => e.EtlinventoryUid).HasColumnName("ETLInventoryUid");
 
                 entity.Property(e => e.AccountCode)
                     .HasMaxLength(50)
@@ -592,9 +592,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
                 entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
 
@@ -606,33 +606,33 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
-                entity.Property(e => e.InventoryExt1Uid).HasColumnName("InventoryExt1UID");
+                entity.Property(e => e.InventoryExt1Uid).HasColumnName("InventoryExt1Uid");
 
-                entity.Property(e => e.InventoryExt2Uid).HasColumnName("InventoryExt2UID");
+                entity.Property(e => e.InventoryExt2Uid).HasColumnName("InventoryExt2Uid");
 
-                entity.Property(e => e.InventoryExt3Uid).HasColumnName("InventoryExt3UID");
+                entity.Property(e => e.InventoryExt3Uid).HasColumnName("InventoryExt3Uid");
 
-                entity.Property(e => e.InventoryExt4Uid).HasColumnName("InventoryExt4UID");
+                entity.Property(e => e.InventoryExt4Uid).HasColumnName("InventoryExt4Uid");
 
-                entity.Property(e => e.InventoryMeta1Uid).HasColumnName("InventoryMeta1UID");
+                entity.Property(e => e.InventoryMeta1Uid).HasColumnName("InventoryMeta1Uid");
 
-                entity.Property(e => e.InventoryMeta2Uid).HasColumnName("InventoryMeta2UID");
+                entity.Property(e => e.InventoryMeta2Uid).HasColumnName("InventoryMeta2Uid");
 
-                entity.Property(e => e.InventoryMeta3Uid).HasColumnName("InventoryMeta3UID");
+                entity.Property(e => e.InventoryMeta3Uid).HasColumnName("InventoryMeta3Uid");
 
-                entity.Property(e => e.InventoryMeta4Uid).HasColumnName("InventoryMeta4UID");
+                entity.Property(e => e.InventoryMeta4Uid).HasColumnName("InventoryMeta4Uid");
 
                 entity.Property(e => e.InventoryNotes)
                     .HasMaxLength(3000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUid");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.InvoiceDate).HasColumnType("date");
 
@@ -640,9 +640,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.Location)
                     .HasMaxLength(50)
@@ -656,7 +656,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUID");
+                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUid");
 
                 entity.Property(e => e.ParentTag)
                     .HasMaxLength(50)
@@ -676,11 +676,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
 
-                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
+                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUid");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
                 entity.Property(e => e.PurchaseOrder)
                     .HasMaxLength(50)
@@ -688,7 +688,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchasePrice).HasColumnType("money");
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.Serial)
                     .HasMaxLength(50)
@@ -698,7 +698,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50)
@@ -710,7 +710,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.Property(e => e.Vendor)
                     .HasMaxLength(100)
@@ -725,23 +725,23 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_ETL_Items");
 
-                entity.Property(e => e.EtlitemUid).HasColumnName("ETLItemUID");
+                entity.Property(e => e.EtlitemUid).HasColumnName("ETLItemUid");
 
                 entity.Property(e => e.Area)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUid");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.Manufacturer)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUid");
 
                 entity.Property(e => e.Model)
                     .HasMaxLength(100)
@@ -801,7 +801,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_ETL_Purchases");
 
-                entity.Property(e => e.EtlpurchaseUid).HasColumnName("ETLPurchaseUID");
+                entity.Property(e => e.EtlpurchaseUid).HasColumnName("ETLPurchaseUid");
 
                 entity.Property(e => e.AccountCode)
                     .HasMaxLength(50)
@@ -825,9 +825,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.Manufacturer)
                     .HasMaxLength(100)
@@ -863,9 +863,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
                 entity.Property(e => e.PurchaseOrder)
                     .HasMaxLength(50)
@@ -873,13 +873,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchasePrice).HasColumnType("money");
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.ShippedToSite)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
+                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUid");
 
                 entity.Property(e => e.Site)
                     .HasMaxLength(100)
@@ -889,11 +889,11 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUID");
+                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.Property(e => e.TicketedBy)
                     .HasMaxLength(50)
@@ -911,7 +911,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUid");
             });
 
             modelBuilder.Entity<EtlRejects>(entity =>
@@ -920,7 +920,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_ETL_Rejects");
 
-                entity.Property(e => e.RejectUid).HasColumnName("RejectUID");
+                entity.Property(e => e.RejectUid).HasColumnName("RejectUid");
 
                 entity.Property(e => e.ExceptionMessage).IsUnicode(false);
 
@@ -946,7 +946,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("_ETL_Settings");
 
                 entity.Property(e => e.EtlsettingUid)
-                    .HasColumnName("ETLSettingUID")
+                    .HasColumnName("ETLSettingUid")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.EtlsettingName)
@@ -966,11 +966,11 @@ namespace TIPWeb_Controller.EF_DAL
             {
                 entity.HasKey(e => e.FoundAdjustmentVendorOrderUid);
 
-                entity.Property(e => e.FoundAdjustmentVendorOrderUid).HasColumnName("FoundAdjustmentVendorOrderUID");
+                entity.Property(e => e.FoundAdjustmentVendorOrderUid).HasColumnName("FoundAdjustmentVendorOrderUid");
 
-                entity.Property(e => e.FoundAdjustmentUid).HasColumnName("FoundAdjustmentUID");
+                entity.Property(e => e.FoundAdjustmentUid).HasColumnName("FoundAdjustmentUid");
 
-                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUID");
+                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUid");
 
                 entity.HasOne(d => d.FoundAdjustmentU)
                     .WithMany(p => p.FoundAdjustmentVendorOrders)
@@ -991,7 +991,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_IIT_InventoryImportProcess");
 
-                entity.Property(e => e.InventoryImportProcessUid).HasColumnName("InventoryImportProcessUID");
+                entity.Property(e => e.InventoryImportProcessUid).HasColumnName("InventoryImportProcessUid");
 
                 entity.Property(e => e.AccountCode)
                     .HasMaxLength(50)
@@ -1001,7 +1001,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUid");
 
                 entity.Property(e => e.CustomField1)
                     .HasMaxLength(50)
@@ -1029,35 +1029,35 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.DepartmentUid).HasColumnName("DepartmentUID");
+                entity.Property(e => e.DepartmentUid).HasColumnName("DepartmentUid");
 
                 entity.Property(e => e.FundingSource)
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
-                entity.Property(e => e.InventoryExtUid1).HasColumnName("InventoryExtUID1");
+                entity.Property(e => e.InventoryExtUid1).HasColumnName("InventoryExtUid1");
 
-                entity.Property(e => e.InventoryExtUid2).HasColumnName("InventoryExtUID2");
+                entity.Property(e => e.InventoryExtUid2).HasColumnName("InventoryExtUid2");
 
-                entity.Property(e => e.InventoryExtUid3).HasColumnName("InventoryExtUID3");
+                entity.Property(e => e.InventoryExtUid3).HasColumnName("InventoryExtUid3");
 
-                entity.Property(e => e.InventoryExtUid4).HasColumnName("InventoryExtUID4");
+                entity.Property(e => e.InventoryExtUid4).HasColumnName("InventoryExtUid4");
 
-                entity.Property(e => e.InventoryMetaUid1).HasColumnName("InventoryMetaUID1");
+                entity.Property(e => e.InventoryMetaUid1).HasColumnName("InventoryMetaUid1");
 
-                entity.Property(e => e.InventoryMetaUid2).HasColumnName("InventoryMetaUID2");
+                entity.Property(e => e.InventoryMetaUid2).HasColumnName("InventoryMetaUid2");
 
-                entity.Property(e => e.InventoryMetaUid3).HasColumnName("InventoryMetaUID3");
+                entity.Property(e => e.InventoryMetaUid3).HasColumnName("InventoryMetaUid3");
 
-                entity.Property(e => e.InventoryMetaUid4).HasColumnName("InventoryMetaUID4");
+                entity.Property(e => e.InventoryMetaUid4).HasColumnName("InventoryMetaUid4");
 
-                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUid");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.IsDuplicateStaffId).HasColumnName("IsDuplicateStaffID");
 
@@ -1065,13 +1065,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LocationTypeUid).HasColumnName("LocationTypeUID");
+                entity.Property(e => e.LocationTypeUid).HasColumnName("LocationTypeUid");
 
                 entity.Property(e => e.Manufacturer)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUid");
 
                 entity.Property(e => e.Model)
                     .HasMaxLength(100)
@@ -1098,17 +1098,17 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ProductTypeUid).HasColumnName("ProductTypeUID");
+                entity.Property(e => e.ProductTypeUid).HasColumnName("ProductTypeUid");
 
-                entity.Property(e => e.ProductUid).HasColumnName("ProductUID");
+                entity.Property(e => e.ProductUid).HasColumnName("ProductUid");
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("date");
 
-                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
+                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUid");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
                 entity.Property(e => e.PurchaseOrderNumber)
                     .IsRequired()
@@ -1117,7 +1117,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchasePrice).HasColumnType("money");
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.RoomDescription)
                     .HasMaxLength(100)
@@ -1136,9 +1136,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUID");
+                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUid");
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
                 entity.Property(e => e.SerialNumber)
                     .HasMaxLength(50)
@@ -1150,7 +1150,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.Sku)
                     .HasColumnName("SKU")
@@ -1177,7 +1177,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StaffOrStudentUid).HasColumnName("StaffOrStudentUID");
+                entity.Property(e => e.StaffOrStudentUid).HasColumnName("StaffOrStudentUid");
 
                 entity.Property(e => e.Status)
                     .IsRequired()
@@ -1196,7 +1196,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUid");
             });
 
             modelBuilder.Entity<IitProductTypeImportProcess>(entity =>
@@ -1205,7 +1205,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("_IIT_ProductTypeImportProcess");
 
-                entity.Property(e => e.ProductTypeImportProcessUid).HasColumnName("ProductTypeImportProcessUID");
+                entity.Property(e => e.ProductTypeImportProcessUid).HasColumnName("ProductTypeImportProcessUid");
 
                 entity.Property(e => e.CustomFieldDataType1)
                     .HasMaxLength(50)
@@ -1247,19 +1247,19 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.CustomFieldRequired4).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.InventoryMetaUid1).HasColumnName("InventoryMetaUID1");
+                entity.Property(e => e.InventoryMetaUid1).HasColumnName("InventoryMetaUid1");
 
-                entity.Property(e => e.InventoryMetaUid2).HasColumnName("InventoryMetaUID2");
+                entity.Property(e => e.InventoryMetaUid2).HasColumnName("InventoryMetaUid2");
 
-                entity.Property(e => e.InventoryMetaUid3).HasColumnName("InventoryMetaUID3");
+                entity.Property(e => e.InventoryMetaUid3).HasColumnName("InventoryMetaUid3");
 
-                entity.Property(e => e.InventoryMetaUid4).HasColumnName("InventoryMetaUID4");
+                entity.Property(e => e.InventoryMetaUid4).HasColumnName("InventoryMetaUid4");
 
                 entity.Property(e => e.ProductType)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ProductTypeUid).HasColumnName("ProductTypeUID");
+                entity.Property(e => e.ProductTypeUid).HasColumnName("ProductTypeUid");
             });
 
             modelBuilder.Entity<ImsCampusCourse>(entity =>
@@ -1268,14 +1268,14 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ImsCampusCourseId).HasColumnName("IMS_CampusCourseID");
 
-                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUID");
+                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUid");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.CourseId)
                     .HasColumnName("CourseID")
@@ -1284,7 +1284,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Import).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.RejectMessage)
                     .HasMaxLength(1000)
@@ -1307,14 +1307,14 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ImsClassId).HasColumnName("IMS_ClassID");
 
-                entity.Property(e => e.CampusCourseAssignedUid).HasColumnName("CampusCourseAssignedUID");
+                entity.Property(e => e.CampusCourseAssignedUid).HasColumnName("CampusCourseAssignedUid");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.ClassId)
                     .HasColumnName("ClassID")
@@ -1334,7 +1334,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.Period)
                     .HasMaxLength(50)
@@ -1399,7 +1399,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.RejectMessage)
                     .HasMaxLength(1000)
@@ -1477,7 +1477,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
                 entity.Property(e => e.StaffId)
                     .HasColumnName("StaffID")
@@ -1492,13 +1492,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
+                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUid");
 
                 entity.Property(e => e.State)
                     .HasMaxLength(2)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.Property(e => e.Zip)
                     .HasMaxLength(10)
@@ -1679,7 +1679,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.Zip)
                     .HasMaxLength(10)
@@ -1692,7 +1692,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ImsStudentScheduleId).HasColumnName("IMS_StudentScheduleID");
 
-                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUID");
+                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUid");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
@@ -1713,7 +1713,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.New).HasColumnName("new");
 
@@ -1734,9 +1734,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsSchedulesUid).HasColumnName("StudentsSchedulesUID");
+                entity.Property(e => e.StudentsSchedulesUid).HasColumnName("StudentsSchedulesUid");
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
             });
 
             modelBuilder.Entity<ImsTeachers>(entity =>
@@ -1816,7 +1816,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
                 entity.Property(e => e.State)
                     .HasMaxLength(2)
@@ -1831,7 +1831,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.Property(e => e.Zip)
                     .HasMaxLength(10)
@@ -1846,7 +1846,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ImsTeachertScheduleId).HasColumnName("IMS_TeachertScheduleID");
 
-                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUID");
+                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUid");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
@@ -1867,7 +1867,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.New).HasColumnName("new");
 
@@ -1888,9 +1888,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TeachersSchedulesUid).HasColumnName("TeachersSchedulesUID");
+                entity.Property(e => e.TeachersSchedulesUid).HasColumnName("TeachersSchedulesUid");
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
             });
 
             modelBuilder.Entity<ReportPickTicket>(entity =>
@@ -1899,7 +1899,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("reportPickTicket");
 
-                entity.Property(e => e.PickTicketUid).HasColumnName("PickTicketUID");
+                entity.Property(e => e.PickTicketUid).HasColumnName("PickTicketUid");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -1910,7 +1910,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(325)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
             });
 
             modelBuilder.Entity<ReportPickTicketDetails>(entity =>
@@ -1919,7 +1919,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("reportPickTicketDetails");
 
-                entity.Property(e => e.PickTicketDetailUid).HasColumnName("PickTicketDetailUID");
+                entity.Property(e => e.PickTicketDetailUid).HasColumnName("PickTicketDetailUid");
 
                 entity.Property(e => e.BinDescription)
                     .HasMaxLength(7500)
@@ -1959,7 +1959,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PickTicketUid).HasColumnName("PickTicketUID");
+                entity.Property(e => e.PickTicketUid).HasColumnName("PickTicketUid");
 
                 entity.Property(e => e.Price).HasColumnType("money");
 
@@ -1978,7 +1978,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(300)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
 
                 entity.Property(e => e.ShippingAddress)
                     .HasMaxLength(1000)
@@ -2011,7 +2011,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("SettingsAPIClient");
 
-                entity.Property(e => e.SettingsApiclientUid).HasColumnName("SettingsAPIClientUID");
+                entity.Property(e => e.SettingsApiclientUid).HasColumnName("SettingsAPIClientUid");
 
                 entity.Property(e => e.BaseUrl)
                     .IsRequired()
@@ -2037,7 +2037,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("SettingsAPIServer");
 
-                entity.Property(e => e.SettingsApiserverUid).HasColumnName("SettingsAPIServerUID");
+                entity.Property(e => e.SettingsApiserverUid).HasColumnName("SettingsAPIServerUid");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -2103,7 +2103,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.CopiesToAdjust, e.AdjustmentDetailsUid, e.Posted, e.AdjustmentId, e.Isbn })
                     .HasName("_dta_index_tblAdjustmentDetails_8_1264879723__K1_K2_3_4_8");
 
-                entity.Property(e => e.AdjustmentDetailsUid).HasColumnName("AdjustmentDetailsUID");
+                entity.Property(e => e.AdjustmentDetailsUid).HasColumnName("AdjustmentDetailsUid");
 
                 entity.Property(e => e.AdjustmentId).HasColumnName("AdjustmentID");
 
@@ -2838,7 +2838,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -2901,7 +2901,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
             });
@@ -2965,7 +2965,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
 
@@ -3339,11 +3339,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblAuditBookInventory");
 
-                entity.Property(e => e.AuditBookInventoryUid).HasColumnName("AuditBookInventoryUID");
+                entity.Property(e => e.AuditBookInventoryUid).HasColumnName("AuditBookInventoryUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblAuditBookInventory)
@@ -3367,11 +3367,11 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.AuditDetailCountUid, e.Count, e.AuditDetailUid, e.BookInventoryUid })
                     .HasName("IDX_AuditDetailBookInventory");
 
-                entity.Property(e => e.AuditDetailCountUid).HasColumnName("AuditDetailCountUID");
+                entity.Property(e => e.AuditDetailCountUid).HasColumnName("AuditDetailCountUid");
 
-                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUID");
+                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(1000)
@@ -3396,15 +3396,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblAuditDetails");
 
-                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUID");
+                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUid");
 
                 entity.Property(e => e.AuditDetailNotes)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -3461,9 +3461,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblAuditFilterMaterialTypes");
 
-                entity.Property(e => e.AuditFilterMaterialTypesUid).HasColumnName("AuditFilterMaterialTypesUID");
+                entity.Property(e => e.AuditFilterMaterialTypesUid).HasColumnName("AuditFilterMaterialTypesUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
                 entity.Property(e => e.MaterialTypeId).HasColumnName("MaterialTypeID");
 
@@ -3479,9 +3479,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblAuditFilters");
 
-                entity.Property(e => e.AuditFilterUid).HasColumnName("AuditFilterUID");
+                entity.Property(e => e.AuditFilterUid).HasColumnName("AuditFilterUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
                 entity.Property(e => e.FilterType).HasMaxLength(50);
 
@@ -3497,7 +3497,7 @@ namespace TIPWeb_Controller.EF_DAL
             {
                 entity.ToTable("tblAustinIFAS");
 
-                entity.Property(e => e.AtmetaUid).HasColumnName("ATMetaUID");
+                entity.Property(e => e.AtmetaUid).HasColumnName("ATMetaUid");
 
                 entity.Property(e => e.Cond)
                     .HasColumnName("cond")
@@ -3519,9 +3519,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FaidmetaUid).HasColumnName("FAIDMetaUID");
+                entity.Property(e => e.FaidmetaUid).HasColumnName("FAIDMetaUid");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.Inservdt)
                     .HasColumnName("inservdt")
@@ -3531,20 +3531,20 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnName("invdt")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.Invoice)
                     .HasColumnName("invoice")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IsdmetaUid).HasColumnName("ISDMetaUID");
+                entity.Property(e => e.IsdmetaUid).HasColumnName("ISDMetaUid");
 
                 entity.Property(e => e.IssuedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.Itemamt)
                     .HasColumnName("itemamt")
@@ -3564,7 +3564,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUid");
 
                 entity.Property(e => e.Mfctid)
                     .HasColumnName("mfctid")
@@ -3581,11 +3581,11 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.OldAtmetaUid).HasColumnName("oldATMetaUID");
+                entity.Property(e => e.OldAtmetaUid).HasColumnName("oldATMetaUid");
 
-                entity.Property(e => e.OldFaidmetaUid).HasColumnName("oldFAIDMetaUID");
+                entity.Property(e => e.OldFaidmetaUid).HasColumnName("oldFAIDMetaUid");
 
-                entity.Property(e => e.OldIsdmetaUid).HasColumnName("oldISDMetaUID");
+                entity.Property(e => e.OldIsdmetaUid).HasColumnName("oldISDMetaUid");
 
                 entity.Property(e => e.Pc)
                     .HasColumnName("pc")
@@ -3601,13 +3601,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnName("purchamt")
                     .HasColumnType("money");
 
-                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
+                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUid");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.Sc)
                     .HasColumnName("sc")
@@ -3619,7 +3619,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.Stat)
                     .HasColumnName("stat")
@@ -3636,7 +3636,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUid");
             });
 
             modelBuilder.Entity<TblBookBins>(entity =>
@@ -3698,7 +3698,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("_dta_index_tblBookInventory_8_672877614__K1_K26_2_3_4_5_6_7_8_9")
                     .IsUnique();
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.Property(e => e.Active)
                     .IsRequired()
@@ -3789,7 +3789,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblBookOrders");
 
                 entity.HasIndex(e => e.BookOrdersUid)
-                    .HasName("idx_BookOrdersUID");
+                    .HasName("idx_BookOrdersUid");
 
                 entity.HasIndex(e => e.Isbn)
                     .HasName("idx_ISBN");
@@ -3818,7 +3818,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.VendorOrder, e.Received, e.Ordered, e.CopiesToSend, e.CopiesSent, e.CopiesApproved, e.CopiesOnHand, e.BackOrders, e.Denied, e.Status, e.Isbn, e.RequisitionUid, e.BookOrdersUid })
                     .HasName("_dta_index_tblBookOrders_8_1442976367__K16_K3_K2_K1_5_8_18_19_20_21_23_24_25");
 
-                entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUID");
+                entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUid");
 
                 entity.Property(e => e.ArrivalDate).HasColumnType("datetime");
 
@@ -3868,7 +3868,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Received).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50)
@@ -3900,7 +3900,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_RandomReq");
 
                 entity.HasIndex(e => e.RequisitionUid)
-                    .HasName("idx_RequisitionUID");
+                    .HasName("idx_RequisitionUid");
 
                 entity.HasIndex(e => new { e.CopiesSent, e.CopiesToShip, e.CopiesReceived, e.TicketDate, e.DateCopiesSent, e.Isbn, e.RequisitionUid, e.BookOrdersHistoryDistUid })
                     .HasName("_dta_index_tblBookOrdersHistoryDist_8_1586976880__K3_K2_K1_4_5_6_7_8");
@@ -3908,7 +3908,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.UserId, e.ModifiedDate, e.RandomReq, e.TicketDate, e.CopiesToShip, e.DateCopiesSent, e.RequisitionUid, e.Isbn, e.BookOrdersHistoryDistUid, e.CopiesReceived, e.CopiesSent })
                     .HasName("_dta_index_tblBookOrdersHistoryDist_8_1586976880__K2_K3_K1_K8_K4_5_6_7_9_10_11");
 
-                entity.Property(e => e.BookOrdersHistoryDistUid).HasColumnName("BookOrdersHistoryDistUID");
+                entity.Property(e => e.BookOrdersHistoryDistUid).HasColumnName("BookOrdersHistoryDistUid");
 
                 entity.Property(e => e.DateCopiesSent).HasColumnType("datetime");
 
@@ -3925,7 +3925,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(325)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
 
                 entity.Property(e => e.TicketDate).HasColumnType("datetime");
 
@@ -3943,9 +3943,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblBookOrderTransactions");
 
-                entity.Property(e => e.BookOrderTransactionUid).HasColumnName("BookOrderTransactionUID");
+                entity.Property(e => e.BookOrderTransactionUid).HasColumnName("BookOrderTransactionUid");
 
-                entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUID");
+                entity.Property(e => e.BookOrdersUid).HasColumnName("BookOrdersUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -3977,17 +3977,17 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.MasterCourseUid, e.Teachers, e.Students, e.BookInventoryUid, e.CampusUid })
                     .HasName("_dta_index_tblBooksCourses_8_429400749__K3_K2_4_5_6");
 
-                entity.Property(e => e.BooksCoursesUid).HasColumnName("BooksCoursesUID");
+                entity.Property(e => e.BooksCoursesUid).HasColumnName("BooksCoursesUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.Students).HasDefaultValueSql("((0))");
 
@@ -4018,15 +4018,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblBooksCoursesDistrict");
 
-                entity.Property(e => e.BooksCoursesDistrictUid).HasColumnName("BooksCoursesDistrictUID");
+                entity.Property(e => e.BooksCoursesDistrictUid).HasColumnName("BooksCoursesDistrictUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.Property(e => e.LastModifiedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.HasOne(d => d.BookInventoryU)
                     .WithMany(p => p.TblBooksCoursesDistrict)
@@ -4143,7 +4143,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblCampusCoursesAssigned");
 
                 entity.HasIndex(e => e.CampusUid)
-                    .HasName("IDX_CampusUID");
+                    .HasName("IDX_CampusUid");
 
                 entity.HasIndex(e => e.MasterCourseUid)
                     .HasName("MasterCoursesAssigned_Index");
@@ -4157,13 +4157,13 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.MaxTeacherEnrollment, e.StudentEnrollment, e.MaxStudentEnrollment, e.TeacherEnrollment, e.CourseSifguid, e.MasterCourseUid, e.CampusUid, e.CampusCoursesAssignedUid })
                     .HasName("_dta_index_tblCampusCoursesAssigned_8_1552880749__K3_K2_K1_4_5_6_7_8");
 
-                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUID");
+                entity.Property(e => e.CampusCoursesAssignedUid).HasColumnName("CampusCoursesAssignedUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.CourseSifguid).HasColumnName("CourseSIFGuid");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.StudentEnrollment).HasDefaultValueSql("((0))");
 
@@ -4320,9 +4320,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_CampusID");
 
                 entity.HasIndex(e => e.CampusUid)
-                    .HasName("IDX_CampusUID");
+                    .HasName("IDX_CampusUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.BillAddress)
                     .HasMaxLength(500)
@@ -4481,11 +4481,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblDigitalMaterialDetails");
 
-                entity.Property(e => e.DigitalMaterialDetailUid).HasColumnName("DigitalMaterialDetailUID");
+                entity.Property(e => e.DigitalMaterialDetailUid).HasColumnName("DigitalMaterialDetailUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
-                entity.Property(e => e.DurationIntervalUid).HasColumnName("DurationIntervalUID");
+                entity.Property(e => e.DurationIntervalUid).HasColumnName("DurationIntervalUid");
 
                 entity.Property(e => e.MaterialTypeId).HasColumnName("MaterialTypeID");
 
@@ -4494,7 +4494,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UsageTypeUid).HasColumnName("UsageTypeUID");
+                entity.Property(e => e.UsageTypeUid).HasColumnName("UsageTypeUid");
 
                 entity.Property(e => e.Website)
                     .HasMaxLength(100)
@@ -4746,7 +4746,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblDurationIntervals");
 
                 entity.Property(e => e.DurationIntervalUid)
-                    .HasColumnName("DurationIntervalUID")
+                    .HasColumnName("DurationIntervalUid")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DurationInterval)
@@ -4803,14 +4803,14 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblFundingSources");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.Active)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.ApplicationUid)
-                    .HasColumnName("ApplicationUID")
+                    .HasColumnName("ApplicationUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
@@ -4953,7 +4953,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => e.CourseId)
                     .HasName("IDX_CourseID");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.CourseId)
                     .IsRequired()
@@ -5078,7 +5078,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblMOBStudDistro");
 
-                entity.Property(e => e.Uid).HasColumnName("UID");
+                entity.Property(e => e.Uid).HasColumnName("Uid");
 
                 entity.Property(e => e.CampusId)
                     .HasColumnName("CampusID")
@@ -5199,7 +5199,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblReconciled_tx");
 
-                entity.Property(e => e.RecondiledUid).HasColumnName("recondiledUID");
+                entity.Property(e => e.RecondiledUid).HasColumnName("recondiledUid");
 
                 entity.Property(e => e.Accession)
                     .HasMaxLength(50)
@@ -5217,13 +5217,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.FkAdjustmentId).HasColumnName("fk_AdjustmentID");
 
-                entity.Property(e => e.FkAreaUid).HasColumnName("fk_AreaUID");
+                entity.Property(e => e.FkAreaUid).HasColumnName("fk_AreaUid");
 
-                entity.Property(e => e.FkBookUid).HasColumnName("fk_BookUID");
+                entity.Property(e => e.FkBookUid).HasColumnName("fk_BookUid");
 
                 entity.Property(e => e.FkEntityId).HasColumnName("fk_EntityID");
 
-                entity.Property(e => e.FkUserUid).HasColumnName("fk_UserUID");
+                entity.Property(e => e.FkUserUid).HasColumnName("fk_UserUid");
             });
 
             modelBuilder.Entity<TblRegion>(entity =>
@@ -5351,7 +5351,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblRequisitionMultiCampus");
 
-                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUID");
+                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -5367,7 +5367,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Notes).HasMaxLength(1000);
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
                 entity.HasOne(d => d.StatusU)
                     .WithMany(p => p.TblRequisitionMultiCampus)
@@ -5382,11 +5382,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblRequisitionMultiCampusDetails");
 
-                entity.Property(e => e.RequisitionMultiCampusDetailUid).HasColumnName("RequisitionMultiCampusDetailUID");
+                entity.Property(e => e.RequisitionMultiCampusDetailUid).HasColumnName("RequisitionMultiCampusDetailUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -5396,7 +5396,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUID");
+                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUid");
 
                 entity.HasOne(d => d.RequisitionMultiCampusU)
                     .WithMany(p => p.TblRequisitionMultiCampusDetails)
@@ -5411,11 +5411,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblRequisitionMultiCampusLink");
 
-                entity.Property(e => e.RequisitionToMultiCampusRequisitionUid).HasColumnName("RequisitionToMultiCampusRequisitionUID");
+                entity.Property(e => e.RequisitionToMultiCampusRequisitionUid).HasColumnName("RequisitionToMultiCampusRequisitionUid");
 
-                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUID");
+                entity.Property(e => e.RequisitionMultiCampusUid).HasColumnName("RequisitionMultiCampusUid");
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
 
                 entity.HasOne(d => d.RequisitionMultiCampusU)
                     .WithMany(p => p.TblRequisitionMultiCampusLink)
@@ -5445,7 +5445,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.RequisitionUid, e.ReqStatus, e.RequisitionId, e.CampusId, e.DateCreatedOrSent })
                     .HasName("_dta_index_tblRequisitions_8_1330975968__K13D_1_2_4_10");
 
-                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUID");
+                entity.Property(e => e.RequisitionUid).HasColumnName("RequisitionUid");
 
                 entity.Property(e => e.Approved).HasDefaultValueSql("((0))");
 
@@ -5635,7 +5635,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StatusTypeUid).HasColumnName("StatusTypeUID");
+                entity.Property(e => e.StatusTypeUid).HasColumnName("StatusTypeUid");
 
                 entity.HasOne(d => d.StatusTypeU)
                     .WithMany(p => p.TblStatus)
@@ -5650,7 +5650,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblStatusTypes");
 
-                entity.Property(e => e.StatusTypeUid).HasColumnName("StatusTypeUID");
+                entity.Property(e => e.StatusTypeUid).HasColumnName("StatusTypeUid");
 
                 entity.Property(e => e.StatusType)
                     .IsRequired()
@@ -5674,7 +5674,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_SIF_StudentSIFGuid");
 
                 entity.HasIndex(e => new { e.Grade, e.StudentsUid })
-                    .HasName("IX_tblStudents_StudentUID_iGrade");
+                    .HasName("IX_tblStudents_StudentUid_iGrade");
 
                 entity.HasIndex(e => new { e.StudentId, e.FullName })
                     .HasName("tblStudents_ID_FullName");
@@ -5697,7 +5697,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.HomeRoom, e.Address2, e.Address, e.City, e.Gender, e.FullName, e.StudentsUid, e.ModifiedDate, e.MiddleName, e.Notes, e.State, e.UserId, e.Zip, e.StudentSifguid, e.Race, e.Phone, e.ParentEmail, e.CampusId, e.StudentId, e.FirstName, e.LastName, e.Grade })
                     .HasName("_dta_index_tblStudents_8_1360880065__K2_K1_K3_K5_K7_4_6_8_9_10_11_12_13_14_15_16_17_18_19_20_22_23");
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.ActiveIt)
                     .HasColumnName("ActiveIT")
@@ -5867,7 +5867,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
             });
@@ -5922,7 +5922,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -5943,10 +5943,10 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_SIF_EnrollmentSIFGuid");
 
                 entity.HasIndex(e => e.MasterCourseUid)
-                    .HasName("IDX_MasterCourseUID");
+                    .HasName("IDX_MasterCourseUid");
 
                 entity.HasIndex(e => e.StudentsUid)
-                    .HasName("IDX_StudentsUID");
+                    .HasName("IDX_StudentsUid");
 
                 entity.HasIndex(e => new { e.SectionId, e.MasterCourseUid, e.StudentsUid })
                     .HasName("_dta_index_tblStudentsSchedules_8_644353510__K5_K3_K2");
@@ -5954,7 +5954,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.StudentsUid, e.MasterCourseUid, e.SectionId })
                     .HasName("_dta_index_tblStudentsSchedules_8_644353510__K2_K3_K5");
 
-                entity.Property(e => e.StudentsSchedulesUid).HasColumnName("StudentsSchedulesUID");
+                entity.Property(e => e.StudentsSchedulesUid).HasColumnName("StudentsSchedulesUid");
 
                 entity.Property(e => e.EnrollmentSifguid).HasColumnName("EnrollmentSIFGuid");
 
@@ -5962,7 +5962,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ExitDate).HasColumnType("datetime");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.Period)
                     .HasMaxLength(50)
@@ -5973,7 +5973,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUID");
+                entity.Property(e => e.StudentsUid).HasColumnName("StudentsUid");
 
                 entity.HasOne(d => d.MasterCourseU)
                     .WithMany(p => p.TblStudentsSchedules)
@@ -5994,7 +5994,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblSubjectArea");
 
-                entity.Property(e => e.SubjectAreaUid).HasColumnName("SubjectAreaUID");
+                entity.Property(e => e.SubjectAreaUid).HasColumnName("SubjectAreaUid");
 
                 entity.Property(e => e.Description).HasMaxLength(2000);
 
@@ -6009,11 +6009,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblSubjectAreaBookLINK");
 
-                entity.Property(e => e.SubjectAreaBookUid).HasColumnName("SubjectAreaBookUID");
+                entity.Property(e => e.SubjectAreaBookUid).HasColumnName("SubjectAreaBookUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
-                entity.Property(e => e.SubjectAreaUid).HasColumnName("SubjectAreaUID");
+                entity.Property(e => e.SubjectAreaUid).HasColumnName("SubjectAreaUid");
             });
 
             modelBuilder.Entity<TblSyncedInventory>(entity =>
@@ -6050,7 +6050,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTeacherID")
                     .IsUnique();
 
-                entity.Property(e => e.TeacherInformationUid).HasColumnName("TeacherInformationUID");
+                entity.Property(e => e.TeacherInformationUid).HasColumnName("TeacherInformationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -6090,12 +6090,12 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("TeacherID_Index");
 
                 entity.HasIndex(e => new { e.StaffTypeUid, e.TeachersUid, e.Grade })
-                    .HasName("IX_tblTeachers_StaffTypeUID");
+                    .HasName("IX_tblTeachers_StaffTypeUid");
 
                 entity.HasIndex(e => new { e.FullName, e.TeacherId, e.CampusId, e.LastName, e.Status, e.TeachersUid })
                     .HasName("_dta_index_tblTeachers_8_740353852__K2_K5_K23_K22_1_6");
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.Property(e => e.ActiveIt)
                     .HasColumnName("ActiveIT")
@@ -6176,7 +6176,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
+                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUid");
 
                 entity.Property(e => e.State)
                     .HasMaxLength(2)
@@ -6192,7 +6192,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.TeacherSifguid).HasColumnName("TeacherSIFGuid");
 
-                entity.Property(e => e.TeacherStatusUid).HasColumnName("TeacherStatusUID");
+                entity.Property(e => e.TeacherStatusUid).HasColumnName("TeacherStatusUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -6225,7 +6225,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IDX_ISBN");
 
                 entity.HasIndex(e => e.TeachersUid)
-                    .HasName("IDX_TeachersUID");
+                    .HasName("IDX_TeachersUid");
 
                 entity.HasIndex(e => new { e.Accession, e.Code, e.TeachersUid })
                     .HasName("_dta_index_tblTeachersDistribution_8_624877443__K4_K5_K2");
@@ -6270,7 +6270,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
             });
@@ -6331,7 +6331,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -6351,13 +6351,13 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.Period, e.TeachersUid, e.SectionId, e.MasterCourseUid })
                     .HasName("_dta_index_tblTeachersSchedules_8_612353396__K2_K4_K3_5");
 
-                entity.Property(e => e.TeachersSchedulesUid).HasColumnName("TeachersSchedulesUID");
+                entity.Property(e => e.TeachersSchedulesUid).HasColumnName("TeachersSchedulesUid");
 
                 entity.Property(e => e.EntryDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ExitDate).HasColumnType("datetime");
 
-                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUID");
+                entity.Property(e => e.MasterCourseUid).HasColumnName("MasterCourseUid");
 
                 entity.Property(e => e.Period)
                     .HasMaxLength(50)
@@ -6370,7 +6370,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.SectionSifguid).HasColumnName("SectionSIFGuid");
 
-                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUID");
+                entity.Property(e => e.TeachersUid).HasColumnName("TeachersUid");
 
                 entity.HasOne(d => d.MasterCourseU)
                     .WithMany(p => p.TblTeachersSchedules)
@@ -6398,7 +6398,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTeacherStatusID")
                     .IsUnique();
 
-                entity.Property(e => e.TeacherStatusUid).HasColumnName("TeacherStatusUID");
+                entity.Property(e => e.TeacherStatusUid).HasColumnName("TeacherStatusUid");
 
                 entity.Property(e => e.Active)
                     .IsRequired()
@@ -6438,7 +6438,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAccessories");
 
-                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUID");
+                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUid");
 
                 entity.Property(e => e.AccessoryDescription)
                     .HasMaxLength(1000)
@@ -6470,17 +6470,17 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAccessoryCharges");
 
-                entity.Property(e => e.AccessoryChargeUid).HasColumnName("AccessoryChargeUID");
+                entity.Property(e => e.AccessoryChargeUid).HasColumnName("AccessoryChargeUid");
 
-                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUID");
+                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUid");
 
-                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
+                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
                 entity.HasOne(d => d.AccessoryU)
                     .WithMany(p => p.TblTechAccessoryCharges)
@@ -6507,7 +6507,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechActions");
 
-                entity.Property(e => e.ActionUid).HasColumnName("ActionUID");
+                entity.Property(e => e.ActionUid).HasColumnName("ActionUid");
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -6526,7 +6526,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAssetConditions");
 
-                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUID");
+                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUid");
 
                 entity.Property(e => e.Active)
                     .IsRequired()
@@ -6560,7 +6560,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAttachments");
 
-                entity.Property(e => e.AttachmentUid).HasColumnName("AttachmentUID");
+                entity.Property(e => e.AttachmentUid).HasColumnName("AttachmentUid");
 
                 entity.Property(e => e.ApplicationArea).HasMaxLength(100);
 
@@ -6595,9 +6595,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAttachmentScheduleLink");
 
-                entity.Property(e => e.AttachmentScheduleLinkUid).HasColumnName("AttachmentScheduleLinkUID");
+                entity.Property(e => e.AttachmentScheduleLinkUid).HasColumnName("AttachmentScheduleLinkUid");
 
-                entity.Property(e => e.AttachmentUid).HasColumnName("AttachmentUID");
+                entity.Property(e => e.AttachmentUid).HasColumnName("AttachmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -6605,7 +6605,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUID");
+                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUid");
 
                 entity.HasOne(d => d.AttachmentU)
                     .WithMany(p => p.TblTechAttachmentScheduleLink)
@@ -6628,11 +6628,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.HasIndex(e => new { e.AuditUid, e.TechDepartmentUid });
 
-                entity.Property(e => e.AuditDepartmentUid).HasColumnName("AuditDepartmentUID");
+                entity.Property(e => e.AuditDepartmentUid).HasColumnName("AuditDepartmentUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblTechAuditDepartments)
@@ -6654,7 +6654,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechAuditDetailInventoryCounts");
 
                 entity.HasIndex(e => e.InventoryUid)
-                    .HasName("IX_InventoryUID");
+                    .HasName("IX_InventoryUid");
 
                 entity.HasIndex(e => e.LastModifiedByUserId)
                     .HasName("IX_LastModifiedByUserID");
@@ -6666,7 +6666,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IX_AuditInvStatusID");
 
                 entity.HasIndex(e => new { e.AuditDetailInventoryCountUid, e.LastModifiedDate })
-                    .HasName("IX_AuditDetailInvCntUID_LModDate");
+                    .HasName("IX_AuditDetailInvCntUid_LModDate");
 
                 entity.HasIndex(e => new { e.AuditDetailUid, e.StatusId })
                     .HasName("IX_AuditInvCounts");
@@ -6674,35 +6674,35 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.AuditDetailUid, e.ItemUid, e.InventoryUid, e.StatusId })
                     .HasName("IX_AuditDetailItemsInventoryStatus");
 
-                entity.Property(e => e.AuditDetailInventoryCountUid).HasColumnName("AuditDetailInventoryCountUID");
+                entity.Property(e => e.AuditDetailInventoryCountUid).HasColumnName("AuditDetailInventoryCountUid");
 
-                entity.Property(e => e.ActionUid).HasColumnName("ActionUID");
+                entity.Property(e => e.ActionUid).HasColumnName("ActionUid");
 
-                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUID");
+                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUid");
 
-                entity.Property(e => e.AuditEntityTypeUid).HasColumnName("AuditEntityTypeUID");
+                entity.Property(e => e.AuditEntityTypeUid).HasColumnName("AuditEntityTypeUid");
 
-                entity.Property(e => e.AuditEntityUid).HasColumnName("AuditEntityUID");
+                entity.Property(e => e.AuditEntityUid).HasColumnName("AuditEntityUid");
 
-                entity.Property(e => e.AuditSiteUid).HasColumnName("AuditSiteUID");
+                entity.Property(e => e.AuditSiteUid).HasColumnName("AuditSiteUid");
 
-                entity.Property(e => e.CreatedByEntityTypeUid).HasColumnName("CreatedByEntityTypeUID");
+                entity.Property(e => e.CreatedByEntityTypeUid).HasColumnName("CreatedByEntityTypeUid");
 
-                entity.Property(e => e.CreatedByEntityUid).HasColumnName("CreatedByEntityUID");
+                entity.Property(e => e.CreatedByEntityUid).HasColumnName("CreatedByEntityUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.FoundReferenceAuditDetailInventoryUid).HasColumnName("FoundReferenceAuditDetailInventoryUID");
+                entity.Property(e => e.FoundReferenceAuditDetailInventoryUid).HasColumnName("FoundReferenceAuditDetailInventoryUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
-                entity.Property(e => e.LastModifiedByEntityTypeUid).HasColumnName("LastModifiedByEntityTypeUID");
+                entity.Property(e => e.LastModifiedByEntityTypeUid).HasColumnName("LastModifiedByEntityTypeUid");
 
-                entity.Property(e => e.LastModifiedByEntityUid).HasColumnName("LastModifiedByEntityUID");
+                entity.Property(e => e.LastModifiedByEntityUid).HasColumnName("LastModifiedByEntityUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -6714,9 +6714,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.OriginalStatusId).HasColumnName("OriginalStatusID");
 
-                entity.Property(e => e.ScanByEntityTypeUid).HasColumnName("ScanByEntityTypeUID");
+                entity.Property(e => e.ScanByEntityTypeUid).HasColumnName("ScanByEntityTypeUid");
 
-                entity.Property(e => e.ScanByEntityUid).HasColumnName("ScanByEntityUID");
+                entity.Property(e => e.ScanByEntityUid).HasColumnName("ScanByEntityUid");
 
                 entity.Property(e => e.ScanDate).HasColumnType("datetime");
 
@@ -6777,13 +6777,13 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.EntityTypeUid, e.EntityUid, e.StatusId, e.AuditUid })
                     .HasName("IX_AuditDetails");
 
-                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUID");
+                entity.Property(e => e.AuditDetailUid).HasColumnName("AuditDetailUid");
 
                 entity.Property(e => e.AuditDetailNotes)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -6791,27 +6791,27 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DueDate).HasColumnType("datetime");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
-                entity.Property(e => e.FinalizedByEntityTypeUid).HasColumnName("FinalizedByEntityTypeUID");
+                entity.Property(e => e.FinalizedByEntityTypeUid).HasColumnName("FinalizedByEntityTypeUid");
 
-                entity.Property(e => e.FinalizedByEntityUid).HasColumnName("FinalizedByEntityUID");
+                entity.Property(e => e.FinalizedByEntityUid).HasColumnName("FinalizedByEntityUid");
 
                 entity.Property(e => e.FinalizedByUserId).HasColumnName("FinalizedByUserID");
 
                 entity.Property(e => e.FinalizedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastModifiedByEntityTypeUid).HasColumnName("LastModifiedByEntityTypeUID");
+                entity.Property(e => e.LastModifiedByEntityTypeUid).HasColumnName("LastModifiedByEntityTypeUid");
 
-                entity.Property(e => e.LastModifiedByEntityUid).HasColumnName("LastModifiedByEntityUID");
+                entity.Property(e => e.LastModifiedByEntityUid).HasColumnName("LastModifiedByEntityUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -6840,11 +6840,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAuditEntityTypes");
 
-                entity.Property(e => e.AuditEntityTypeUid).HasColumnName("AuditEntityTypeUID");
+                entity.Property(e => e.AuditEntityTypeUid).HasColumnName("AuditEntityTypeUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblTechAuditEntityTypes)
@@ -6865,9 +6865,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAuditGrades");
 
-                entity.Property(e => e.AuditGradesUid).HasColumnName("AuditGradesUID");
+                entity.Property(e => e.AuditGradesUid).HasColumnName("AuditGradesUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
                 entity.Property(e => e.GradeName)
                     .IsRequired()
@@ -6887,11 +6887,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAuditItemTypes");
 
-                entity.Property(e => e.AuditItemTypeUid).HasColumnName("AuditItemTypeUID");
+                entity.Property(e => e.AuditItemTypeUid).HasColumnName("AuditItemTypeUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblTechAuditItemTypes)
@@ -6912,11 +6912,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAuditRoomTypes");
 
-                entity.Property(e => e.AuditRoomTypeUid).HasColumnName("AuditRoomTypeUID");
+                entity.Property(e => e.AuditRoomTypeUid).HasColumnName("AuditRoomTypeUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUID");
+                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblTechAuditRoomTypes)
@@ -6937,11 +6937,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechAuditStaffTypes");
 
-                entity.Property(e => e.AuditStaffTypesUid).HasColumnName("AuditStaffTypesUID");
+                entity.Property(e => e.AuditStaffTypesUid).HasColumnName("AuditStaffTypesUid");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
+                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUid");
 
                 entity.HasOne(d => d.AuditU)
                     .WithMany(p => p.TblTechAuditStaffTypes)
@@ -6962,7 +6962,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechBulkEdit");
 
-                entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUID");
+                entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -6985,7 +6985,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechContainers");
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.ContainerDescription)
                     .HasMaxLength(100)
@@ -7000,7 +7000,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ContainerTypeUid).HasColumnName("ContainerTypeUID");
+                entity.Property(e => e.ContainerTypeUid).HasColumnName("ContainerTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7008,9 +7008,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7018,7 +7018,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -7047,7 +7047,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechContainerTypes");
 
-                entity.Property(e => e.ContainerTypeUid).HasColumnName("ContainerTypeUID");
+                entity.Property(e => e.ContainerTypeUid).HasColumnName("ContainerTypeUid");
 
                 entity.Property(e => e.ContainerTypeName)
                     .IsRequired()
@@ -7073,7 +7073,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechDepartments");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7097,7 +7097,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PrimaryContactUserId).HasColumnName("PrimaryContactUserID");
 
-                entity.Property(e => e.TransferCompleteNotificationRecipientUid).HasColumnName("TransferCompleteNotificationRecipientUID");
+                entity.Property(e => e.TransferCompleteNotificationRecipientUid).HasColumnName("TransferCompleteNotificationRecipientUid");
 
                 entity.HasOne(d => d.PrimaryContactUser)
                     .WithMany(p => p.TblTechDepartments)
@@ -7116,11 +7116,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechFundingSourceUsers");
 
-                entity.Property(e => e.FundingSourceUserUid).HasColumnName("FundingSourceUserUID");
+                entity.Property(e => e.FundingSourceUserUid).HasColumnName("FundingSourceUserUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -7157,7 +7157,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechImages_ImageName")
                     .IsUnique();
 
-                entity.Property(e => e.ImageUid).HasColumnName("ImageUID");
+                entity.Property(e => e.ImageUid).HasColumnName("ImageUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7195,7 +7195,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechImports");
 
-                entity.Property(e => e.ImportUid).HasColumnName("ImportUID");
+                entity.Property(e => e.ImportUid).HasColumnName("ImportUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7213,7 +7213,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.ImportTypeUid)
-                    .HasColumnName("ImportTypeUID")
+                    .HasColumnName("ImportTypeUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.ImportTypeU)
@@ -7244,21 +7244,21 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.ItemUid, e.InventoryUid });
 
                 entity.HasIndex(e => new { e.EntityUid, e.EntityTypeUid, e.InventoryUid })
-                    .HasName("IX_tblTechInventory_EUID_ETUID_IUID");
+                    .HasName("IX_tblTechInventory_EUid_ETUid_IUid");
 
                 entity.HasIndex(e => new { e.Serial, e.PurchasePrice, e.PurchaseDate, e.ExpirationDate, e.InventoryNotes, e.TechDepartmentUid, e.ArchiveUid, e.StatusUid, e.InventoryUid, e.EntityTypeUid, e.InventoryTypeUid, e.SiteUid, e.FundingSourceUid, e.ItemUid, e.EntityUid, e.Tag })
                     .HasName("_dta_index_tblTechInventory_8_1122259203__K8_K20_K7_K1_K6_K2_K4_K11_K3_K5_K9_10_12_13_14_15");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
-                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUID");
+                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUid");
 
                 entity.Property(e => e.AssetId)
                     .HasColumnName("AssetID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7266,23 +7266,23 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
                 entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.InventoryNotes)
                     .HasMaxLength(3000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUid");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7290,7 +7290,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUID");
+                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUid");
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
 
@@ -7300,16 +7300,16 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
                 entity.Property(e => e.Tag)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.HasOne(d => d.ArchiveU)
                     .WithMany(p => p.TblTechInventory)
@@ -7378,15 +7378,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryAccessories");
 
-                entity.Property(e => e.InventoryAccessoryUid).HasColumnName("InventoryAccessoryUID");
+                entity.Property(e => e.InventoryAccessoryUid).HasColumnName("InventoryAccessoryUid");
 
-                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUID");
+                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7415,9 +7415,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechInventoryDetails")
                     .IsUnique();
 
-                entity.Property(e => e.InventoryDetailUid).HasColumnName("InventoryDetailUID");
+                entity.Property(e => e.InventoryDetailUid).HasColumnName("InventoryDetailUid");
 
-                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUID");
+                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUid");
 
                 entity.Property(e => e.Cfda)
                     .HasColumnName("CFDA")
@@ -7428,7 +7428,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7460,7 +7460,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechInventoryDetailsSettings_InventoryDetailField")
                     .IsUnique();
 
-                entity.Property(e => e.InventoryDetailSettingUid).HasColumnName("InventoryDetailSettingUID");
+                entity.Property(e => e.InventoryDetailSettingUid).HasColumnName("InventoryDetailSettingUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7490,7 +7490,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryDueDates");
 
-                entity.Property(e => e.InventoryDueDateUid).HasColumnName("InventoryDueDateUID");
+                entity.Property(e => e.InventoryDueDateUid).HasColumnName("InventoryDueDateUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7498,9 +7498,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DueDate).HasColumnType("date");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7540,24 +7540,24 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechInventoryExt");
 
                 entity.HasIndex(e => e.InventoryMetaUid)
-                    .HasName("IX_tblTechInventoryMetaInventoryMetaUID");
+                    .HasName("IX_tblTechInventoryMetaInventoryMetaUid");
 
                 entity.HasIndex(e => new { e.InventoryExtUid, e.InventoryUid })
-                    .HasName("IX_tblTechInventoryExt_InventoryUID");
+                    .HasName("IX_tblTechInventoryExt_InventoryUid");
 
                 entity.HasIndex(e => new { e.InventoryUid, e.InventoryMetaUid })
                     .IsUnique();
 
-                entity.Property(e => e.InventoryExtUid).HasColumnName("InventoryExtUID");
+                entity.Property(e => e.InventoryExtUid).HasColumnName("InventoryExtUid");
 
                 entity.Property(e => e.InventoryExtValue)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventoryMetaUid).HasColumnName("InventoryMetaUID");
+                entity.Property(e => e.InventoryMetaUid).HasColumnName("InventoryMetaUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.HasOne(d => d.InventoryMetaU)
                     .WithMany(p => p.TblTechInventoryExt)
@@ -7579,7 +7579,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechInventoryHistory");
 
                 entity.HasIndex(e => new { e.InventoryHistoryUid, e.InventoryUid, e.CreatedDate })
-                    .HasName("IX_tblTechInventoryHistory_CD_IUID_iIHUID");
+                    .HasName("IX_tblTechInventoryHistory_CD_IUid_iIHUid");
 
                 entity.HasIndex(e => new { e.InventoryHistoryNotes, e.CreatedDate, e.InventoryHistoryUid, e.InventoryUid, e.CreatedByUserId })
                     .HasName("_dta_index_tblTechInventoryHistory_8_2062018477__K1_K2_K13_12_14");
@@ -7587,13 +7587,13 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.InventoryHistoryNotes, e.CreatedDate, e.InventoryUid, e.CreatedByUserId, e.InventoryHistoryUid })
                     .HasName("_dta_index_tblTechInventoryHistory_8_2062018477__K2_K13_K1_12_14");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
-                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUID");
+                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUid");
 
-                entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUID");
+                entity.Property(e => e.BulkEditUid).HasColumnName("BulkEditUid");
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7601,19 +7601,19 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
                 entity.Property(e => e.InventoryHistoryNotes)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUid");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7621,27 +7621,27 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.OperationUid).HasColumnName("OperationUID");
+                entity.Property(e => e.OperationUid).HasColumnName("OperationUid");
 
-                entity.Property(e => e.OriginArchiveUid).HasColumnName("OriginArchiveUID");
+                entity.Property(e => e.OriginArchiveUid).HasColumnName("OriginArchiveUid");
 
-                entity.Property(e => e.OriginContainerUid).HasColumnName("OriginContainerUID");
+                entity.Property(e => e.OriginContainerUid).HasColumnName("OriginContainerUid");
 
-                entity.Property(e => e.OriginEntityTypeUid).HasColumnName("OriginEntityTypeUID");
+                entity.Property(e => e.OriginEntityTypeUid).HasColumnName("OriginEntityTypeUid");
 
-                entity.Property(e => e.OriginEntityUid).HasColumnName("OriginEntityUID");
+                entity.Property(e => e.OriginEntityUid).HasColumnName("OriginEntityUid");
 
-                entity.Property(e => e.OriginParentInventoryUid).HasColumnName("OriginParentInventoryUID");
+                entity.Property(e => e.OriginParentInventoryUid).HasColumnName("OriginParentInventoryUid");
 
-                entity.Property(e => e.OriginSiteUid).HasColumnName("OriginSiteUID");
+                entity.Property(e => e.OriginSiteUid).HasColumnName("OriginSiteUid");
 
-                entity.Property(e => e.OriginStatusUid).HasColumnName("OriginStatusUID");
+                entity.Property(e => e.OriginStatusUid).HasColumnName("OriginStatusUid");
 
-                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUID");
+                entity.Property(e => e.ParentInventoryUid).HasColumnName("ParentInventoryUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
                 entity.HasOne(d => d.ContainerU)
                     .WithMany(p => p.TblTechInventoryHistoryContainerU)
@@ -7698,11 +7698,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryImports");
 
-                entity.Property(e => e.InventoryImportUid).HasColumnName("InventoryImportUID");
+                entity.Property(e => e.InventoryImportUid).HasColumnName("InventoryImportUid");
 
-                entity.Property(e => e.ImportUid).HasColumnName("ImportUID");
+                entity.Property(e => e.ImportUid).HasColumnName("ImportUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.HasOne(d => d.ImportU)
                     .WithMany(p => p.TblTechInventoryImports)
@@ -7723,17 +7723,17 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryInstallationDetails");
 
-                entity.Property(e => e.InstallationDetailUid).HasColumnName("InstallationDetailUID");
+                entity.Property(e => e.InstallationDetailUid).HasColumnName("InstallationDetailUid");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.InstallationDate).HasColumnType("date");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.HasOne(d => d.InventoryU)
                     .WithMany(p => p.TblTechInventoryInstallationDetails)
@@ -7760,7 +7760,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryMeta");
 
-                entity.Property(e => e.InventoryMetaUid).HasColumnName("InventoryMetaUID");
+                entity.Property(e => e.InventoryMetaUid).HasColumnName("InventoryMetaUid");
 
                 entity.Property(e => e.InventoryMetaLabel)
                     .IsRequired()
@@ -7772,7 +7772,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
                 entity.HasOne(d => d.ItemTypeU)
                     .WithMany(p => p.TblTechInventoryMeta)
@@ -7787,21 +7787,21 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryQuickAction");
 
-                entity.Property(e => e.InventoryQuickActionUid).HasColumnName("InventoryQuickActionUID");
+                entity.Property(e => e.InventoryQuickActionUid).HasColumnName("InventoryQuickActionUid");
 
-                entity.Property(e => e.ActionUid).HasColumnName("ActionUID");
+                entity.Property(e => e.ActionUid).HasColumnName("ActionUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.HasOne(d => d.ActionU)
                     .WithMany(p => p.TblTechInventoryQuickAction)
@@ -7828,7 +7828,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventorySource");
 
-                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUID");
+                entity.Property(e => e.InventorySourceUid).HasColumnName("InventorySourceUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7854,23 +7854,23 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryStatusChangeRequests");
 
-                entity.Property(e => e.StatusChangeRequestUid).HasColumnName("StatusChangeRequestUID");
+                entity.Property(e => e.StatusChangeRequestUid).HasColumnName("StatusChangeRequestUid");
 
-                entity.Property(e => e.ApprovedDeniedInventoryHistoryUid).HasColumnName("ApprovedDeniedInventoryHistoryUID");
+                entity.Property(e => e.ApprovedDeniedInventoryHistoryUid).HasColumnName("ApprovedDeniedInventoryHistoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TagAttachmentUid).HasColumnName("TagAttachmentUID");
+                entity.Property(e => e.TagAttachmentUid).HasColumnName("TagAttachmentUid");
 
                 entity.HasOne(d => d.ApprovedDeniedInventoryHistoryU)
                     .WithMany(p => p.TblTechInventoryStatusChangeRequestsApprovedDeniedInventoryHistoryU)
@@ -7901,7 +7901,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechInventoryTypes");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7927,9 +7927,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechItemAccessories");
 
-                entity.Property(e => e.ItemAccessoryUid).HasColumnName("ItemAccessoryUID");
+                entity.Property(e => e.ItemAccessoryUid).HasColumnName("ItemAccessoryUid");
 
-                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUID");
+                entity.Property(e => e.AccessoryUid).HasColumnName("AccessoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7937,7 +7937,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -7964,7 +7964,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechItemImages");
 
-                entity.Property(e => e.ItemImageUid).HasColumnName("ItemImageUID");
+                entity.Property(e => e.ItemImageUid).HasColumnName("ItemImageUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -7972,13 +7972,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ImageUid).HasColumnName("ImageUID");
+                entity.Property(e => e.ImageUid).HasColumnName("ImageUid");
 
                 entity.Property(e => e.IsPrimary)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -8012,9 +8012,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => e.ItemTypeUid)
                     .HasName("_dta_index_tblTechItems_8_254012036__K5");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
-                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8057,7 +8057,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("money")
                     .HasDefaultValueSql("((0.00))");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -8065,7 +8065,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUid");
 
                 entity.Property(e => e.ModelNumber)
                     .HasMaxLength(100)
@@ -8101,7 +8101,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechItemTypes");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8131,7 +8131,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechOperations");
 
-                entity.Property(e => e.OperationUid).HasColumnName("OperationUID");
+                entity.Property(e => e.OperationUid).HasColumnName("OperationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasDefaultValueSql("((1))");
 
@@ -8157,7 +8157,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechPermissionTemplate");
 
-                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUID");
+                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8172,7 +8172,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUID");
+                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUid");
 
                 entity.HasOne(d => d.UserRoleU)
                     .WithMany(p => p.TblTechPermissionTemplate)
@@ -8187,7 +8187,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechPurchaseAttachment");
 
-                entity.Property(e => e.PurchaseAttachmentUid).HasColumnName("PurchaseAttachmentUID");
+                entity.Property(e => e.PurchaseAttachmentUid).HasColumnName("PurchaseAttachmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8217,7 +8217,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.UploadedFileName)
                     .IsRequired()
@@ -8232,16 +8232,16 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechPurchaseInventory");
 
                 entity.HasIndex(e => e.InventoryUid)
-                    .HasName("UQ_tblTechPurchaseInventoryInventoryUID")
+                    .HasName("UQ_tblTechPurchaseInventoryInventoryUid")
                     .IsUnique();
 
                 entity.HasIndex(e => e.PurchaseItemShipmentUid)
-                    .HasName("IX_PurchaseItemShipmentUID");
+                    .HasName("IX_PurchaseItemShipmentUid");
 
                 entity.HasIndex(e => new { e.PurchaseItemShipmentUid, e.InventoryUid })
                     .HasName("_dta_index_tblTechPurchaseInventory_8_228299973__K2_3");
 
-                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
+                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8249,7 +8249,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -8257,7 +8257,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
                 entity.HasOne(d => d.InventoryU)
                     .WithOne(p => p.TblTechPurchaseInventory)
@@ -8278,7 +8278,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechPurchaseInvoice");
 
-                entity.Property(e => e.PurchaseInvoiceUid).HasColumnName("PurchaseInvoiceUID");
+                entity.Property(e => e.PurchaseInvoiceUid).HasColumnName("PurchaseInvoiceUid");
 
                 entity.Property(e => e.AccountingDate)
                     .HasMaxLength(50)
@@ -8308,7 +8308,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.HasOne(d => d.PurchaseU)
                     .WithMany(p => p.TblTechPurchaseInvoice)
@@ -8323,7 +8323,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechPurchaseInvoiceDetail");
 
-                entity.Property(e => e.PurchaseInvoiceDetailUid).HasColumnName("PurchaseInvoiceDetailUID");
+                entity.Property(e => e.PurchaseInvoiceDetailUid).HasColumnName("PurchaseInvoiceDetailUid");
 
                 entity.Property(e => e.AssetPrice)
                     .HasMaxLength(50)
@@ -8351,7 +8351,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PurchaseInvoiceUid).HasColumnName("PurchaseInvoiceUID");
+                entity.Property(e => e.PurchaseInvoiceUid).HasColumnName("PurchaseInvoiceUid");
 
                 entity.Property(e => e.Quantity)
                     .HasMaxLength(50)
@@ -8371,9 +8371,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechPurchaseItemDetails");
 
                 entity.HasIndex(e => new { e.PurchaseItemDetailUid, e.PurchaseUid })
-                    .HasName("IX_PurchaseUID");
+                    .HasName("IX_PurchaseUid");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
                 entity.Property(e => e.AccountCode)
                     .HasMaxLength(100)
@@ -8390,9 +8390,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -8402,15 +8402,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.PurchasePrice).HasDefaultValueSql("((0.00))");
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.SiteAddedSiteUid)
-                    .HasColumnName("SiteAddedSiteUID")
+                    .HasColumnName("SiteAddedSiteUid")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.HasOne(d => d.FundingSourceU)
                     .WithMany(p => p.TblTechPurchaseItemDetails)
@@ -8456,9 +8456,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechPurchaseItemShipments");
 
                 entity.HasIndex(e => e.PurchaseItemDetailUid)
-                    .HasName("IX_PurchaseItemDetailUID");
+                    .HasName("IX_PurchaseItemDetailUid");
 
-                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
+                entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8478,11 +8478,11 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
+                entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUid");
 
-                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
+                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUid");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
                 entity.Property(e => e.TicketedByUserId).HasColumnName("TicketedByUserID");
 
@@ -8517,7 +8517,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechPurchasesOrderNumber")
                     .IsUnique();
 
-                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
+                entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8558,14 +8558,14 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.SiteUid)
-                    .HasColumnName("SiteUID")
+                    .HasColumnName("SiteUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.StateFunding).HasColumnType("decimal(5, 2)");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
-                entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
+                entity.Property(e => e.VendorUid).HasColumnName("VendorUid");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.TblTechPurchases)
@@ -8599,7 +8599,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechSavedTagSearches");
 
                 entity.Property(e => e.TagSearchUid)
-                    .HasColumnName("TagSearchUID")
+                    .HasColumnName("TagSearchUid")
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.SearchName)
@@ -8626,7 +8626,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
             });
 
             modelBuilder.Entity<TblTechScheduleReport>(entity =>
@@ -8635,7 +8635,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechScheduleReport");
 
-                entity.Property(e => e.ScheduleReportUid).HasColumnName("ScheduleReportUID");
+                entity.Property(e => e.ScheduleReportUid).HasColumnName("ScheduleReportUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8647,11 +8647,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUID");
+                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUid");
 
-                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUID");
+                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUid");
 
-                entity.Property(e => e.SearchUid).HasColumnName("SearchUID");
+                entity.Property(e => e.SearchUid).HasColumnName("SearchUid");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.TblTechScheduleReportCreatedByUser)
@@ -8683,7 +8683,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechSignatureReceipt");
 
-                entity.Property(e => e.SignatureReceiptUid).HasColumnName("SignatureReceiptUID");
+                entity.Property(e => e.SignatureReceiptUid).HasColumnName("SignatureReceiptUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8691,11 +8691,11 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -8714,7 +8714,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechSites_SiteID")
                     .IsUnique();
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.BillingAddress1)
                     .HasMaxLength(100)
@@ -8808,7 +8808,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteTypeUid).HasColumnName("SiteTypeUID");
+                entity.Property(e => e.SiteTypeUid).HasColumnName("SiteTypeUid");
 
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.TblTechSites)
@@ -8828,7 +8828,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechSiteTypes");
 
-                entity.Property(e => e.SiteTypeUid).HasColumnName("SiteTypeUID");
+                entity.Property(e => e.SiteTypeUid).HasColumnName("SiteTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8859,7 +8859,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStaffAttachment");
 
-                entity.Property(e => e.StaffAttachmentUid).HasColumnName("StaffAttachmentUID");
+                entity.Property(e => e.StaffAttachmentUid).HasColumnName("StaffAttachmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8889,7 +8889,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StaffUid).HasColumnName("StaffUID");
+                entity.Property(e => e.StaffUid).HasColumnName("StaffUid");
 
                 entity.Property(e => e.UploadedFileName)
                     .IsRequired()
@@ -8903,9 +8903,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStaffCharges");
 
-                entity.Property(e => e.StaffChargeUid).HasColumnName("StaffChargeUID");
+                entity.Property(e => e.StaffChargeUid).HasColumnName("StaffChargeUid");
 
-                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
+                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUid");
 
                 entity.Property(e => e.StaffId)
                     .IsRequired()
@@ -8926,15 +8926,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStaffRooms");
 
-                entity.Property(e => e.StaffRoomUid).HasColumnName("StaffRoomUID");
+                entity.Property(e => e.StaffRoomUid).HasColumnName("StaffRoomUid");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
-                entity.Property(e => e.TeacherUid).HasColumnName("TeacherUID");
+                entity.Property(e => e.TeacherUid).HasColumnName("TeacherUid");
 
                 entity.HasOne(d => d.RoomU)
                     .WithMany(p => p.TblTechStaffRooms)
@@ -8955,7 +8955,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStatusApprovalSettings");
 
-                entity.Property(e => e.StatusApprovalSettingsUid).HasColumnName("StatusApprovalSettingsUID");
+                entity.Property(e => e.StatusApprovalSettingsUid).HasColumnName("StatusApprovalSettingsUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -8965,7 +8965,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUID");
+                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUid");
 
                 entity.HasOne(d => d.RecipientU)
                     .WithMany(p => p.TblTechStatusApprovalSettings)
@@ -8980,13 +8980,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStatusApprovalSettingsStatusLink");
 
-                entity.Property(e => e.StatusApprovalSettingStatusUid).HasColumnName("StatusApprovalSettingStatusUID");
+                entity.Property(e => e.StatusApprovalSettingStatusUid).HasColumnName("StatusApprovalSettingStatusUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.StatusApprovalSettingsUid).HasColumnName("StatusApprovalSettingsUID");
+                entity.Property(e => e.StatusApprovalSettingsUid).HasColumnName("StatusApprovalSettingsUid");
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -9003,7 +9003,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStatusChangeSettings");
 
-                entity.Property(e => e.StatusChangeSettingsUid).HasColumnName("StatusChangeSettingsUID");
+                entity.Property(e => e.StatusChangeSettingsUid).HasColumnName("StatusChangeSettingsUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9013,7 +9013,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUID");
+                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUid");
 
                 entity.HasOne(d => d.RecipientU)
                     .WithMany(p => p.TblTechStatusChangeSettings)
@@ -9028,13 +9028,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStatusChangeSettingsStatus");
 
-                entity.Property(e => e.StatusChangeSettingStatusUid).HasColumnName("StatusChangeSettingStatusUID");
+                entity.Property(e => e.StatusChangeSettingStatusUid).HasColumnName("StatusChangeSettingStatusUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.StatusChangeSettingsUid).HasColumnName("StatusChangeSettingsUID");
+                entity.Property(e => e.StatusChangeSettingsUid).HasColumnName("StatusChangeSettingsUid");
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -9051,7 +9051,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStudentAttachment");
 
-                entity.Property(e => e.StudentAttachmentUid).HasColumnName("StudentAttachmentUID");
+                entity.Property(e => e.StudentAttachmentUid).HasColumnName("StudentAttachmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9081,7 +9081,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StudentUid).HasColumnName("StudentUID");
+                entity.Property(e => e.StudentUid).HasColumnName("StudentUid");
 
                 entity.Property(e => e.UploadedFileName)
                     .IsRequired()
@@ -9095,9 +9095,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStudentCharges");
 
-                entity.Property(e => e.StudentChargeUid).HasColumnName("StudentChargeUID");
+                entity.Property(e => e.StudentChargeUid).HasColumnName("StudentChargeUid");
 
-                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
+                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUid");
 
                 entity.Property(e => e.StudentId)
                     .IsRequired()
@@ -9118,11 +9118,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechStudentInventory");
 
-                entity.Property(e => e.StudentInventoryUid).HasColumnName("StudentInventoryUID");
+                entity.Property(e => e.StudentInventoryUid).HasColumnName("StudentInventoryUid");
 
-                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUID");
+                entity.Property(e => e.InventoryHistoryUid).HasColumnName("InventoryHistoryUid");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.StudentId)
                     .IsRequired()
@@ -9149,7 +9149,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTagAttachment");
 
-                entity.Property(e => e.TagAttachmentUid).HasColumnName("TagAttachmentUID");
+                entity.Property(e => e.TagAttachmentUid).HasColumnName("TagAttachmentUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9167,7 +9167,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -9196,7 +9196,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblTechTagEpc")
                     .IsUnique();
 
-                entity.Property(e => e.TagEpcUid).HasColumnName("TagEpcUID");
+                entity.Property(e => e.TagEpcUid).HasColumnName("TagEpcUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9225,9 +9225,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTagHistory");
 
-                entity.Property(e => e.TagHistoryUid).HasColumnName("TagHistoryUID");
+                entity.Property(e => e.TagHistoryUid).HasColumnName("TagHistoryUid");
 
-                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUID");
+                entity.Property(e => e.AssetConditionUid).HasColumnName("AssetConditionUid");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -9235,9 +9235,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DueDate).HasColumnType("date");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
-                entity.Property(e => e.OriginAssetConditionUid).HasColumnName("OriginAssetConditionUID");
+                entity.Property(e => e.OriginAssetConditionUid).HasColumnName("OriginAssetConditionUid");
 
                 entity.Property(e => e.OriginDueDate).HasColumnType("date");
 
@@ -9288,19 +9288,19 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTemplateFunction");
 
-                entity.Property(e => e.TemplateFunctionUid).HasColumnName("TemplateFunctionUID");
+                entity.Property(e => e.TemplateFunctionUid).HasColumnName("TemplateFunctionUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
+                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUID");
+                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUid");
 
                 entity.HasOne(d => d.PermissionTemplateU)
                     .WithMany(p => p.TblTechTemplateFunction)
@@ -9330,7 +9330,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
+                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUid");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
@@ -9348,9 +9348,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferDepartmentWorkflows");
 
-                entity.Property(e => e.TransferDepartmentWorkflowUid).HasColumnName("TransferDepartmentWorkflowUID");
+                entity.Property(e => e.TransferDepartmentWorkflowUid).HasColumnName("TransferDepartmentWorkflowUid");
 
-                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
+                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9364,7 +9364,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -9405,7 +9405,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferHistory");
 
-                entity.Property(e => e.TransferHistoryUid).HasColumnName("TransferHistoryUID");
+                entity.Property(e => e.TransferHistoryUid).HasColumnName("TransferHistoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9423,13 +9423,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.OriginStatusUid).HasColumnName("OriginStatusUID");
+                entity.Property(e => e.OriginStatusUid).HasColumnName("OriginStatusUid");
 
-                entity.Property(e => e.SignatureUid).HasColumnName("SignatureUID");
+                entity.Property(e => e.SignatureUid).HasColumnName("SignatureUid");
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
                 entity.HasOne(d => d.Driver)
                     .WithMany(p => p.TblTechTransferHistory)
@@ -9460,9 +9460,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferInventory");
 
-                entity.Property(e => e.TransferInventoryUid).HasColumnName("TransferInventoryUID");
+                entity.Property(e => e.TransferInventoryUid).HasColumnName("TransferInventoryUid");
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9470,7 +9470,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.FundingSourceApproved).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUID");
+                entity.Property(e => e.InventoryUid).HasColumnName("InventoryUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -9481,12 +9481,12 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.OriginStatusUid)
-                    .HasColumnName("OriginStatusUID")
+                    .HasColumnName("OriginStatusUid")
                     .HasDefaultValueSql("((26))");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
-                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUID");
+                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUid");
 
                 entity.HasOne(d => d.ContainerU)
                     .WithMany(p => p.TblTechTransferInventory)
@@ -9525,9 +9525,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferInventoryContainerLink");
 
-                entity.Property(e => e.TransferInventoryContainerUid).HasColumnName("TransferInventoryContainerUID");
+                entity.Property(e => e.TransferInventoryContainerUid).HasColumnName("TransferInventoryContainerUid");
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9537,7 +9537,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TransferInventoryUid).HasColumnName("TransferInventoryUID");
+                entity.Property(e => e.TransferInventoryUid).HasColumnName("TransferInventoryUid");
 
                 entity.HasOne(d => d.ContainerU)
                     .WithMany(p => p.TblTechTransferInventoryContainerLink)
@@ -9558,21 +9558,21 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferRequestDetails");
 
-                entity.Property(e => e.TransferRequestDetailsUid).HasColumnName("TransferRequestDetailsUID");
+                entity.Property(e => e.TransferRequestDetailsUid).HasColumnName("TransferRequestDetailsUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUID");
+                entity.Property(e => e.InventoryTypeUid).HasColumnName("InventoryTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
                 entity.HasOne(d => d.InventoryTypeU)
                     .WithMany(p => p.TblTechTransferRequestDetails)
@@ -9599,13 +9599,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferRequestDetailsHistory");
 
-                entity.Property(e => e.TransferRequestDetailsHistoryUid).HasColumnName("TransferRequestDetailsHistoryUID");
+                entity.Property(e => e.TransferRequestDetailsHistoryUid).HasColumnName("TransferRequestDetailsHistoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TransferRequestDetailsUid).HasColumnName("TransferRequestDetailsUID");
+                entity.Property(e => e.TransferRequestDetailsUid).HasColumnName("TransferRequestDetailsUid");
 
                 entity.HasOne(d => d.TransferRequestDetailsU)
                     .WithMany(p => p.TblTechTransferRequestDetailsHistory)
@@ -9620,7 +9620,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferRequestNotes");
 
-                entity.Property(e => e.TransferRequestNotesUid).HasColumnName("TransferRequestNotesUID");
+                entity.Property(e => e.TransferRequestNotesUid).HasColumnName("TransferRequestNotesUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9632,9 +9632,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Notes).IsUnicode(false);
 
-                entity.Property(e => e.StatusUid).HasColumnName("StatusUID");
+                entity.Property(e => e.StatusUid).HasColumnName("StatusUid");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
                 entity.HasOne(d => d.StatusU)
                     .WithMany(p => p.TblTechTransferRequestNotes)
@@ -9655,7 +9655,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransfers");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9663,7 +9663,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
 
-                entity.Property(e => e.DestinationSiteUid).HasColumnName("DestinationSiteUID");
+                entity.Property(e => e.DestinationSiteUid).HasColumnName("DestinationSiteUid");
 
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 
@@ -9691,10 +9691,10 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.ReceiveApprovedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.StatusUid)
-                    .HasColumnName("StatusUID")
+                    .HasColumnName("StatusUid")
                     .HasDefaultValueSql("((23))");
 
                 entity.Property(e => e.TransferNotes)
@@ -9702,7 +9702,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.TransferTypeUid)
-                    .HasColumnName("TransferTypeUID")
+                    .HasColumnName("TransferTypeUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Driver)
@@ -9729,7 +9729,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferSites");
 
-                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUID");
+                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUid");
 
                 entity.Property(e => e.CreatedByUserId).HasDefaultValueSql("((1))");
 
@@ -9752,7 +9752,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferStatusWorkflowSettings");
 
-                entity.Property(e => e.TransferStatusWorkflowSettingUid).HasColumnName("TransferStatusWorkflowSettingUID");
+                entity.Property(e => e.TransferStatusWorkflowSettingUid).HasColumnName("TransferStatusWorkflowSettingUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9766,7 +9766,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.NotifyRecipientUid).HasColumnName("NotifyRecipientUID");
+                entity.Property(e => e.NotifyRecipientUid).HasColumnName("NotifyRecipientUid");
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
@@ -9802,7 +9802,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblTechTransferTypes");
 
                 entity.Property(e => e.TransferTypeUid)
-                    .HasColumnName("TransferTypeUID")
+                    .HasColumnName("TransferTypeUid")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
@@ -9833,7 +9833,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferUserWorkflows");
 
-                entity.Property(e => e.TransferUserWorkflowUid).HasColumnName("TransferUserWorkflowUID");
+                entity.Property(e => e.TransferUserWorkflowUid).HasColumnName("TransferUserWorkflowUid");
 
                 entity.Property(e => e.ApprovalLevel).HasDefaultValueSql("((1))");
 
@@ -9893,11 +9893,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferWorkflowHistory");
 
-                entity.Property(e => e.TransferWorkflowHistoryUid).HasColumnName("TransferWorkflowHistoryUID");
+                entity.Property(e => e.TransferWorkflowHistoryUid).HasColumnName("TransferWorkflowHistoryUid");
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUid");
 
                 entity.Property(e => e.ApprovedByName)
                     .HasMaxLength(150)
@@ -9913,7 +9913,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
+                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -9937,15 +9937,15 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUID");
+                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUid");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
-                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUID");
+                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
+                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUid");
 
                 entity.HasOne(d => d.CcnotificationRecipientU)
                     .WithMany(p => p.TblTechTransferWorkflowHistory)
@@ -9982,13 +9982,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferWorkflowLinks");
 
-                entity.Property(e => e.TransferWorkflowLinkUid).HasColumnName("TransferWorkflowLinkUID");
+                entity.Property(e => e.TransferWorkflowLinkUid).HasColumnName("TransferWorkflowLinkUid");
 
                 entity.Property(e => e.EncryptedLink)
                     .IsRequired()
                     .IsUnicode(false);
 
-                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUID");
+                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -10011,11 +10011,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechTransferWorkflows");
 
-                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUID");
+                entity.Property(e => e.TransferWorkflowUid).HasColumnName("TransferWorkflowUid");
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUid");
 
                 entity.Property(e => e.ApprovedByName)
                     .HasMaxLength(150)
@@ -10031,7 +10031,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUID");
+                entity.Property(e => e.CcnotificationRecipientUid).HasColumnName("CCNotificationRecipientUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10055,13 +10055,13 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUID");
+                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUid");
 
-                entity.Property(e => e.TransferUid).HasColumnName("TransferUID");
+                entity.Property(e => e.TransferUid).HasColumnName("TransferUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
+                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUid");
 
                 entity.HasOne(d => d.CcnotificationRecipientU)
                     .WithMany(p => p.TblTechTransferWorkflows)
@@ -10098,9 +10098,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechUntaggedInventory");
 
-                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUID");
+                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUid");
 
-                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10113,10 +10113,10 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.InventorySourceUid)
-                    .HasColumnName("InventorySourceUID")
+                    .HasColumnName("InventorySourceUid")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -10149,7 +10149,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechUntaggedInventoryHistory");
 
-                entity.Property(e => e.UntaggedInventoryHistoryUid).HasColumnName("UntaggedInventoryHistoryUID");
+                entity.Property(e => e.UntaggedInventoryHistoryUid).HasColumnName("UntaggedInventoryHistoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10159,7 +10159,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.StatusId).HasColumnName("StatusID");
 
-                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUID");
+                entity.Property(e => e.UntaggedInventoryUid).HasColumnName("UntaggedInventoryUid");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.TblTechUntaggedInventoryHistory)
@@ -10180,9 +10180,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechUserDepartments");
 
-                entity.Property(e => e.UserDepartmentUid).HasColumnName("UserDepartmentUID");
+                entity.Property(e => e.UserDepartmentUid).HasColumnName("UserDepartmentUid");
 
-                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
+                entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -10219,7 +10219,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUID");
+                entity.Property(e => e.PermissionTemplateUid).HasColumnName("PermissionTemplateUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -10263,7 +10263,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IX_tblTechUserRoleTypes")
                     .IsUnique();
 
-                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
+                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10281,9 +10281,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechUserSites");
 
-                entity.Property(e => e.UserSiteUid).HasColumnName("UserSiteUID");
+                entity.Property(e => e.UserSiteUid).HasColumnName("UserSiteUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -10306,11 +10306,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblTechUserTypeWorkflows");
 
-                entity.Property(e => e.UserTypeWorkflowUid).HasColumnName("UserTypeWorkflowUID");
+                entity.Property(e => e.UserTypeWorkflowUid).HasColumnName("UserTypeWorkflowUid");
 
                 entity.Property(e => e.AdditionalEmail).IsUnicode(false);
 
-                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUID");
+                entity.Property(e => e.ApprovalUserTypeUid).HasColumnName("ApprovalUserTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10320,13 +10320,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUID");
+                entity.Property(e => e.TransferSiteUid).HasColumnName("TransferSiteUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUID");
+                entity.Property(e => e.UserRoleTypeUid).HasColumnName("UserRoleTypeUid");
 
-                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUID");
+                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUid");
 
                 entity.HasOne(d => d.TransferSiteU)
                     .WithMany(p => p.TblTechUserTypeWorkflows)
@@ -10422,7 +10422,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.Description).HasMaxLength(500);
 
@@ -10523,7 +10523,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvAlerts");
 
-                entity.Property(e => e.AlertUid).HasColumnName("AlertUID");
+                entity.Property(e => e.AlertUid).HasColumnName("AlertUid");
 
                 entity.Property(e => e.AlertBeginDate).HasColumnType("datetime");
 
@@ -10539,9 +10539,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
-                entity.Property(e => e.AlertTypeUid).HasColumnName("AlertTypeUID");
+                entity.Property(e => e.AlertTypeUid).HasColumnName("AlertTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10578,7 +10578,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvAlertTypes");
 
-                entity.Property(e => e.AlertTypeUid).HasColumnName("AlertTypeUID");
+                entity.Property(e => e.AlertTypeUid).HasColumnName("AlertTypeUid");
 
                 entity.Property(e => e.AlertTypeDescription)
                     .HasMaxLength(1000)
@@ -10589,7 +10589,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.HasOne(d => d.ApplicationU)
                     .WithMany(p => p.TblUnvAlertTypes)
@@ -10604,9 +10604,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvAlertUser");
 
-                entity.Property(e => e.AlertUserUid).HasColumnName("AlertUserUID");
+                entity.Property(e => e.AlertUserUid).HasColumnName("AlertUserUid");
 
-                entity.Property(e => e.AlertUid).HasColumnName("AlertUID");
+                entity.Property(e => e.AlertUid).HasColumnName("AlertUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -10629,7 +10629,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvApplications");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.ApplicationDescription)
                     .IsRequired()
@@ -10660,10 +10660,10 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvArchives");
 
-                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUID");
+                entity.Property(e => e.ArchiveUid).HasColumnName("ArchiveUid");
 
                 entity.Property(e => e.ApplicationUid)
-                    .HasColumnName("ApplicationUID")
+                    .HasColumnName("ApplicationUid")
                     .HasDefaultValueSql("((2))");
 
                 entity.Property(e => e.ArchiveDate)
@@ -10687,7 +10687,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvAreas");
 
-                entity.Property(e => e.AreaUid).HasColumnName("AreaUID");
+                entity.Property(e => e.AreaUid).HasColumnName("AreaUid");
 
                 entity.Property(e => e.AreaName)
                     .IsRequired()
@@ -10716,9 +10716,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.AuditName, e.AuditUid })
                     .HasName("IX_tblUnvAudits_AuditName");
 
-                entity.Property(e => e.AuditUid).HasColumnName("AuditUID");
+                entity.Property(e => e.AuditUid).HasColumnName("AuditUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.ApprovedByUserId).HasColumnName("ApprovedByUserID");
 
@@ -10751,7 +10751,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.HasOne(d => d.ApplicationU)
                     .WithMany(p => p.TblUnvAudits)
@@ -10766,13 +10766,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvChargePayments");
 
-                entity.Property(e => e.ChargePaymentUid).HasColumnName("ChargePaymentUID");
+                entity.Property(e => e.ChargePaymentUid).HasColumnName("ChargePaymentUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.ChargeAmount).HasColumnType("money");
 
-                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
+                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10790,7 +10790,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Notes).IsUnicode(false);
 
-                entity.Property(e => e.PaymentSiteUid).HasColumnName("PaymentSiteUID");
+                entity.Property(e => e.PaymentSiteUid).HasColumnName("PaymentSiteUid");
 
                 entity.HasOne(d => d.ChargeU)
                     .WithMany(p => p.TblUnvChargePayments)
@@ -10804,15 +10804,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvCharges");
 
-                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUID");
+                entity.Property(e => e.ChargeUid).HasColumnName("ChargeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.ChargeAmount).HasColumnType("money");
 
-                entity.Property(e => e.ChargeSiteUid).HasColumnName("ChargeSiteUID");
+                entity.Property(e => e.ChargeSiteUid).HasColumnName("ChargeSiteUid");
 
-                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUID");
+                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10824,13 +10824,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Description).IsUnicode(false);
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.EntityUid).HasColumnName("EntityUID");
+                entity.Property(e => e.EntityUid).HasColumnName("EntityUid");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
-                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -10857,7 +10857,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvChargeTypeCategories");
 
-                entity.Property(e => e.ChargeTypeCategoryUid).HasColumnName("ChargeTypeCategoryUID");
+                entity.Property(e => e.ChargeTypeCategoryUid).HasColumnName("ChargeTypeCategoryUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10883,11 +10883,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvChargeTypeChargeTypeCategory");
 
-                entity.Property(e => e.ChargeTypeChargeTypeCategoryUid).HasColumnName("ChargeTypeChargeTypeCategoryUID");
+                entity.Property(e => e.ChargeTypeChargeTypeCategoryUid).HasColumnName("ChargeTypeChargeTypeCategoryUid");
 
-                entity.Property(e => e.ChargeTypeCategoryUid).HasColumnName("ChargeTypeCategoryUID");
+                entity.Property(e => e.ChargeTypeCategoryUid).HasColumnName("ChargeTypeCategoryUid");
 
-                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUID");
+                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10916,13 +10916,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvChargeTypes");
 
-                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUID");
+                entity.Property(e => e.ChargeTypeUid).HasColumnName("ChargeTypeUid");
 
                 entity.Property(e => e.Active)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -10947,11 +10947,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvClosings");
 
-                entity.Property(e => e.ClosingUid).HasColumnName("ClosingUID");
+                entity.Property(e => e.ClosingUid).HasColumnName("ClosingUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
-                entity.Property(e => e.ClosingCampusUid).HasColumnName("ClosingCampusUID");
+                entity.Property(e => e.ClosingCampusUid).HasColumnName("ClosingCampusUid");
 
                 entity.Property(e => e.ClosingDate).HasColumnType("datetime");
 
@@ -10964,7 +10964,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ClosingTypeUid).HasColumnName("ClosingTypeUID");
+                entity.Property(e => e.ClosingTypeUid).HasColumnName("ClosingTypeUid");
 
                 entity.Property(e => e.ClosingUserId).HasColumnName("ClosingUserID");
 
@@ -10994,7 +10994,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblUnvClosingTypes");
 
                 entity.Property(e => e.ClosingTypeUid)
-                    .HasColumnName("ClosingTypeUID")
+                    .HasColumnName("ClosingTypeUid")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.ClosingType)
@@ -11009,7 +11009,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvCounter");
 
-                entity.Property(e => e.CounterUid).HasColumnName("CounterUID");
+                entity.Property(e => e.CounterUid).HasColumnName("CounterUid");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -11023,9 +11023,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvDistrictPreferences");
 
-                entity.Property(e => e.DistrictPreferenceUid).HasColumnName("DistrictPreferenceUID");
+                entity.Property(e => e.DistrictPreferenceUid).HasColumnName("DistrictPreferenceUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11064,9 +11064,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvEntityTypes");
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11106,7 +11106,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblUnvFunctions")
                     .IsUnique();
 
-                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
+                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11138,7 +11138,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.HasIndex(e => e.GradeName);
 
-                entity.Property(e => e.GradeUid).HasColumnName("GradeUID");
+                entity.Property(e => e.GradeUid).HasColumnName("GradeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11168,9 +11168,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvImportTypes");
 
-                entity.Property(e => e.ImportTypeUid).HasColumnName("ImportTypeUID");
+                entity.Property(e => e.ImportTypeUid).HasColumnName("ImportTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.ImportTypeName).IsUnicode(false);
             });
@@ -11181,9 +11181,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvItemTypes");
 
-                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
+                entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11219,15 +11219,15 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvLogs");
 
-                entity.Property(e => e.LogUid).HasColumnName("LogUID");
+                entity.Property(e => e.LogUid).HasColumnName("LogUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
-                entity.Property(e => e.CreatedByUserUid).HasColumnName("CreatedByUserUID");
+                entity.Property(e => e.CreatedByUserUid).HasColumnName("CreatedByUserUid");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastModifiedByUserUid).HasColumnName("LastModifiedByUserUID");
+                entity.Property(e => e.LastModifiedByUserUid).HasColumnName("LastModifiedByUserUid");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
@@ -11235,7 +11235,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsRequired()
                     .IsUnicode(false);
 
-                entity.Property(e => e.LogTypeUid).HasColumnName("LogTypeUID");
+                entity.Property(e => e.LogTypeUid).HasColumnName("LogTypeUid");
             });
 
             modelBuilder.Entity<TblUnvLogTypes>(entity =>
@@ -11244,7 +11244,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvLogTypes");
 
-                entity.Property(e => e.LogTypeUid).HasColumnName("LogTypeUID");
+                entity.Property(e => e.LogTypeUid).HasColumnName("LogTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11270,7 +11270,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvManufacturers");
 
-                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUID");
+                entity.Property(e => e.ManufacturerUid).HasColumnName("ManufacturerUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11296,9 +11296,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvRecipient");
 
-                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUID");
+                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11306,7 +11306,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.RecipientTypeUid).HasColumnName("RecipientTypeUID");
+                entity.Property(e => e.RecipientTypeUid).HasColumnName("RecipientTypeUid");
 
                 entity.HasOne(d => d.ApplicationU)
                     .WithMany(p => p.TblUnvRecipient)
@@ -11333,9 +11333,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvRecipientInformation");
 
-                entity.Property(e => e.RecipientInformationUid).HasColumnName("RecipientInformationUID");
+                entity.Property(e => e.RecipientInformationUid).HasColumnName("RecipientInformationUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11349,7 +11349,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUID");
+                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -11388,9 +11388,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvRecipientType");
 
-                entity.Property(e => e.RecipientTypeUid).HasColumnName("RecipientTypeUID");
+                entity.Property(e => e.RecipientTypeUid).HasColumnName("RecipientTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11423,9 +11423,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblUnvRooms");
 
                 entity.HasIndex(e => new { e.RoomUid, e.Active, e.SiteUid, e.RoomTypeUid })
-                    .HasName("IX_tblUnvRooms_SUID_RTUID_iRoomUID_iActive");
+                    .HasName("IX_tblUnvRooms_SUid_RTUid_iRoomUid_iActive");
 
-                entity.Property(e => e.RoomUid).HasColumnName("RoomUID");
+                entity.Property(e => e.RoomUid).HasColumnName("RoomUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11456,9 +11456,9 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUID");
+                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUid");
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
                 entity.HasOne(d => d.RoomTypeU)
                     .WithMany(p => p.TblUnvRooms)
@@ -11473,7 +11473,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvRoomTypes");
 
-                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUID");
+                entity.Property(e => e.RoomTypeUid).HasColumnName("RoomTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11502,7 +11502,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvSavedActivities");
 
-                entity.Property(e => e.SavedActivityUid).HasColumnName("SavedActivityUID");
+                entity.Property(e => e.SavedActivityUid).HasColumnName("SavedActivityUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11514,7 +11514,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(110)
                     .IsUnicode(false);
 
-                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUID");
+                entity.Property(e => e.EntityTypeUid).HasColumnName("EntityTypeUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -11527,7 +11527,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(250)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ParameterTypeUid).HasColumnName("ParameterTypeUID");
+                entity.Property(e => e.ParameterTypeUid).HasColumnName("ParameterTypeUid");
 
                 entity.HasOne(d => d.EntityTypeU)
                     .WithMany(p => p.TblUnvSavedActivities)
@@ -11542,9 +11542,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvSchedule");
 
-                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUID");
+                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11560,11 +11560,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastRunTime).HasColumnType("datetime");
 
-                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUID");
+                entity.Property(e => e.RecipientUid).HasColumnName("RecipientUid");
 
-                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUID");
+                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUid");
 
-                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUID");
+                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUid");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
 
@@ -11583,19 +11583,19 @@ namespace TIPWeb_Controller.EF_DAL
                     .WithMany(p => p.TblUnvSchedule)
                     .HasForeignKey(d => d.RecipientUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblUnvSchedule_RecipientUID");
+                    .HasConstraintName("FK_tblUnvSchedule_RecipientUid");
 
                 entity.HasOne(d => d.ScheduleReportTypeU)
                     .WithMany(p => p.TblUnvSchedule)
                     .HasForeignKey(d => d.ScheduleReportTypeUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblUnvSchedule_ScheduleReportTypeUID");
+                    .HasConstraintName("FK_tblUnvSchedule_ScheduleReportTypeUid");
 
                 entity.HasOne(d => d.ScheduleTypeU)
                     .WithMany(p => p.TblUnvSchedule)
                     .HasForeignKey(d => d.ScheduleTypeUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_tblUnvSchedule_ScheduleTypeUID");
+                    .HasConstraintName("FK_tblUnvSchedule_ScheduleTypeUid");
             });
 
             modelBuilder.Entity<TblUnvScheduleDay>(entity =>
@@ -11604,7 +11604,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvScheduleDay");
 
-                entity.Property(e => e.ScheduleDayUid).HasColumnName("ScheduleDayUID");
+                entity.Property(e => e.ScheduleDayUid).HasColumnName("ScheduleDayUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11617,7 +11617,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUID");
+                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUid");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.TblUnvScheduleDay)
@@ -11638,7 +11638,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvScheduleDayAssigned");
 
-                entity.Property(e => e.ScheduleDayAssignedUid).HasColumnName("ScheduleDayAssignedUID");
+                entity.Property(e => e.ScheduleDayAssignedUid).HasColumnName("ScheduleDayAssignedUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11650,11 +11650,11 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduleDayUid).HasColumnName("ScheduleDayUID");
+                entity.Property(e => e.ScheduleDayUid).HasColumnName("ScheduleDayUid");
 
-                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUID");
+                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUid");
 
-                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUID");
+                entity.Property(e => e.ScheduleUid).HasColumnName("ScheduleUid");
 
                 entity.HasOne(d => d.CreatedByUser)
                     .WithMany(p => p.TblUnvScheduleDayAssignedCreatedByUser)
@@ -11692,9 +11692,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvScheduleReportType");
 
-                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUID");
+                entity.Property(e => e.ScheduleReportTypeUid).HasColumnName("ScheduleReportTypeUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11726,7 +11726,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvScheduleType");
 
-                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUID");
+                entity.Property(e => e.ScheduleTypeUid).HasColumnName("ScheduleTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11752,25 +11752,25 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
-                entity.Property(e => e.CreatedByUserUid).HasColumnName("CreatedByUserUID");
+                entity.Property(e => e.CreatedByUserUid).HasColumnName("CreatedByUserUid");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.LastModifiedByUserUid).HasColumnName("LastModifiedByUserUID");
+                entity.Property(e => e.LastModifiedByUserUid).HasColumnName("LastModifiedByUserUid");
 
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ObjectTypeUid).HasColumnName("ObjectTypeUID");
+                entity.Property(e => e.ObjectTypeUid).HasColumnName("ObjectTypeUid");
 
                 entity.Property(e => e.SerilalizedObj)
                     .IsRequired()
                     .IsUnicode(false);
 
-                entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
+                entity.Property(e => e.SiteUid).HasColumnName("SiteUid");
 
-                entity.Property(e => e.UserUid).HasColumnName("UserUID");
+                entity.Property(e => e.UserUid).HasColumnName("UserUid");
             });
 
             modelBuilder.Entity<TblUnvSignature>(entity =>
@@ -11779,7 +11779,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvSignature");
 
-                entity.Property(e => e.SignatureUid).HasColumnName("SignatureUID");
+                entity.Property(e => e.SignatureUid).HasColumnName("SignatureUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11798,7 +11798,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvStaffTypes");
 
-                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUID");
+                entity.Property(e => e.StaffTypeUid).HasColumnName("StaffTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11829,10 +11829,10 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblUnvSupportLinks");
 
                 entity.Property(e => e.SupportLinkUid)
-                    .HasColumnName("SupportLinkUID")
+                    .HasColumnName("SupportLinkUid")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(50)
@@ -11861,7 +11861,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvUserPreferences");
 
-                entity.Property(e => e.UserPreferenceUid).HasColumnName("UserPreferenceUID");
+                entity.Property(e => e.UserPreferenceUid).HasColumnName("UserPreferenceUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11903,7 +11903,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvUserRoles");
 
-                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUID");
+                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11926,7 +11926,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ViewUid).HasColumnName("ViewUID");
+                entity.Property(e => e.ViewUid).HasColumnName("ViewUid");
 
                 entity.HasOne(d => d.ViewU)
                     .WithMany(p => p.TblUnvUserRoles)
@@ -11945,7 +11945,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("IX_tblUnvUserTypes")
                     .IsUnique();
 
-                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUID");
+                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -11967,9 +11967,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUnvViews");
 
-                entity.Property(e => e.ViewUid).HasColumnName("ViewUID");
+                entity.Property(e => e.ViewUid).HasColumnName("ViewUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -12000,7 +12000,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.ToTable("tblUsageTypes");
 
                 entity.Property(e => e.UsageTypeUid)
-                    .HasColumnName("UsageTypeUID")
+                    .HasColumnName("UsageTypeUid")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.UsageType)
@@ -12026,7 +12026,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.ApplicationUid)
-                    .HasColumnName("ApplicationUID")
+                    .HasColumnName("ApplicationUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CampusId)
@@ -12103,7 +12103,7 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.Property(e => e.SessionId).HasColumnName("SessionID");
 
                 entity.Property(e => e.SiteUid)
-                    .HasColumnName("SiteUID")
+                    .HasColumnName("SiteUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.State)
@@ -12111,10 +12111,10 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.UserRoleUid)
-                    .HasColumnName("UserRoleUID")
+                    .HasColumnName("UserRoleUid")
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUID");
+                entity.Property(e => e.UserTypeUid).HasColumnName("UserTypeUid");
 
                 entity.Property(e => e.Zip)
                     .HasMaxLength(10)
@@ -12151,9 +12151,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblUserCampuses");
 
-                entity.Property(e => e.UserCampusUid).HasColumnName("UserCampusUID");
+                entity.Property(e => e.UserCampusUid).HasColumnName("UserCampusUid");
 
-                entity.Property(e => e.CampusUid).HasColumnName("CampusUID");
+                entity.Property(e => e.CampusUid).HasColumnName("CampusUid");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
@@ -12180,7 +12180,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblUserFunctions")
                     .IsUnique();
 
-                entity.Property(e => e.UserFunctionUid).HasColumnName("UserFunctionUID");
+                entity.Property(e => e.UserFunctionUid).HasColumnName("UserFunctionUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -12188,7 +12188,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
+                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -12353,7 +12353,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasName("UQ_tblUserRoleFunctions")
                     .IsUnique();
 
-                entity.Property(e => e.UserRoleFunctionUid).HasColumnName("UserRoleFunctionUID");
+                entity.Property(e => e.UserRoleFunctionUid).HasColumnName("UserRoleFunctionUid");
 
                 entity.Property(e => e.CreatedByUserId).HasColumnName("CreatedByUserID");
 
@@ -12361,7 +12361,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUID");
+                entity.Property(e => e.FunctionUid).HasColumnName("FunctionUid");
 
                 entity.Property(e => e.LastModifiedByUserId).HasColumnName("LastModifiedByUserID");
 
@@ -12369,7 +12369,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUID");
+                entity.Property(e => e.UserRoleUid).HasColumnName("UserRoleUid");
 
                 entity.HasOne(d => d.FunctionU)
                     .WithMany(p => p.TblUserRoleFunctions)
@@ -12412,7 +12412,7 @@ namespace TIPWeb_Controller.EF_DAL
                     .IsUnicode(false);
 
                 entity.Property(e => e.ApplicationUid)
-                    .HasColumnName("ApplicationUID")
+                    .HasColumnName("ApplicationUid")
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CampusId)
@@ -12501,9 +12501,9 @@ namespace TIPWeb_Controller.EF_DAL
                 entity.HasIndex(e => new { e.Received, e.Price, e.Ordered, e.BookInventoryUid, e.StatusId, e.VendorOrderUid })
                     .HasName("_dta_index_tblVendorOrderDetails_8_1140355277__K3_K9_K2_5_7_10");
 
-                entity.Property(e => e.VendorOrderDetailsUid).HasColumnName("VendorOrderDetailsUID");
+                entity.Property(e => e.VendorOrderDetailsUid).HasColumnName("VendorOrderDetailsUid");
 
-                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUID");
+                entity.Property(e => e.BookInventoryUid).HasColumnName("BookInventoryUid");
 
                 entity.Property(e => e.DateArriving).HasColumnType("datetime");
 
@@ -12513,7 +12513,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DateReceived).HasColumnType("datetime");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.Price).HasColumnType("money");
 
@@ -12521,7 +12521,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUID");
+                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUid");
 
                 entity.HasOne(d => d.BookInventoryU)
                     .WithMany(p => p.TblVendorOrderDetails)
@@ -12542,13 +12542,13 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblVendorOrderDetailsHistory");
 
-                entity.Property(e => e.VendorOrderDetailsHistoryUid).HasColumnName("VendorOrderDetailsHistoryUID");
+                entity.Property(e => e.VendorOrderDetailsHistoryUid).HasColumnName("VendorOrderDetailsHistoryUid");
 
                 entity.Property(e => e.DateReceived).HasColumnType("datetime");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
-                entity.Property(e => e.VendorOrderDetailsUid).HasColumnName("VendorOrderDetailsUID");
+                entity.Property(e => e.VendorOrderDetailsUid).HasColumnName("VendorOrderDetailsUid");
             });
 
             modelBuilder.Entity<TblVendorOrders>(entity =>
@@ -12557,7 +12557,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblVendorOrders");
 
-                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUID");
+                entity.Property(e => e.VendorOrderUid).HasColumnName("VendorOrderUid");
 
                 entity.Property(e => e.ArrivalDate).HasColumnType("datetime");
 
@@ -12576,7 +12576,7 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.Property(e => e.DistrictCreated).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUID");
+                entity.Property(e => e.FundingSourceUid).HasColumnName("FundingSourceUid");
 
                 entity.Property(e => e.PurchaseOrder)
                     .HasMaxLength(50)
@@ -12607,9 +12607,9 @@ namespace TIPWeb_Controller.EF_DAL
 
                 entity.ToTable("tblVersion");
 
-                entity.Property(e => e.VersionUid).HasColumnName("VersionUID");
+                entity.Property(e => e.VersionUid).HasColumnName("VersionUid");
 
-                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUID");
+                entity.Property(e => e.ApplicationUid).HasColumnName("ApplicationUid");
 
                 entity.Property(e => e.CombinedVersion)
                     .IsRequired()

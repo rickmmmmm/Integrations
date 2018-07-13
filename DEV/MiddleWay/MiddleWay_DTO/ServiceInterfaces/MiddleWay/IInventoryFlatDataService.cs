@@ -9,7 +9,7 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
     {
         List<InventoryFlatDataModel> Get(int offset, int limit);
         InventoryFlatDataModel Get(int inventoryFlatDataUid);
-        InventoryFlatDataModel GetByAssetID(string assetId);
+        InventoryFlatDataModel GetByAssetId(string assetId);
         InventoryFlatDataModel GetByTag(string tag);
         int GetTotal();
         bool Add(InventoryFlatDataModel inventoryFlatData);

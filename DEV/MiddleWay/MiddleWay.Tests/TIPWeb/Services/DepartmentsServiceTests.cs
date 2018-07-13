@@ -7,10 +7,9 @@ namespace MiddleWay.Tests.TIPWeb.Services
 {
     public class DepartmentsServiceTests
     {
-        [Fact]
-        public void Test()
-        {
-
-        }
+        //[Fact]
+        //public void Test()
+        //{
+        //}
     }
 }

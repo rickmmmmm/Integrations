@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace MiddleWay.Tests.MiddleWay.Repositories
+namespace MiddleWay.Tests.MiddleWay_Controller.Repositories
 {
-    public class ProcessesRepositoryTests
+    public class TransformationsRepositoryTests
     {
         [Fact]
         public void Test()
         {
-
         }
     }
 }

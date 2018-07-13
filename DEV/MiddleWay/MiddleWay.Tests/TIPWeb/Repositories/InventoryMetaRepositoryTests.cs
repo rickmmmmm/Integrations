@@ -7,10 +7,9 @@ namespace MiddleWay.Tests.TIPWeb.Repositories
 {
     public class InventoryMetaRepositoryTests
     {
-        [Fact]
-        public void Test()
-        {
-
-        }
+        //[Fact]
+        //public void Test()
+        //{
+        //}
     }
 }

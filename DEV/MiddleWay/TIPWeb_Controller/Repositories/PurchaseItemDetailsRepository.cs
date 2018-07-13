@@ -46,7 +46,7 @@ namespace TIPWeb_Controller.Repositories
                 throw;
             }
             //string returnQuery = "SELECT p.* FROM tblTechPurchaseItemDetails p ";
-            //returnQuery += "JOIN tblTechPurchases p2 ON p.PurchaseUID = p2.PurchaseUID WHERE p2.OrderNumber = '" + orderNumber + "' AND p.LineNumber = " + lineNumber.ToString();
+            //returnQuery += "JOIN tblTechPurchases p2 ON p.PurchaseUid = p2.PurchaseUid WHERE p2.OrderNumber = '" + orderNumber + "' AND p.LineNumber = " + lineNumber.ToString();
 
             //return false;
 
@@ -102,7 +102,7 @@ namespace TIPWeb_Controller.Repositories
                         detailToUpdate.PurchasePrice = detail.PurchasePrice;
                         detailToUpdate.AccountCode = detail.AccountCode;
                         detailToUpdate.StatusUid = (int)ReceivingStatus.Open;
-                        detailToUpdate.SiteAddedSiteUid = detail.SiteAddedSiteUID;
+                        detailToUpdate.SiteAddedSiteUid = detail.SiteAddedSiteUid;
                         detailToUpdate.LastModifiedByUserId = 0;
                         detailToUpdate.LastModifiedDate = DateTime.Now;
 
@@ -113,12 +113,12 @@ namespace TIPWeb_Controller.Repositories
                         //detailQuery += "QuantityReceived = " + detail.QuantityReceived + ", ";
                         //detailQuery += "PurchasePrice = " + detail.PurchasePrice + ", ";
                         //detailQuery += "AccountCode = '" + detail.AccountCode + "', ";
-                        //detailQuery += "StatusUID = 32,";
-                        //detailQuery += "SiteAddedSiteUID = '" + detail.SiteAddedSiteUID + "',";
+                        //detailQuery += "StatusUid = 32,";
+                        //detailQuery += "SiteAddedSiteUid = '" + detail.SiteAddedSiteUid + "',";
                         //detailQuery += "LastModifiedByUserID = 0,";
                         //detailQuery += "LastModifiedDate = '" + detail.LastModifiedDate.ToString() + "'";
                         //detailQuery += "FROM tblTechPurchaseItemDetails p JOIN tblTechPurchases p2 ";
-                        //detailQuery += "ON p.PurchaseUID = p2.PurchaseUID";
+                        //detailQuery += "ON p.PurchaseUid = p2.PurchaseUid";
                         //detailQuery += " WHERE p2.OrderNumber = '" + detail.ParentPurchase.PurchaseOrderNumber + "' AND p.LineNumber = " + detail.LineNumber.ToString();
 
                         message = "Detail record already exists. Updated detail record for order number " + detail.ParentPurchase.PurchaseOrderNumber + " and Line Number " + detail.LineNumber.ToString();
@@ -133,15 +133,15 @@ namespace TIPWeb_Controller.Repositories
                         {
                             PurchaseUid = purchaseUid,
                             LineNumber = detail.LineNumber,
-                            ItemUid = detail.ItemUID,
-                            FundingSourceUid = detail.FundingSourceUID,
+                            ItemUid = detail.ItemUid,
+                            FundingSourceUid = detail.FundingSourceUid,
                             StatusUid = (int)ReceivingStatus.Open,
-                            SiteAddedSiteUid = detail.SiteAddedSiteUID,
+                            SiteAddedSiteUid = detail.SiteAddedSiteUid,
                             QuantityOrdered = detail.QuantityOrdered,
                             QuantityReceived = detail.QuantityReceived,
                             PurchasePrice = detail.PurchasePrice,
                             AccountCode = detail.AccountCode,
-                            TechDepartmentUid = detail.TechDepartmentUID,
+                            TechDepartmentUid = detail.TechDepartmentUid,
                             CreatedByUserId = 0,
                             CreatedDate = DateTime.Now,
                             LastModifiedByUserId = 0,
@@ -151,13 +151,13 @@ namespace TIPWeb_Controller.Repositories
                         _context.TblTechPurchaseItemDetails.Add(detailToInsert);
 
                         //detailQuery = "INSERT INTO [dbo].[tblTechPurchaseItemDetails](";
-                        //detailQuery += "[PurchaseUID],[ItemUID],[FundingSourceUID],[StatusUID],[SiteAddedSiteUID],";
+                        //detailQuery += "[PurchaseUid],[ItemUid],[FundingSourceUid],[StatusUid],[SiteAddedSiteUid],";
                         //detailQuery += "[QuantityOrdered],[QuantityReceived],[PurchasePrice],[AccountCode],";
-                        //detailQuery += "[TechDepartmentUID],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],";
+                        //detailQuery += "[TechDepartmentUid],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],";
                         //detailQuery += "[LastModifiedDate],[LineNumber]) ";
-                        ////detailQuery += "VALUES ('" + GetPurchaseUIDFromOrderNumber(detail.ParentPurchase.PurchaseOrderNumber).ToString() + "','" + detail.ItemUID.ToString() + "','";
-                        //detailQuery += detail.FundingSourceUID.ToString() + "','" + detail.StatusUID + "','" + detail.SiteAddedSiteUID.ToString() + "','" + detail.QuantityOrdered.ToString();
-                        //detailQuery += "','" + detail.QuantityReceived.ToString() + "','" + detail.PurchasePrice + "','" + detail.AccountCode + "','" + detail.TechDepartmentUID.ToString();
+                        ////detailQuery += "VALUES ('" + GetPurchaseUidFromOrderNumber(detail.ParentPurchase.PurchaseOrderNumber).ToString() + "','" + detail.ItemUid.ToString() + "','";
+                        //detailQuery += detail.FundingSourceUid.ToString() + "','" + detail.StatusUid + "','" + detail.SiteAddedSiteUid.ToString() + "','" + detail.QuantityOrdered.ToString();
+                        //detailQuery += "','" + detail.QuantityReceived.ToString() + "','" + detail.PurchasePrice + "','" + detail.AccountCode + "','" + detail.TechDepartmentUid.ToString();
                         //detailQuery += "','" + detail.CreatedByUserID.ToString() + "','" + detail.CreatedDate.ToString() + "','" + detail.LastModifiedByUserID + "','" + detail.LastModifiedDate.ToString() + "','" + detail.LineNumber.ToString() + "')";
 
                         message = "Successfully added detail for order number " + detail.ParentPurchase.PurchaseOrderNumber + " and Line Number " + detail.LineNumber.ToString();

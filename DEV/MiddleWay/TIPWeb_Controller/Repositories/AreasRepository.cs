@@ -24,7 +24,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int getAreaUIDFromName(string areaName)
+        public int GetAreaUidFromName(string areaName)
         {
             try
             {
@@ -52,11 +52,11 @@ namespace TIPWeb_Controller.Repositories
                         where areas.AreaName.Trim().ToLower() == area
                         select new AreasModel
                         {
-                            AreaUID = areas.AreaUid,
+                            AreaUid = areas.AreaUid,
                             AreaName = areas.AreaName,
-                            CreatedByUserID = areas.CreatedByUserId, // createdBy.RealName,
+                            CreatedByUserId = areas.CreatedByUserId, // createdBy.RealName,
                             CreatedDate = areas.CreatedDate,
-                            LastModifiedByUserID = areas.LastModifiedByUserId, // modifiedBy.RealName,
+                            LastModifiedByUserId = areas.LastModifiedByUserId, // modifiedBy.RealName,
                             LastModifiedDate = areas.LastModifiedDate
                         }).FirstOrDefault();
             }

@@ -7,6 +7,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
     {
         public int InventoryFlatDataUid { get; set; }
         public int ProcessUid { get; set; }
+        public int RowId { get; set; }
         public string AssetId { get; set; }
         public string Tag { get; set; }
         public string Serial { get; set; }
@@ -18,9 +19,9 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string DepartmentId { get; set; }
         public string FundingSource { get; set; }
         public string FundingSourceDescription { get; set; }
-        public decimal? PurchasePrice { get; set; }
-        public DateTime? PurchaseDate { get; set; }
-        public DateTime? ExpirationDate { get; set; }
+        public string PurchasePrice { get; set; }
+        public string PurchaseDate { get; set; }
+        public string ExpirationDate { get; set; }
         public string InventoryNotes { get; set; }
         public string OrderNumber { get; set; }
         public string VendorName { get; set; }
@@ -43,7 +44,9 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string CustomField4Value { get; set; }
         public string CustomField4Label { get; set; }
         public string InvoiceNumber { get; set; }
-        public DateTime? InvoiceDate { get; set; }
+        public string InvoiceDate { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
 
         public Processes ProcessU { get; set; }
     }

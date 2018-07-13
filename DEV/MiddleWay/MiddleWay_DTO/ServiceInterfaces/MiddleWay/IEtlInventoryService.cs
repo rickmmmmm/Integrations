@@ -11,7 +11,7 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         EtlInventoryModel GetByTag(string client, string processName, string tag);
         EtlInventoryModel GetByAsset(string client, string processName, string assetId);
         //EtlInventoryModel GetBySerial(string client, string processName, string serial);
-        EtlInventoryModel GetByInventoryID(string client, string processName, int inventoryUid);
+        EtlInventoryModel GetByInventoryId(string client, string processName, int inventoryUid);
         int Add(EtlInventoryModel item);
         bool AddRange(List<EtlInventoryModel> items);
         bool Edit(EtlInventoryModel item);

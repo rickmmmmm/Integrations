@@ -57,8 +57,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var list = (from transformations in _context.Transformations
                             join processes in _context.Processes

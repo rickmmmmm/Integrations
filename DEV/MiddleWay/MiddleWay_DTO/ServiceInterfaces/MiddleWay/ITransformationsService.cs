@@ -18,5 +18,6 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         string Truncate<T>(T value, List<string> parameters);
         //U Cast<T, U>(T value, List<string> parameters);
         int RoundDown<T>(T value);
+        int RoundUp<T>(T value);
     }
 }

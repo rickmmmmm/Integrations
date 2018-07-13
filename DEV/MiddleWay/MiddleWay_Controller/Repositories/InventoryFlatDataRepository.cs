@@ -44,17 +44,18 @@ namespace MiddleWay_Controller.Repositories
                             where inventoryFlat.ProcessUid == processUid
                             select new InventoryFlatDataModel
                             {
-                                InventoryFlatDataUID = inventoryFlat.InventoryFlatDataUid,
+                                InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
                                 ProcessUid = inventoryFlat.ProcessUid,
-                                AssetID = inventoryFlat.AssetId,
+                                RowId = inventoryFlat.RowId,
+                                AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
                                 Serial = inventoryFlat.Serial,
-                                SiteID = inventoryFlat.SiteId,
+                                SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
-                                DepartmentID = inventoryFlat.DepartmentId,
+                                DepartmentId = inventoryFlat.DepartmentId,
                                 FundingSource = inventoryFlat.FundingSource,
                                 FundingSourceDescription = inventoryFlat.FundingSourceDescription,
                                 PurchasePrice = inventoryFlat.PurchasePrice,
@@ -82,7 +83,9 @@ namespace MiddleWay_Controller.Repositories
                                 CustomField4Value = inventoryFlat.CustomField4Value,
                                 CustomField4Label = inventoryFlat.CustomField4Label,
                                 InvoiceNumber = inventoryFlat.InvoiceNumber,
-                                InvoiceDate = inventoryFlat.InvoiceDate
+                                InvoiceDate = inventoryFlat.InvoiceDate,
+                                Rejected = inventoryFlat.Rejected,
+                                RejectedNotes = inventoryFlat.RejectedNotes
                             });
 
                 return data.Skip(offset).Take(limit).ToList();
@@ -97,8 +100,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 if (offset < 0)
                 {
                     offset = 0;
@@ -115,17 +118,18 @@ namespace MiddleWay_Controller.Repositories
                                && processes.ProcessName.Trim().ToLower() == processNameVal
                             select new InventoryFlatDataModel
                             {
-                                InventoryFlatDataUID = inventoryFlat.InventoryFlatDataUid,
+                                InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
                                 ProcessUid = inventoryFlat.ProcessUid,
-                                AssetID = inventoryFlat.AssetId,
+                                RowId = inventoryFlat.RowId,
+                                AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
                                 Serial = inventoryFlat.Serial,
-                                SiteID = inventoryFlat.SiteId,
+                                SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
-                                DepartmentID = inventoryFlat.DepartmentId,
+                                DepartmentId = inventoryFlat.DepartmentId,
                                 FundingSource = inventoryFlat.FundingSource,
                                 FundingSourceDescription = inventoryFlat.FundingSourceDescription,
                                 PurchasePrice = inventoryFlat.PurchasePrice,
@@ -153,7 +157,9 @@ namespace MiddleWay_Controller.Repositories
                                 CustomField4Value = inventoryFlat.CustomField4Value,
                                 CustomField4Label = inventoryFlat.CustomField4Label,
                                 InvoiceNumber = inventoryFlat.InvoiceNumber,
-                                InvoiceDate = inventoryFlat.InvoiceDate
+                                InvoiceDate = inventoryFlat.InvoiceDate,
+                                Rejected = inventoryFlat.Rejected,
+                                RejectedNotes = inventoryFlat.RejectedNotes
                             });
 
                 return data.Skip(offset).Take(limit).ToList();
@@ -172,17 +178,18 @@ namespace MiddleWay_Controller.Repositories
                             where inventoryFlat.InventoryFlatDataUid == inventoryFlatDataUid
                             select new InventoryFlatDataModel
                             {
-                                InventoryFlatDataUID = inventoryFlat.InventoryFlatDataUid,
+                                InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
                                 ProcessUid = inventoryFlat.ProcessUid,
-                                AssetID = inventoryFlat.AssetId,
+                                RowId = inventoryFlat.RowId,
+                                AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
                                 Serial = inventoryFlat.Serial,
-                                SiteID = inventoryFlat.SiteId,
+                                SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
-                                DepartmentID = inventoryFlat.DepartmentId,
+                                DepartmentId = inventoryFlat.DepartmentId,
                                 FundingSource = inventoryFlat.FundingSource,
                                 FundingSourceDescription = inventoryFlat.FundingSourceDescription,
                                 PurchasePrice = inventoryFlat.PurchasePrice,
@@ -210,7 +217,9 @@ namespace MiddleWay_Controller.Repositories
                                 CustomField4Value = inventoryFlat.CustomField4Value,
                                 CustomField4Label = inventoryFlat.CustomField4Label,
                                 InvoiceNumber = inventoryFlat.InvoiceNumber,
-                                InvoiceDate = inventoryFlat.InvoiceDate
+                                InvoiceDate = inventoryFlat.InvoiceDate,
+                                Rejected = inventoryFlat.Rejected,
+                                RejectedNotes = inventoryFlat.RejectedNotes
                             }).FirstOrDefault();
 
                 return data;
@@ -221,13 +230,13 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public InventoryFlatDataModel SelectByAssetID(string client, string processName, string assetId)
+        public InventoryFlatDataModel SelectByAssetId(string client, string processName, string assetId)
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-                var assetIdVal = assetId.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var assetIdVal = (assetId ?? string.Empty).Trim().ToLower();
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
                             join processes in _context.Processes
@@ -237,17 +246,18 @@ namespace MiddleWay_Controller.Repositories
                                && inventoryFlat.AssetId.Trim().ToLower() == assetIdVal
                             select new InventoryFlatDataModel
                             {
-                                InventoryFlatDataUID = inventoryFlat.InventoryFlatDataUid,
+                                InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
                                 ProcessUid = inventoryFlat.ProcessUid,
-                                AssetID = inventoryFlat.AssetId,
+                                RowId = inventoryFlat.RowId,
+                                AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
                                 Serial = inventoryFlat.Serial,
-                                SiteID = inventoryFlat.SiteId,
+                                SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
-                                DepartmentID = inventoryFlat.DepartmentId,
+                                DepartmentId = inventoryFlat.DepartmentId,
                                 FundingSource = inventoryFlat.FundingSource,
                                 FundingSourceDescription = inventoryFlat.FundingSourceDescription,
                                 PurchasePrice = inventoryFlat.PurchasePrice,
@@ -275,7 +285,9 @@ namespace MiddleWay_Controller.Repositories
                                 CustomField4Value = inventoryFlat.CustomField4Value,
                                 CustomField4Label = inventoryFlat.CustomField4Label,
                                 InvoiceNumber = inventoryFlat.InvoiceNumber,
-                                InvoiceDate = inventoryFlat.InvoiceDate
+                                InvoiceDate = inventoryFlat.InvoiceDate,
+                                Rejected = inventoryFlat.Rejected,
+                                RejectedNotes = inventoryFlat.RejectedNotes
                             }).FirstOrDefault();
 
                 return data;
@@ -290,9 +302,9 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-                var tagVal = tag.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var tagVal = (tag ?? string.Empty).Trim().ToLower();
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
                             join processes in _context.Processes
@@ -302,17 +314,18 @@ namespace MiddleWay_Controller.Repositories
                                && inventoryFlat.AssetId.Trim().ToLower() == tagVal
                             select new InventoryFlatDataModel
                             {
-                                InventoryFlatDataUID = inventoryFlat.InventoryFlatDataUid,
+                                InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
                                 ProcessUid = inventoryFlat.ProcessUid,
-                                AssetID = inventoryFlat.AssetId,
+                                RowId = inventoryFlat.RowId,
+                                AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
                                 Serial = inventoryFlat.Serial,
-                                SiteID = inventoryFlat.SiteId,
+                                SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
-                                DepartmentID = inventoryFlat.DepartmentId,
+                                DepartmentId = inventoryFlat.DepartmentId,
                                 FundingSource = inventoryFlat.FundingSource,
                                 FundingSourceDescription = inventoryFlat.FundingSourceDescription,
                                 PurchasePrice = inventoryFlat.PurchasePrice,
@@ -340,7 +353,9 @@ namespace MiddleWay_Controller.Repositories
                                 CustomField4Value = inventoryFlat.CustomField4Value,
                                 CustomField4Label = inventoryFlat.CustomField4Label,
                                 InvoiceNumber = inventoryFlat.InvoiceNumber,
-                                InvoiceDate = inventoryFlat.InvoiceDate
+                                InvoiceDate = inventoryFlat.InvoiceDate,
+                                Rejected = inventoryFlat.Rejected,
+                                RejectedNotes = inventoryFlat.RejectedNotes
                             }).FirstOrDefault();
 
                 return data;
@@ -369,8 +384,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 return (from inventoryFlat in _context.InventoryFlatData
                         join processes in _context.Processes
@@ -397,15 +412,16 @@ namespace MiddleWay_Controller.Repositories
                 {
                     InventoryFlatDataUid = 0,
                     ProcessUid = inventoryFlatData.ProcessUid,
-                    AssetId = inventoryFlatData.AssetID,
+                    RowId = inventoryFlatData.RowId,
+                    AssetId = inventoryFlatData.AssetId,
                     Tag = inventoryFlatData.Tag,
                     Serial = inventoryFlatData.Serial,
-                    SiteId = inventoryFlatData.SiteID,
+                    SiteId = inventoryFlatData.SiteId,
                     SiteName = inventoryFlatData.SiteName,
                     Location = inventoryFlatData.Location,
                     Status = inventoryFlatData.Status,
                     DepartmentName = inventoryFlatData.DepartmentName,
-                    DepartmentId = inventoryFlatData.DepartmentID,
+                    DepartmentId = inventoryFlatData.DepartmentId,
                     FundingSource = inventoryFlatData.FundingSource,
                     FundingSourceDescription = inventoryFlatData.FundingSourceDescription,
                     PurchasePrice = inventoryFlatData.PurchasePrice,
@@ -433,7 +449,9 @@ namespace MiddleWay_Controller.Repositories
                     CustomField4Value = inventoryFlatData.CustomField4Value,
                     CustomField4Label = inventoryFlatData.CustomField4Label,
                     InvoiceNumber = inventoryFlatData.InvoiceNumber,
-                    InvoiceDate = inventoryFlatData.InvoiceDate
+                    InvoiceDate = inventoryFlatData.InvoiceDate,
+                    Rejected = inventoryFlatData.Rejected,
+                    RejectedNotes = inventoryFlatData.RejectedNotes
                 };
 
                 _context.InventoryFlatData.Add(inventoryFlatToInsert);
@@ -464,15 +482,16 @@ namespace MiddleWay_Controller.Repositories
                     {
                         InventoryFlatDataUid = 0,
                         ProcessUid = inventoryFlatData.ProcessUid,
-                        AssetId = inventoryFlatData.AssetID,
+                        RowId = inventoryFlatData.RowId,
+                        AssetId = inventoryFlatData.AssetId,
                         Tag = inventoryFlatData.Tag,
                         Serial = inventoryFlatData.Serial,
-                        SiteId = inventoryFlatData.SiteID,
+                        SiteId = inventoryFlatData.SiteId,
                         SiteName = inventoryFlatData.SiteName,
                         Location = inventoryFlatData.Location,
                         Status = inventoryFlatData.Status,
                         DepartmentName = inventoryFlatData.DepartmentName,
-                        DepartmentId = inventoryFlatData.DepartmentID,
+                        DepartmentId = inventoryFlatData.DepartmentId,
                         FundingSource = inventoryFlatData.FundingSource,
                         FundingSourceDescription = inventoryFlatData.FundingSourceDescription,
                         PurchasePrice = inventoryFlatData.PurchasePrice,
@@ -500,7 +519,9 @@ namespace MiddleWay_Controller.Repositories
                         CustomField4Value = inventoryFlatData.CustomField4Value,
                         CustomField4Label = inventoryFlatData.CustomField4Label,
                         InvoiceNumber = inventoryFlatData.InvoiceNumber,
-                        InvoiceDate = inventoryFlatData.InvoiceDate
+                        InvoiceDate = inventoryFlatData.InvoiceDate,
+                        Rejected = inventoryFlatData.Rejected,
+                        RejectedNotes = inventoryFlatData.RejectedNotes
                     };
                     _context.InventoryFlatData.Add(inventoryFlatDataToInsert);
                 }
@@ -523,18 +544,19 @@ namespace MiddleWay_Controller.Repositories
             try
             {
                 var inventoryFlatDataToUpdate = (from inventoryFlat in _context.InventoryFlatData
-                                                 where inventoryFlat.InventoryFlatDataUid == inventoryFlatData.InventoryFlatDataUID
+                                                 where inventoryFlat.InventoryFlatDataUid == inventoryFlatData.InventoryFlatDataUid
                                                  select inventoryFlat).FirstOrDefault();
 
-                inventoryFlatDataToUpdate.AssetId = inventoryFlatData.AssetID;
+                inventoryFlatDataToUpdate.RowId = inventoryFlatData.RowId;
+                inventoryFlatDataToUpdate.AssetId = inventoryFlatData.AssetId;
                 inventoryFlatDataToUpdate.Tag = inventoryFlatData.Tag;
                 inventoryFlatDataToUpdate.Serial = inventoryFlatData.Serial;
-                inventoryFlatDataToUpdate.SiteId = inventoryFlatData.SiteID;
+                inventoryFlatDataToUpdate.SiteId = inventoryFlatData.SiteId;
                 inventoryFlatDataToUpdate.SiteName = inventoryFlatData.SiteName;
                 inventoryFlatDataToUpdate.Location = inventoryFlatData.Location;
                 inventoryFlatDataToUpdate.Status = inventoryFlatData.Status;
                 inventoryFlatDataToUpdate.DepartmentName = inventoryFlatData.DepartmentName;
-                inventoryFlatDataToUpdate.DepartmentId = inventoryFlatData.DepartmentID;
+                inventoryFlatDataToUpdate.DepartmentId = inventoryFlatData.DepartmentId;
                 inventoryFlatDataToUpdate.FundingSource = inventoryFlatData.FundingSource;
                 inventoryFlatDataToUpdate.FundingSourceDescription = inventoryFlatData.FundingSourceDescription;
                 inventoryFlatDataToUpdate.PurchasePrice = inventoryFlatData.PurchasePrice;
@@ -563,6 +585,8 @@ namespace MiddleWay_Controller.Repositories
                 inventoryFlatDataToUpdate.CustomField4Label = inventoryFlatData.CustomField4Label;
                 inventoryFlatDataToUpdate.InvoiceNumber = inventoryFlatData.InvoiceNumber;
                 inventoryFlatDataToUpdate.InvoiceDate = inventoryFlatData.InvoiceDate;
+                inventoryFlatDataToUpdate.Rejected = inventoryFlatData.Rejected;
+                inventoryFlatDataToUpdate.RejectedNotes = inventoryFlatData.RejectedNotes;
 
                 _context.InventoryFlatData.Update(inventoryFlatDataToUpdate);
                 var result = _context.SaveChanges();
@@ -602,8 +626,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var inventoryData = (from inventoryFlatData in _context.InventoryFlatData
                                      join processes in _context.Processes

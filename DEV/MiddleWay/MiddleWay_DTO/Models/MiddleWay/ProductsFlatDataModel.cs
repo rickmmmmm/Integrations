@@ -6,24 +6,26 @@ namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class ProductsFlatDataModel
     {
-        public int ProductsFlatDataUID { get; set; }
+        public int ProductsFlatDataUid { get; set; }
         public int ProcessUid { get; set; }
-        public int ProductName { get; set; }
-        public int ProductDescription { get; set; }
-        public int ProductTypeName { get; set; }
-        public int ProductTypeDescription { get; set; }
-        public int ModelNumber { get; set; }
-        public int ManufacturerName { get; set; }
-        public int SuggestedPrice { get; set; }
-        public int AreaName { get; set; }
-        public int Notes { get; set; }
-        public int SKU { get; set; }
-        public int SerialRequired { get; set; }
-        public int ProjectedLife { get; set; }
-        public int OtherField1 { get; set; }
-        public int OtherField2 { get; set; }
-        public int OtherField3 { get; set; }
-        public int AllowUntagged { get; set; }
-        public int RowID { get; set; }
+        public int RowId { get; set; }
+        public string ProductName { get; set; }
+        public string ProductDescription { get; set; }
+        public string ProductTypeName { get; set; }
+        public string ProductTypeDescription { get; set; }
+        public string ModelNumber { get; set; }
+        public string ManufacturerName { get; set; }
+        public string SuggestedPrice { get; set; }
+        public string AreaName { get; set; }
+        public string Notes { get; set; }
+        public string SKU { get; set; }
+        public string SerialRequired { get; set; }
+        public string ProjectedLife { get; set; }
+        public string OtherField1 { get; set; }
+        public string OtherField2 { get; set; }
+        public string OtherField3 { get; set; }
+        public string AllowUntagged { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
     }
 }

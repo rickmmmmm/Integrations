@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetManufacturerUIDFromName(string manufacturerName)
+        public int GetManufacturerUidFromName(string manufacturerName)
         {
             throw new NotImplementedException();
         }

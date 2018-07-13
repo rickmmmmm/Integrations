@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetContainerUID(string name)
+        public int GetContainerUid(string name)
         {
             throw new NotImplementedException();
         }

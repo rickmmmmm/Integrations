@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetItemTypeUIDFromName(string itemTypeName)
+        public int GetItemTypeUidFromName(string itemTypeName)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //int itemTypeId = -1;
 
-            //string returnQuery = "SELECT ItemTypeUID FROM tblTechItems WHERE LOWER(ItemName) = '" + itemType.ToLower() + "'";
+            //string returnQuery = "SELECT ItemTypeUid FROM tblTechItems WHERE LOWER(ItemName) = '" + itemType.ToLower() + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{

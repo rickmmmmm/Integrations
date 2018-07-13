@@ -6,20 +6,22 @@ namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class PurchaseInvoiceFlatDataModel
     {
-        public int PurchaseInvoiceFlatDataUID { get; set; }
+        public int PurchaseInvoiceFlatDataUid { get; set; }
         public int ProcessUid { get; set; }
-        public int OrderNumber { get; set; }
-        public int LineNumber { get; set; }
-        public int InvoiceNumber { get; set; }
-        public int InvoiceDate { get; set; }
-        public int InvoiceStatus { get; set; }
-        public int AuthorizationStatus { get; set; }
-        public int AccountingDate { get; set; }
-        public int LineDescription { get; set; }
-        public int AssetPrice { get; set; }
-        public int InvoicePrice { get; set; }
-        public int Quantity { get; set; }
-        public int LineAmount { get; set; }
-        public int RowID { get; set; }
+        public int RowId { get; set; }
+        public string OrderNumber { get; set; }
+        public string LineNumber { get; set; }
+        public string InvoiceNumber { get; set; }
+        public string InvoiceDate { get; set; }
+        public string InvoiceStatus { get; set; }
+        public string AuthorizationStatus { get; set; }
+        public string AccountingDate { get; set; }
+        public string LineDescription { get; set; }
+        public string AssetPrice { get; set; }
+        public string InvoicePrice { get; set; }
+        public string Quantity { get; set; }
+        public string LineAmount { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
     }
 }

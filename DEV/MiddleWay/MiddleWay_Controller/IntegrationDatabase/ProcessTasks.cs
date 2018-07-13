@@ -7,7 +7,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
     {
         public ProcessTasks()
         {
-            ProcessErrors = new HashSet<ProcessErrors>();
+            ProcessTaskSteps = new HashSet<ProcessTaskSteps>();
+            ProcessTasksErrors = new HashSet<ProcessTasksErrors>();
         }
 
         public int ProcessTaskUid { get; set; }
@@ -18,6 +19,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public bool Successful { get; set; }
 
         public Processes ProcessU { get; set; }
-        public ICollection<ProcessErrors> ProcessErrors { get; set; }
+        public ICollection<ProcessTaskSteps> ProcessTaskSteps { get; set; }
+        public ICollection<ProcessTasksErrors> ProcessTasksErrors { get; set; }
     }
 }

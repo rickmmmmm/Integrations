@@ -11,7 +11,7 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         List<EtlInventoryModel> Select(string client, string processName, int offset, int limit);
         EtlInventoryModel Select(int etlInventoryUid);
         EtlInventoryModel SelectByInventoryUid(string client, string processName, int inventoryUid);
-        EtlInventoryModel SelectByAssetID(string client, string processName, string assetId);
+        EtlInventoryModel SelectByAssetId(string client, string processName, string assetId);
         EtlInventoryModel SelectByTag(string client, string processName, string tag);
         int GetTotal(int processUid);
         int GetTotal(string client, string processName);

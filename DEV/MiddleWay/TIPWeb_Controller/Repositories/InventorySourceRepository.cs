@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetInventorySourceUID(string name)
+        public int GetInventorySourceUid(string name)
         {
             throw new NotImplementedException();
         }

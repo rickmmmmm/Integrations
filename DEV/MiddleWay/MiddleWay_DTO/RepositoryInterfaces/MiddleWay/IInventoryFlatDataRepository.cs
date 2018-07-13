@@ -10,7 +10,7 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         List<InventoryFlatDataModel> Select(int processUid, int offset, int limit);
         List<InventoryFlatDataModel> Select(string client, string processName, int offset, int limit);
         InventoryFlatDataModel Select(int inventoryFlatDataUid);
-        InventoryFlatDataModel SelectByAssetID(string client, string processName, string assetId);
+        InventoryFlatDataModel SelectByAssetId(string client, string processName, string assetId);
         InventoryFlatDataModel SelectByTag(string  client, string  processName, string  tag);
         int GetTotal(int processUid);
         int GetTotal(string client, string processName);

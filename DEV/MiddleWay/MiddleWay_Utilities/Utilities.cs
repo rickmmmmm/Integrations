@@ -36,7 +36,7 @@ namespace MiddleWay_Utilities
             //NewLine, Carriage return, tabs to spaces, other white space cleanup
             string result = data;
             result = result.Replace(System.Environment.NewLine, "\\r\\n");
-            result = result.Replace(((char)13).ToString(), "\\r" );
+            result = result.Replace(((char)13).ToString(), "\\r");
             result = result.Replace(((char)12).ToString(), "\\f");
             result = result.Replace(((char)11).ToString(), "\\v");
             result = result.Replace(((char)10).ToString(), "\\n");
@@ -66,9 +66,12 @@ namespace MiddleWay_Utilities
             for (int i = 0; i < expression.Length; i++)
             {
                 // Check for negative symbol not in first character
-                if (expression[i] == '-' && i != 0)
+                if (expression[i] == '-')
                 {
-                    return false;
+                    if (i != 0)
+                    {
+                        return false;
+                    }
                 }
                 else
                 {

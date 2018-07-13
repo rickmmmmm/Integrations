@@ -1,9 +1,7 @@
 ﻿using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
@@ -56,7 +54,7 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                return _etlInventoryRepository.SelectByAssetID(client, processName, assetId);
+                return _etlInventoryRepository.SelectByAssetId(client, processName, assetId);
             }
             catch
             {
@@ -76,7 +74,7 @@ namespace MiddleWay_Controller.Services
         //    }
         //}
 
-        public EtlInventoryModel GetByInventoryID(string client, string processName, int inventoryUid)
+        public EtlInventoryModel GetByInventoryId(string client, string processName, int inventoryUid)
         {
             try
             {

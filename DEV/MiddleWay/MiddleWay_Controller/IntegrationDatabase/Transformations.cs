@@ -14,6 +14,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public bool Enabled { get; set; }
         public int Order { get; set; }
 
-        public Processes TransformationU { get; set; }
+        public Processes ProcessU { get; set; }
     }
 }

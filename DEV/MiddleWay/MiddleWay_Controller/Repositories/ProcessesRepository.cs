@@ -54,8 +54,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var process = (from processes in _context.Processes
                                where processes.Client.Trim().ToLower() == clientVal
@@ -83,8 +83,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var processUid = (from processes in _context.Processes
                                   where processes.Client.Trim().ToLower() == clientVal

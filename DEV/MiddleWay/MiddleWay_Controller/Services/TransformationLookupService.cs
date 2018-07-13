@@ -1,9 +1,7 @@
 ﻿using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
@@ -28,11 +26,89 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public List<TransformationLookupModel> GetTransformationLookupData(string transformationLookupKey)
+        public TransformationLookupModel GetTransformationLookup(int transformationLookupUid)
         {
             try
             {
-                var transformationLookups = _transformationLookupRepository.SelectTransformationLookups(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey);
+                var transformationLookup = _transformationLookupRepository.SelectTransformationLookup(transformationLookupUid);
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string GetTransformationLookupValue(int transformationLookupUid)
+        {
+            try
+            {
+                var value = _transformationLookupRepository.SelectTransformationLookupValue(transformationLookupUid);
+                return value;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public TransformationLookupModel GetTransformationLookup(int processUid, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var transformationLookup = _transformationLookupRepository.SelectTransformationLookup(processUid, transformationLookupKey, key);
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string GetTransformationLookupValue(int processUid, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var value = _transformationLookupRepository.SelectTransformationLookupValue(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
+                return value;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public TransformationLookupModel GetTransformationLookup(string transformationLookupKey, string key)
+        {
+            try
+            {
+                var transformationLookup = _transformationLookupRepository.SelectTransformationLookup(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string GetTransformationLookupValue(string transformationLookupKey, string key)
+        {
+            try
+            {
+                var value = _transformationLookupRepository.SelectTransformationLookupValue(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
+                return value;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<TransformationLookupModel> GetTransformationLookupData(int processUid, string transformationLookupKey)
+        {
+            try
+            {
+                var transformationLookups = _transformationLookupRepository.SelectTransformationLookups(processUid, transformationLookupKey);
                 return transformationLookups;
             }
             catch
@@ -41,12 +117,12 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public string LookupValue(string transformationLookupKey, string key)
+        public List<TransformationLookupModel> GetTransformationLookupData(string transformationLookupKey)
         {
             try
             {
-                var lookupValue = _transformationLookupRepository.SelectTransformationLookup(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
-                return lookupValue;
+                var transformationLookups = _transformationLookupRepository.SelectTransformationLookups(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey);
+                return transformationLookups;
             }
             catch
             {
@@ -67,5 +143,6 @@ namespace MiddleWay_Controller.Services
         //#region Delete Methods
 
         //#endregion Delete Methods
+
     }
 }

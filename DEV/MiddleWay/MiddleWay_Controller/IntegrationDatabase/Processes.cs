@@ -23,6 +23,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
             PurchaseOrderShellFlatData = new HashSet<PurchaseOrderShellFlatData>();
             PurchaseShipmentFlatData = new HashSet<PurchaseShipmentFlatData>();
             TransformationLookup = new HashSet<TransformationLookup>();
+            Transformations = new HashSet<Transformations>();
         }
 
         public int ProcessUid { get; set; }
@@ -32,7 +33,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public bool Enabled { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public Transformations Transformations { get; set; }
         public ICollection<Configurations> Configurations { get; set; }
         public ICollection<EtlDetails> EtlDetails { get; set; }
         public ICollection<EtlHeaders> EtlHeaders { get; set; }
@@ -49,5 +49,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public ICollection<PurchaseOrderShellFlatData> PurchaseOrderShellFlatData { get; set; }
         public ICollection<PurchaseShipmentFlatData> PurchaseShipmentFlatData { get; set; }
         public ICollection<TransformationLookup> TransformationLookup { get; set; }
+        public ICollection<Transformations> Transformations { get; set; }
     }
 }

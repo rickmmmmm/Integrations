@@ -6,19 +6,21 @@ namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class PurchaseOrderShellFlatDataModel
     {
-        public int PurchaseOrderShellFlatDataUID { get; set; }
+        public int PurchaseOrderShellFlatDataUid { get; set; }
         public int ProcessUid { get; set; }
-        public int OrderNumber { get; set; }
-        public int PurchaseDate { get; set; }
-        public int Status { get; set; }
-        public int VendorName { get; set; }
-        public int VendorAccountNumber { get; set; }
-        public int SiteID { get; set; }
-        public int SiteName { get; set; }
-        public int EstimatedDeliveryDate { get; set; }
-        public int Notes { get; set; }
-        public int Other1 { get; set; }
-        public int FRN { get; set; }
-        public int RowID { get; set; }
+        public int RowId { get; set; }
+        public string OrderNumber { get; set; }
+        public string PurchaseDate { get; set; }
+        public string Status { get; set; }
+        public string VendorName { get; set; }
+        public string VendorAccountNumber { get; set; }
+        public string SiteId { get; set; }
+        public string SiteName { get; set; }
+        public string EstimatedDeliveryDate { get; set; }
+        public string Notes { get; set; }
+        public string Other1 { get; set; }
+        public string FRN { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
     }
 }

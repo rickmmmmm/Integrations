@@ -32,8 +32,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var configurations = (from configuration in _context.Configurations
                                       join processes in _context.Processes
@@ -55,9 +55,9 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-                var nameVal = name.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var nameVal = (name ?? string.Empty).Trim().ToLower();
 
                 var config = (from configuration in _context.Configurations
                               join processes in _context.Processes
@@ -86,9 +86,9 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-                var nameVal = name.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var nameVal = (name ?? string.Empty).Trim().ToLower();
 
                 var configurationValue = (from configuration in _context.Configurations
                                           join processes in _context.Processes

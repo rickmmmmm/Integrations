@@ -114,7 +114,7 @@ namespace MiddleWay_BLL.Services
                         {
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
 
-                            batch.ForEach(row => row.RowID = rowCount++);
+                            batch.ForEach(row => row.RowId = rowCount++);
                             //var mappedBatch = _mappingsService.Map(batch);
 
                             //var transformedBatch = _transformationService.Transform(mappedBatch);

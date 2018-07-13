@@ -3,7 +3,7 @@ using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -30,23 +30,145 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                //var list = (from transformations in _context.Transformations
-                //            where transformations.ProcessUid == processUid
-                //               && transformations.Enabled
-                //            select new TransformationsModel
-                //            {
-                //                TransformationUid = transformations.TransformationUid,
-                //                ProcessUid = transformations.ProcessUid,
-                //                Function = transformations.Function,
-                //                Parameters = transformations.Parameters,
-                //                SourceColumn = transformations.SourceColumn,
-                //                DestinationColumn = transformations.DestinationColumn,
-                //                Enabled = transformations.Enabled,
-                //                Order = transformations.Order
-                //            }).ToList();
+                var transformationLookup = (from transformationLookups in _context.TransformationLookup
+                                            where transformationLookups.TransformationLookupUid == transformationLookupUid
+                                            select new TransformationLookupModel
+                                            {
+                                                TransformationLookupUid = transformationLookups.TransformationLookupUid,
+                                                ProcessUid = transformationLookups.ProcessUid,
+                                                TransformationLookupKey = transformationLookups.TransformationLookupKey,
+                                                Key = transformationLookups.Key,
+                                                Value = transformationLookups.Value,
+                                                Enabled = transformationLookups.Enabled
+                                            }).FirstOrDefault();
 
-                //return list;
-                return null;
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string SelectTransformationLookupValue(int transformationLookupUid)
+        {
+            try
+            {
+                var transformationLookupValue = (from transformationLookups in _context.TransformationLookup
+                                                 where transformationLookups.TransformationLookupUid == transformationLookupUid
+                                                 select transformationLookups.Value).FirstOrDefault();
+
+                return transformationLookupValue;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public TransformationLookupModel SelectTransformationLookup(int processUid, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
+                var keyVal = (key ?? string.Empty).Trim().ToLower();
+
+                var transformationLookup = (from transformationLookups in _context.TransformationLookup
+                                            where transformationLookups.ProcessUid == processUid
+                                               && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                               && transformationLookups.Key.Trim().ToLower() == keyVal
+                                            select new TransformationLookupModel
+                                            {
+                                                TransformationLookupUid = transformationLookups.TransformationLookupUid,
+                                                ProcessUid = transformationLookups.ProcessUid,
+                                                TransformationLookupKey = transformationLookups.TransformationLookupKey,
+                                                Key = transformationLookups.Key,
+                                                Value = transformationLookups.Value,
+                                                Enabled = transformationLookups.Enabled
+                                            }).FirstOrDefault();
+
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string SelectTransformationLookupValue(int processUid, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
+                var keyVal = (key ?? string.Empty).Trim().ToLower();
+
+                var transformationLookupValue = (from transformationLookups in _context.TransformationLookup
+                                                 where transformationLookups.ProcessUid == processUid
+                                                    && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                                    && transformationLookups.Key.Trim().ToLower() == keyVal
+                                                 select transformationLookups.Value).FirstOrDefault();
+
+                return transformationLookupValue;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public TransformationLookupModel SelectTransformationLookup(string client, string processName, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
+                var keyVal = (key ?? string.Empty).Trim().ToLower();
+
+                var transformationLookup = (from transformationLookups in _context.TransformationLookup
+                                            join processes in _context.Processes
+                                                on transformationLookups.ProcessUid equals processes.ProcessUid
+                                            where processes.Client.Trim().ToLower() == clientVal
+                                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                                               && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                               && transformationLookups.Key.Trim().ToLower() == keyVal
+                                            select new TransformationLookupModel
+                                            {
+                                                TransformationLookupUid = transformationLookups.TransformationLookupUid,
+                                                ProcessUid = transformationLookups.ProcessUid,
+                                                TransformationLookupKey = transformationLookups.TransformationLookupKey,
+                                                Key = transformationLookups.Key,
+                                                Value = transformationLookups.Value,
+                                                Enabled = transformationLookups.Enabled
+                                            }).FirstOrDefault();
+
+                return transformationLookup;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string SelectTransformationLookupValue(string client, string processName, string transformationLookupKey, string key)
+        {
+            try
+            {
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
+                var keyVal = (key ?? string.Empty).Trim().ToLower();
+
+                var transformationLookupValue = (from transformationLookups in _context.TransformationLookup
+                                                 join processes in _context.Processes
+                                                     on transformationLookups.ProcessUid equals processes.ProcessUid
+                                                 where processes.Client.Trim().ToLower() == clientVal
+                                                    && processes.ProcessName.Trim().ToLower() == processNameVal
+                                                    && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                                    && transformationLookups.Key.Trim().ToLower() == keyVal
+                                                 select transformationLookups.Value).FirstOrDefault();
+
+                return transformationLookupValue;
             }
             catch
             {
@@ -58,23 +180,22 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                //var list = (from transformations in _context.Transformations
-                //            where transformations.ProcessUid == processUid
-                //               && transformations.Enabled
-                //            select new TransformationsModel
-                //            {
-                //                TransformationUid = transformations.TransformationUid,
-                //                ProcessUid = transformations.ProcessUid,
-                //                Function = transformations.Function,
-                //                Parameters = transformations.Parameters,
-                //                SourceColumn = transformations.SourceColumn,
-                //                DestinationColumn = transformations.DestinationColumn,
-                //                Enabled = transformations.Enabled,
-                //                Order = transformations.Order
-                //            }).ToList();
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
 
-                //return list;
-                return null;
+                var transformationLookupList = (from transformationLookups in _context.TransformationLookup
+                                                where transformationLookups.ProcessUid == processUid
+                                                   && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                                select new TransformationLookupModel
+                                                {
+                                                    TransformationLookupUid = transformationLookups.TransformationLookupUid,
+                                                    ProcessUid = transformationLookups.ProcessUid,
+                                                    TransformationLookupKey = transformationLookups.TransformationLookupKey,
+                                                    Key = transformationLookups.Key,
+                                                    Value = transformationLookups.Value,
+                                                    Enabled = transformationLookups.Enabled
+                                                }).ToList();
+
+                return transformationLookupList;
             }
             catch
             {
@@ -86,85 +207,27 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var transformationLookupKeyVal = (transformationLookupKey ?? string.Empty).Trim().ToLower();
 
-                //var list = (from transformations in _context.Transformations
-                //            where transformations.ProcessUid == processUid
-                //               && transformations.Enabled
-                //            select new TransformationsModel
-                //            {
-                //                TransformationUid = transformations.TransformationUid,
-                //                ProcessUid = transformations.ProcessUid,
-                //                Function = transformations.Function,
-                //                Parameters = transformations.Parameters,
-                //                SourceColumn = transformations.SourceColumn,
-                //                DestinationColumn = transformations.DestinationColumn,
-                //                Enabled = transformations.Enabled,
-                //                Order = transformations.Order
-                //            }).ToList();
+                var transformationLookupList = (from transformationLookups in _context.TransformationLookup
+                                                join processes in _context.Processes
+                                                    on transformationLookups.ProcessUid equals processes.ProcessUid
+                                                where processes.Client.Trim().ToLower() == clientVal
+                                                   && processes.ProcessName.Trim().ToLower() == processNameVal
+                                                   && transformationLookups.TransformationLookupKey.Trim().ToLower() == transformationLookupKeyVal
+                                                select new TransformationLookupModel
+                                                {
+                                                    TransformationLookupUid = transformationLookups.TransformationLookupUid,
+                                                    ProcessUid = transformationLookups.ProcessUid,
+                                                    TransformationLookupKey = transformationLookups.TransformationLookupKey,
+                                                    Key = transformationLookups.Key,
+                                                    Value = transformationLookups.Value,
+                                                    Enabled = transformationLookups.Enabled
+                                                }).ToList();
 
-                //return list;
-                return null;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public string SelectTransformationLookup(int processUid, string transformationLookupKey, string key)
-        {
-            try
-            {
-                //var list = (from transformations in _context.Transformations
-                //            where transformations.ProcessUid == processUid
-                //               && transformations.Enabled
-                //            select new TransformationsModel
-                //            {
-                //                TransformationUid = transformations.TransformationUid,
-                //                ProcessUid = transformations.ProcessUid,
-                //                Function = transformations.Function,
-                //                Parameters = transformations.Parameters,
-                //                SourceColumn = transformations.SourceColumn,
-                //                DestinationColumn = transformations.DestinationColumn,
-                //                Enabled = transformations.Enabled,
-                //                Order = transformations.Order
-                //            }).ToList();
-
-                //return list;
-                return null;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public string SelectTransformationLookup(string client, string processName, string transformationLookupKey, string key)
-        {
-            try
-            {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-
-                //var list = (from transformations in _context.Transformations
-                //            where transformations.ProcessUid == processUid
-                //               && transformations.Enabled
-                //            select new TransformationsModel
-                //            {
-                //                TransformationUid = transformations.TransformationUid,
-                //                ProcessUid = transformations.ProcessUid,
-                //                Function = transformations.Function,
-                //                Parameters = transformations.Parameters,
-                //                SourceColumn = transformations.SourceColumn,
-                //                DestinationColumn = transformations.DestinationColumn,
-                //                Enabled = transformations.Enabled,
-                //                Order = transformations.Order
-                //            }).ToList();
-
-                //return list;
-                return null;
+                return transformationLookupList;
             }
             catch
             {

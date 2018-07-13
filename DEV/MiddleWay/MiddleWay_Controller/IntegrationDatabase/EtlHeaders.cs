@@ -6,6 +6,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public partial class EtlHeaders
     {
         public int EtlHeaderUid { get; set; }
+        public int RowId { get; set; }
         public int ProcessUid { get; set; }
         public int PurchaseUid { get; set; }
         public string OrderNumber { get; set; }
@@ -21,6 +22,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string Notes { get; set; }
         public string Other1 { get; set; }
         public string Frn { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
 
         public Processes ProcessU { get; set; }
     }

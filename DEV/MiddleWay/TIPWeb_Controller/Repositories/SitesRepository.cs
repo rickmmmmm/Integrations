@@ -25,11 +25,11 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int getSiteUIDFromName(string siteName)
+        public int GetSiteUidFromName(string siteName)
         {
             int siteId = -1;
 
-            string returnQuery = "SELECT SiteUID FROM tblTechSites WHERE LOWER(SiteID) = '" + siteName.ToLower() + "'";
+            string returnQuery = "SELECT SiteUid FROM tblTechSites WHERE LOWER(SiteID) = '" + siteName.ToLower() + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{

@@ -6,7 +6,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class TransformationLookupModel
     {
-        public int TransformationLookupUID { get; set; }
+        public int TransformationLookupUid { get; set; }
         public int ProcessUid { get; set; }
         public string TransformationLookupKey { get; set; }
         public string Key { get; set; }

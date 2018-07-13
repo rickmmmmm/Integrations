@@ -9,10 +9,10 @@ namespace MiddleWay_DTO.DTO_Models.TIPWeb
     public class PurchaseOrderDto
     {
         public string OrderNumber { get; set; }
-        public int StatusID { get; set; }
-        public int VendorID { get; set; }
+        public int StatusId { get; set; }
+        public int VendorId { get; set; }
         public string VendorName { get; set; }
-        public string SiteID { get; set; }
+        public string SiteId { get; set; }
         public DateTime PurchaseDate { get; set; }
         public DateTime EstimatedDeliveryDate { get; set; }
         public string Notes { get; set; }

@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int getVendorUIDFromName(string vendorName)
+        public int GetVendorUidFromName(string vendorName)
         {
             int vendorId = -1;
 
@@ -70,9 +70,9 @@ namespace TIPWeb_Controller.Repositories
 
         #region Insert Functions
 
-        public void addVendor(string vendorName)
+        public void AddVendor(string vendorName)
         {
-            string query = "INSERT INTO tblVendor (VendorName, Active, UserID, ApplicationUID, ModifiedDate) VALUES ('" + vendorName + "',1,0,2,getdate())";
+            string query = "INSERT INTO tblVendor (VendorName, Active, UserID, ApplicationUid, ModifiedDate) VALUES ('" + vendorName + "',1,0,2,getdate())";
 
             //if (_conn.State == ConnectionState.Closed)
             //{

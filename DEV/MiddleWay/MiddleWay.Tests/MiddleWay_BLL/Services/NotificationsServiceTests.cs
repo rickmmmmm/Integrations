@@ -7,10 +7,9 @@ namespace MiddleWay.Tests.MiddleWay_BLL.Services
 {
     public class NotificationsServiceTests
     {
-        [Fact]
-        public void Test()
-        {
-
-        }
+        //[Fact]
+        //public void Test()
+        //{
+        //}
     }
 }

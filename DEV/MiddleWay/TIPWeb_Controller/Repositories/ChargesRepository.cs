@@ -43,12 +43,12 @@ namespace TIPWeb_Controller.Repositories
                                              join students in _context.TblStudents
                                                  on new
                                                  {
-                                                     EntityUID = charges.EntityUid,
-                                                     EntityTypeUID = charges.EntityTypeUid
+                                                     EntityUid = charges.EntityUid,
+                                                     EntityTypeUid = charges.EntityTypeUid
                                                  } equals new
                                                  {
-                                                     EntityUID = students.StudentsUid,
-                                                     EntityTypeUID = (int)EntityTypeEnum.Student
+                                                     EntityUid = students.StudentsUid,
+                                                     EntityTypeUid = (int)EntityTypeEnum.Student
                                                  }
                                              join campuses in _context.TblCampuses
                                                  on students.CampusId equals campuses.CampusId
@@ -103,14 +103,14 @@ namespace TIPWeb_Controller.Repositories
             }
             //List<ChargeExportFile> charges = new List<ChargeExportFile>();
 
-            //string returnQuery = "SELECT chg.ChargeUID, sd.StudentID, items.ItemName, '' as ItemBarCode, chgt.Name  as ItemCollection, camp.CampusName as FineLocationCode, chg.[Notes], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as ChargeAmount ";
+            //string returnQuery = "SELECT chg.ChargeUid, sd.StudentID, items.ItemName, '' as ItemBarCode, chgt.Name  as ItemCollection, camp.CampusName as FineLocationCode, chg.[Notes], chg.CreatedDate, chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUid = chg.ChargeUid),0) as ChargeAmount ";
             //returnQuery += "FROM tblUnvCharges chg ";
-            //returnQuery += "JOIN tblUnvChargeTypes chgt ON chgt.ChargeTypeUID = chg.[ChargeTypeUID] ";
-            //returnQuery += "JOIN tblStudents sd on chg.EntityUID = sd.StudentsUID and chg.entitytypeuid = 4 ";
+            //returnQuery += "JOIN tblUnvChargeTypes chgt ON chgt.ChargeTypeUid = chg.[ChargeTypeUid] ";
+            //returnQuery += "JOIN tblStudents sd on chg.EntityUid = sd.StudentsUid and chg.entitytypeuid = 4 ";
             //returnQuery += "JOIN tblCampuses camp on camp.CampusID = sd.CampusID ";
-            //returnQuery += "JOIN tblTechItems items on items.ItemUID = chg.ItemUID ";
-            ////returnQuery += "JOIN tblTechInventory inv on inv.ItemUID = items.ItemUID ";
-            //returnQuery += "WHERE chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) > 0 ";
+            //returnQuery += "JOIN tblTechItems items on items.ItemUid = chg.ItemUid ";
+            ////returnQuery += "JOIN tblTechInventory inv on inv.ItemUid = items.ItemUid ";
+            //returnQuery += "WHERE chg.ChargeAmount - ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUid = chg.ChargeUid),0) > 0 ";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -186,7 +186,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //int outputValue = 0;
 
-            //string query = "SELECT count(ChargeUID) FROM tblUnvCharges WHERE ChargeUID = " + chargeId.ToString();
+            //string query = "SELECT count(ChargeUid) FROM tblUnvCharges WHERE ChargeUid = " + chargeId.ToString();
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -226,7 +226,7 @@ namespace TIPWeb_Controller.Repositories
             try
             {
                 var chargeUids = (from voided in voidedCharges
-                                  select voided.ChargeUID);
+                                  select voided.ChargeUid);
 
                 var chargesToVoid = (from charges in _context.TblUnvCharges
                                      where chargeUids.Contains(charges.ChargeUid)
@@ -244,7 +244,7 @@ namespace TIPWeb_Controller.Repositories
             catch // (Exception e)
             {
                 //DbErrorEventArgs args = new DbErrorEventArgs();
-                //args.InterfaceMessage = "ERROR updating data for fine " + charge.ChargeUID.ToString();
+                //args.InterfaceMessage = "ERROR updating data for fine " + charge.ChargeUid.ToString();
                 //args.ExceptionMessage = e.Message;
                 //continue;
                 throw;
@@ -252,7 +252,7 @@ namespace TIPWeb_Controller.Repositories
 
             // string query = "UPDATE tblUnvCharges ";
             //query += "SET Void = 1 ";
-            //query += "WHERE ChargeUID = {0}";
+            //query += "WHERE ChargeUid = {0}";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -262,7 +262,7 @@ namespace TIPWeb_Controller.Repositories
 
             //foreach (var charge in voidedCharges)
             //{
-            //SqlCommand cmd = new SqlCommand(string.Format(query, charge.ParentCharge.ChargeUID.ToString()), _conn);
+            //SqlCommand cmd = new SqlCommand(string.Format(query, charge.ParentCharge.ChargeUid.ToString()), _conn);
             //cmd.ExecuteNonQuery();
 
             //}

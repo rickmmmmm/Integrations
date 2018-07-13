@@ -25,7 +25,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetDepartmentUIDFromName(string departmentName)
+        public int GetDepartmentUidFromName(string departmentName)
         {
             throw new NotImplementedException();
         }

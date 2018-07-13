@@ -40,7 +40,7 @@ namespace MiddleWay_BLL.Services
         {
             try
             {
-                //int testItem = _rep.getSiteUIDFromName(item.ShippedToSite);
+                //int testItem = _rep.getSiteUidFromName(item.ShippedToSite);
                 return true;
             }
 
@@ -68,7 +68,7 @@ namespace MiddleWay_BLL.Services
         {
             try
             {
-                //int testItem = _rep.getItemUIDFromName(productName);
+                //int testItem = _rep.getItemUidFromName(productName);
                 return false;
             }
             catch
@@ -82,7 +82,7 @@ namespace MiddleWay_BLL.Services
         {
             try
             {
-                //int testItem = _rep.getItemUIDFromName(item.ProductName);
+                //int testItem = _rep.getItemUidFromName(item.ProductName);
                 return true;
             }
 
@@ -143,7 +143,7 @@ namespace MiddleWay_BLL.Services
         {
             try
             {
-                //int testItem = _rep.getVendorUIDFromName(vendorName);
+                //int testItem = _rep.getVendorUidFromName(vendorName);
                 return false;
             }
             catch
@@ -242,7 +242,7 @@ namespace MiddleWay_BLL.Services
         {
             try
             {
-                //int testItem = _rep.getVendorUIDFromName(item.VendorName);
+                //int testItem = _rep.getVendorUidFromName(item.VendorName);
 
                 return true;
             }
@@ -353,7 +353,7 @@ namespace MiddleWay_BLL.Services
             try
             {
                 throw new NotImplementedException();
-                //_rep.getFundingSourceUIDFromName(fundingSource);
+                //_rep.getFundingSourceUidFromName(fundingSource);
                 return false;
             }
             catch
@@ -387,7 +387,7 @@ namespace MiddleWay_BLL.Services
             //{
             //    try
             //    {
-            //        //_rep.getFundingSourceUIDFromName(item.FundingSource);
+            //        //_rep.getFundingSourceUidFromName(item.FundingSource);
             //        return false;
             //    }
             //    catch(Exception e)

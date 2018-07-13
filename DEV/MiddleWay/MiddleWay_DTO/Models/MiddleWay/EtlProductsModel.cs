@@ -6,20 +6,20 @@ namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class EtlProductsModel
     {
-        public int _ETL_ProductsUID { get; set; }
+        public int _ETL_ProductsUid { get; set; }
         public int ProcessUid { get; set; }
-        public int ProductUID { get; set; }
+        public int ProductUid { get; set; }
         public int ProductNumber { get; set; }
         public int ProductName { get; set; }
         public int ProductDescription { get; set; }
-        public int ItemTypeUID { get; set; }
+        public int ItemTypeUid { get; set; }
         public int ProductTypeName { get; set; }
         public int ProductTypeDescription { get; set; }
         public int ModelNumber { get; set; }
-        public int ManufacturerUID { get; set; }
+        public int ManufacturerUid { get; set; }
         public int ManufacturerName { get; set; }
         public int SuggestedPrice { get; set; }
-        public int AreaUID { get; set; }
+        public int AreaUid { get; set; }
         public int AreaName { get; set; }
         public int ItemNotes { get; set; }
         public int SKU { get; set; }
@@ -30,7 +30,8 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int CustomField3 { get; set; }
         public int Active { get; set; }
         public int AllowUntagged { get; set; }
-        public int RowID { get; set; }
+        public int RowId { get; set; }
         public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
     }
 }

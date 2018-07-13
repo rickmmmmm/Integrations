@@ -186,7 +186,7 @@ namespace MiddleWay_DTO.Enumerations
         Finalized = 55,
         Closed = 56
     }
-    
+
     public enum StaffStatus
     {
         InUse = 31,
@@ -243,5 +243,15 @@ namespace MiddleWay_DTO.Enumerations
         Complete = 2,
         InProgress = 4,
         Pending = 7
+    }
+
+    public enum TransformationFunctions
+    {
+        DEFAULT = 0,
+        LOOKUP = 1,
+        SPLIT = 2,
+        TRUNCATE = 3,
+        ROUNDDOWN = 4,
+        ROUNDUP = 5
     }
 }

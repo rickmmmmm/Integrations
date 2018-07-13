@@ -56,8 +56,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVar = client.Trim().ToLower();
-                var processNameVar = processName.Trim().ToLower();
+                var clientVar = (client ?? string.Empty).Trim().ToLower();
+                var processNameVar = (processName ?? string.Empty).Trim().ToLower();
 
                 var processTask = (from processTasks in _context.ProcessTasks
                                    join processes in _context.Processes
@@ -136,8 +136,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVar = client.Trim().ToLower();
-                var processNameVar = processName.Trim().ToLower();
+                var clientVar = (client ?? string.Empty).Trim().ToLower();
+                var processNameVar = (processName ?? string.Empty).Trim().ToLower();
 
                 var processTaskList = (from processTasks in _context.ProcessTasks
                                        join processes in _context.Processes
@@ -195,8 +195,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVar = client.Trim().ToLower();
-                var processNameVar = processName.Trim().ToLower();
+                var clientVar = (client ?? string.Empty).Trim().ToLower();
+                var processNameVar = (processName ?? string.Empty).Trim().ToLower();
 
                 var process = (from processes in _context.Processes
                                where processes.Client.Trim().ToLower() == clientVar

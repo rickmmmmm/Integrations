@@ -29,24 +29,24 @@ namespace TIPWeb_Controller.Repositories
 
         #region Insert Functions
 
-        public void addShipmentInfo()
+        public void AddShipmentInfo()
         {
             string query = "INSERT INTO [dbo].[tblTechPurchaseItemShipments]";
-            query += "([PurchaseItemDetailUID] ";
-            query += ",[ShippedToSiteUID] ";
+            query += "([PurchaseItemDetailUid] ";
+            query += ",[ShippedToSiteUid] ";
             query += ",[TicketNumber] ";
             query += ",[QuantityShipped] ";
             query += ",[TicketedByUserID] ";
             query += ",[TicketedDate] ";
-            query += ",[StatusUID] ";
+            query += ",[StatusUid] ";
             query += ",[CreatedByUserID] ";
             query += ",[CreatedDate] ";
             query += ",[LastModifiedByUserID] ";
             query += ",[LastModifiedDate]) ";
-            query += "SELECT ttpid.[PurchaseItemDetailUID], ttpid.[SiteAddedSiteUID], NULL, ttpid.QuantityOrdered, NULL, NULL, ttpid.StatusUID, 0, getdate(), 0, getdate() ";
+            query += "SELECT ttpid.[PurchaseItemDetailUid], ttpid.[SiteAddedSiteUid], NULL, ttpid.QuantityOrdered, NULL, NULL, ttpid.StatusUid, 0, getdate(), 0, getdate() ";
             query += "FROM tblTechPurchaseItemShipments ttpis ";
-            query += "RIGHT JOIN tblTechPurchaseItemDetails ttpid on ttpis.[PurchaseItemDetailUID] = ttpid.[PurchaseItemDetailUID] ";
-            query += "WHERE ttpis.PurchaseItemDetailUID is null";
+            query += "RIGHT JOIN tblTechPurchaseItemDetails ttpid on ttpis.[PurchaseItemDetailUid] = ttpid.[PurchaseItemDetailUid] ";
+            query += "WHERE ttpis.PurchaseItemDetailUid is null";
 
             //if (_conn.State == ConnectionState.Closed)
             //{

@@ -68,9 +68,9 @@ namespace MiddleWay_BLL.Services
             //    order.OrderNumber = item.Key.OrderNumber;
             //    order.PurchaseDate = Convert.ToDateTime(item.Key.OrderDate);
             //    order.Notes = item.Key.Notes;
-            //    //order.StatusUID = _repo.getStatusUID("open");
-            //    //order.VendorUID = _repo.getVendorUIDFromName(item.Key.VendorName);
-            //    //order.SiteID = _repo.getSiteUIDFromName(item.Key.ShippedToSite);
+            //    //order.StatusUid = _repo.getStatusUid("open");
+            //    //order.VendorUid = _repo.getVendorUidFromName(item.Key.VendorName);
+            //    //order.SiteID = _repo.getSiteUidFromName(item.Key.ShippedToSite);
             //    order.CreatedByUserId = 0;
             //    order.CreatedDate = DateTime.Now;
             //    order.LastModifiedByUserId = 0;
@@ -82,10 +82,10 @@ namespace MiddleWay_BLL.Services
             //        order.PurchaseOrderDetails.Add(new PurchaseItemDetailDto
             //        {
             //            ParentPurchase = order,
-            //            //ItemUID = _repo.getItemUIDFromName(det.ProductName),
-            //            //FundingSourceUID = _repo.getFundingSourceUIDFromName(det.FundingSource),
-            //            //StatusUID = _repo.getStatusUID("open"),
-            //            //SiteAddedSiteUID = _repo.getSiteUIDFromName(det.ShippedToSite),
+            //            //ItemUid = _repo.getItemUidFromName(det.ProductName),
+            //            //FundingSourceUid = _repo.getFundingSourceUidFromName(det.FundingSource),
+            //            //StatusUid = _repo.getStatusUid("open"),
+            //            //SiteAddedSiteUid = _repo.getSiteUidFromName(det.ShippedToSite),
             //            QuantityOrdered = det.Quantity,
             //            QuantityReceived = det.Quantity,
             //            PurchasePrice = det.PurchasePrice,

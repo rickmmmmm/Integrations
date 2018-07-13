@@ -53,8 +53,8 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var list = (from mappings in _context.Mappings
                             join processes in _context.Processes
@@ -83,7 +83,7 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var sourceColumnVal = sourceColumn.Trim().ToLower();
+                var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             where mappings.ProcessUid == processUid
@@ -109,9 +109,9 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var clientVal = client.Trim().ToLower();
-                var processNameVal = processName.Trim().ToLower();
-                var sourceColumnVal = sourceColumn.Trim().ToLower();
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             join processes in _context.Processes

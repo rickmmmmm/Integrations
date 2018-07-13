@@ -6,11 +6,11 @@ namespace MiddleWay_DTO.Models.TIPWeb
 {
     public class AreasModel
     {
-        public int AreaUID { get; set; }
+        public int AreaUid { get; set; }
         public string AreaName { get; set; }
-        public int CreatedByUserID { get; set; }
+        public int CreatedByUserId { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int LastModifiedByUserID { get; set; }
+        public int LastModifiedByUserId { get; set; }
         public DateTime LastModifiedDate { get; set; }
     }
 }

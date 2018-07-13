@@ -6,6 +6,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public partial class EtlDetails
     {
         public int EtlDetailUid { get; set; }
+        public int RowId { get; set; }
         public int ProcessUid { get; set; }
         public int PurchaseItemDetailUid { get; set; }
         public int PurchaseUid { get; set; }
@@ -33,6 +34,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string DepartmentId { get; set; }
         public string Cfda { get; set; }
         public bool IsAssociated { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
 
         public Processes ProcessU { get; set; }
     }

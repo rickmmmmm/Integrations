@@ -1,4 +1,5 @@
-﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_Utilities;
 using System;
@@ -78,7 +79,7 @@ namespace MiddleWay_Controller.Services
                                     {
                                         var transformationGroup = (from transforms in transformations
                                                                    where transforms.SourceColumn == groupedTransformation.SourceColumn
-                                                                      //&& transforms.DestinationColumn == groupedTransformation.DestinationColumn
+                                                                   //&& transforms.DestinationColumn == groupedTransformation.DestinationColumn
                                                                    orderby transforms.Order ascending
                                                                    select transforms).ToList();
 
@@ -162,28 +163,40 @@ namespace MiddleWay_Controller.Services
             var paramsList = ProcessParameters.SplitParameters(parameters);
             string stringVal = string.Empty;
             int intVal = -1;
-            switch (function)
+
+            TransformationFunctions functionVal;
+            if (Enum.TryParse<TransformationFunctions>(function, out functionVal))
             {
-                case "default":
-                    return Default<T, U>(value, paramsList);
-                case "lookup":
-                    stringVal = Lookup(value, paramsList);
-                    return QuickCast<U>(stringVal);
-                case "split":
-                    stringVal = Split(value, paramsList);
-                    return QuickCast<U>(stringVal);
-                case "truncate":
-                    stringVal = Truncate(value, paramsList);
-                    return QuickCast<U>(stringVal);
-                //case "cast":
-                //    return Cast<T, U>(value, paramsList);
-                case "rounddown":
-                    intVal = RoundDown<T>(value); // paramsList
-                    return QuickCast<U>(intVal);
-                //case "concatenate":
-                //    return Concatenate();
-                default:
-                    return QuickCast<T, U>(value);
+                switch (functionVal)
+                {
+                    case TransformationFunctions.DEFAULT:// "default":
+                        return Default<T, U>(value, paramsList);
+                    case TransformationFunctions.LOOKUP:
+                        stringVal = Lookup(value, paramsList);
+                        return QuickCast<U>(stringVal);
+                    case TransformationFunctions.SPLIT:
+                        stringVal = Split(value, paramsList);
+                        return QuickCast<U>(stringVal);
+                    case TransformationFunctions.TRUNCATE:
+                        stringVal = Truncate(value, paramsList);
+                        return QuickCast<U>(stringVal);
+                    //case "cast":
+                    //    return Cast<T, U>(value, paramsList);
+                    case TransformationFunctions.ROUNDDOWN:
+                        intVal = RoundDown<T>(value); // paramsList
+                        return QuickCast<U>(intVal);
+                    case TransformationFunctions.ROUNDUP:
+                        intVal = RoundUp<T>(value); // paramsList
+                        return QuickCast<U>(intVal);
+                    //case "concatenate":
+                    //    return Concatenate();
+                    default:
+                        return QuickCast<T, U>(value);
+                }
+            }
+            else
+            {
+                return QuickCast<T, U>(value);
             }
             //}
             //catch
@@ -194,18 +207,27 @@ namespace MiddleWay_Controller.Services
 
         public U QuickCast<T, U>(T value)
         {
+            //TODO: Perform a switch statement using the types of input and perform targeted casts
             if (value is U)
             {
                 return (U)Convert.ChangeType(value, typeof(U));
             }
             else
             {
-                return default(U);
+                if (value == null)
+                {
+                    return default(U);
+                }
+                else
+                {
+                    return (U)Convert.ChangeType(value.ToString(), typeof(U));
+                }
             }
         }
 
         public T QuickCast<T>(string value)
         {
+            //TODO: Perform a switch statement using the types of input and perform targeted casts
             if (value is T)
             {
                 return (T)Convert.ChangeType(value, typeof(T));
@@ -218,6 +240,7 @@ namespace MiddleWay_Controller.Services
 
         public T QuickCast<T>(int value)
         {
+            //TODO: Perform a switch statement using the types of input and perform targeted casts
             if (value is T)
             {
                 return (T)Convert.ChangeType(value, typeof(T));
@@ -240,14 +263,28 @@ namespace MiddleWay_Controller.Services
                 }
                 else
                 {
-                    return default(U);
+                    if (parameters.Count == 1 && parameters[0] != null)
+                    {
+                        return QuickCast<U>(parameters[0]);
+                    }
+                    else
+                    {
+                        return default(U);
+                    }
                 }
             }
             else
             {
                 if (value == null)
                 {
-                    return default(U);
+                    if (parameters.Count == 1 && parameters[0] != null)
+                    {
+                        return QuickCast<U>(parameters[0]);
+                    }
+                    else
+                    {
+                        return default(U);
+                    }
                 }
                 else
                 {
@@ -267,7 +304,7 @@ namespace MiddleWay_Controller.Services
             {
                 try
                 {
-                    var lookupValue = _transformationLookupService.LookupValue(parameters[0], value.ToString());
+                    var lookupValue = _transformationLookupService.GetTransformationLookupValue(parameters[0], value.ToString());
 
                     //if(lookupValue != null)
                     //{
@@ -300,50 +337,63 @@ namespace MiddleWay_Controller.Services
         /// <returns></returns>
         public string Split<T>(T value, List<string> parameters)
         {
+            string[] splitResult;
+
             if (parameters != null && (parameters.Count == 1 || parameters.Count == 2))
             {
-                try
+                var delimiter = parameters[0];
+
+                if (!string.IsNullOrEmpty(delimiter))
                 {
-                    var delimiter = parameters[0];
-
-                    var splitResult = value.ToString().Split(delimiter, StringSplitOptions.None); // Keeping all sections of the input because of the indices to keep must match
-
                     if (parameters.Count > 1)
                     {
                         var indicesString = parameters[1];
-                        var indicesArray = indicesString.Split(','); // indicesString.Split(',').ToList().ForEach(cast => { int result; Int32.TryParse(cast, out result) ? return result : -1; });
-                        var indices = new List<int>();
+                        var indicesArray = indicesString.Split(',', StringSplitOptions.RemoveEmptyEntries); // indicesString.Split(',').ToList().ForEach(cast => { int result; Int32.TryParse(cast, out result) ? return result : -1; });
 
-                        // Extract the indices to recover from the split
-                        for (var i = 0; i < indicesArray.Length; i++)
+                        if (indicesArray.Length > 0)
                         {
-                            if (Int32.TryParse(indicesArray[i], out int index))
-                            {
-                                indices.Add(index);
-                            }
-                        }
+                            var indices = new List<int>();
 
-                        var result = new StringBuilder();
-                        // Traverse the indices to recover and concatenate the split items matched
-                        foreach (var indexMatch in indices)
+                            // Extract the indices to recover from the split
+                            for (var i = 0; i < indicesArray.Length; i++)
+                            {
+                                if (Int32.TryParse(indicesArray[i], out int index))
+                                {
+                                    indices.Add(index);
+                                }
+                            }
+
+                            splitResult = value.ToString().Split(delimiter, StringSplitOptions.None); // Keeping all sections of the input because of the indices to keep must match
+                            var result = new StringBuilder();
+
+                            // Traverse the indices to recover and concatenate the split items matched
+                            foreach (var indexMatch in indices)
+                            {
+                                if (indexMatch > 0 && indexMatch < splitResult.Length)
+                                {
+                                    result.Append(splitResult[indexMatch]);
+                                }
+                            }
+
+                            return result.ToString();
+
+                        }
+                        else
                         {
-                            if (indexMatch > 0 && indexMatch < splitResult.Length)
-                            {
-                                result.Append(splitResult[indexMatch]);
-                            }
+                            throw new ArgumentException("Indices (Second) parameters for Split is null or empty, Split cannot be performed.");
                         }
-
-                        return result.ToString();
                     }
                     else //parameters.Count == 1
                     {
+                        splitResult = value.ToString().Split(delimiter, StringSplitOptions.None); // Keeping all sections of the input because of the indices to keep must match
                         return splitResult[0];
                     }
                 }
-                catch
+                else
                 {
-                    throw;
+                    throw new ArgumentException("Delimiter (First) parameters for Split is null or empty, Split cannot be performed.");
                 }
+
             }
             else
             {
@@ -367,14 +417,21 @@ namespace MiddleWay_Controller.Services
                     int limit = -1;
                     if (Int32.TryParse(parameters[0], out limit))
                     {
-                        string result = value.ToString();
-                        if (result.Length > limit)
+                        if (limit > 0)
                         {
-                            return result.Substring(0, limit - 1);
+                            string result = value.ToString();
+                            if (result.Length > limit)
+                            {
+                                return result.Substring(0, limit);
+                            }
+                            else
+                            {
+                                return result;
+                            }
                         }
                         else
                         {
-                            return result;
+                            return value.ToString();
                         }
                     }
                     else
@@ -416,29 +473,72 @@ namespace MiddleWay_Controller.Services
         {
             //if (parameters != null && parameters.Count == 1)
             //{
-            if (Utilities.IsANumber(value.ToString()))
+            if (value != null)
             {
-                //try
-                //{
-                //Cast value to string then rounddown
-                var val = decimal.Parse(value.ToString());
+                if (Utilities.IsANumber(value.ToString()))
+                {
+                    //try
+                    //{
+                    //Cast value to string then rounddown
+                    var val = decimal.Parse(value.ToString());
 
-                return Convert.ToInt32(Math.Floor(val));
+                    return Convert.ToInt32(Math.Floor(val));
+                    //}
+                    //catch
+                    //{
+                    //    throw;
+                    //}
+                }
+                else
+                {
+                    throw new ArgumentException("Value is not a Number.");
+                }
                 //}
-                //catch
+                //else
                 //{
-                //    throw;
+                //    throw new ArgumentNullException("Parameters for RoundDown are null or empty, RoundDown cannot be performed.");
                 //}
             }
             else
             {
-                throw new ArgumentException("Value is not a Number.");
+                throw new ArgumentNullException("Value cannot be null.");
             }
-            //}
-            //else
+        }
+
+        public int RoundUp<T>(T value) //, List<string> parameters
+        {
+            //if (parameters != null && parameters.Count == 1)
             //{
-            //    throw new ArgumentNullException("Parameters for RoundDown are null or empty, RoundDown cannot be performed.");
-            //}
+            if (value != null)
+            {
+                if (Utilities.IsANumber(value.ToString()))
+                {
+                    //try
+                    //{
+                    //Cast value to string then rounddown
+                    var val = decimal.Parse(value.ToString());
+
+                    return Convert.ToInt32(Math.Ceiling(val));
+                    //}
+                    //catch
+                    //{
+                    //    throw;
+                    //}
+                }
+                else
+                {
+                    throw new ArgumentException("Value is not a Number.");
+                }
+                //}
+                //else
+                //{
+                //    throw new ArgumentNullException("Parameters for RoundDown are null or empty, RoundDown cannot be performed.");
+                //}
+            }
+            else
+            {
+                throw new ArgumentNullException("Value cannot be null."); // return 0;
+            }
         }
 
         #endregion Get Methods

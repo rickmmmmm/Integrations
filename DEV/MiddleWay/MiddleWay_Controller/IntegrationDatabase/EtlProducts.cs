@@ -6,6 +6,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public partial class EtlProducts
     {
         public int EtlProductsUid { get; set; }
+        public int RowId { get; set; }
         public int ProcessUid { get; set; }
         public int ProductUid { get; set; }
         public string ProductNumber { get; set; }
@@ -29,6 +30,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string CustomField3 { get; set; }
         public bool Active { get; set; }
         public bool AllowUntagged { get; set; }
+        public bool Rejected { get; set; }
+        public string RejectedNotes { get; set; }
 
         public Processes ProcessU { get; set; }
     }

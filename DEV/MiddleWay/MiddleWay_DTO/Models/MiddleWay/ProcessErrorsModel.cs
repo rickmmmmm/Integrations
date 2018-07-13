@@ -11,7 +11,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int ErrorNumber { get; set; }
         public int ErrorDescription { get; set; }
         public int ErrorField { get; set; }
-        public int RowID { get; set; }
+        public int RowId { get; set; }
         public int CreatedDate { get; set; }
         public bool ValidationError { get; set; }
     }

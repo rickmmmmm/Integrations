@@ -6,7 +6,7 @@ namespace MiddleWay_DTO.View_Models
 {
     public class ChargesViewModel
     {
-        public int ChargeUID { get; set; }
+        public int ChargeUid { get; set; }
         public decimal ChargeAmount { get; set; }
         public ICollection<ChargePaymentsViewModel> Payments { get; set; }
     }

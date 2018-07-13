@@ -26,7 +26,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetStatusUID(string statusName, StatusTypes statusTypeID)
+        public int GetStatusUid(string statusName, StatusTypes statusTypeID)
         {
             try
             {

@@ -39,9 +39,9 @@ namespace TIPWeb_Controller.Repositories
             try
             {
                 //string query = "UPDATE tblTechInventory ";
-                //query += "SET AssetID = 'FA' + Convert(varchar(50), InventoryUID) ";
+                //query += "SET AssetID = 'FA' + Convert(varchar(50), InventoryUid) ";
                 //query += "FROM tblTechInventory inv ";
-                //query += "JOIN tblTechItems item on item.ItemUID = inv.ItemUID ";
+                //query += "JOIN tblTechItems item on item.ItemUid = inv.ItemUid ";
                 //query += "WHERE item.ItemSuggestedPrice >= 5000 AND AssetID IS NULL";
 
                 var assetsToUpdate = (from inventory in _context.TblTechInventory

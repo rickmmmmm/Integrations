@@ -30,7 +30,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public ChargesViewModel GetChargeAmountByChargeID(int chargeID)
+        public ChargesViewModel GetChargeAmountByChargeId(int chargeId)
         {
             try
             {
@@ -39,12 +39,12 @@ namespace TIPWeb_Controller.Repositories
                                  join chargePayments in _context.TblUnvChargePayments
                                     on charges.ChargeUid equals chargePayments.ChargeUid into paymentsGroup
                                  from chargePayments in paymentsGroup.DefaultIfEmpty()
-                                 where charges.ChargeUid == chargeID
+                                 where charges.ChargeUid == chargeId
                                  select new
                                  {
-                                     ChargeId = chargeID,
+                                     ChargeId = chargeId,
                                      ChargeAmount = charges.ChargeAmount,
-                                     ChargePaymentUID = chargePayments.ChargePaymentUid,
+                                     ChargePaymentUid = chargePayments.ChargePaymentUid,
                                      PaymentAmount = chargePayments.ChargeAmount,
                                      PaymentDate = chargePayments.CreatedDate
                                  })
@@ -52,13 +52,13 @@ namespace TIPWeb_Controller.Repositories
                               group chargePayments by chargePayments.ChargeId into chargePaymentsGroup
                               select new ChargesViewModel
                               {
-                                  ChargeUID = chargePaymentsGroup.Key,
+                                  ChargeUid = chargePaymentsGroup.Key,
                                   ChargeAmount = chargePaymentsGroup.Max(x => x.ChargeAmount),
                                   Payments = (from payments in chargePaymentsGroup
                                               select new ChargePaymentsViewModel
                                               {
-                                                  ChargePaymentUID = payments.ChargePaymentUID,
-                                                  ChargeUID = chargeID,
+                                                  ChargePaymentUid = payments.ChargePaymentUid,
+                                                  ChargeUid = chargeId,
                                                   ChargeAmount = payments.ChargeAmount,
                                                   PaymentDate = payments.PaymentDate
                                               }).ToList()
@@ -72,7 +72,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //ChargesModel returnCharge = new ChargesModel();
 
-            //string query = "SELECT chg.ChargeAmount, ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUID = chg.ChargeUID),0) as PaidAmount FROM tblUnvCharges chg WHERE ChargeUID = " + chargeId.ToString();
+            //string query = "SELECT chg.ChargeAmount, ISNULL((SELECT SUM(ISNULL(pmt.ChargeAmount,0)) FROM tblUnvChargePayments pmt WHERE pmt.ChargeUid = chg.ChargeUid),0) as PaidAmount FROM tblUnvCharges chg WHERE ChargeUid = " + chargeId.ToString();
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -86,7 +86,7 @@ namespace TIPWeb_Controller.Repositories
 
             //while (reader.Read())
             //{
-            //    returnCharge.ChargeUID = chargeId;
+            //    returnCharge.ChargeUid = chargeId;
             //    returnCharge.ChargeAmount = (decimal)reader[0];
             //    returnCharge.Payments = getPaymentsByChargeId(chargeId);
             //}
@@ -94,16 +94,16 @@ namespace TIPWeb_Controller.Repositories
             //return returnCharge;
         }
 
-        public List<ChargePaymentsViewModel> GetPaymentsByChargeID(int chargeID)
+        public List<ChargePaymentsViewModel> GetPaymentsByChargeId(int chargeId)
         {
             try
             {
                 var chargePaymentsList = (from chargePayments in _context.TblUnvChargePayments
-                                          where chargePayments.ChargeUid == chargeID
+                                          where chargePayments.ChargeUid == chargeId
                                           select new ChargePaymentsViewModel
                                           {
-                                              ChargePaymentUID = chargePayments.ChargePaymentUid,
-                                              ChargeUID = chargeID,
+                                              ChargePaymentUid = chargePayments.ChargePaymentUid,
+                                              ChargeUid = chargeId,
                                               ChargeAmount = chargePayments.ChargeAmount,
                                               Void = chargePayments.Void,
                                               PaymentDate = chargePayments.CreatedDate
@@ -117,7 +117,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //var payments = new List<ChargePaymentsModel>();
 
-            //string query = " WHERE ChargeUID = " + chargeId.ToString();
+            //string query = " WHERE ChargeUid = " + chargeId.ToString();
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -133,7 +133,7 @@ namespace TIPWeb_Controller.Repositories
             //{
             //    var payment = new ChargePaymentsModel();
 
-            //    payment.ParentCharge.ChargeUID = chargeId;
+            //    payment.ParentCharge.ChargeUid = chargeId;
             //    payment.ChargeAmount = (decimal)reader[1];
             //    payment.PaymentDate = (DateTime)reader[2];
             //}
@@ -161,7 +161,7 @@ namespace TIPWeb_Controller.Repositories
                 {
                     //ChargePaymentUid = payment.,
                     ApplicationUid = (int)ApplicationCode.TIPWebIT,
-                    ChargeUid = payment.ChargeUID,
+                    ChargeUid = payment.ChargeUid,
                     //PaymentSiteUid = payment.,
                     ChargeAmount = payment.ChargeAmount,
                     //Void = payment.Void,
@@ -181,10 +181,10 @@ namespace TIPWeb_Controller.Repositories
             {
                 throw;
             }
-            //string query = "INSERT INTO tblUnvChargePayments (ApplicationUID, ChargeUID, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";
+            //string query = "INSERT INTO tblUnvChargePayments (ApplicationUid, ChargeUid, ChargeAmount, CreatedDate, CreatedByUserID, LastModifiedDate, LastModifiedByUserID) ";
             //query += "VALUES ({0}, {1}, {2}, '{3}', {4}, '{5}', {6})";
 
-            //SqlCommand cmd = new SqlCommand(string.Format(query, 2, import.ParentCharge.ChargeUID, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
+            //SqlCommand cmd = new SqlCommand(string.Format(query, 2, import.ParentCharge.ChargeUid, import.ChargeAmount, DateTime.Now.ToString(), 0, DateTime.Now.ToString(), 0), _conn);
 
             //if (_conn.State == ConnectionState.Open)
             //{

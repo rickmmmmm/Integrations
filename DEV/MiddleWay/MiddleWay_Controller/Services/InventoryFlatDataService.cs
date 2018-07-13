@@ -55,11 +55,11 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public InventoryFlatDataModel GetByAssetID(string assetId)
+        public InventoryFlatDataModel GetByAssetId(string assetId)
         {
             try
             {
-                return _inventoryFlatDataRepository.SelectByAssetID(_clientConfiguration.Client, _clientConfiguration.ProcessName, assetId);
+                return _inventoryFlatDataRepository.SelectByAssetId(_clientConfiguration.Client, _clientConfiguration.ProcessName, assetId);
             }
             catch
             {

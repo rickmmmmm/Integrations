@@ -6,7 +6,7 @@ namespace MiddleWay_DTO.DTO_Models.TIPWeb
 {
     public class AreasDto
     {
-        public int AreaID { get; set; }
+        public int AreaId { get; set; }
         public string AreaName { get; set; }
         public string CreatedByUser { get; set; }
         public DateTime CreatedDate { get; set; }

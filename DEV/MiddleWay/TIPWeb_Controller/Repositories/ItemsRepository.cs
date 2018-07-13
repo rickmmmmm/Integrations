@@ -28,7 +28,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int getItemUIDFromName(string itemName)
+        public int GetItemUidFromName(string itemName)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //int itemId = -1;
 
-            //string returnQuery = "SELECT ItemUID FROM tblTechItems WHERE LOWER(ItemName) = '" + name.ToLower() + "'";
+            //string returnQuery = "SELECT ItemUid FROM tblTechItems WHERE LOWER(ItemName) = '" + name.ToLower() + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -136,9 +136,9 @@ namespace TIPWeb_Controller.Repositories
                                 ItemDescription = items.ItemDescription,
                                 ItemType = items.ItemTypeUid,
                                 ModelNumber = items.ModelNumber,
-                                ManufacturerUID = items.ManufacturerUid,
+                                ManufacturerUid = items.ManufacturerUid,
                                 ItemSuggestedPrice = items.ItemSuggestedPrice,
-                                AreaUID = items.AreaUid,
+                                AreaUid = items.AreaUid,
                                 ItemNotes = items.ItemNotes,
                                 SKU = items.Sku,
                                 SerialRequired = items.SerialRequired,
@@ -146,7 +146,7 @@ namespace TIPWeb_Controller.Repositories
                                 Active = items.Active,
                                 CreatedByUserId = items.CreatedByUserId,
                                 CreatedDate = items.CreatedDate,
-                                LastModifiedByUserID = items.LastModifiedByUserId,
+                                LastModifiedByUserId = items.LastModifiedByUserId,
                                 LastModifiedDate = items.LastModifiedDate,
                                 AllowUntagged = items.AllowUntagged
                             }).FirstOrDefault();
@@ -159,7 +159,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //ItemsModel newItem = new ItemsModel();
 
-            //string returnQuery = "SELECT [ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU],[SerialRequired],[ProjectedLife],[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],[AllowUntagged] FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
+            //string returnQuery = "SELECT [ItemNumber],[ItemName],[ItemDescription],[ItemTypeUid],[ModelNumber],[ManufacturerUid],[ItemSuggestedPrice],[AreaUid],[ItemNotes],[SKU],[SerialRequired],[ProjectedLife],[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],[AllowUntagged] FROM tblTechItems WHERE LOWER(ItemName) = '" + productName.ToLower() + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -217,7 +217,7 @@ namespace TIPWeb_Controller.Repositories
                     // update item number in tblUnvCounter for next item that is added
                     //using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["AdoConnectionString"].ConnectionString))
                     //{
-                    //    string returnQuery = "UPDATE tblUnvCounter SET Value = " + (itemNumber + 1) + " WHERE CounterUID = " + (int)CounterTypesEnum.ProductNumber;
+                    //    string returnQuery = "UPDATE tblUnvCounter SET Value = " + (itemNumber + 1) + " WHERE CounterUid = " + (int)CounterTypesEnum.ProductNumber;
 
                     var counterValue = (from counter in _context.TblUnvCounter
                                         where counter.CounterUid == (int)CounterTypesEnum.ProductNumber
@@ -278,7 +278,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //Int64 result = 0;
 
-            //string returnQuery = "SELECT Value FROM tblUnvCounter WHERE CounterUID = " + (int)CounterTypesEnum.ProductNumber;
+            //string returnQuery = "SELECT Value FROM tblUnvCounter WHERE CounterUid = " + (int)CounterTypesEnum.ProductNumber;
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -385,9 +385,9 @@ namespace TIPWeb_Controller.Repositories
                     ItemDescription = item.ItemDescription,
                     ItemTypeUid = item.ItemType,
                     ModelNumber = item.ModelNumber,
-                    ManufacturerUid = item.ManufacturerUID,
+                    ManufacturerUid = item.ManufacturerUid,
                     ItemSuggestedPrice = item.ItemSuggestedPrice,
-                    AreaUid = item.AreaUID,
+                    AreaUid = item.AreaUid,
                     ItemNotes = item.ItemNotes,
                     Sku = item.SKU,
                     SerialRequired = item.SerialRequired,
@@ -410,10 +410,10 @@ namespace TIPWeb_Controller.Repositories
             {
                 throw;
             }
-            //string query = "INSERT INTO tblTechItems ([ItemNumber],[ItemName],[ItemDescription],[ItemTypeUID],[ModelNumber],[ManufacturerUID],[ItemSuggestedPrice],[AreaUID],[ItemNotes],[SKU] ";
+            //string query = "INSERT INTO tblTechItems ([ItemNumber],[ItemName],[ItemDescription],[ItemTypeUid],[ModelNumber],[ManufacturerUid],[ItemSuggestedPrice],[AreaUid],[ItemNotes],[SKU] ";
             //query += ",[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],SerialRequired,AllowUntagged,ProjectedLife) ";
             //query += "VALUES ('" + item.ItemNumber + "','" + item.ItemName + "','" + item.ItemDescription + "','" + item.ItemType + "','" + item.ModelNumber + "','";
-            //query += item.ManufacturerUID + "','" + item.ItemSuggestedPrice + "','" + item.AreaUID + "','" + item.ItemNotes + "','" + item.SKU + "','" + item.Active + "','";
+            //query += item.ManufacturerUid + "','" + item.ItemSuggestedPrice + "','" + item.AreaUid + "','" + item.ItemNotes + "','" + item.SKU + "','" + item.Active + "','";
             //query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "','" + item.LastModifiedDate.ToString() + "','FALSE',0,0)";
 
             //if (_conn.State == ConnectionState.Closed)

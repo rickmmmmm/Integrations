@@ -7,15 +7,15 @@ namespace MiddleWay_DTO.DTO_Models.TIPWeb
     public class PurchaseItemDetailDto
     {
         public string OrderNumber { get; set; }
-        public int ItemID { get; set; }
-        public int FundingSourceID { get; set; }
-        public int StatusID { get; set; }
-        public string SiteAddedSiteID { get; set; }
+        public int ItemId { get; set; }
+        public int FundingSourceId { get; set; }
+        public int StatusId { get; set; }
+        public string SiteAddedSiteId { get; set; }
         public int QuantityOrdered { get; set; }
         public int QuantityReceived { get; set; }
         public decimal PurchasePrice { get; set; }
         public string AccountCode { get; set; }
-        public int DepartmentID { get; set; }
+        public int DepartmentId { get; set; }
         public int LineNumber { get; set; }
         public string CFDA { get; set; }
         public bool IsAssociated { get; set; }

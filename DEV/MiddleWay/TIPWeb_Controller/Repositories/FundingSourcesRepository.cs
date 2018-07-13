@@ -26,7 +26,7 @@ namespace TIPWeb_Controller.Repositories
 
         #region Select Functions
 
-        public int GetFundingSourceUIDFromName(string fundingSourceName)
+        public int GetFundingSourceUidFromName(string fundingSourceName)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace TIPWeb_Controller.Repositories
             }
             //int fundingSource = -1;
 
-            //string returnQuery = "SELECT FundingSourceUID FROM tblFundingSources WHERE LOWER(FundingSource) = '" + sourceName.ToLower() + "'";
+            //string returnQuery = "SELECT FundingSourceUid FROM tblFundingSources WHERE LOWER(FundingSource) = '" + sourceName.ToLower() + "'";
 
             //if (_conn.State == ConnectionState.Open)
             //{
@@ -86,7 +86,7 @@ namespace TIPWeb_Controller.Repositories
             {
                 throw;
             }
-            string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUID) VALUES ('" + source + "',1,0,2)";
+            string query = "INSERT INTO tblFundingSources (FundingSource, Active, CreatedByUserID, ApplicationUid) VALUES ('" + source + "',1,0,2)";
 
             //if (_conn.State == ConnectionState.Closed)
             //{
