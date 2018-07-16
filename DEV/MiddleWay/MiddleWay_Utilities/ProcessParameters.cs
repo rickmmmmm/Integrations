@@ -12,7 +12,7 @@ namespace MiddleWay_Utilities
             try
             {
                 //Split the string by the separator combination ][
-                var splitParameters = parameters.Split("][", StringSplitOptions.None);
+                var splitParameters = parameters.Split("][", StringSplitOptions.RemoveEmptyEntries);
 
                 if (splitParameters.Length > 0)
                 {

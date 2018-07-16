@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace MiddleWay_Utilities
 {
@@ -100,5 +101,85 @@ namespace MiddleWay_Utilities
             return true;
         }
 
+        public static string ToStringObject<T>(T input)
+        {
+            //Iterate through the properties and print each value and property name
+            var output = new StringBuilder();
+
+            if (input is System.Dynamic.ExpandoObject)
+            {
+                output.AppendLine(Utilities.ToStringDynamic(input as IDictionary<string, object>));
+            }
+            else
+            {
+                var enumerable = input as IEnumerable;
+
+                if (enumerable != null)
+                {
+                    output.AppendLine(Utilities.ToStringIEnumerable(enumerable));
+                }
+                else
+                {
+                    //var dynamicObject = input as IDictionary<string, object>;
+                    //if (dynamicObject != null)
+                    //{
+                    //    output.AppendLine(Utilities.ToStringDynamic(dynamicObject));
+                    //}
+                    //else
+                    //{
+                    var properties = input.GetType().GetProperties();
+
+                    foreach (var property in properties)
+                    {
+                        var val = property.GetValue(input);
+                        output.AppendLine(property.Name + ":\t" + val.ToString());
+                    }
+                    //}
+                }
+            }
+
+            return output.ToString();
+        }
+
+        private static string ToStringDynamic(IDictionary<string, object> input)
+        {
+            //Iterate through the elements in the dictionary and print each value and property name
+            var output = new StringBuilder();
+
+            foreach (var row in input)
+            {
+                output.AppendLine(row.Key + ":\t" + row.Value);
+            }
+
+            //if (expandoDict.ContainsKey(propertyName))
+            //{
+            //    var val = expandoDict[propertyName];
+            //    destinationType = val.GetType();
+            //}
+
+            //if (expandoDict.ContainsKey(propertyName))
+            //{
+            //    expandoDict[propertyName] = transformedValue;
+            //}
+            //else
+            //{
+            //    expandoDict.Add(propertyName, transformedValue);
+            //}
+
+            return output.ToString();
+        }
+
+        private static string ToStringIEnumerable(IEnumerable enumerable)
+        {
+            // for each item in the enumerable iterate and toString each item
+            var output = new StringBuilder();
+
+            foreach (var value in enumerable)
+            {
+                return Utilities.ToStringObject(value);
+            }
+
+            return output.ToString();
+        }
     }
 }

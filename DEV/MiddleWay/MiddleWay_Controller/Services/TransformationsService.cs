@@ -33,8 +33,20 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        //public List<U> Transform<T, U>(List<T> items) where U : new()
-        public List<dynamic> Transform<T>(List<T> items) // where U : new()
+        public dynamic Transform<T>(T item)
+        {
+            var itemList = Transform<T>(new List<T> { item });
+            if (itemList != null && itemList.Count == 1)
+            {
+                return itemList[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<dynamic> Transform<T>(List<T> items)
         {
             try
             {
@@ -64,11 +76,13 @@ namespace MiddleWay_Controller.Services
 
                             //U outputItem = new U();
                             var outputItem = new System.Dynamic.ExpandoObject();
+                            var expandoDict = outputItem as IDictionary<string, object>;
 
                             foreach (var groupedTransformation in groupedTransformations)
                             {
                                 try
                                 {
+
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
                                     //var destinationProperty = outputItem.GetType().GetProperty(groupedTransformation.DestinationColumn);
 
@@ -86,25 +100,48 @@ namespace MiddleWay_Controller.Services
                                         var sourceType = sourceProperty.GetType();
                                         object value = sourceProperty.GetValue(item);
                                         //object result = value; //Create a copy of the value?
-                                        var propertyName = groupedTransformation.SourceColumn;
 
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
                                         {
                                             try
                                             {
+                                                string propertyName;
+                                                Type destinationType;
+
+                                                if (!string.IsNullOrEmpty(transformation.DestinationColumn))
+                                                {
+                                                    propertyName = transformation.DestinationColumn;
+                                                }
+                                                else
+                                                {
+                                                    propertyName = groupedTransformation.SourceColumn;
+                                                }
+
+                                                if (expandoDict.ContainsKey(propertyName))
+                                                {
+                                                    var val = expandoDict[propertyName];
+                                                    destinationType = val.GetType();
+                                                }
+                                                else
+                                                {
+                                                    destinationType = sourceType; //Type.GetType("object");
+                                                }
                                                 //var destinationType = destinationProperty.GetType();
 
                                                 // perhaps change this to an object <object, Type> to allow post transformation conversion
-                                                //var transformedValue = ApplyTransformation(sourceType, destinationType, transformation.Function, transformation.Parameters, result);
-                                                var transformedValue = ApplyTransformation(sourceType, typeof(object), transformation.Function, transformation.Parameters, value);
+
+                                                //var transformedValue = ApplyTransformation(sourceType, destinationType, transformation.Function, transformation.Parameters, value);
+                                                var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
+                                                //ApplyTransformation(transformation.Function, transformation.Parameters, value, out output);
+
                                                 //if (transformedValue != null)
                                                 //{
                                                 //    destinationProperty.SetValue(outputItem, transformedValue);
-                                                //result = transformedValue;
+                                                //    result = transformedValue;
                                                 //}
 
-                                                var expandoDict = outputItem as IDictionary<string, object>;
+                                                //var expandoDict = outputItem as IDictionary<string, object>;
                                                 if (expandoDict.ContainsKey(propertyName))
                                                 {
                                                     expandoDict[propertyName] = transformedValue;
@@ -115,9 +152,10 @@ namespace MiddleWay_Controller.Services
                                                 }
 
                                             }
-                                            catch
+                                            catch (Exception ex)
                                             {
                                                 //TODO: log error
+                                                Console.WriteLine(Utilities.ParseException(ex));
                                                 break;
                                             }
                                         }
@@ -156,6 +194,128 @@ namespace MiddleWay_Controller.Services
             }
         }
 
+        //public void ApplyTransformation<T, U>(string function, string parameters, T inputValue, out U outputValue)
+        //{
+        //    //try
+        //    //{
+        //    var paramsList = ProcessParameters.SplitParameters(parameters);
+        //    string stringVal = string.Empty;
+        //    int intVal = -1;
+
+        //    TransformationFunctions functionVal;
+        //    if (Enum.TryParse<TransformationFunctions>(function, true, out functionVal))
+        //    {
+        //        switch (functionVal)
+        //        {
+        //            case TransformationFunctions.DEFAULT:// "default":
+        //                outputValue = Default<T, U>(inputValue, paramsList);
+        //                break;
+        //            case TransformationFunctions.LOOKUP:
+        //                stringVal = Lookup(inputValue, paramsList);
+        //                outputValue = QuickCast<U>(stringVal);
+        //                break;
+        //            case TransformationFunctions.SPLIT:
+        //                stringVal = Split(inputValue, paramsList);
+        //                outputValue = QuickCast<U>(stringVal);
+        //                break;
+        //            case TransformationFunctions.TRUNCATE:
+        //                stringVal = Truncate(inputValue, paramsList);
+        //                outputValue = QuickCast<U>(stringVal);
+        //                break;
+        //            //case "cast":
+        //            //    return Cast<T, U>(value, paramsList);
+        //            //    break;
+        //            case TransformationFunctions.ROUNDDOWN:
+        //                intVal = RoundDown<T>(inputValue); // paramsList
+        //                outputValue = QuickCast<U>(intVal);
+        //                break;
+        //            case TransformationFunctions.ROUNDUP:
+        //                intVal = RoundUp<T>(inputValue); // paramsList
+        //                outputValue = QuickCast<U>(intVal);
+        //                break;
+        //            //case "concatenate":
+        //            //    return Concatenate();
+        //            //    break;
+        //            default:
+        //                outputValue = QuickCast<T, U>(inputValue);
+        //                break;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        outputValue = QuickCast<T, U>(inputValue);
+        //    }
+        //    //}
+        //    //catch
+        //    //{
+        //    //    throw;
+        //    //}
+        //}
+
+        public object ApplyTransformation(string function, string parameters, string value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<string, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, int value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<int, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, int? value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<int?, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, double value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<double, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, double? value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<double?, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, bool value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<bool, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, bool? value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<bool?, object>(value, output, function, parameters, value);
+        }
+
+        public object ApplyTransformation(string function, string parameters, object value) // where T : new()
+        {
+            //var input = new T();
+            var output = new object();
+
+            return ApplyTransformation<object, object>(value, output, function, parameters, value);
+        }
+
         public U ApplyTransformation<T, U>(T inputEntity, U outputEntity, string function, string parameters, T value)
         {
             //try
@@ -165,7 +325,7 @@ namespace MiddleWay_Controller.Services
             int intVal = -1;
 
             TransformationFunctions functionVal;
-            if (Enum.TryParse<TransformationFunctions>(function, out functionVal))
+            if (Enum.TryParse<TransformationFunctions>(function, true, out functionVal))
             {
                 switch (functionVal)
                 {
@@ -263,9 +423,9 @@ namespace MiddleWay_Controller.Services
                 }
                 else
                 {
-                    if (parameters.Count == 1 && parameters[0] != null)
+                    if (parameters != null && parameters.Count == 1 && parameters[0] != null)
                     {
-                        return QuickCast<U>(parameters[0]);
+                        return QuickCast<U>(parameters[0]); // Pre-cast the parameter to the input type
                     }
                     else
                     {
@@ -277,14 +437,7 @@ namespace MiddleWay_Controller.Services
             {
                 if (value == null)
                 {
-                    if (parameters.Count == 1 && parameters[0] != null)
-                    {
-                        return QuickCast<U>(parameters[0]);
-                    }
-                    else
-                    {
-                        return default(U);
-                    }
+                    return default(U);
                 }
                 else
                 {
@@ -300,7 +453,7 @@ namespace MiddleWay_Controller.Services
 
         public string Lookup<T>(T value, List<string> parameters)
         {
-            if (parameters != null && parameters.Count == 1)
+            if (parameters != null && parameters.Count == 1 && parameters[0] != null)
             {
                 try
                 {
@@ -369,7 +522,7 @@ namespace MiddleWay_Controller.Services
                             // Traverse the indices to recover and concatenate the split items matched
                             foreach (var indexMatch in indices)
                             {
-                                if (indexMatch > 0 && indexMatch < splitResult.Length)
+                                if (indexMatch >= 0 && indexMatch < splitResult.Length)
                                 {
                                     result.Append(splitResult[indexMatch]);
                                 }
@@ -410,7 +563,7 @@ namespace MiddleWay_Controller.Services
         /// <returns></returns>
         public string Truncate<T>(T value, List<string> parameters)
         {
-            if (parameters != null && parameters.Count == 1)
+            if (parameters != null && parameters.Count == 1 && parameters[0] != null)
             {
                 try
                 {

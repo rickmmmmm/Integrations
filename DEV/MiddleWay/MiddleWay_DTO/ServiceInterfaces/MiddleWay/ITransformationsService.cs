@@ -6,8 +6,16 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
     public interface ITransformationsService
     {
-        //List<U> Transform<T, U>(List<T> items) where U : new();
+        dynamic Transform<T>(T item);
         List<dynamic> Transform<T>(List<T> items);
+        object ApplyTransformation(string function, string parameters, string value);
+        object ApplyTransformation(string function, string parameters, int value);
+        object ApplyTransformation(string function, string parameters, int? value);
+        object ApplyTransformation(string function, string parameters, double value);
+        object ApplyTransformation(string function, string parameters, double? value);
+        object ApplyTransformation(string function, string parameters, bool value);
+        object ApplyTransformation(string function, string parameters, bool? value);
+        object ApplyTransformation(string function, string parameters, object value);
         U ApplyTransformation<T, U>(T inputEntity, U outputEntity, string function, string parameters, T value);
         //U QuickCast<T, U>(T value);
         T QuickCast<T>(string value);

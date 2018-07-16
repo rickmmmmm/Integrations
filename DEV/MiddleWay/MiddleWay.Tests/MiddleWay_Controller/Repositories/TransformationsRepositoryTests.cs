@@ -7,9 +7,9 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Repositories
 {
     public class TransformationsRepositoryTests
     {
-        [Fact]
-        public void Test()
-        {
-        }
+        //[Fact]
+        //public void Test()
+        //{
+        //}
     }
 }

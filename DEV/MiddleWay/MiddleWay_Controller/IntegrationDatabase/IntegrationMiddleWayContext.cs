@@ -8,6 +8,10 @@ namespace MiddleWay_Controller.IntegrationDatabase
     {
         private string _connectionString;
 
+        public IntegrationMiddleWayContext() : base()
+        {
+            _connectionString = string.Empty;
+        }
         public IntegrationMiddleWayContext(string connectionString) : base()
         {
             _connectionString = connectionString;

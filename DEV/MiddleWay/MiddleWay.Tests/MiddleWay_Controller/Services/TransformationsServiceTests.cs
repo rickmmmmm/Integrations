@@ -5,16 +5,29 @@ using MiddleWay_Controller.Services;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_Utilities;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MiddleWay.Tests.MiddleWay_Controller.Services
 {
     public class TransformationsServiceTests
     {
+        #region Constructor
+
+        private readonly ITestOutputHelper _outputHelper;
+
+        public TransformationsServiceTests(ITestOutputHelper output)
+        {
+            _outputHelper = output;
+        }
+
+        #endregion Constructor
+
         #region Transform Tests
 
         //List<dynamic> Transform<T>(List<T> items);
@@ -23,47 +36,44 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         {
             var process = GetMockProcessData();
             var transformations = GetMockTransformationData();
-            //var transformations = GetMockTransformationData();
             var clientConfiguration = SetupMockClientConfiguration();
-            var transformationsRepository = SetupMockTransformationsRepository(process, transformations); //SetupMockTransformationsRepository();
-            //Setup method calls to use
+            var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
-            //Setup method calls to use
 
             var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService.Object);
 
-            InventoryFlatDataModel inventoryFlat = new InventoryFlatDataModel
+            var inventoryFlat = new InventoryFlatDataModel
             {
                 InventoryFlatDataUid = 1,
                 ProcessUid = 1,
                 RowId = 1,
                 AssetId = "A0",
-                Tag = "Tag",
-                Serial = "",
-                SiteId = "",
-                SiteName = "",
-                Location = "",
-                Status = "",
-                DepartmentName = "",
-                DepartmentId = "",
-                FundingSource = "",
+                Tag = "Tag001",
+                Serial = "1234",
+                SiteId = "001",
+                SiteName = "001 - Site",
+                Location = "Room: Maintenance Room",
+                Status = "Available",
+                DepartmentName = "None",
+                DepartmentId = "0",
+                FundingSource = "None",
                 FundingSourceDescription = "",
-                PurchasePrice = "",
+                PurchasePrice = "10.00",
                 PurchaseDate = "",
                 ExpirationDate = "",
-                InventoryNotes = "",
+                InventoryNotes = "New Broom",
                 OrderNumber = "",
-                VendorName = "",
+                VendorName = "Broom's R Us",
                 VendorAccountNumber = "",
                 ParentTag = "",
-                ProductName = "",
-                ProductDescription = "",
-                ProductByNumber = "",
-                ProductTypeName = "",
-                ProductTypeDescription = "",
+                ProductName = "Broom",
+                ProductDescription = "Wooden Handle Broom",
+                ProductByNumber = "001",
+                ProductTypeName = "Broom",
+                ProductTypeDescription = "Broom",
                 ModelNumber = "",
-                ManufacturerName = "",
-                AreaName = "",
+                ManufacturerName = "Broom's R Us",
+                AreaName = "Floor",
                 CustomField1Value = "",
                 CustomField1Label = "",
                 CustomField2Value = "",
@@ -76,24 +86,157 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 InvoiceDate = ""
             };
 
-            //var result = service.Transform();
+            var result = service.Transform(inventoryFlat);
 
-            //Assert.Equal(, result);
+            Assert.NotNull(result);
+            _outputHelper.WriteLine(Utilities.ToStringObject(result));
+            //Assert.False(true);
         }
         [Fact]
         public void Transform_ListInventoryFlat()
         {
+            var process = GetMockProcessData();
+            var transformations = GetMockTransformationData();
             var clientConfiguration = SetupMockClientConfiguration();
-            var transformationsRepository = SetupMockTransformationsRepository();
-            //Setup method calls to use
+            var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
-            //Setup method calls to use
 
-            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.Transform();
+            var inventoryFlatList = new List<InventoryFlatDataModel> {
+                new InventoryFlatDataModel() {
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 1,
+                    AssetId = "A0",
+                    Tag = "Tag",
+                    Serial = "1234",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "10.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "New Broom",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Wooden Handle Broom",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Broom",
+                    ProductTypeDescription = "Broom",
+                    ModelNumber = "",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "",
+                    CustomField1Label = "",
+                    CustomField2Value = "",
+                    CustomField2Label = "",
+                    CustomField3Value = "",
+                    CustomField3Label = "",
+                    CustomField4Value = "",
+                    CustomField4Label = "",
+                    InvoiceNumber = "",
+                    InvoiceDate = ""
+                },
+                new InventoryFlatDataModel() {
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 2,
+                    AssetId = "A1",
+                    Tag = "Tag1",
+                    Serial = "12345",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "10.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "New Broom",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Wooden Handle Broom",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Broom",
+                    ProductTypeDescription = "Broom",
+                    ModelNumber = "",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "Nothing",
+                    CustomField1Label = "Cost",
+                    CustomField2Value = "0.0",
+                    CustomField2Label = "Value",
+                    CustomField3Value = "01234",
+                    CustomField3Label = "Special Value",
+                    CustomField4Value = "true",
+                    CustomField4Label = "Expired",
+                    InvoiceNumber = "000",
+                    InvoiceDate = "2018/01/01"
+                },
+                new InventoryFlatDataModel(){
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 3,
+                    AssetId = "0",
+                    Tag = "Dustpan1",
+                    Serial = "",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "1.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "Old Dustpan",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Rusted Dustpan",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Dustpan",
+                    ProductTypeDescription = "Metal Dustpa",
+                    ModelNumber = "001",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "Yes",
+                    CustomField1Label = "Rusted",
+                    CustomField2Value = "",
+                    CustomField2Label = "",
+                    CustomField3Value = "",
+                    CustomField3Label = "",
+                    CustomField4Value = "",
+                    CustomField4Label = "",
+                    InvoiceNumber = "",
+                    InvoiceDate = ""
+                }
+            };
 
-            //Assert.Equal(, result);
+            var result = service.Transform(inventoryFlatList);
+
+            Assert.NotNull(result);
+            _outputHelper.WriteLine(Utilities.ToStringObject(result));
+            //Assert.False(true);
         }
 
         #endregion Transform Tests
@@ -102,7 +245,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         //U ApplyTransformation<T, U>(T inputEntity, U outputEntity, string function, string parameters, T value);
         [Fact]
-        public void ApplyTransformation_Default()
+        public void ApplyTransformation_DefaultInteger()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -112,12 +255,13 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            var result = service.ApplyTransformation("default", "", 10);
 
-            //Assert.Equal(, result);
+            Assert.Equal(10, result);
+            //Assert.False(true);
         }
         [Fact]
-        public void ApplyTransformation_Lookup()
+        public void ApplyTransformation_DefaultIntegerWithParam()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -127,12 +271,13 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            var result = service.ApplyTransformation("default", "1", -11);
 
-            //Assert.Equal(, result);
+            Assert.Equal(-11, result);
+            //Assert.False(true);
         }
         [Fact]
-        public void ApplyTransformation_Split()
+        public void ApplyTransformation_DefaultIntegerInvalid()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -142,12 +287,14 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            int? invalidInt = null;
+            var result = service.ApplyTransformation("default", "", invalidInt);
 
-            //Assert.Equal(, result);
+            Assert.Null(result);
+            //Assert.False(true);
         }
         [Fact]
-        public void ApplyTransformation_Truncate()
+        public void ApplyTransformation_DefaultIntegerInvalidWithParam()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -157,12 +304,14 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            int? invalidInt = null;
+            var result = service.ApplyTransformation("default", "1", invalidInt);
 
-            //Assert.Equal(, result);
+            Assert.Equal(1, result);
+            //Assert.False(true);
         }
         [Fact]
-        public void ApplyTransformation_RoundDown()
+        public void ApplyTransformation_DefaultDouble()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -172,9 +321,307 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            var result = service.ApplyTransformation("default", "", 4.5);
 
-            //Assert.Equal(, result);
+            Assert.Equal(4.5, result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultDoubleWithParam()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("default", "1.0", 10.0);
+
+            Assert.Equal(10.0, result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultDoubleInvalid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            double? invalidDouble = null;
+            var result = service.ApplyTransformation("default", "", invalidDouble);
+
+            Assert.Null(result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultDoubleInvalidWithParam()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            double? invalidDouble = null;
+            var result = service.ApplyTransformation("default", "-1.1", invalidDouble);
+
+            Assert.Equal(-1.1, result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultBool()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("default", "", true);
+
+            Assert.True(Boolean.Parse(result.ToString()));
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultBoolWithParam()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("default", "true", false);
+
+            Assert.False(Boolean.Parse(result.ToString()));
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultBoolInvalid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            bool? invalidBool = null;
+            var result = service.ApplyTransformation("default", "", invalidBool);
+
+            Assert.Null(result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_DefaultBoolInvalidWithParam()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            bool? invalidBool = null;
+            var result = service.ApplyTransformation("default", "true", invalidBool);
+
+            Assert.True(Boolean.Parse(result.ToString()));
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_LookupValid()
+        {
+            var processes = GetMockProcessData();
+            var transformations = GetMockTransformationData();
+            var transformationLookups = GetMockTransformationLookupData();
+
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(processes, transformations);
+            var transformationLookupRepository = SetupMockTransformationLookupRepository(processes, transformationLookups);
+            var transformationLookupService = SetupMockTransformationLookupService(transformationLookupRepository, clientConfiguration);
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService);
+
+            var result = service.ApplyTransformation("lookup", "[test]", 1);
+
+            Assert.Equal("one", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_LookupInvalid()
+        {
+            var processes = GetMockProcessData();
+            var transformations = GetMockTransformationData();
+            var transformationLookups = GetMockTransformationLookupData();
+
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(processes, transformations);
+            var transformationLookupRepository = SetupMockTransformationLookupRepository(processes, transformationLookups);
+            var transformationLookupService = SetupMockTransformationLookupService(transformationLookupRepository, clientConfiguration);
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService);
+
+            var result = service.ApplyTransformation("lookup", "[test]", -1);
+
+            Assert.Null( result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_SplitValid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("split", "[,]", "first,second,fourth,third");
+
+            Assert.Equal("first", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_SplitValidWithIndices()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("split", "[,][0,1,3,2]", "first,second,fourth,third");
+
+            Assert.Equal("firstsecondthirdfourth", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_SplitInvalid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("split", "[,]", "nosplit");
+
+            Assert.Equal("nosplit", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_SplitInvalidParameters()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            Assert.Throws<ArgumentException>(() => service.ApplyTransformation("split", "[]", "nosplit"));
+
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_TruncateValidLessThanLenght()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("truncate", "[10]", "this_is_a_string_to_truncate");
+
+            Assert.Equal("this_is_a_", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_TruncateValidGreaterThanLenght()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("truncate", "[30]", "this_is_a_string_to_truncate");
+
+            Assert.Equal("this_is_a_string_to_truncate", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_TruncateInvalid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("truncate", "[]", "this_is_a_string_to_truncate");
+
+            Assert.Equal("this_is_a_string_to_truncate", result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_RoundDownValid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("rounddown", "", 13.05);
+
+            Assert.Equal(13, result);
+            //Assert.False(true);
+        }
+        [Fact]
+        public void ApplyTransformation_RoundDownInvalid()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.ApplyTransformation("rounddown", "", 10);
+
+            Assert.Equal(10, result);
+            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_RoundUp()
@@ -187,9 +634,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            var result = service.ApplyTransformation("roundup", "", 7.08);
 
-            //Assert.Equal(, result);
+            Assert.Equal(8, result);
+            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_InvalidFunction()
@@ -202,9 +650,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            //var result = service.ApplyTransformation();
+            var result = service.ApplyTransformation("invalid", "", 9);
 
-            //Assert.Equal(, result);
+            Assert.Equal(9, result);
+            //Assert.False(true);
         }
 
         #endregion ApplyTransformation Tests
@@ -1276,71 +1725,51 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         protected IQueryable<Transformations> GetMockTransformationData()
         {
-            var data = new List<Transformations>
-                        {
-                            new Transformations {
-                                TransformationUid  = 0,
-                                ProcessUid = 1,
-                                Function = "rounddown",
-                                Parameters = "",
-                                SourceColumn = "number",
-                                DestinationColumn = "unknown",
-                                Enabled = true,
-                                Order = 0
-                            },
-                            new Transformations {
-                                TransformationUid  = 1,
-                                ProcessUid = 1,
-                                Function = "default",
-                                Parameters = "[0]",
-                                SourceColumn = "value",
-                                DestinationColumn = "clone",
-                                Enabled = true,
-                                Order =1
-                            },
-                            new Transformations {
-                                TransformationUid  = 2,
-                                ProcessUid = 1,
-                                Function = "split",
-                                Parameters = "[;][0,3]",
-                                SourceColumn = "largeString",
-                                DestinationColumn = "compoundnumber",
-                                Enabled = true,
-                                Order =1
-                            },
-                            new Transformations {
-                                TransformationUid  = 2,
-                                ProcessUid = 1,
-                                Function = "default",
-                                Parameters = "",
-                                SourceColumn = "largestring",
-                                DestinationColumn = "compoundnumber",
-                                Enabled = true,
-                                Order =2
-                            },
-                            new Transformations {
-                                TransformationUid  = 2,
-                                ProcessUid = 1,
-                                Function = "rounddown",
-                                Parameters = "",
-                                SourceColumn = "largestring",
-                                DestinationColumn = "compoundnumber",
-                                Enabled = true,
-                                Order =3
-                            },
-                            new Transformations {
-                                TransformationUid  = 2,
-                                ProcessUid = 1,
-                                Function = "lookup",
-                                Parameters = "",
-                                SourceColumn = "reference",
-                                DestinationColumn = "referenced",
-                                Enabled = true,
-                                Order =3
-                            },
-                        }.AsQueryable();
+            var transformations = new List<Transformations>
+                {
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "InventoryFlatDataUid", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "ProcessUid", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "RowId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "default", Parameters = "[]", SourceColumn = "AssetId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "Tag", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "Serial", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "SiteId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "SiteName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "split", Parameters = "[:][1]", SourceColumn = "Location", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "default", Parameters = "[In Use]", SourceColumn = "Status", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "DepartmentName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "DepartmentId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "FundingSource", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "truncate", Parameters = "[100]", SourceColumn = "FundingSourceDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ExpirationDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "InventoryNotes", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "OrderNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "VendorName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "VendorAccountNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "rounddown", Parameters = "", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductTypeName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductTypeDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ModelNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ManufacturerName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "AreaName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField1Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField1Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField2Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField2Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField3Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField3Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField4Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField4Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "roundup", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "InvoiceDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                }.AsQueryable();
 
-            return data;
+            return transformations;
         }
 
         protected IQueryable<TransformationLookup> GetMockTransformationLookupData()
