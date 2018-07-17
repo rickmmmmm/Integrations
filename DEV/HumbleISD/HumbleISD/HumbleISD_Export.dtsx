@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="HumbleISD_Export"
   DTS:PackageType="5"
-  DTS:VersionBuild="178"
-  DTS:VersionGUID="{241B670B-0A4D-4579-939B-34A71704D6C7}">
+  DTS:VersionBuild="179"
+  DTS:VersionGUID="{6FEA220E-614B-45E7-8DE9-837A3CC923F8}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -45,7 +45,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.txt">
+          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.txt">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnDelimiter=""
@@ -74,7 +74,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.txt">
+          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.txt">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnDelimiter=""
@@ -753,7 +753,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFilePath">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Archived\Export\export_07102018.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Archived\Export\export_07172018.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -773,7 +773,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ClientExportFilePath">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.txt</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.txt</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -784,7 +784,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ClientExportZipFile">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -2111,23 +2111,23 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select top 10 tti. assetID as Asset, '' as [Master Asset], 
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select tti. assetID as Asset, '' as [Master Asset], 
 case when statusDesc in ('Available', 'In Use', 'In Repair', 'Lost', 'Surplus', 'In Transit', 'Pending Transfer') then 'A' else 'R' end as statusDesc,
 '' as [Class], '' as [Sub-Class], Tag, '' as Serial, '' as Description, 
 Substring(SiteID, 1, 4) as Location,
-'' as [Loc Memo], '' as [Storage Loc], '' as [Acq Date], '' as [Fiscal Year], '' as [Department],
+'' as [Loc Memo], 
+substring((case when EntityTypeUID = 3 then tch.TeacherID
+when EntityTypeUID = 4 then stu.StudentID
+when EntityTypeUID = 6 then cast(trn.TransferNumber as varchar(10))
+else '' end), 1, 20) as [Storage Loc], 
+'' as [Acq Date], '' as [Fiscal Year], '' as [Department],
 (case when EntityTypeUID = 2 then  'RM'
 when EntityTypeUID = 3 then 'SF'
 when EntityTypeUID = 4 then 'ST' 
 when EntityTypeUID = 6 then 'TRN' 
 else '' end) as Custodian,
 '' as [Floor], 
-substring((case when EntityTypeUID = 2 then  rm.RoomNumber
-when EntityTypeUID = 3 then tch.TeacherID
-when EntityTypeUID = 4 then stu.StudentID
-when EntityTypeUID = 6 then cast(trn.TransferNumber as varchar(10))
-else ''
-end), 1, 5) as Room,
+substring((case when EntityTypeUID = 2 then  rm.RoomNumber else '' end), 1, 5) as Room,
 '' as [Acq Cost], '' as [Manufacturer], '' as [Model], '' as [Model Yr], '' as [License], '' as [Quantity], 
 '' as [Unit Of Measeure], '' as [Unit Cost], '' as [Acres], '' as [Square Feet], '' as [Condition Code], 
 '' as [Acq Code], '' as [Install Date], '' as [Last Inv Date], '' as [Estimated Life], '' as [Last Apprs. Value], 
@@ -3118,7 +3118,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
                           refId="Package\Export, Zip, Archive File\Export Data\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Storage Loc]"
                           codePage="1252"
                           dataType="str"
-                          length="1"
+                          length="20"
                           name="Storage Loc" />
                         <externalMetadataColumn
                           refId="Package\Export, Zip, Archive File\Export Data\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Acq Date]"
@@ -3609,7 +3609,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
                           refId="Package\Export, Zip, Archive File\Export Data\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Storage Loc]"
                           codePage="1252"
                           dataType="str"
-                          length="1"
+                          length="20"
                           lineageId="Package\Export, Zip, Archive File\Export Data\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Storage Loc]"
                           name="Storage Loc" />
                         <outputColumn
@@ -4154,7 +4154,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           <DTS:ObjectData>
             <ExecuteProcessData
               Executable="E:\Integration\7z.exe"
-              Arguments="a &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.zip&quot; &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07102018.txt&quot;" />
+              Arguments="a &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.zip&quot; &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07172018.txt&quot;" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
