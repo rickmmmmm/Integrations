@@ -132,10 +132,10 @@ namespace MiddleWay_BLL.Services
 
                             //TODO: Log count of flatdata records returned
 
-                            var transformedData = _transformationService.Transform<InventoryFlatDataModel>(flatData); //<InventoryFlatDataModel, InventoryFlatDataModel>
+                            var transformedData = _transformationService.Transform<InventoryFlatDataModel>(flatData, ProcessSteps.Ingest.ToString()); //<InventoryFlatDataModel, InventoryFlatDataModel>
                             //TODO: Log count of transformed records returned
 
-                            var mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(transformedData);
+                            var mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(transformedData, ProcessSteps.Ingest.ToString());
                             //TODO: Log count of mapped records returned
 
                             //var transformedData = _transformationService.Transform<EtlInventoryModel, EtlInventoryModel>(mappedData);

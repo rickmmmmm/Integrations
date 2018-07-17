@@ -120,21 +120,13 @@ namespace MiddleWay_Utilities
                 }
                 else
                 {
-                    //var dynamicObject = input as IDictionary<string, object>;
-                    //if (dynamicObject != null)
-                    //{
-                    //    output.AppendLine(Utilities.ToStringDynamic(dynamicObject));
-                    //}
-                    //else
-                    //{
                     var properties = input.GetType().GetProperties();
 
                     foreach (var property in properties)
                     {
                         var val = property.GetValue(input);
-                        output.AppendLine(property.Name + ":\t" + val.ToString());
+                        output.AppendLine(property.Name + ":\t" + (val ?? string.Empty).ToString());
                     }
-                    //}
                 }
             }
 
@@ -148,23 +140,8 @@ namespace MiddleWay_Utilities
 
             foreach (var row in input)
             {
-                output.AppendLine(row.Key + ":\t" + row.Value);
+                output.AppendLine(row.Key + ":\t" + (row.Value ?? string.Empty).ToString());
             }
-
-            //if (expandoDict.ContainsKey(propertyName))
-            //{
-            //    var val = expandoDict[propertyName];
-            //    destinationType = val.GetType();
-            //}
-
-            //if (expandoDict.ContainsKey(propertyName))
-            //{
-            //    expandoDict[propertyName] = transformedValue;
-            //}
-            //else
-            //{
-            //    expandoDict.Add(propertyName, transformedValue);
-            //}
 
             return output.ToString();
         }

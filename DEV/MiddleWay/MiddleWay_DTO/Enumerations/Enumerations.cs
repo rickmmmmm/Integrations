@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-
-namespace MiddleWay_DTO.Enumerations
+﻿namespace MiddleWay_DTO.Enumerations
 {
     public enum ChangeTypeEnum
     {
@@ -253,5 +248,13 @@ namespace MiddleWay_DTO.Enumerations
         TRUNCATE = 3,
         ROUNDDOWN = 4,
         ROUNDUP = 5
+    }
+
+    public enum ProcessSteps
+    {
+        Ingest,
+        Stage,
+        Validate,
+        Upload
     }
 }

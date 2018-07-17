@@ -1,7 +1,6 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,17 +25,21 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<TransformationsModel> SelectTransformations(int processUid)
+        public List<TransformationsModel> SelectTransformations(int processUid, string stepName)
         {
             try
             {
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+
                 var list = (from transformations in _context.Transformations
                             where transformations.ProcessUid == processUid
+                               && transformations.StepName.Trim().ToLower() == stepNameVal
                                && transformations.Enabled
                             select new TransformationsModel
                             {
                                 TransformationUid = transformations.TransformationUid,
                                 ProcessUid = transformations.ProcessUid,
+                                StepName = transformations.StepName,
                                 Function = transformations.Function,
                                 Parameters = transformations.Parameters,
                                 SourceColumn = transformations.SourceColumn,
@@ -53,23 +56,26 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<TransformationsModel> SelectTransformations(string client, string processName)
+        public List<TransformationsModel> SelectTransformations(string client, string processName, string stepName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
 
                 var list = (from transformations in _context.Transformations
                             join processes in _context.Processes
                                 on transformations.ProcessUid equals processes.ProcessUid
                             where processes.Client.Trim().ToLower() == clientVal
                                && processes.ProcessName.Trim().ToLower() == processNameVal
+                               && transformations.StepName.Trim().ToLower() == stepNameVal
                                && transformations.Enabled
                             select new TransformationsModel
                             {
                                 TransformationUid = transformations.TransformationUid,
                                 ProcessUid = transformations.ProcessUid,
+                                StepName = transformations.StepName,
                                 Function = transformations.Function,
                                 Parameters = transformations.Parameters,
                                 SourceColumn = transformations.SourceColumn,

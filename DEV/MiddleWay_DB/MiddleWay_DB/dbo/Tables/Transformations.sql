@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Transformations] (
     [TransformationUid] INT           IDENTITY (1, 1) NOT NULL,
     [ProcessUid]        INT           NOT NULL,
+    [StepName]          VARCHAR (100) NOT NULL,
     [Function]          VARCHAR (100) NOT NULL,
     [Parameters]        VARCHAR (500) NULL,
     [SourceColumn]      VARCHAR (100) NOT NULL,

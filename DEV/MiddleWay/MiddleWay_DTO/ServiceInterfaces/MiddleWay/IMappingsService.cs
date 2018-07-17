@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
     public interface IMappingsService
     {
-        List<U> Map<T, U>(List<T> item) where U : new();
+        U Map<T, U>(T item, string stepName) where U : new();
+        List<U> Map<T, U>(List<T> item, string stepName) where U : new();
     }
 }

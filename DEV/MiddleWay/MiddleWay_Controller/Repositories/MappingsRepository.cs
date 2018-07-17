@@ -25,12 +25,15 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<MappingsModel> SelectMappings(int processUid)
+        public List<MappingsModel> SelectMappings(int processUid, string stepName)
         {
             try
             {
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+
                 var list = (from mappings in _context.Mappings
                             where mappings.ProcessUid == processUid
+                               && mappings.StepName.Trim().ToLower() == stepNameVal
                                && mappings.Enabled
                             select new MappingsModel
                             {
@@ -49,18 +52,20 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<MappingsModel> SelectMappings(string client, string processName)
+        public List<MappingsModel> SelectMappings(string client, string processName, string stepName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
 
                 var list = (from mappings in _context.Mappings
                             join processes in _context.Processes
                                 on mappings.ProcessUid equals processes.ProcessUid
                             where processes.Client.Trim().ToLower() == clientVal
                                && processes.ProcessName.Trim().ToLower() == processNameVal
+                               && mappings.StepName.Trim().ToLower() == stepNameVal
                                && mappings.Enabled
                             select new MappingsModel
                             {
@@ -79,15 +84,17 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public MappingsModel SelectMappings(int processUid, string sourceColumn)
+        public MappingsModel SelectMappings(int processUid, string sourceColumn, string stepName)
         {
             try
             {
                 var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             where mappings.ProcessUid == processUid
                                && mappings.SourceColumn.Trim().ToLower() == sourceColumnVal
+                               && mappings.StepName.Trim().ToLower() == stepNameVal
                             select new MappingsModel
                             {
                                 MappingsUid = mappings.MappingsUid,
@@ -105,13 +112,14 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public MappingsModel SelectMappings(string client, string processName, string sourceColumn)
+        public MappingsModel SelectMappings(string client, string processName, string sourceColumn, string stepName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
+                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             join processes in _context.Processes
@@ -119,6 +127,7 @@ namespace MiddleWay_Controller.Repositories
                             where processes.Client.Trim().ToLower() == clientVal
                                && processes.ProcessName.Trim().ToLower() == processNameVal
                                && mappings.SourceColumn.Trim().ToLower() == sourceColumnVal
+                               && mappings.StepName.Trim().ToLower() == stepNameVal
                             select new MappingsModel
                             {
                                 MappingsUid = mappings.MappingsUid,

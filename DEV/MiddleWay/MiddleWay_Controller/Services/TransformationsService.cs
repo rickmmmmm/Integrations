@@ -33,9 +33,9 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public dynamic Transform<T>(T item)
+        public dynamic Transform<T>(T item, string stepName)
         {
-            var itemList = Transform<T>(new List<T> { item });
+            var itemList = Transform<T>(new List<T> { item }, stepName);
             if (itemList != null && itemList.Count == 1)
             {
                 return itemList[0];
@@ -46,19 +46,17 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public List<dynamic> Transform<T>(List<T> items)
+        public List<dynamic> Transform<T>(List<T> items, string stepName)
         {
             try
             {
                 if (items != null && items.Count > 0)
                 {
-                    var transformations = _transformationsRepository.SelectTransformations(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                    var transformations = _transformationsRepository.SelectTransformations(_clientConfiguration.Client, _clientConfiguration.ProcessName, stepName);
 
                     if (transformations != null)
                     {
                         List<dynamic> outputItems = new List<dynamic>();
-                        //var typeT = typeof(T);
-                        //var typeU = typeof(U);
 
                         foreach (var item in items)
                         {
@@ -74,7 +72,6 @@ namespace MiddleWay_Controller.Services
                                                     group transforms by transforms.DestinationColumn into destinationTransforms
                                                     select destinationTransforms.Key).ToList();
 
-                            //U outputItem = new U();
                             var outputItem = new System.Dynamic.ExpandoObject();
                             var expandoDict = outputItem as IDictionary<string, object>;
 
@@ -84,22 +81,18 @@ namespace MiddleWay_Controller.Services
                                 {
 
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
-                                    //var destinationProperty = outputItem.GetType().GetProperty(groupedTransformation.DestinationColumn);
 
                                     bool hasSourceProperty = (sourceProperty != null);
-                                    //bool hasDestinationProperty = (destinationProperty != null);
 
-                                    if (hasSourceProperty)//&& hasDestinationProperty
+                                    if (hasSourceProperty)
                                     {
                                         var transformationGroup = (from transforms in transformations
                                                                    where transforms.SourceColumn == groupedTransformation.SourceColumn
-                                                                   //&& transforms.DestinationColumn == groupedTransformation.DestinationColumn
                                                                    orderby transforms.Order ascending
                                                                    select transforms).ToList();
 
                                         var sourceType = sourceProperty.GetType();
                                         object value = sourceProperty.GetValue(item);
-                                        //object result = value; //Create a copy of the value?
 
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
@@ -125,23 +118,13 @@ namespace MiddleWay_Controller.Services
                                                 }
                                                 else
                                                 {
-                                                    destinationType = sourceType; //Type.GetType("object");
+                                                    destinationType = sourceType;
                                                 }
-                                                //var destinationType = destinationProperty.GetType();
 
                                                 // perhaps change this to an object <object, Type> to allow post transformation conversion
 
-                                                //var transformedValue = ApplyTransformation(sourceType, destinationType, transformation.Function, transformation.Parameters, value);
                                                 var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
-                                                //ApplyTransformation(transformation.Function, transformation.Parameters, value, out output);
 
-                                                //if (transformedValue != null)
-                                                //{
-                                                //    destinationProperty.SetValue(outputItem, transformedValue);
-                                                //    result = transformedValue;
-                                                //}
-
-                                                //var expandoDict = outputItem as IDictionary<string, object>;
                                                 if (expandoDict.ContainsKey(propertyName))
                                                 {
                                                     expandoDict[propertyName] = transformedValue;
@@ -159,8 +142,6 @@ namespace MiddleWay_Controller.Services
                                                 break;
                                             }
                                         }
-
-                                        //destinationProperty.SetValue(outputItem, result);
                                     }
                                 }
                                 catch
@@ -252,65 +233,57 @@ namespace MiddleWay_Controller.Services
         //    //}
         //}
 
-        public object ApplyTransformation(string function, string parameters, string value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, string value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<string, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, int value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, int value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<int, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, int? value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, int? value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<int?, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, double value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, double value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<double, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, double? value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, double? value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<double?, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, bool value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, bool value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<bool, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, bool? value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, bool? value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<bool?, object>(value, output, function, parameters, value);
         }
 
-        public object ApplyTransformation(string function, string parameters, object value) // where T : new()
+        public object ApplyTransformation(string function, string parameters, object value)
         {
-            //var input = new T();
             var output = new object();
 
             return ApplyTransformation<object, object>(value, output, function, parameters, value);
@@ -318,8 +291,6 @@ namespace MiddleWay_Controller.Services
 
         public U ApplyTransformation<T, U>(T inputEntity, U outputEntity, string function, string parameters, T value)
         {
-            //try
-            //{
             var paramsList = ProcessParameters.SplitParameters(parameters);
             string stringVal = string.Empty;
             int intVal = -1;
@@ -329,7 +300,7 @@ namespace MiddleWay_Controller.Services
             {
                 switch (functionVal)
                 {
-                    case TransformationFunctions.DEFAULT:// "default":
+                    case TransformationFunctions.DEFAULT:
                         return Default<T, U>(value, paramsList);
                     case TransformationFunctions.LOOKUP:
                         stringVal = Lookup(value, paramsList);
@@ -343,10 +314,10 @@ namespace MiddleWay_Controller.Services
                     //case "cast":
                     //    return Cast<T, U>(value, paramsList);
                     case TransformationFunctions.ROUNDDOWN:
-                        intVal = RoundDown<T>(value); // paramsList
+                        intVal = RoundDown<T>(value);
                         return QuickCast<U>(intVal);
                     case TransformationFunctions.ROUNDUP:
-                        intVal = RoundUp<T>(value); // paramsList
+                        intVal = RoundUp<T>(value);
                         return QuickCast<U>(intVal);
                     //case "concatenate":
                     //    return Concatenate();
@@ -358,57 +329,191 @@ namespace MiddleWay_Controller.Services
             {
                 return QuickCast<T, U>(value);
             }
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
         }
 
         public U QuickCast<T, U>(T value)
         {
             //TODO: Perform a switch statement using the types of input and perform targeted casts
-            if (value is U)
+            if (value == null)
             {
-                return (U)Convert.ChangeType(value, typeof(U));
+                return default(U);
             }
             else
             {
-                if (value == null)
+                Type outputType = null;
+
+                outputType = typeof(U);
+                if (Nullable.GetUnderlyingType(outputType) != null)
                 {
-                    return default(U);
+                    outputType = Nullable.GetUnderlyingType(outputType);
+                }
+
+                try
+                {
+                    switch (outputType.Name)
+                    {
+                        case "Byte": // int
+                            return (U)Convert.ChangeType(Convert.ToByte(value), outputType);
+                        case "Char": // int
+                            return (U)Convert.ChangeType(Convert.ToChar(value), outputType);
+                        case "Int16": // int
+                            return (U)Convert.ChangeType(Convert.ToInt16(value), outputType);
+                        case "Int32": // int
+                            return (U)Convert.ChangeType(Convert.ToInt32(value), outputType);
+                        case "Int64": // long
+                            return (U)Convert.ChangeType(Convert.ToInt64(value), outputType);
+                        case "Boolean": //bool
+                            return (U)Convert.ChangeType(Convert.ToBoolean(value), outputType);
+                        case "Single": //float
+                            return (U)Convert.ChangeType(Convert.ToSingle(value), outputType);
+                        case "Double": // double
+                            return (U)Convert.ChangeType(Convert.ToDouble(value), outputType);
+                        case "Decimal": // decimal
+                            return (U)Convert.ChangeType(Convert.ToDecimal(value), outputType);
+                        case "String": // string
+                            return (U)Convert.ChangeType(Convert.ToString(value), outputType);
+                        case "DateTime": // DateTime
+                            return (U)Convert.ChangeType(Convert.ToDateTime(value), outputType);
+                        case "Object": // object
+                            return (U)Convert.ChangeType(value, outputType);
+                        default:
+                            return (U)Convert.ChangeType(value, typeof(U));
+                    }
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        //public void QuickCast<T, U>(T value, out U destination)
+        //{
+        //    destination = QuickCast<T, U>(value);
+        //    //if (value is U)
+        //    //{
+        //    //    destination = (U)Convert.ChangeType(value, typeof(U));
+        //    //}
+        //    //else
+        //    //{
+        //    //    if (value == null)
+        //    //    {
+        //    //        destination = default(U);
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        destination = (U)Convert.ChangeType(value.ToString(), typeof(U));
+        //    //    }
+        //    //}
+        //}
+
+        /// <summary>
+        /// This function takes the type passed as a parameter to determine which QuickCast
+        /// variation to run and attempts to perform a QuickCast based on this considering the 
+        /// possibility of the type being nullable and returning null when the input value
+        /// cannot be converted
+        /// </summary>
+        /// <typeparam name="T">The dynamic type of hte input object</typeparam>
+        /// <param name="value">Value to Cast</param>
+        /// <param name="destinationType">The Type of the output to return (boxed in an object)</param>
+        /// <returns></returns>
+        public object QuickCast<T>(T value, Type destinationType)
+        {
+            var outputTypeName = string.Empty;
+            bool isNullable = false;
+
+            if (destinationType.Name == "String")
+            {
+                outputTypeName = "String";
+            }
+            else
+            {
+                var objectType = destinationType;
+                if (Nullable.GetUnderlyingType(objectType) != null)
+                {
+                    objectType = Nullable.GetUnderlyingType(objectType);
+                    isNullable = true;
+                    outputTypeName = objectType.Name;
                 }
                 else
                 {
-                    return (U)Convert.ChangeType(value.ToString(), typeof(U));
+                    outputTypeName = objectType.Name;
+                }
+            }
+
+            try
+            {
+                switch (outputTypeName)
+                {
+                    case "Byte": // int
+                        return QuickCast<T, Byte>(value);
+                    case "Char": // int
+                        return QuickCast<T, Char>(value);
+                    case "Int16": // int
+                        return QuickCast<T, Int16>(value);
+                    case "Int32": // int
+                        return QuickCast<T, Int32>(value);
+                    case "Int64": // long
+                        return QuickCast<T, Int64>(value);
+                    case "Boolean": //bool
+                        return QuickCast<T, Boolean>(value);
+                    case "Single": //float
+                        return QuickCast<T, Single>(value);
+                    case "Double": // double
+                        return QuickCast<T, Double>(value);
+                    case "Decimal": // decimal
+                        return QuickCast<T, Decimal>(value);
+                    case "String": // string
+                        return QuickCast<T, String>(value);
+                    case "DateTime": // DateTime
+                        return QuickCast<T, DateTime>(value);
+                    case "Object": // object
+                                   //return QuickCast < T, Object > (value);
+                    default:
+                        return QuickCast<T, Object>(value);
+                }
+            }
+            catch
+            {
+                if (isNullable)
+                {
+                    return null;
+                }
+                else
+                {
+                    throw;
                 }
             }
         }
 
         public T QuickCast<T>(string value)
         {
-            //TODO: Perform a switch statement using the types of input and perform targeted casts
-            if (value is T)
-            {
-                return (T)Convert.ChangeType(value, typeof(T));
-            }
-            else
-            {
-                return default(T);
-            }
+            return QuickCast<string, T>(value);
         }
 
         public T QuickCast<T>(int value)
         {
-            //TODO: Perform a switch statement using the types of input and perform targeted casts
-            if (value is T)
-            {
-                return (T)Convert.ChangeType(value, typeof(T));
-            }
-            else
-            {
-                return default(T);
-            }
+            return QuickCast<int, T>(value);
+        }
+
+        public T QuickCast<T>(double value)
+        {
+            return QuickCast<double, T>(value);
+        }
+
+        public T QuickCast<T>(decimal value)
+        {
+            return QuickCast<decimal, T>(value);
+        }
+
+        public T QuickCast<T>(bool value)
+        {
+            return QuickCast<bool, T>(value);
+        }
+
+        public T QuickCast<T>(DateTime value)
+        {
+            return QuickCast<DateTime, T>(value);
         }
 
         public U Default<T, U>(T value, List<string> parameters)
@@ -423,9 +528,10 @@ namespace MiddleWay_Controller.Services
                 }
                 else
                 {
-                    if (parameters != null && parameters.Count == 1 && parameters[0] != null)
+                    if (parameters.Count == 1 && parameters[0] != null)
                     {
-                        return QuickCast<U>(parameters[0]); // Pre-cast the parameter to the input type
+                        var defaultCast = QuickCast<T>(parameters[0]); // Pre-cast the parameter to the input type
+                        return QuickCast<T, U>(defaultCast);
                     }
                     else
                     {
@@ -435,20 +541,8 @@ namespace MiddleWay_Controller.Services
             }
             else
             {
-                if (value == null)
-                {
-                    return default(U);
-                }
-                else
-                {
-                    return QuickCast<T, U>(value);
-                }
+                return QuickCast<T, U>(value);
             }
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
         }
 
         public string Lookup<T>(T value, List<string> parameters)
@@ -459,14 +553,8 @@ namespace MiddleWay_Controller.Services
                 {
                     var lookupValue = _transformationLookupService.GetTransformationLookupValue(parameters[0], value.ToString());
 
-                    //if(lookupValue != null)
-                    //{
                     return lookupValue;
-                    //}
-                    //else
-                    //{
-                    //    return default(U);
-                    //}
+
                 }
                 catch
                 {
@@ -693,6 +781,34 @@ namespace MiddleWay_Controller.Services
                 throw new ArgumentNullException("Value cannot be null."); // return 0;
             }
         }
+
+        //public object GetOutputVariable(System.Reflection.PropertyInfo destinationProperty)
+        //{
+        //    var objectType = destinationProperty.PropertyType;
+        //    bool isNullable = false;
+        //    if (Nullable.GetUnderlyingType(objectType) != null)
+        //    {
+        //        objectType = Nullable.GetUnderlyingType(objectType);
+        //        isNullable = true;
+        //    }
+
+        //    if (objectType.Name == "String")
+        //    {
+        //        return (object)string.Empty;
+        //    }
+        //    else
+        //    {
+        //        if (isNullable)
+        //        {
+        //            var nullable = typeof(Nullable<>).MakeGenericType(objectType);
+        //            return Activator.CreateInstance(nullable);
+        //        }
+        //        else
+        //        {
+        //            return Activator.CreateInstance(objectType);
+        //        }
+        //    }
+        //}
 
         #endregion Get Methods
 

@@ -11,26 +11,33 @@ namespace MiddleWay_Utilities
         {
             try
             {
-                //Split the string by the separator combination ][
-                var splitParameters = parameters.Split("][", StringSplitOptions.RemoveEmptyEntries);
-
-                if (splitParameters.Length > 0)
+                if (parameters != null)
                 {
-                    //Remove [ from the first item
-                    if (splitParameters[0][0] == '[')
-                    {
-                        splitParameters[0] = splitParameters[0].Substring(1);
-                    }
+                    //Split the string by the separator combination ][
+                    var splitParameters = parameters.Split("][", StringSplitOptions.RemoveEmptyEntries);
 
-                    //Remove ] from the last item
-                    var lastItem = splitParameters[splitParameters.Length - 1];
-                    var lenghtOfLast = lastItem.Length;
-                    if (lastItem[lenghtOfLast - 1] == ']')
+                    if (splitParameters.Length > 0)
                     {
-                        splitParameters[splitParameters.Length - 1] = lastItem.Substring(0, lenghtOfLast - 1);
-                    }
+                        //Remove [ from the first item
+                        if (splitParameters[0][0] == '[')
+                        {
+                            splitParameters[0] = splitParameters[0].Substring(1);
+                        }
 
-                    return splitParameters.ToList();
+                        //Remove ] from the last item
+                        var lastItem = splitParameters[splitParameters.Length - 1];
+                        var lenghtOfLast = lastItem.Length;
+                        if (lastItem[lenghtOfLast - 1] == ']')
+                        {
+                            splitParameters[splitParameters.Length - 1] = lastItem.Substring(0, lenghtOfLast - 1);
+                        }
+
+                        return splitParameters.ToList();
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {

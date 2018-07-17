@@ -2,6 +2,7 @@
 using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_Controller.Repositories;
 using MiddleWay_Controller.Services;
+using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
@@ -86,11 +87,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 InvoiceDate = ""
             };
 
-            var result = service.Transform(inventoryFlat);
+            var result = service.Transform(inventoryFlat, ProcessSteps.Ingest.ToString());
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));
-            //Assert.False(true);
         }
         [Fact]
         public void Transform_ListInventoryFlat()
@@ -188,7 +188,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     InvoiceNumber = "000",
                     InvoiceDate = "2018/01/01"
                 },
-                new InventoryFlatDataModel(){
+                new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
                     ProcessUid = 1,
                     RowId = 3,
@@ -232,11 +232,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 }
             };
 
-            var result = service.Transform(inventoryFlatList);
+            var result = service.Transform(inventoryFlatList, ProcessSteps.Ingest.ToString());
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));
-            //Assert.False(true);
         }
 
         #endregion Transform Tests
@@ -258,7 +257,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", 10);
 
             Assert.Equal(10, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultIntegerWithParam()
@@ -274,7 +272,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "1", -11);
 
             Assert.Equal(-11, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultIntegerInvalid()
@@ -291,7 +288,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", invalidInt);
 
             Assert.Null(result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultIntegerInvalidWithParam()
@@ -308,7 +304,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "1", invalidInt);
 
             Assert.Equal(1, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultDouble()
@@ -324,7 +319,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", 4.5);
 
             Assert.Equal(4.5, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultDoubleWithParam()
@@ -340,7 +334,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "1.0", 10.0);
 
             Assert.Equal(10.0, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultDoubleInvalid()
@@ -357,7 +350,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", invalidDouble);
 
             Assert.Null(result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultDoubleInvalidWithParam()
@@ -374,7 +366,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "-1.1", invalidDouble);
 
             Assert.Equal(-1.1, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultBool()
@@ -390,7 +381,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", true);
 
             Assert.True(Boolean.Parse(result.ToString()));
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultBoolWithParam()
@@ -406,7 +396,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "true", false);
 
             Assert.False(Boolean.Parse(result.ToString()));
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultBoolInvalid()
@@ -423,7 +412,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("default", "", invalidBool);
 
             Assert.Null(result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_DefaultBoolInvalidWithParam()
@@ -439,8 +427,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             bool? invalidBool = null;
             var result = service.ApplyTransformation("default", "true", invalidBool);
 
-            Assert.True(Boolean.Parse(result.ToString()));
-            //Assert.False(true);
+            Assert.True((bool)result);
         }
         [Fact]
         public void ApplyTransformation_LookupValid()
@@ -459,7 +446,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("lookup", "[test]", 1);
 
             Assert.Equal("one", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_LookupInvalid()
@@ -477,8 +463,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var result = service.ApplyTransformation("lookup", "[test]", -1);
 
-            Assert.Null( result);
-            //Assert.False(true);
+            Assert.Null(result);
         }
         [Fact]
         public void ApplyTransformation_SplitValid()
@@ -494,7 +479,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("split", "[,]", "first,second,fourth,third");
 
             Assert.Equal("first", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_SplitValidWithIndices()
@@ -510,7 +494,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("split", "[,][0,1,3,2]", "first,second,fourth,third");
 
             Assert.Equal("firstsecondthirdfourth", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_SplitInvalid()
@@ -526,7 +509,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("split", "[,]", "nosplit");
 
             Assert.Equal("nosplit", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_SplitInvalidParameters()
@@ -540,8 +522,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             Assert.Throws<ArgumentException>(() => service.ApplyTransformation("split", "[]", "nosplit"));
-
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_TruncateValidLessThanLenght()
@@ -557,7 +537,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("truncate", "[10]", "this_is_a_string_to_truncate");
 
             Assert.Equal("this_is_a_", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_TruncateValidGreaterThanLenght()
@@ -573,7 +552,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("truncate", "[30]", "this_is_a_string_to_truncate");
 
             Assert.Equal("this_is_a_string_to_truncate", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_TruncateInvalid()
@@ -589,7 +567,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("truncate", "[]", "this_is_a_string_to_truncate");
 
             Assert.Equal("this_is_a_string_to_truncate", result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_RoundDownValid()
@@ -605,7 +582,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("rounddown", "", 13.05);
 
             Assert.Equal(13, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_RoundDownInvalid()
@@ -621,7 +597,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("rounddown", "", 10);
 
             Assert.Equal(10, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_RoundUp()
@@ -637,7 +612,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("roundup", "", 7.08);
 
             Assert.Equal(8, result);
-            //Assert.False(true);
         }
         [Fact]
         public void ApplyTransformation_InvalidFunction()
@@ -653,7 +627,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("invalid", "", 9);
 
             Assert.Equal(9, result);
-            //Assert.False(true);
         }
 
         #endregion ApplyTransformation Tests
@@ -718,7 +691,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             Assert.Throws<FormatException>(() => service.QuickCast<string, bool>("blablabla"));
         }
         [Fact]
-        public void QuickCast_StringtoDouble()
+        public void QuickCast_StringToDouble()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -733,7 +706,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             Assert.Equal(3.17, result);
         }
         [Fact]
-        public void QuickCast_InvalidStringtoDouble()
+        public void QuickCast_StringInvalidToDouble()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -801,6 +774,52 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var result = service.QuickCast<int, bool>(23);
 
+            Assert.True(result);
+        }
+        [Fact]
+        public void QuickCast_IntegerNullableToBoolean()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            int? value = (int?)23;
+            var result = service.QuickCast<int?, bool>(value);
+
+            Assert.True(result);
+        }
+        [Fact]
+        public void QuickCast_IntegerZeroToBoolean()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.QuickCast<int, bool>(0);
+
+            Assert.False(result);
+        }
+        [Fact]
+        public void QuickCast_IntegerNegativeToBoolean()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.QuickCast<int, bool>(0);
+
             Assert.False(result);
         }
         [Fact]
@@ -814,10 +833,8 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            var result = service.QuickCast<int, DateTime>(231651); //TODO: Does not do a good transformation
+            Assert.Throws<InvalidCastException>(() => service.QuickCast<int, DateTime>(231651));
 
-            //Assert.NotNull(result);
-            Assert.IsType<DateTime>(result);
         }
         [Fact]
         public void QuickCast_DateToInteger()
@@ -830,10 +847,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
-            var result = service.QuickCast<DateTime, int>(new DateTime(2018, 12, 31));
-
-            //Assert.NotNull(result);
-            Assert.IsType<int>(result);
+            Assert.Throws<InvalidCastException>(() => service.QuickCast<DateTime, int>(new DateTime(2018, 12, 31)));
         }
         [Fact]
         public void QuickCast_DateToString()
@@ -868,22 +882,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             Assert.Equal("String Object", result);
         }
         [Fact]
-        public void QuickCast_StringToObject()
-        {
-            var clientConfiguration = SetupMockClientConfiguration();
-            var transformationsRepository = SetupMockTransformationsRepository();
-            //Setup method calls to use
-            var transformationLookupService = SetupMockTransformationLookupService();
-            //Setup method calls to use
-
-            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
-
-            var result = service.QuickCast<string, object>("String Object"); //TODO: Is this a valid test?
-
-            Assert.IsType<object>(result);
-        }
-        [Fact]
-        public void QuickCast_NullObjectToString()
+        public void QuickCast_ObjectNullToString()
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
@@ -896,7 +895,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.QuickCast<object, string>(null);
 
             Assert.Null(result);
-            //Assert.IsType<string>(result);
+        }
+        [Fact]
+        public void QuickCast_StringToObject()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.QuickCast<string, object>("String Object");
+
+            Assert.NotNull(result);
         }
 
         #endregion QuickCast Tests
@@ -1017,7 +1030,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var parameters = new List<string>();
             var result = service.Default<object, string>(null, parameters);
 
-            Assert.Equal(null, result);
+            Assert.Null(result);
         }
         [Fact]
         public void Default_NullToStringWithDefault()
@@ -1481,7 +1494,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             Assert.Throws<ArgumentException>(() => service.RoundDown("NotAValidString"));
-
         }
         [Fact]
         public void RoundDown_Null()
@@ -1495,7 +1507,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             Assert.Throws<ArgumentNullException>(() => service.RoundDown<object>(null));
-
         }
 
         #endregion RoundDown Tests
@@ -1590,8 +1601,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             Assert.Throws<ArgumentException>(() => service.RoundUp<string>("NotANumber"));
-
-            //Assert.Equal(0, result);
         }
         [Fact]
         public void RoundUp_Null()
@@ -1605,8 +1614,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             Assert.Throws<ArgumentNullException>(() => service.RoundUp<string>(null));
-
-            //Assert.Equal(0, result);
         }
 
         #endregion RoundUp Tests
@@ -1615,21 +1622,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         protected Mock<IntegrationMiddleWayContext> SetupMockTransformationsContext() // IQueryable<Processes> process, IQueryable<Transformations> data)
         {
-            //var mockProcess = new Mock<DbSet<Processes>>();
-            //mockProcess.As<IQueryable<Processes>>().Setup(m => m.Provider).Returns(process.Provider);
-            //mockProcess.As<IQueryable<Processes>>().Setup(m => m.Expression).Returns(process.Expression);
-            //mockProcess.As<IQueryable<Processes>>().Setup(m => m.ElementType).Returns(process.ElementType);
-            //mockProcess.As<IQueryable<Processes>>().Setup(m => m.GetEnumerator()).Returns(process.GetEnumerator());
-
-            //var mockTransformations = new Mock<DbSet<Transformations>>();
-            //mockTransformations.As<IQueryable<Transformations>>().Setup(m => m.Provider).Returns(data.Provider);
-            //mockTransformations.As<IQueryable<Transformations>>().Setup(m => m.Expression).Returns(data.Expression);
-            //mockTransformations.As<IQueryable<Transformations>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            //mockTransformations.As<IQueryable<Transformations>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
             var mockContext = new Mock<IntegrationMiddleWayContext>();
-            //mockContext.Setup(c => c.Processes).Returns(mockProcess.Object);
-            //mockContext.Setup(c => c.Transformations).Returns(mockTransformations.Object);
 
             return mockContext;
         }
@@ -1651,7 +1644,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         protected ITransformationsRepository SetupMockTransformationsRepository(IQueryable<Processes> processes, IQueryable<Transformations> transformations)
         {
-            var mockContext = SetupMockTransformationsContext(); // processes, transformations);
+            var mockContext = SetupMockTransformationsContext();
 
             var mockProcess = new Mock<DbSet<Processes>>();
             mockProcess.As<IQueryable<Processes>>().Setup(m => m.Provider).Returns(processes.Provider);
@@ -1679,7 +1672,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         protected ITransformationLookupRepository SetupMockTransformationLookupRepository(IQueryable<Processes> processes, IQueryable<TransformationLookup> transformationLookups) //IQueryable<Processes> processes
         {
-            var mockContext = SetupMockTransformationsContext(); // processes, transformations);
+            var mockContext = SetupMockTransformationsContext();
 
             var mockProcess = new Mock<DbSet<Processes>>();
             mockProcess.As<IQueryable<Processes>>().Setup(m => m.Provider).Returns(processes.Provider);
@@ -1715,8 +1708,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         //    return new Mock<ITransformationsService>(transformationsRepository.Object, clientConfiguration.Object);
         //}
 
-        //protected I Get() { }
-
         protected IQueryable<Processes> GetMockProcessData()
         {
             var processes = new List<Processes> { new Processes { ProcessUid = 1, Client = "Test", ProcessName = "Module", Description = "Test Module", Enabled = true, CreatedDate = DateTime.Now } }.AsQueryable();
@@ -1725,51 +1716,49 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         protected IQueryable<Transformations> GetMockTransformationData()
         {
-            var transformations = new List<Transformations>
+            return new List<Transformations>
                 {
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "InventoryFlatDataUid", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "ProcessUid", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "quickcast", Parameters = "", SourceColumn = "RowId", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "default", Parameters = "[]", SourceColumn = "AssetId", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "Tag", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "Serial", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "SiteId", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "SiteName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "split", Parameters = "[:][1]", SourceColumn = "Location", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "default", Parameters = "[In Use]", SourceColumn = "Status", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "DepartmentName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "DepartmentId", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "lookup", Parameters = "", SourceColumn = "FundingSource", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "truncate", Parameters = "[100]", SourceColumn = "FundingSourceDescription", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ExpirationDate", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "InventoryNotes", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "OrderNumber", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "VendorName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "VendorAccountNumber", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductDescription", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "rounddown", Parameters = "", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductTypeName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ProductTypeDescription", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ModelNumber", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "ManufacturerName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "AreaName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField1Value", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField1Label", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField2Value", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField2Label", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField3Value", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField3Label", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField4Value", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "CustomField4Label", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "roundup", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, Function = "", Parameters = "", SourceColumn = "InvoiceDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "quickcast", Parameters = "", SourceColumn = "InventoryFlatDataUid", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "quickcast", Parameters = "", SourceColumn = "ProcessUid", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "quickcast", Parameters = "", SourceColumn = "RowId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[]", SourceColumn = "AssetId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "Tag", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "Serial", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "SiteId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "SiteName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "split", Parameters = "[:][1]", SourceColumn = "Location", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[In Use]", SourceColumn = "Status", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "DepartmentName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "DepartmentId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "FundingSource", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "truncate", Parameters = "[100]", SourceColumn = "FundingSourceDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ExpirationDate", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InventoryNotes", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "OrderNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "VendorName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "VendorAccountNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "rounddown", Parameters = "", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeDescription", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ModelNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ManufacturerName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "AreaName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField1Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField1Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField2Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField2Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField3Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField3Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField4Value", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField4Label", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "roundup", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InvoiceDate", DestinationColumn = "", Enabled = true, Order = 0 },
                 }.AsQueryable();
-
-            return transformations;
         }
 
         protected IQueryable<TransformationLookup> GetMockTransformationLookupData()

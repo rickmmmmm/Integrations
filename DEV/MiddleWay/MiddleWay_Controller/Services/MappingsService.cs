@@ -1,66 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-//using CsvHelper;
-//using CsvHelper.Configuration;
-using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace MiddleWay_Controller.Services
 {
     public class MappingsService : IMappingsService
     {
-        //}
-
-        //public sealed class PurchaseOrderClassMap : ClassMap<PurchaseOrderFile>
-        //{
 
         #region Private Variables and Properties
 
         private IMappingsRepository _mappingsRepository;
         private IClientConfiguration _clientConfiguration;
+        private ITransformationsService _transformationsService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        //public MappingsService() //PurchaseOrderClassMap() //Convert to a more generic format
-        //{
-        //    //Map(u => u.OrderNumber).Name(ConfigurationManager.AppSettings["OrderNumber"]);
-        //    //Map(u => u.OrderDate).Name(ConfigurationManager.AppSettings["OrderDate"]);
-        //    //Map(u => u.VendorName).Name(ConfigurationManager.AppSettings["VendorName"]);
-        //    //Map(u => u.ProductName).Name(ConfigurationManager.AppSettings["ProductName"]);
-        //    //Map(u => u.Description).Name(ConfigurationManager.AppSettings["Description"]);
-        //    //Map(u => u.ProductType).Name(ConfigurationManager.AppSettings["ProductType"]);
-        //    //Map(u => u.Model).Name(ConfigurationManager.AppSettings["Model"]);
-        //    //Map(u => u.Manufacturer).Name(ConfigurationManager.AppSettings["Manufacturer"]);
-        //    //Map(u => u.Quantity).Name(ConfigurationManager.AppSettings["Quantity"]);
-        //    //Map(u => u.PurchasePrice).Name(ConfigurationManager.AppSettings["PurchasePrice"]);
-        //    //Map(u => u.FundingSource).Name(ConfigurationManager.AppSettings["FundingSource"]);
-        //    //Map(u => u.AccountCode).Name(ConfigurationManager.AppSettings["AccountCode"]);
-        //    //Map(u => u.LineNumber).Name(ConfigurationManager.AppSettings["LineNumber"]);
-        //    //Map(u => u.ShippedToSite).Name(ConfigurationManager.AppSettings["ShippedToSite"]);
-        //    //Map(u => u.QuantityShipped).Name(ConfigurationManager.AppSettings["QuantityShipped"]);
-        //    //Map(u => u.Notes).Name(ConfigurationManager.AppSettings["Notes"]);
-        //}
-
-        public MappingsService(IMappingsRepository mappingsRepository, IClientConfiguration clientConfiguration)
+        public MappingsService(IMappingsRepository mappingsRepository, IClientConfiguration clientConfiguration, ITransformationsService transformationsService)
         {
             _mappingsRepository = mappingsRepository;
             _clientConfiguration = clientConfiguration;
+            _transformationsService = transformationsService;
         }
 
         #endregion Constructor
 
         #region Get Methods
 
-        public List<U> Map<T, U>(List<T> items) where U : new()
+        public U Map<T, U>(T item, string stepName) where U : new()
+        {
+            var itemList = Map<T, U>(new List<T> { item }, stepName);
+            if (itemList != null && itemList.Count == 1)
+            {
+                return itemList[0];
+            }
+            else
+            {
+                return default(U);
+            }
+        }
+
+        public List<U> Map<T, U>(List<T> items, string stepName) where U : new()
         {
             try
             {
                 if (items != null && items.Count > 0)
                 {
-                    var mappings = _mappingsRepository.SelectMappings(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                    var mappings = _mappingsRepository.SelectMappings(_clientConfiguration.Client, _clientConfiguration.ProcessName, stepName);
 
                     if (mappings != null)
                     {
@@ -68,31 +57,99 @@ namespace MiddleWay_Controller.Services
 
                         foreach (var item in items)
                         {
-
                             U outputItem = new U();
+                            IDictionary<string, object> dynamicInput = null;
+                            IDictionary<string, object> dynamicOutput = null;
+                            bool isDynamicSourceProperty = false;
+                            bool isDynamicDestinationProperty = false;
+                            bool hasSourceProperty = false;
+                            object sourceValue = null;
+                            PropertyInfo destinationProperty = null;
+                            bool hasDestinationProperty = false;
+
+                            if (item is IDictionary<string, object>)
+                            {
+                                isDynamicSourceProperty = true;
+                                dynamicInput = item as IDictionary<string, object>;
+                            }
+
+                            if (outputItem is IDictionary<string, object>)
+                            {
+                                dynamicOutput = outputItem as IDictionary<string, object>;
+                                isDynamicDestinationProperty = true;
+                            }
 
                             foreach (var mapping in mappings)
                             {
                                 try
                                 {
-                                    var sourceProperty = item.GetType().GetProperty(mapping.SourceColumn);
-                                    var destinationProperty = outputItem.GetType().GetProperty(mapping.DestinationColumn);
+                                    hasSourceProperty = false;
+                                    sourceValue = null;
+                                    destinationProperty = null;
+                                    hasDestinationProperty = false;
 
-                                    bool hasSourceProperty = (sourceProperty != null);
-                                    bool hasDestinationProperty = (destinationProperty != null);
-
-                                    //var sourceType = sourceProperty.GetType();
-                                    //var destinationType = destinationProperty.GetType();
-
-                                    if (hasSourceProperty && hasDestinationProperty)
+                                    if (!string.IsNullOrEmpty(mapping.SourceColumn))
                                     {
-                                        var value = sourceProperty.GetValue(item);
+                                        if (item is IDictionary<string, object>)
+                                        {
+                                            if (isDynamicSourceProperty)
+                                            {
+                                                if (dynamicInput.ContainsKey(mapping.SourceColumn))
+                                                {
+                                                    hasSourceProperty = true;
+                                                    sourceValue = dynamicInput[mapping.SourceColumn];
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var sourceProperty = item.GetType().GetProperty(mapping.SourceColumn);
+                                            hasSourceProperty = (sourceProperty != null);
+                                            sourceValue = sourceProperty.GetValue(item);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        hasSourceProperty = true;
+                                        sourceValue = null;
+                                    }
 
-                                        destinationProperty.SetValue(outputItem, value);
+                                    if (isDynamicDestinationProperty)
+                                    {
+                                        hasDestinationProperty = dynamicOutput.ContainsKey(mapping.DestinationColumn);
+                                    }
+                                    else
+                                    {
+                                        destinationProperty = outputItem.GetType().GetProperty(mapping.DestinationColumn);
+                                        hasDestinationProperty = (destinationProperty != null);
+                                    }
+
+                                    if (isDynamicDestinationProperty)
+                                    {
+                                        if (hasDestinationProperty)
+                                        {
+                                            dynamicOutput[mapping.DestinationColumn] = sourceValue;
+                                        }
+                                        else
+                                        {
+                                            dynamicOutput.Add(mapping.DestinationColumn, sourceValue);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (hasDestinationProperty)
+                                        {
+                                            if (!string.IsNullOrEmpty(mapping.SourceColumn) && hasSourceProperty)
+                                            {
+                                                var outputValue = _transformationsService.QuickCast(sourceValue, destinationProperty.PropertyType);
+                                                destinationProperty.SetValue(outputItem, outputValue);
+                                            }
+                                        }
                                     }
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
+                                    System.Diagnostics.Debug.WriteLine(MiddleWay_Utilities.Utilities.ParseException(ex));
                                     //Log error
                                     continue;
                                 }
