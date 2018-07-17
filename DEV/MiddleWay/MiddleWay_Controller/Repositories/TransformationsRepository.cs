@@ -1,4 +1,5 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
+using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System.Collections.Generic;
@@ -25,11 +26,11 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<TransformationsModel> SelectTransformations(int processUid, string stepName)
+        public List<TransformationsModel> SelectTransformations(int processUid, ProcessSteps stepName)
         {
             try
             {
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var list = (from transformations in _context.Transformations
                             where transformations.ProcessUid == processUid
@@ -56,13 +57,13 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<TransformationsModel> SelectTransformations(string client, string processName, string stepName)
+        public List<TransformationsModel> SelectTransformations(string client, string processName, ProcessSteps stepName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var list = (from transformations in _context.Transformations
                             join processes in _context.Processes

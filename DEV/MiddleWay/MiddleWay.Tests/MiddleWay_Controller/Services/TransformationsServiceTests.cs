@@ -87,7 +87,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 InvoiceDate = ""
             };
 
-            var result = service.Transform(inventoryFlat, ProcessSteps.Ingest.ToString());
+            var result = service.Transform(inventoryFlat, ProcessSteps.Ingest);
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));
@@ -232,7 +232,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 }
             };
 
-            var result = service.Transform(inventoryFlatList, ProcessSteps.Ingest.ToString());
+            var result = service.Transform(inventoryFlatList, ProcessSteps.Ingest);
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));

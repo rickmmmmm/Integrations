@@ -33,7 +33,7 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public dynamic Transform<T>(T item, string stepName)
+        public dynamic Transform<T>(T item, ProcessSteps stepName)
         {
             var itemList = Transform<T>(new List<T> { item }, stepName);
             if (itemList != null && itemList.Count == 1)
@@ -46,7 +46,7 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public List<dynamic> Transform<T>(List<T> items, string stepName)
+        public List<dynamic> Transform<T>(List<T> items, ProcessSteps stepName)
         {
             try
             {

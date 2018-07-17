@@ -32,10 +32,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var mappingsRepository = SetupMockMappingsRepository();
-            var mappings = GetMappingsData(ProcessSteps.Stage.ToString());
+            var mappings = GetMappingsData(ProcessSteps.Stage);
             var transformationService = SetupTransformationsService();
 
-            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Stage.ToString())).Returns(mappings.ToList());
+            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Stage)).Returns(mappings.ToList());
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
 
@@ -87,7 +87,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             data.TryAdd("InvoiceDate", "");
             #endregion dynamicData
 
-            EtlInventoryModel mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(dynamicData, ProcessSteps.Stage.ToString());
+            EtlInventoryModel mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(dynamicData, ProcessSteps.Stage);
 
             Assert.NotNull(mappedData);
             if (mappedData != null)
@@ -173,10 +173,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var mappingsRepository = SetupMockMappingsRepository();
-            var mappings = GetMappingsData(ProcessSteps.Ingest.ToString());
+            var mappings = GetMappingsData(ProcessSteps.Ingest);
             var transformationService = SetupTransformationsService();
 
-            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest.ToString())).Returns(mappings.ToList());
+            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(mappings.ToList());
 
             var inventoryFlat = new InventoryFlatDataModel
             {
@@ -224,7 +224,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
 
-            var mappedData = _mappingsService.Map<InventoryFlatDataModel, System.Dynamic.ExpandoObject>(inventoryFlat, ProcessSteps.Ingest.ToString());
+            var mappedData = _mappingsService.Map<InventoryFlatDataModel, System.Dynamic.ExpandoObject>(inventoryFlat, ProcessSteps.Ingest);
 
             Assert.NotNull(mappedData);
             if (mappedData != null)
@@ -279,10 +279,10 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         {
             var clientConfiguration = SetupMockClientConfiguration();
             var mappingsRepository = SetupMockMappingsRepository();
-            var mappings = GetMappingsData(ProcessSteps.Ingest.ToString());
+            var mappings = GetMappingsData(ProcessSteps.Ingest);
             var transformationService = SetupTransformationsService();
 
-            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest.ToString())).Returns(mappings.ToList());
+            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(mappings.ToList());
 
             var inventoryFlat = new InventoryFlatDataModel
             {
@@ -330,7 +330,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
 
-            var data = _mappingsService.Map<InventoryFlatDataModel, EtlInventoryModel>(inventoryFlat, ProcessSteps.Ingest.ToString());
+            var data = _mappingsService.Map<InventoryFlatDataModel, EtlInventoryModel>(inventoryFlat, ProcessSteps.Ingest);
 
             Assert.NotNull(data);
             if (data != null)
@@ -428,9 +428,9 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             return mockMappingsRepository;
         }
 
-        protected IQueryable<MappingsModel> GetMappingsData(string stepName)
+        protected IQueryable<MappingsModel> GetMappingsData(ProcessSteps stepName)
         {
-            if (stepName == ProcessSteps.Ingest.ToString())
+            if (stepName == ProcessSteps.Ingest)
             {
                 return new List<MappingsModel>
                 {

@@ -1,4 +1,5 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
+using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System.Collections.Generic;
@@ -25,11 +26,11 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<MappingsModel> SelectMappings(int processUid, string stepName)
+        public List<MappingsModel> SelectMappings(int processUid, ProcessSteps stepName)
         {
             try
             {
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var list = (from mappings in _context.Mappings
                             where mappings.ProcessUid == processUid
@@ -52,13 +53,13 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<MappingsModel> SelectMappings(string client, string processName, string stepName)
+        public List<MappingsModel> SelectMappings(string client, string processName, ProcessSteps stepName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var list = (from mappings in _context.Mappings
                             join processes in _context.Processes
@@ -84,12 +85,12 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public MappingsModel SelectMappings(int processUid, string sourceColumn, string stepName)
+        public MappingsModel SelectMappings(int processUid, ProcessSteps stepName, string sourceColumn)
         {
             try
             {
                 var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             where mappings.ProcessUid == processUid
@@ -112,14 +113,14 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public MappingsModel SelectMappings(string client, string processName, string sourceColumn, string stepName)
+        public MappingsModel SelectMappings(string client, string processName, ProcessSteps stepName, string sourceColumn)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var sourceColumnVal = (sourceColumn ?? string.Empty).Trim().ToLower();
-                var stepNameVal = (stepName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
 
                 var data = (from mappings in _context.Mappings
                             join processes in _context.Processes

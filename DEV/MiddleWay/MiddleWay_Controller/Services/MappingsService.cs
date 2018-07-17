@@ -1,4 +1,5 @@
-﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public U Map<T, U>(T item, string stepName) where U : new()
+        public U Map<T, U>(T item, ProcessSteps stepName) where U : new()
         {
             var itemList = Map<T, U>(new List<T> { item }, stepName);
             if (itemList != null && itemList.Count == 1)
@@ -43,7 +44,7 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public List<U> Map<T, U>(List<T> items, string stepName) where U : new()
+        public List<U> Map<T, U>(List<T> items, ProcessSteps stepName) where U : new()
         {
             try
             {
