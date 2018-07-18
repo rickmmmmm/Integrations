@@ -79,23 +79,24 @@ namespace MiddleWay_Controller.Services
 
                         foreach (var item in items)
                         {
-                            var outputItem = new T();
+                            var rejectedProperty = item.GetType().GetProperty("Rejected");
+                            var rejectedNotesProperty = item.GetType().GetProperty("RejectedNotes");
 
-                            var groupedTransformations = (from transform in transformations
-                                                          group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
-                                                          select new
-                                                          {
-                                                              tranformGroup.Key.SourceColumn //,
-                                                              //tranformGroup.Key.DestinationColumn
-                                                          }).ToList();
-
-                            //var outputProperties = (from transforms in transformations
-                            //                        group transforms by transforms.DestinationColumn into destinationTransforms
-                            //                        select destinationTransforms.Key).ToList();
-
-                            foreach (var groupedTransformation in groupedTransformations)
+                            try
                             {
-                                try
+                                var outputItem = new T();
+
+                                var groupedTransformations = (from transform in transformations
+                                                              group transform by transform.SourceColumn into tranformGroup
+                                                              select new { SourceColumn = tranformGroup.Key }).ToList();
+                                //group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
+                                //select new { tranformGroup.Key.SourceColumn }).ToList();
+
+                                //var outputProperties = (from transforms in transformations
+                                //                        group transforms by transforms.DestinationColumn into destinationTransforms
+                                //                        select destinationTransforms.Key).ToList();
+
+                                foreach (var groupedTransformation in groupedTransformations)
                                 {
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
 
@@ -114,10 +115,11 @@ namespace MiddleWay_Controller.Services
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
                                         {
+                                            string propertyName = null;
+                                            //Type destinationType;
+
                                             try
                                             {
-                                                string propertyName;
-                                                //Type destinationType;
 
                                                 if (!string.IsNullOrEmpty(transformation.DestinationColumn))
                                                 {
@@ -140,21 +142,47 @@ namespace MiddleWay_Controller.Services
                                             catch (Exception ex)
                                             {
                                                 //TODO: log error
-                                                Console.WriteLine(Utilities.ParseException(ex));
+
+                                                if (rejectedProperty != null)
+                                                {
+                                                    rejectedProperty.SetValue(item, true);
+                                                }
+
+                                                if (rejectedNotesProperty != null)
+                                                {
+                                                    var notes = rejectedNotesProperty.GetValue(item);
+                                                    notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(string.IsNullOrEmpty(propertyName) ? string.Empty : $"Property: {propertyName}; ")}{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                                    rejectedNotesProperty.SetValue(item, notes);
+                                                }
                                                 break;
                                             }
                                         }
                                     }
                                 }
-                                catch
+
+                                if (rejectedProperty == null || !(bool)rejectedProperty.GetValue(item))
                                 {
-                                    //TODO: log error
-                                    continue;
+                                    outputItems.Add(outputItem);
                                 }
+
                             }
+                            catch (Exception ex)
+                            {
+                                //TODO: log error
+                                if (rejectedProperty != null)
+                                {
+                                    rejectedProperty.SetValue(item, true);
+                                }
 
-                            outputItems.Add(outputItem);
+                                if (rejectedNotesProperty != null)
+                                {
+                                    var notes = rejectedNotesProperty.GetValue(item);
+                                    notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                    rejectedNotesProperty.SetValue(item, notes);
+                                }
 
+                                continue;
+                            }
                         }
 
                         return outputItems;
@@ -191,24 +219,26 @@ namespace MiddleWay_Controller.Services
 
                         foreach (var item in items)
                         {
-                            var groupedTransformations = (from transform in transformations
-                                                          group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
-                                                          select new
-                                                          {
-                                                              tranformGroup.Key.SourceColumn //,
-                                                              //tranformGroup.Key.DestinationColumn
-                                                          }).ToList();
+                            var rejectedProperty = item.GetType().GetProperty("Rejected");
+                            var rejectedNotesProperty = item.GetType().GetProperty("RejectedNotes");
 
-                            //var outputProperties = (from transforms in transformations
-                            //                        group transforms by transforms.DestinationColumn into destinationTransforms
-                            //                        select destinationTransforms.Key).ToList();
-
-                            var outputItem = new ExpandoObject();
-                            var expandoDict = outputItem as IDictionary<string, object>;
-
-                            foreach (var groupedTransformation in groupedTransformations)
+                            try
                             {
-                                try
+
+                                var groupedTransformations = (from transform in transformations
+                                                              group transform by transform.SourceColumn into tranformGroup
+                                                              select new { SourceColumn = tranformGroup.Key }).ToList();
+                                //group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
+                                //select new { tranformGroup.Key.SourceColumn }).ToList();
+
+                                //var outputProperties = (from transforms in transformations
+                                //                        group transforms by transforms.DestinationColumn into destinationTransforms
+                                //                        select destinationTransforms.Key).ToList();
+
+                                var outputItem = new ExpandoObject();
+                                var expandoDict = outputItem as IDictionary<string, object>;
+
+                                foreach (var groupedTransformation in groupedTransformations)
                                 {
 
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
@@ -228,10 +258,11 @@ namespace MiddleWay_Controller.Services
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
                                         {
+                                            string propertyName = null;
+                                            Type destinationType;
+
                                             try
                                             {
-                                                string propertyName;
-                                                Type destinationType;
 
                                                 if (!string.IsNullOrEmpty(transformation.DestinationColumn))
                                                 {
@@ -269,21 +300,46 @@ namespace MiddleWay_Controller.Services
                                             catch (Exception ex)
                                             {
                                                 //TODO: log error
-                                                Console.WriteLine(Utilities.ParseException(ex));
+                                                if (rejectedProperty != null)
+                                                {
+                                                    rejectedProperty.SetValue(item, true);
+                                                }
+
+                                                if (rejectedNotesProperty != null)
+                                                {
+                                                    var notes = rejectedNotesProperty.GetValue(item);
+                                                    notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(string.IsNullOrEmpty(propertyName) ? string.Empty : $"Property: {propertyName}; ")}{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                                    rejectedNotesProperty.SetValue(item, notes);
+                                                }
                                                 break;
                                             }
                                         }
                                     }
                                 }
-                                catch
+
+                                if (rejectedProperty == null || !(bool)rejectedProperty.GetValue(item))
                                 {
-                                    //TODO: log error
-                                    continue;
+                                    outputItems.Add(outputItem);
                                 }
+
                             }
+                            catch (Exception ex)
+                            {
+                                //TODO: log error
+                                if (rejectedProperty != null)
+                                {
+                                    rejectedProperty.SetValue(item, true);
+                                }
 
-                            outputItems.Add(outputItem);
+                                if (rejectedNotesProperty != null)
+                                {
+                                    var notes = rejectedNotesProperty.GetValue(item);
+                                    notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                    rejectedNotesProperty.SetValue(item, notes);
+                                }
 
+                                continue;
+                            }
                         }
 
                         return outputItems;

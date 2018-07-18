@@ -30,7 +30,8 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         #endregion Constructor
 
         [Fact]
-        public void HasTransformations_Valid() {
+        public void HasTransformations_Valid()
+        {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
             transformationsRepository.Setup(x => x.HasTransformations(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(true);
@@ -43,7 +44,8 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             Assert.True(result);
         }
         [Fact]
-        public void HasTransformations_Invalid() {
+        public void HasTransformations_Invalid()
+        {
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository();
             transformationsRepository.Setup(x => x.HasTransformations(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(true);
@@ -86,9 +88,9 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 SiteName = "001 - Site",
                 Location = "Room: Maintenance Room",
                 Status = "Available",
-                DepartmentName = "None",
-                DepartmentId = "0",
-                FundingSource = "None",
+                DepartmentName = "tc",
+                DepartmentId = "A",
+                FundingSource = "N",
                 FundingSourceDescription = "",
                 PurchasePrice = "10.00",
                 PurchaseDate = "",
@@ -120,8 +122,15 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var result = service.Transform(inventoryFlat, ProcessSteps.Ingest);
 
+            if (inventoryFlat.Rejected)
+            {
+                _outputHelper.WriteLine(inventoryFlat.RejectedNotes);
+            }
+            if (result != null)
+            {
+                _outputHelper.WriteLine(Utilities.ToStringObject(result));
+            }
             Assert.NotNull(result);
-            _outputHelper.WriteLine(Utilities.ToStringObject(result));
         }
         [Fact]
         public void TransformToDynamic_SingleInventoryFlat()
@@ -1965,9 +1974,9 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "SiteName", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "split", Parameters = "[:][1]", SourceColumn = "Location", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[In Use]", SourceColumn = "Status", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "DepartmentName", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "DepartmentId", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "", SourceColumn = "FundingSource", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "[deptName]", SourceColumn = "DepartmentName", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "[deptId]", SourceColumn = "DepartmentId", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "lookup", Parameters = "[funding]", SourceColumn = "FundingSource", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "truncate", Parameters = "[100]", SourceColumn = "FundingSourceDescription", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "", Enabled = true, Order = 0 },
@@ -1979,7 +1988,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductName", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductDescription", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "rounddown", Parameters = "", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[\"00\"]", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeName", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeDescription", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ModelNumber", DestinationColumn = "", Enabled = true, Order = 0 },
@@ -1993,7 +2002,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField3Label", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField4Value", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "CustomField4Label", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "roundup", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InvoiceDate", DestinationColumn = "", Enabled = true, Order = 0 },
                 }.AsQueryable();
         }
@@ -2002,54 +2011,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         {
             var data = new List<TransformationLookup>
                         {
-                            new TransformationLookup {
-                                TransformationLookupUid  = 0,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "0",
-                                Value = "zero",
-                                Enabled = true
-                            },
-                            new TransformationLookup {
-                                TransformationLookupUid  = 1,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "1",
-                                Value = "one",
-                                Enabled = true
-                            },
-                            new TransformationLookup {
-                                TransformationLookupUid  = 2,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "2",
-                                Value = "two",
-                                Enabled = true
-                            },
-                            new TransformationLookup {
-                                TransformationLookupUid  = 3,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "3",
-                                Value = "three",
-                                Enabled = true
-                            },
-                            new TransformationLookup {
-                                TransformationLookupUid  = 4,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "4",
-                                Value = "four",
-                                Enabled = true
-                            },
-                            new TransformationLookup {
-                                TransformationLookupUid  = 5,
-                                ProcessUid = 1,
-                                TransformationLookupKey = "test",
-                                Key = "5",
-                                Value = "five",
-                                Enabled = true
-                            },
+                            new TransformationLookup { TransformationLookupUid  = 0, ProcessUid = 1, TransformationLookupKey = "test", Key = "0", Value = "zero", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 1, ProcessUid = 1, TransformationLookupKey = "test", Key = "1", Value = "one", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 2, ProcessUid = 1, TransformationLookupKey = "test", Key = "2", Value = "two", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 3, ProcessUid = 1, TransformationLookupKey = "test", Key = "3", Value = "three", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 4, ProcessUid = 1, TransformationLookupKey = "test", Key = "4", Value = "four", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 5, ProcessUid = 1, TransformationLookupKey = "test", Key = "5", Value = "five", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 6, ProcessUid = 1, TransformationLookupKey = "deptName", Key = "at", Value = "Athletics", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 7, ProcessUid = 1, TransformationLookupKey = "deptName", Key = "tc", Value = "Technology", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 8, ProcessUid = 1, TransformationLookupKey = "deptName", Key = "n", Value = "None", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 9, ProcessUid = 1, TransformationLookupKey = "deptId", Key = "A", Value = "001", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 10, ProcessUid = 1, TransformationLookupKey = "deptId", Key = "B", Value = "002", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 11, ProcessUid = 1, TransformationLookupKey = "deptId", Key = "C", Value = "003", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 12, ProcessUid = 1, TransformationLookupKey = "funding", Key = "N", Value = "None", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 13, ProcessUid = 1, TransformationLookupKey = "funding", Key = "F", Value = "Federal", Enabled = true },
+                            new TransformationLookup { TransformationLookupUid  = 14, ProcessUid = 1, TransformationLookupKey = "funding", Key = "S", Value = "State", Enabled = true },
                         }.AsQueryable();
 
             return data;
