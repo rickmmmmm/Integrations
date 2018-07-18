@@ -29,9 +29,40 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
         #endregion Constructor
 
+        [Fact]
+        public void HasTransformations_Valid() {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            transformationsRepository.Setup(x => x.HasTransformations(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(true);
+            var transformationLookupService = SetupMockTransformationLookupService();
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.HasTransformations(ProcessSteps.Ingest);
+
+            Assert.True(result);
+        }
+        [Fact]
+        public void HasTransformations_Invalid() {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            transformationsRepository.Setup(x => x.HasTransformations(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Ingest)).Returns(true);
+            var transformationLookupService = SetupMockTransformationLookupService();
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.HasTransformations(ProcessSteps.CleanUp);
+
+            Assert.False(result);
+        }
+
+        #region Has Transformations
+
+        #endregion Has Transformations
+
         #region Transform Tests
 
-        //List<dynamic> Transform<T>(List<T> items);
+        //List<ExpandoObject> Transform<T>(List<T> items);
         [Fact]
         public void Transform_SingleInventoryFlat()
         {
@@ -88,6 +119,66 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             };
 
             var result = service.Transform(inventoryFlat, ProcessSteps.Ingest);
+
+            Assert.NotNull(result);
+            _outputHelper.WriteLine(Utilities.ToStringObject(result));
+        }
+        [Fact]
+        public void TransformToDynamic_SingleInventoryFlat()
+        {
+            var process = GetMockProcessData();
+            var transformations = GetMockTransformationData();
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
+            var transformationLookupService = SetupMockTransformationLookupService();
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService.Object);
+
+            var inventoryFlat = new InventoryFlatDataModel
+            {
+                InventoryFlatDataUid = 1,
+                ProcessUid = 1,
+                RowId = 1,
+                AssetId = "A0",
+                Tag = "Tag001",
+                Serial = "1234",
+                SiteId = "001",
+                SiteName = "001 - Site",
+                Location = "Room: Maintenance Room",
+                Status = "Available",
+                DepartmentName = "None",
+                DepartmentId = "0",
+                FundingSource = "None",
+                FundingSourceDescription = "",
+                PurchasePrice = "10.00",
+                PurchaseDate = "",
+                ExpirationDate = "",
+                InventoryNotes = "New Broom",
+                OrderNumber = "",
+                VendorName = "Broom's R Us",
+                VendorAccountNumber = "",
+                ParentTag = "",
+                ProductName = "Broom",
+                ProductDescription = "Wooden Handle Broom",
+                ProductByNumber = "001",
+                ProductTypeName = "Broom",
+                ProductTypeDescription = "Broom",
+                ModelNumber = "",
+                ManufacturerName = "Broom's R Us",
+                AreaName = "Floor",
+                CustomField1Value = "",
+                CustomField1Label = "",
+                CustomField2Value = "",
+                CustomField2Label = "",
+                CustomField3Value = "",
+                CustomField3Label = "",
+                CustomField4Value = "",
+                CustomField4Label = "",
+                InvoiceNumber = "",
+                InvoiceDate = ""
+            };
+
+            var result = service.TransformToDynamic(inventoryFlat, ProcessSteps.Ingest);
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));
@@ -233,6 +324,152 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             };
 
             var result = service.Transform(inventoryFlatList, ProcessSteps.Ingest);
+
+            Assert.NotNull(result);
+            _outputHelper.WriteLine(Utilities.ToStringObject(result));
+        }
+
+        [Fact]
+        public void TransformToDynamic_ListInventoryFlat()
+        {
+            var process = GetMockProcessData();
+            var transformations = GetMockTransformationData();
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
+            var transformationLookupService = SetupMockTransformationLookupService();
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService.Object);
+
+            var inventoryFlatList = new List<InventoryFlatDataModel> {
+                new InventoryFlatDataModel() {
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 1,
+                    AssetId = "A0",
+                    Tag = "Tag",
+                    Serial = "1234",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "10.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "New Broom",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Wooden Handle Broom",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Broom",
+                    ProductTypeDescription = "Broom",
+                    ModelNumber = "",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "",
+                    CustomField1Label = "",
+                    CustomField2Value = "",
+                    CustomField2Label = "",
+                    CustomField3Value = "",
+                    CustomField3Label = "",
+                    CustomField4Value = "",
+                    CustomField4Label = "",
+                    InvoiceNumber = "",
+                    InvoiceDate = ""
+                },
+                new InventoryFlatDataModel() {
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 2,
+                    AssetId = "A1",
+                    Tag = "Tag1",
+                    Serial = "12345",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "10.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "New Broom",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Wooden Handle Broom",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Broom",
+                    ProductTypeDescription = "Broom",
+                    ModelNumber = "",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "Nothing",
+                    CustomField1Label = "Cost",
+                    CustomField2Value = "0.0",
+                    CustomField2Label = "Value",
+                    CustomField3Value = "01234",
+                    CustomField3Label = "Special Value",
+                    CustomField4Value = "true",
+                    CustomField4Label = "Expired",
+                    InvoiceNumber = "000",
+                    InvoiceDate = "2018/01/01"
+                },
+                new InventoryFlatDataModel() {
+                    InventoryFlatDataUid = 0,
+                    ProcessUid = 1,
+                    RowId = 3,
+                    AssetId = "0",
+                    Tag = "Dustpan1",
+                    Serial = "",
+                    SiteId = "001",
+                    SiteName = "001 - Site",
+                    Location = "Maintenance Room",
+                    Status = "Available",
+                    DepartmentName = "None",
+                    DepartmentId = "0",
+                    FundingSource = "None",
+                    FundingSourceDescription = "",
+                    PurchasePrice = "1.00",
+                    PurchaseDate = "",
+                    ExpirationDate = "",
+                    InventoryNotes = "Old Dustpan",
+                    OrderNumber = "",
+                    VendorName = "Broom's R Us",
+                    VendorAccountNumber = "",
+                    ParentTag = "",
+                    ProductName = "Broom",
+                    ProductDescription = "Rusted Dustpan",
+                    ProductByNumber = "001",
+                    ProductTypeName = "Dustpan",
+                    ProductTypeDescription = "Metal Dustpa",
+                    ModelNumber = "001",
+                    ManufacturerName = "Broom's R Us",
+                    AreaName = "Floor",
+                    CustomField1Value = "Yes",
+                    CustomField1Label = "Rusted",
+                    CustomField2Value = "",
+                    CustomField2Label = "",
+                    CustomField3Value = "",
+                    CustomField3Label = "",
+                    CustomField4Value = "",
+                    CustomField4Label = "",
+                    InvoiceNumber = "",
+                    InvoiceDate = ""
+                }
+            };
+
+            var result = service.TransformToDynamic(inventoryFlatList, ProcessSteps.Ingest);
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Dynamic;
 
 namespace MiddleWay_Utilities
 {
@@ -106,7 +107,7 @@ namespace MiddleWay_Utilities
             //Iterate through the properties and print each value and property name
             var output = new StringBuilder();
 
-            if (input is System.Dynamic.ExpandoObject)
+            if (input is ExpandoObject)
             {
                 output.AppendLine(Utilities.ToStringDynamic(input as IDictionary<string, object>));
             }

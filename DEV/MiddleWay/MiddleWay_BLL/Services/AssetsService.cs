@@ -7,6 +7,7 @@ using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_Utilities;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace MiddleWay_BLL.Services
 {
@@ -19,6 +20,7 @@ namespace MiddleWay_BLL.Services
         private IInventoryFlatDataService _inventoryFlatService;
         private IProcessesService _processesService;
         private IProcessTasksService _processTasksService;
+        private IProcessTaskStepsService _processTaskStepsService;
         private IProcessTaskErrorsService _processTaskErrorsService;
         private IMappingsService _mappingsService;
         private ITransformationsService _transformationService;
@@ -31,15 +33,17 @@ namespace MiddleWay_BLL.Services
 
         public AssetsService(INotificationsService notificationService, IConfigurationService configurationService,
                              IInventoryFlatDataService inventoryFlatService, IProcessesService processesService,
-                             IProcessTasksService processTasksService, IProcessTaskErrorsService processTaskErrorsService,
-                             IInputService inputService, ITransformationsService transformationService,
-                             IMappingsService mappingsService, IEtlInventoryService etlInventoryService)
+                             IProcessTasksService processTasksService, IProcessTaskStepsService processTaskStepsService,
+                             IProcessTaskErrorsService processTaskErrorsService, IInputService inputService,
+                             ITransformationsService transformationService, IMappingsService mappingsService,
+                             IEtlInventoryService etlInventoryService)
         {
             _notificationService = notificationService;
             _configurationService = configurationService;
             _inventoryFlatService = inventoryFlatService;
             _processesService = processesService;
             _processTasksService = processTasksService;
+            _processTaskStepsService = processTaskStepsService;
             _processTaskErrorsService = processTaskErrorsService;
             _mappingsService = mappingsService;
             _transformationService = transformationService;
@@ -53,11 +57,15 @@ namespace MiddleWay_BLL.Services
 
         public void ProcessAssets(List<string> commands, string parameters = null)
         {
+            var taskStepUid = 0;
             try
             {
                 // Start Process Task
-                if (_processTasksService.StartProcessTask(parameters))
+                var processTaskUid = _processTasksService.StartProcessTask(parameters);
+                if (processTaskUid > 0)
                 { // Create record, keep uid
+
+                    taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.CleanUp);
 
                     // Send start process email
                     var message = new EmailMessageModel();
@@ -102,11 +110,14 @@ namespace MiddleWay_BLL.Services
                     //    }
                     //}
 
+                    _processTaskStepsService.EndTaskStep(taskStepUid, true);
+                    taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Ingest);
+
                     //Read data from source (in batches) - Read Input (Loop)
                     var total = _inputService.GetInputCount();
                     if (total > 0)
                     {
-                        var rowCount = 0;
+                        var rowCount = 1;
                         //  PER BATCH
                         //      Apply mappings and move to flat tables, catch and store errors
                         //      Apply transformations and move to stage tables, catch and store errors
@@ -115,12 +126,15 @@ namespace MiddleWay_BLL.Services
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
 
                             batch.ForEach(row => row.RowId = rowCount++);
-                            //var mappedBatch = _mappingsService.Map(batch);
 
+                            //var mappedBatch = _mappingsService.Map(batch);
                             //var transformedBatch = _transformationService.Transform(mappedBatch);
 
                             _inventoryFlatService.AddRange(batch);
                         }
+
+                        _processTaskStepsService.EndTaskStep(taskStepUid, true);
+                        taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Stage);
 
                         var flatCount = _inventoryFlatService.GetTotal();
                         var limit = _configurationService.ReadLimit;
@@ -132,14 +146,11 @@ namespace MiddleWay_BLL.Services
 
                             //TODO: Log count of flatdata records returned
 
-                            var transformedData = _transformationService.Transform<InventoryFlatDataModel>(flatData, ProcessSteps.Ingest); //<InventoryFlatDataModel, InventoryFlatDataModel>
+                            var transformedData = _transformationService.TransformToDynamic(flatData, ProcessSteps.Ingest);
                             //TODO: Log count of transformed records returned
 
-                            var mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(transformedData, ProcessSteps.Ingest);
+                            var mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(transformedData, ProcessSteps.Ingest);
                             //TODO: Log count of mapped records returned
-
-                            //var transformedData = _transformationService.Transform<EtlInventoryModel, EtlInventoryModel>(mappedData);
-                            //TODO: Log count of transformed records returned
 
                             //if (!_etlInventoryService.AddRange(transformedData))
                             if (!_etlInventoryService.AddRange(mappedData))
@@ -148,6 +159,12 @@ namespace MiddleWay_BLL.Services
                             }
                             currentCount += limit;
                         }
+
+                        _processTaskStepsService.EndTaskStep(taskStepUid, true);
+
+                        return;
+
+                        taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.ProcessCommands);
 
                         // Process options
                         var options = ProcessInput.ReadOptions(commands);
@@ -165,14 +182,28 @@ namespace MiddleWay_BLL.Services
                             }
                         }
 
+                        _processTaskStepsService.EndTaskStep(taskStepUid, true);
+                        taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
+
                         // Validate ETLInventory data on TIPWeb
+                        var validationPassed = _etlInventoryService.ValidateEtlInventory();
 
-                        // Submit valid ETLInventory data to TIPWeb
+                        _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
 
+                        if (validationPassed)
+                        {
+                            taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Upload);
+
+                            // Submit valid ETLInventory data to TIPWeb
+                            //validationPassed = _etlInventoryService.SubmitEtlInventory();
+
+                            _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
+                        }
                     }
                     else
                     {
                         //TODO: No data to read, log it
+                        _processTaskStepsService.EndTaskStep(taskStepUid, false); //TODO: Is this a fail??
                     }
 
                     // End ProcessTask
@@ -180,11 +211,16 @@ namespace MiddleWay_BLL.Services
                 }
                 else
                 {
-                    // Cannot create Process Task, log issue
+                    //TODO: Cannot create Process Task, log issue
                 }
             }
             catch
             {
+                if (taskStepUid > 0)
+                {
+                    _processTaskStepsService.EndTaskStep(taskStepUid, false);
+                }
+                //TODO: Log Error
                 throw;
             }
         }

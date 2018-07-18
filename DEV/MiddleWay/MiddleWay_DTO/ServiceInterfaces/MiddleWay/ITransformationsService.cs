@@ -1,13 +1,17 @@
 ﻿using MiddleWay_DTO.Enumerations;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
     public interface ITransformationsService
     {
-        dynamic Transform<T>(T item, ProcessSteps stepName);
-        List<dynamic> Transform<T>(List<T> items, ProcessSteps stepName);
+        bool HasTransformations(ProcessSteps stepName);
+        T Transform<T>(T item, ProcessSteps stepName) where T : new();
+        ExpandoObject TransformToDynamic<T>(T item, ProcessSteps stepName);
+        List<T> Transform<T>(List<T> items, ProcessSteps stepName) where T : new();
+        List<ExpandoObject> TransformToDynamic<T>(List<T> items, ProcessSteps stepName);
         object ApplyTransformation(string function, string parameters, string value);
         object ApplyTransformation(string function, string parameters, int value);
         object ApplyTransformation(string function, string parameters, int? value);

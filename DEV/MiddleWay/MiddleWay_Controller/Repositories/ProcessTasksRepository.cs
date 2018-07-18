@@ -31,9 +31,18 @@ namespace MiddleWay_Controller.Repositories
             try
             {
                 var processTask = (from processTasks in _context.ProcessTasks
-                                   join processes in _context.Processes
-                                    on processTasks.ProcessUid equals processes.ProcessUid
-                                   where processes.ProcessUid == processUid
+                                   join latestProcessTask in
+                                    (from processTasks in _context.ProcessTasks
+                                     join processes in _context.Processes
+                                                 on processTasks.ProcessUid equals processes.ProcessUid
+                                     where processes.ProcessUid == processUid
+                                     group processTasks by new
+                                     {
+                                         processes.Client,
+                                         processes.ProcessName
+                                     } into processTasksGroup
+                                     select processTasksGroup.Max(task => task.ProcessTaskUid))
+                                    on processTasks.ProcessTaskUid equals latestProcessTask
                                    select new ProcessTasksModel
                                    {
                                        ProcessTaskUid = processTasks.ProcessTaskUid,
@@ -60,10 +69,19 @@ namespace MiddleWay_Controller.Repositories
                 var processNameVar = (processName ?? string.Empty).Trim().ToLower();
 
                 var processTask = (from processTasks in _context.ProcessTasks
-                                   join processes in _context.Processes
-                                    on processTasks.ProcessUid equals processes.ProcessUid
-                                   where processes.Client.Trim().ToLower() == clientVar
-                                      && processes.ProcessName.Trim().ToLower() == processNameVar
+                                   join latestProcessTask in
+                                    (from processTasks in _context.ProcessTasks
+                                     join processes in _context.Processes
+                                                 on processTasks.ProcessUid equals processes.ProcessUid
+                                     where processes.Client.Trim().ToLower() == clientVar
+                                        && processes.ProcessName.Trim().ToLower() == processNameVar
+                                     group processTasks by new
+                                     {
+                                         processes.Client,
+                                         processes.ProcessName
+                                     } into processTasksGroup
+                                     select processTasksGroup.Max(task => task.ProcessTaskUid))
+                                    on processTasks.ProcessTaskUid equals latestProcessTask
                                    select new ProcessTasksModel
                                    {
                                        ProcessTaskUid = processTasks.ProcessTaskUid,

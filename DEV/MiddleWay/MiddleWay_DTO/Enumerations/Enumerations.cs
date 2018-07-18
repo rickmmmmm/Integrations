@@ -252,9 +252,12 @@
 
     public enum ProcessSteps
     {
+        CleanUp,
         Ingest,
         Stage,
+        ProcessCommands,
         Validate,
-        Upload
+        Upload,
+        Export
     }
 }

@@ -132,6 +132,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
+                var processUid = _processesService.GetProcessUid();
+                inventoryFlatData.ProcessUid = processUid;
                 return _inventoryFlatDataRepository.Update(inventoryFlatData);
             }
             catch

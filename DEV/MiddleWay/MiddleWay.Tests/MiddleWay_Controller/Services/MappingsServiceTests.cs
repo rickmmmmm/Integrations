@@ -6,6 +6,7 @@ using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_Utilities;
 using Moq;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,7 +41,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
 
             #region dynamicData
-            dynamic dynamicData = new System.Dynamic.ExpandoObject();
+            var dynamicData = new ExpandoObject();
             var data = dynamicData as IDictionary<string, object>;
             data.TryAdd("Uid", 1);
             data.TryAdd("PUid", 1);
@@ -87,7 +88,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             data.TryAdd("InvoiceDate", "");
             #endregion dynamicData
 
-            EtlInventoryModel mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(dynamicData, ProcessSteps.Stage);
+            EtlInventoryModel mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(dynamicData, ProcessSteps.Stage);
 
             Assert.NotNull(mappedData);
             if (mappedData != null)
@@ -224,7 +225,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
 
-            var mappedData = _mappingsService.Map<InventoryFlatDataModel, System.Dynamic.ExpandoObject>(inventoryFlat, ProcessSteps.Ingest);
+            var mappedData = _mappingsService.Map<InventoryFlatDataModel, ExpandoObject>(inventoryFlat, ProcessSteps.Ingest);
 
             Assert.NotNull(mappedData);
             if (mappedData != null)
@@ -384,7 +385,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         //[Fact]
         //public void Map_()
         //{
-        //    //var mappedData = _mappingsService.Map<dynamic, EtlInventoryModel>(transformedData);
+        //    //var mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(transformedData);
         //    //List<U> Map<T, U>(List<T> item) where U : new();
         //    Assert.False(true);
         //}

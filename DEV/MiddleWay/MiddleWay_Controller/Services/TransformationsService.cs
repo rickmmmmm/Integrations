@@ -4,6 +4,7 @@ using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_Utilities;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 
@@ -33,9 +34,27 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
-        public dynamic Transform<T>(T item, ProcessSteps stepName)
+        public bool HasTransformations(ProcessSteps stepName)
+        {
+            return _transformationsRepository.HasTransformations(_clientConfiguration.Client, _clientConfiguration.ProcessName, stepName);
+        }
+
+        public T Transform<T>(T item, ProcessSteps stepName) where T : new()
         {
             var itemList = Transform<T>(new List<T> { item }, stepName);
+            if (itemList != null && itemList.Count == 1)
+            {
+                return itemList[0];
+            }
+            else
+            {
+                return default(T);
+            }
+        }
+
+        public ExpandoObject TransformToDynamic<T>(T item, ProcessSteps stepName)
+        {
+            var itemList = TransformToDynamic<T>(new List<T> { item }, stepName);
             if (itemList != null && itemList.Count == 1)
             {
                 return itemList[0];
@@ -46,7 +65,7 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public List<dynamic> Transform<T>(List<T> items, ProcessSteps stepName)
+        public List<T> Transform<T>(List<T> items, ProcessSteps stepName) where T : new()
         {
             try
             {
@@ -56,7 +75,119 @@ namespace MiddleWay_Controller.Services
 
                     if (transformations != null)
                     {
-                        List<dynamic> outputItems = new List<dynamic>();
+                        List<T> outputItems = new List<T>();
+
+                        foreach (var item in items)
+                        {
+                            var outputItem = new T();
+
+                            var groupedTransformations = (from transform in transformations
+                                                          group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
+                                                          select new
+                                                          {
+                                                              tranformGroup.Key.SourceColumn //,
+                                                              //tranformGroup.Key.DestinationColumn
+                                                          }).ToList();
+
+                            //var outputProperties = (from transforms in transformations
+                            //                        group transforms by transforms.DestinationColumn into destinationTransforms
+                            //                        select destinationTransforms.Key).ToList();
+
+                            foreach (var groupedTransformation in groupedTransformations)
+                            {
+                                try
+                                {
+                                    var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
+
+                                    bool hasSourceProperty = (sourceProperty != null);
+
+                                    if (hasSourceProperty)
+                                    {
+                                        var transformationGroup = (from transforms in transformations
+                                                                   where transforms.SourceColumn == groupedTransformation.SourceColumn
+                                                                   orderby transforms.Order ascending
+                                                                   select transforms).ToList();
+
+                                        var sourceType = sourceProperty.GetType();
+                                        object value = sourceProperty.GetValue(item);
+
+                                        //For each item, map
+                                        foreach (var transformation in transformationGroup)
+                                        {
+                                            try
+                                            {
+                                                string propertyName;
+                                                //Type destinationType;
+
+                                                if (!string.IsNullOrEmpty(transformation.DestinationColumn))
+                                                {
+                                                    propertyName = transformation.DestinationColumn;
+                                                }
+                                                else
+                                                {
+                                                    propertyName = groupedTransformation.SourceColumn;
+                                                }
+
+                                                var destinationProperty = outputItem.GetType().GetProperty(propertyName);
+                                                //var destinationType = destinationProperty.GetType();
+
+                                                // perhaps change this to an object <object, Type> to allow post transformation conversion
+
+                                                var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
+
+                                                destinationProperty.SetValue(outputItem, transformedValue);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                //TODO: log error
+                                                Console.WriteLine(Utilities.ParseException(ex));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                    //TODO: log error
+                                    continue;
+                                }
+                            }
+
+                            outputItems.Add(outputItem);
+
+                        }
+
+                        return outputItems;
+                    }
+                    else
+                    {
+                        //TODO: Log message indicating no transformations
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                //TODO: log error
+                throw;
+            }
+        }
+
+        public List<ExpandoObject> TransformToDynamic<T>(List<T> items, ProcessSteps stepName)
+        {
+            try
+            {
+                if (items != null && items.Count > 0)
+                {
+                    var transformations = _transformationsRepository.SelectTransformations(_clientConfiguration.Client, _clientConfiguration.ProcessName, stepName);
+
+                    if (transformations != null)
+                    {
+                        List<ExpandoObject> outputItems = new List<ExpandoObject>();
 
                         foreach (var item in items)
                         {
@@ -68,11 +199,11 @@ namespace MiddleWay_Controller.Services
                                                               //tranformGroup.Key.DestinationColumn
                                                           }).ToList();
 
-                            var outputProperties = (from transforms in transformations
-                                                    group transforms by transforms.DestinationColumn into destinationTransforms
-                                                    select destinationTransforms.Key).ToList();
+                            //var outputProperties = (from transforms in transformations
+                            //                        group transforms by transforms.DestinationColumn into destinationTransforms
+                            //                        select destinationTransforms.Key).ToList();
 
-                            var outputItem = new System.Dynamic.ExpandoObject();
+                            var outputItem = new ExpandoObject();
                             var expandoDict = outputItem as IDictionary<string, object>;
 
                             foreach (var groupedTransformation in groupedTransformations)
@@ -413,7 +544,7 @@ namespace MiddleWay_Controller.Services
         /// possibility of the type being nullable and returning null when the input value
         /// cannot be converted
         /// </summary>
-        /// <typeparam name="T">The dynamic type of hte input object</typeparam>
+        /// <typeparam name="T">The Dynamic type of the input object</typeparam>
         /// <param name="value">Value to Cast</param>
         /// <param name="destinationType">The Type of the output to return (boxed in an object)</param>
         /// <returns></returns>

@@ -4,6 +4,7 @@ using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_EDS.Services;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
 
 namespace MiddleWay_BLL.Services
@@ -329,16 +330,16 @@ namespace MiddleWay_BLL.Services
                         //Read from DB source directly into the expected type (via dapper)
                         var batch = dataReader.ReadInput<T>();
                         return batch;
-                        ////Apply tranformations
-                        //var transformedBatch = _transformationService.Transform<T>(batch); //TODO; Verify this....
-                        ////Cast dynamic list to type list
-                        //var result = new List<T>();
-                        //foreach (var row in transformedBatch)
-                        //{
-                        //    var cast = (T)row;
-                        //    result.Add(cast);
-                        //}
-                        //return result;
+                    ////Apply tranformations
+                    //var transformedBatch = _transformationService.Transform<T>(batch); //TODO; Verify this....
+                    ////Cast Dynamic list to type list
+                    //var result = new List<T>();
+                    //foreach (var row in transformedBatch)
+                    //{
+                    //    var cast = (T)row;
+                    //    result.Add(cast);
+                    //}
+                    //return result;
                     //break;
                     case DataSourceTypes.FlatFile:
                         //var batch = fileReader.ReadNext<T>();
@@ -362,28 +363,42 @@ namespace MiddleWay_BLL.Services
             }
             else
             {
+                List<T> batch;
                 //Perform Action
                 switch (dataSourceType)
                 {
                     case DataSourceTypes.SQL:
                     case DataSourceTypes.MySQL:
-                        var batch = dataReader.ReadNext<T>();
-                        return batch;
-                        ////Apply transformations
-                        //var transformedBatch = _transformationService.Transform(batch); //TODO; Verify this....
-                        ////Cast dynamic list to type list
+                        batch = dataReader.ReadNext<T>();
+                        //return batch;
+
+                        //Apply transformations
+                        if (_transformationService.HasTransformations(ProcessSteps.Ingest))
+                        {
+                            batch = _transformationService.Transform<T>(batch, ProcessSteps.Ingest); //TODO; Verify this....
+                        }
+
+                        //Apply Mappings
+                        if (_mappingsService.HasMappings(ProcessSteps.Ingest))
+                        {
+                            batch = _mappingsService.Map<T, T>(batch, ProcessSteps.Ingest); //TODO; Verify this....
+                        }
+
+                        //Cast Dynamic list to type list?????
                         //var result = new List<T>();
-                        //foreach (var row in transformedBatch)
+                        //foreach (var row in mappedBatch)
                         //{
                         //    var cast = (T)row;
                         //    result.Add(cast);
                         //}
                         //return result;
-                    //break;
+                        //break;
+
+                        return batch;
                     case DataSourceTypes.FlatFile:
-                        //var batch = fileReader.ReadNext<T>();
-                        //var transformedBatch = _transformationService.Transform(batch);
-                        //var mappedBatch = _mappingsService.Map(transformedBatch);
+                        //batch = fileReader.ReadNext<T>();
+                        //var transformedBatch = _transformationService.TransformToDynamic(batch, ProcessSteps.Ingest);
+                        //var mappedBatch = _mappingsService.Map<ExpandoObject, T>(transformedBatch, ProcessSteps.Ingest);
                         throw new NotImplementedException();
                     //break;
                     case DataSourceTypes.Other:

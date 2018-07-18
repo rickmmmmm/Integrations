@@ -35,6 +35,13 @@ namespace MiddleWay_Controller.Services
         #endregion Constructor
 
         #region Get Methods
+        public int GetProcessTaskUid
+        {
+            get
+            {
+                return processTaskUid;
+            }
+        }
 
         public ProcessTasksModel GetProcessTaskByProcessUid(int processTaskUid)
         {
@@ -105,7 +112,7 @@ namespace MiddleWay_Controller.Services
 
         #region Add Methods
 
-        public bool StartProcessTask(string parameters = null)
+        public int StartProcessTask(string parameters = null)
         {
             try
             {
@@ -128,12 +135,12 @@ namespace MiddleWay_Controller.Services
                     processTaskUid = _processTasksRepository.InsertProcessTask(processTask);
 
                     //Save the ProcessTaskUid and return
-                    return (processTaskUid > 0);
+                    return processTaskUid;
 
                 }
                 else
                 {
-                    return false;
+                    return -1;
                 }
             }
             catch

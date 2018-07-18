@@ -6,6 +6,8 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
     public interface IMappingsRepository
     {
+        bool HasMappings(int processUid, ProcessSteps stepName);
+        bool HasMappings(string client, string processName, ProcessSteps stepName);
         List<MappingsModel> SelectMappings(int processUid, ProcessSteps stepName);
         List<MappingsModel> SelectMappings(string client, string processName, ProcessSteps stepName);
         MappingsModel SelectMappings(int processUid, ProcessSteps stepName, string sourceColumn);

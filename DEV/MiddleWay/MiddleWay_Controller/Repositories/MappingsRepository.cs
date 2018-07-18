@@ -26,6 +26,47 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
+        public bool HasMappings(int processUid, ProcessSteps stepName)
+        {
+            try
+            {
+                var stepNameVal = stepName.ToString().Trim().ToLower();
+
+                return (from mappings in _context.Mappings
+                        where mappings.ProcessUid == processUid
+                           && mappings.StepName.Trim().ToLower() == stepNameVal
+                           && mappings.Enabled
+                        select 1).Count() > 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool HasMappings(string client, string processName, ProcessSteps stepName)
+        {
+            try
+            {
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
+
+                return (from mappings in _context.Mappings
+                        join processes in _context.Processes
+                            on mappings.ProcessUid equals processes.ProcessUid
+                        where processes.Client.Trim().ToLower() == clientVal
+                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                           && mappings.StepName.Trim().ToLower() == stepNameVal
+                           && mappings.Enabled
+                        select 1).Count() > 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public List<MappingsModel> SelectMappings(int processUid, ProcessSteps stepName)
         {
             try

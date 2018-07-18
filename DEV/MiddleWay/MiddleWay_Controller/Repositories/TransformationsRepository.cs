@@ -26,6 +26,47 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
+        public bool HasTransformations(int processUid, ProcessSteps stepName)
+        {
+            try
+            {
+                var stepNameVal = stepName.ToString().Trim().ToLower();
+
+                return (from transformations in _context.Transformations
+                        where transformations.ProcessUid == processUid
+                           && transformations.StepName.Trim().ToLower() == stepNameVal
+                           && transformations.Enabled
+                        select 1).Count() > 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool HasTransformations(string client, string processName, ProcessSteps stepName)
+        {
+            try
+            {
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+                var stepNameVal = stepName.ToString().Trim().ToLower();
+
+                return (from transformations in _context.Transformations
+                        join processes in _context.Processes
+                            on transformations.ProcessUid equals processes.ProcessUid
+                        where processes.Client.Trim().ToLower() == clientVal
+                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                           && transformations.StepName.Trim().ToLower() == stepNameVal
+                           && transformations.Enabled
+                        select 1).Count() > 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public List<TransformationsModel> SelectTransformations(int processUid, ProcessSteps stepName)
         {
             try
@@ -95,16 +136,16 @@ namespace MiddleWay_Controller.Repositories
 
         #endregion Select Functions
 
-        #region Insert Functions
+        //#region Insert Functions
 
-        #endregion Insert Functions
+        //#endregion Insert Functions
 
-        #region Update Functions
+        //#region Update Functions
 
-        #endregion Update Functions
+        //#endregion Update Functions
 
-        #region Delete Functions
+        //#region Delete Functions
 
-        #endregion Delete Functions
+        //#endregion Delete Functions
     }
 }

@@ -11,15 +11,18 @@ namespace MiddleWay_Controller.Services
 
         private IEtlInventoryRepository _etlInventoryRepository;
         private IClientConfiguration _clientConfiguration;
+        private IProcessesService _processesService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public EtlInventoryService(IEtlInventoryRepository etlInventoryRepository, IClientConfiguration clientConfiguration)
+        public EtlInventoryService(IEtlInventoryRepository etlInventoryRepository, IClientConfiguration clientConfiguration,
+                                   IProcessesService processesService)
         {
             _etlInventoryRepository = etlInventoryRepository;
             _clientConfiguration = clientConfiguration;
+            _processesService = processesService;
         }
 
         #endregion Constructor
@@ -94,6 +97,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
+                var processUid = _processesService.GetProcessUid();
+                item.ProcessUid = processUid;
                 return _etlInventoryRepository.Insert(item);
             }
             catch
@@ -106,6 +111,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
+                var processUid = _processesService.GetProcessUid();
+                items.ForEach(row => row.ProcessUid = processUid);
                 return _etlInventoryRepository.InsertRange(items);
                 //TODO: Log count of items saved?
             }
@@ -123,7 +130,24 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
+                var processUid = _processesService.GetProcessUid();
+                item.ProcessUid = processUid;
                 return _etlInventoryRepository.Update(item);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool ValidateEtlInventory()
+        {
+            throw new System.NotImplementedException();
+            try
+            {
+                var processUid = _processesService.GetProcessUid();
+                
+                //TODO: Log count of items saved?
             }
             catch
             {

@@ -31,6 +31,11 @@ namespace MiddleWay_Controller.Services
 
         #region Get Methods
 
+        public bool HasMappings(ProcessSteps stepName)
+        {
+            return _mappingsRepository.HasMappings(_clientConfiguration.Client, _clientConfiguration.ProcessName, stepName);
+        }
+
         public U Map<T, U>(T item, ProcessSteps stepName) where U : new()
         {
             var itemList = Map<T, U>(new List<T> { item }, stepName);
