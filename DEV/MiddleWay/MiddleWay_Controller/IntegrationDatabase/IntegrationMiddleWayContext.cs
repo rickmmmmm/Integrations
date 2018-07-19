@@ -696,11 +696,15 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.Location).IsUnicode(false);
 
+                entity.Property(e => e.LocationType).IsUnicode(false);
+
                 entity.Property(e => e.ManufacturerName).IsUnicode(false);
 
                 entity.Property(e => e.ModelNumber).IsUnicode(false);
 
                 entity.Property(e => e.OrderNumber).IsUnicode(false);
+
+                entity.Property(e => e.LineNumber).IsUnicode(false);
 
                 entity.Property(e => e.ParentTag).IsUnicode(false);
 

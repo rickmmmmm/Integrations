@@ -87,6 +87,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 SiteId = "001",
                 SiteName = "001 - Site",
                 Location = "Room: Maintenance Room",
+                LocationType = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "tc",
                 DepartmentId = "A",
@@ -154,6 +155,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 SiteId = "001",
                 SiteName = "001 - Site",
                 Location = "Room: Maintenance Room",
+                LocationType = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "None",
                 DepartmentId = "0",
@@ -214,6 +216,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -256,6 +259,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -298,6 +302,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -360,6 +365,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -402,6 +408,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -444,6 +451,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     SiteId = "001",
                     SiteName = "001 - Site",
                     Location = "Maintenance Room",
+                    LocationType = "Maintenance Room",
                     Status = "Available",
                     DepartmentName = "None",
                     DepartmentId = "0",
@@ -1573,6 +1581,22 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.Truncate(string.Empty, new List<string> { "10" });
 
             Assert.Equal(string.Empty, result);
+        }
+        [Fact]
+        public void Truncate_Null()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            string value = null;
+            var result = service.Truncate(value, new List<string> { "10" });
+
+            Assert.Null(result);
         }
         [Fact]
         public void Truncate_EmptyParameters()

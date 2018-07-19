@@ -1,27 +1,22 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System;
-using System.Configuration;
-using MiddleWay_Controller.IntegrationDatabase;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using MiddleWay_Utilities;
-using System.Collections.Generic;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
-using MiddleWay_EDS.Services;
 using MiddleWay_BLL.Services;
-using MiddleWay_DTO.RepositoryInterfaces;
-using TIPWeb_Controller.Repositories;
+using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_Controller.Repositories;
 using MiddleWay_Controller.Services;
-using TIPWeb_Controller.EF_DAL;
-using TIPWeb_Controller.DataProvider;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
-using MiddleWay_DTO.Models;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
+using MiddleWay_EDS.Services;
+using MiddleWay_Utilities;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using TIPWeb_Controller.DataProvider;
+using TIPWeb_Controller.Repositories;
 using TIPWeb_Controller.Services;
 
 namespace MiddleWay
@@ -57,7 +52,7 @@ namespace MiddleWay
             }
             catch (Exception ex)
             {
-                Console.WriteLine(Utilities.ParseException(ex));
+                PrintToConsole(Utilities.ParseException(ex));
 #if DEBUG
                 Console.Write("Press Enter to quit");
                 Console.Read();
@@ -204,12 +199,15 @@ namespace MiddleWay
         {
             try
             {
-                //MiddleWay Repositories
+                //MiddleWay_Controller Repositories
                 services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+                services.AddScoped<IEtlInventoryRepository, EtlInventoryRepository>();
                 services.AddScoped<IMappingsRepository, MappingsRepository>();
-                services.AddScoped<IProcessTaskErrorsRepository, ProcessTaskErrorsRepository>();
                 services.AddScoped<IProcessesRepository, ProcessesRepository>();
+                services.AddScoped<IProcessTaskErrorsRepository, ProcessTaskErrorsRepository>();
                 services.AddScoped<IProcessTasksRepository, ProcessTasksRepository>();
+                services.AddScoped<IProcessTaskStepsRepository, ProcessTaskStepsRepository>();
+                services.AddScoped<ITransformationLookupRepository, TransformationLookupRepository>();
                 services.AddScoped<ITransformationsRepository, TransformationsRepository>();
                 services.AddScoped<IInventoryFlatDataRepository, InventoryFlatDataRepository>();
                 //services.AddScoped<I Repository, Repository>();
@@ -232,27 +230,34 @@ namespace MiddleWay
         {
             try
             {
-                //MiddleWay Services
+                //MiddleWay_Controller Services
                 services.AddScoped<IConfigurationService, ConfigurationService>();
+                services.AddScoped<IEtlInventoryService, EtlInventoryService>();
                 services.AddScoped<IInventoryFlatDataService, InventoryFlatDataService>();
                 services.AddScoped<IMappingsService, MappingsService>();
-                services.AddScoped<IProcessTaskErrorsService, ProcessTaskErrorsService>();
                 services.AddScoped<IProcessesService, ProcessesService>();
+                services.AddScoped<IProcessTaskErrorsService, ProcessTaskErrorsService>();
                 services.AddScoped<IProcessTasksService, ProcessTasksService>();
+                services.AddScoped<IProcessTaskStepsService, ProcessTaskStepsService>();
+                services.AddScoped<ITransformationLookupService, TransformationLookupService>();
                 services.AddScoped<ITransformationsService, TransformationsService>();
                 services.AddScoped<IInventoryFlatDataService, InventoryFlatDataService>();
                 //services.AddScoped < I , > ();
 
                 //MiddleWay_BLL Services
+                services.AddScoped<IAssetsService, AssetsService>();
                 services.AddScoped<IChargePaymentsService, ChargePaymentsService>();
                 services.AddScoped<IChargesService, ChargesService>();
-                services.AddScoped<IAssetsService, AssetsService>();
+                services.AddScoped<IInputService, InputService>();
+                services.AddScoped<INotificationsService, NotificationsService>();
                 services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
                 //services.AddScoped < I , > ();
 
                 //TIPWeb Services
                 services.AddScoped<IEmailService, EmailService>();
+                services.AddScoped<IElasticMailService, ElasticMailService>();
                 services.AddScoped<IInventoryService, InventoryService>();
+                //services.AddScoped<Service, Service>();
             }
             catch (Exception ex)
             {
@@ -288,7 +293,7 @@ namespace MiddleWay
             if (!configurationService.HasConfiguration)
             {
                 // Configuration Not Loaded
-                Console.WriteLine("Configuration Not Loaded");
+                Console.WriteLine($"Configuration Not Loaded or Invalid for Client: {clientConfiguration.Client} and ProcessName: {clientConfiguration.ProcessName}");
                 Environment.Exit(0);
             }
             else
@@ -316,6 +321,9 @@ namespace MiddleWay
                         break;
                     case "-a":
                         AssetsMenu(commands, "Test"); // commands.GetAllArguments
+                        break;
+                    case "-pc":
+                        PrintConfiguration();
                         break;
                     default:
                         break;
@@ -910,6 +918,29 @@ namespace MiddleWay
 
             assetsService.ProcessAssets(commands, parameters);
 
+        }
+
+        public static void PrintConfiguration()
+        {
+            var configurationService = serviceProvider.GetService<IConfigurationService>();
+
+            var config = configurationService.GetAllConfigurations();
+
+            var configText = Utilities.ToStringObject(config);
+
+            Console.WriteLine(configText);
+            Console.Write("Press Enter to quit");
+            Console.Read();
+        }
+
+        public static void PrintToConsole(string message)
+        {
+            var lines = message.Split(new string[] { "\\r\\n", "\\n" }, StringSplitOptions.None);
+
+            foreach (var line in lines)
+            {
+                Console.WriteLine(line);
+            }
         }
 
         /*

@@ -1,8 +1,5 @@
 ﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
@@ -19,7 +16,7 @@ namespace MiddleWay_Controller.Services
         #region Constructor
 
         public ProcessesService(IProcessesRepository processesRepository, IClientConfiguration clientConfiguration,
-                                IConfigurationService configurationService, IProcessTasksService processTasksService)
+                                IConfigurationService configurationService) // , IProcessTasksService processTasksService
         {
             _processesRepository = processesRepository;
             _clientConfiguration = clientConfiguration;

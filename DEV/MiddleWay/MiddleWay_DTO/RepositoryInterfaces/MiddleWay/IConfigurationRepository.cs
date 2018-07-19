@@ -1,8 +1,5 @@
-﻿//using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_DTO.Models.MiddleWay;
-using System;
+﻿using MiddleWay_DTO.Models.MiddleWay;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
@@ -13,6 +10,8 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         ConfigurationsModel SelectConfigurationByName(string client, string processName, string name);
 
         string SelectConfigurationValueByName(string client, string processName, string name);
+
+        List<ConfigurationsModel> SelectConfigurations(string client, string processName);
 
     }
 }

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Dapper;
+using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using Dapper;
-using MiddleWay_DTO.Enumerations;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 
 namespace MiddleWay_EDS.Services
 {
@@ -18,6 +18,8 @@ namespace MiddleWay_EDS.Services
         private string querySelect;
         private string queryBody;
         private string queryWhere;
+        private string queryGroup;
+        private string queryOrder;
         private string queryOffset;
         private int readOffset = 0;
         private int readLimit = 1000;
@@ -71,6 +73,28 @@ namespace MiddleWay_EDS.Services
             set
             {
                 queryWhere = value;
+            }
+        }
+        public string Group
+        {
+            get
+            {
+                return queryGroup;
+            }
+            set
+            {
+                queryGroup = value;
+            }
+        }
+        public string Order
+        {
+            get
+            {
+                return queryOrder;
+            }
+            set
+            {
+                queryOrder = value;
             }
         }
         public string Offset
@@ -197,6 +221,11 @@ namespace MiddleWay_EDS.Services
         //    }
         //}
 
+        public bool HasNext(int total)
+        {
+            return readOffset < total;
+        }
+
         public int GetCount()
         {
             try
@@ -204,14 +233,20 @@ namespace MiddleWay_EDS.Services
                 using (IDbConnection db = new SqlConnection(connectionString))
                 {
                     var query = new StringBuilder();
-                    query.Append("SELECT 1 ");
-                    query.Append(queryBody);
+                    query.AppendLine("SELECT 1");
+                    query.AppendLine(queryBody);
                     if (!string.IsNullOrEmpty(queryWhere))
                     {
-                        query.Append(queryWhere);
+                        query.AppendLine(queryWhere);
+                    }
+                    if (!string.IsNullOrEmpty(queryGroup))
+                    {
+                        query.AppendLine(queryGroup);
                     }
 
-                    var total = db.Query<int>(query.ToString()).Count();
+                    var command = query.ToString().Replace("\\r\\n", "", StringComparison.InvariantCultureIgnoreCase).Replace("\\n", "", StringComparison.InvariantCultureIgnoreCase);
+
+                    var total = db.Query<int>(command).Count();
 
                     return total;
                 }
@@ -229,15 +264,25 @@ namespace MiddleWay_EDS.Services
                 using (IDbConnection db = new SqlConnection(connectionString))
                 {
                     var query = new StringBuilder();
-                    query.Append(querySelect);
-                    query.Append(queryBody);
+                    query.AppendLine(querySelect);
+                    query.AppendLine(queryBody);
                     if (!string.IsNullOrEmpty(queryWhere))
                     {
-                        query.Append(queryWhere);
+                        query.AppendLine(queryWhere);
                     }
-                    query.Append(queryOffset.Replace("@OFFSET", readOffset.ToString()).Replace("@LIMIT", readLimit.ToString()));
+                    if (!string.IsNullOrEmpty(queryGroup))
+                    {
+                        query.AppendLine(queryGroup);
+                    }
+                    if (!string.IsNullOrEmpty(queryOrder))
+                    {
+                        query.AppendLine(queryOrder);
+                    }
+                    query.AppendLine(queryOffset.Replace("@OFFSET", readOffset.ToString()).Replace("@LIMIT", readLimit.ToString()));
 
-                    var result = db.Query<T>(query.ToString()).ToList();
+                    var command = query.ToString().Replace("\\r\\n", "", StringComparison.InvariantCultureIgnoreCase).Replace("\\n", "", StringComparison.InvariantCultureIgnoreCase);
+
+                    var result = db.Query<T>(command).ToList();
 
                     return result;
                 }
@@ -255,15 +300,25 @@ namespace MiddleWay_EDS.Services
                 using (IDbConnection db = new SqlConnection(connectionString))
                 {
                     var query = new StringBuilder();
-                    query.Append(querySelect);
-                    query.Append(queryBody);
+                    query.AppendLine(querySelect);
+                    query.AppendLine(queryBody);
                     if (!string.IsNullOrEmpty(queryWhere))
                     {
-                        query.Append(queryWhere);
+                        query.AppendLine(queryWhere);
                     }
-                    query.Append(queryOffset.Replace("@OFFSET", readOffset.ToString()).Replace("@LIMIT", readLimit.ToString()));
+                    if (!string.IsNullOrEmpty(queryGroup))
+                    {
+                        query.AppendLine(queryGroup);
+                    }
+                    if (!string.IsNullOrEmpty(queryOrder))
+                    {
+                        query.AppendLine(queryOrder);
+                    }
+                    query.AppendLine(queryOffset.Replace("@OFFSET", readOffset.ToString()).Replace("@LIMIT", readLimit.ToString()));
 
-                    var result = db.Query<T>(query.ToString()).ToList();
+                    var command = query.ToString().Replace("\\r\\n", "", StringComparison.InvariantCultureIgnoreCase).Replace("\\n", "", StringComparison.InvariantCultureIgnoreCase);
+
+                    var result = db.Query<T>(command).ToList();
 
                     readOffset += readLimit; //Increase the offset to the next group
 
@@ -283,15 +338,25 @@ namespace MiddleWay_EDS.Services
                 using (IDbConnection db = new SqlConnection(connectionString))
                 {
                     var query = new StringBuilder();
-                    query.Append(querySelect);
-                    query.Append(queryBody);
+                    query.AppendLine(querySelect);
+                    query.AppendLine(queryBody);
                     if (!string.IsNullOrEmpty(queryWhere))
                     {
-                        query.Append(queryWhere);
+                        query.AppendLine(queryWhere);
                     }
-                    query.Append(queryOffset.Replace("@OFFSET", (offset > 0 ? offset : 0).ToString()).Replace("@LIMIT", (limit > 0 ? limit : 1000).ToString()));
+                    if (!string.IsNullOrEmpty(queryGroup))
+                    {
+                        query.AppendLine(queryGroup);
+                    }
+                    if (!string.IsNullOrEmpty(queryOrder))
+                    {
+                        query.AppendLine(queryOrder);
+                    }
+                    query.AppendLine(queryOffset.Replace("@OFFSET", (offset > 0 ? offset : 0).ToString()).Replace("@LIMIT", (limit > 0 ? limit : 1000).ToString()));
 
-                    var result = db.Query<T>(query.ToString()).ToList();
+                    var command = query.ToString().Replace("\\r\\n", "", StringComparison.InvariantCultureIgnoreCase).Replace("\\n", "", StringComparison.InvariantCultureIgnoreCase);
+
+                    var result = db.Query<T>(command).ToList();
 
                     return result;
                 }

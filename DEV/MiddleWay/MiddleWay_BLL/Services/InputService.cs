@@ -4,8 +4,6 @@ using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_EDS.Services;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
 
 namespace MiddleWay_BLL.Services
 {
@@ -29,6 +27,8 @@ namespace MiddleWay_BLL.Services
         private string querySelect;
         private string queryBody;
         private string queryWhere;
+        private string queryGroup;
+        private string queryOrder;
         private string queryOffset;
         private int total = -1;
         private int offset;
@@ -199,9 +199,15 @@ namespace MiddleWay_BLL.Services
                 querySelect = _configurationService.ExternalDataSourceQuerySelect;
                 queryBody = _configurationService.ExternalDataSourceQueryBody;
                 queryWhere = _configurationService.ExternalDataSourceQueryWhere;
+                queryGroup = _configurationService.ExternalDataSourceQueryGroup;
+                queryOrder = _configurationService.ExternalDataSourceQueryOrder;
                 queryOffset = _configurationService.ExternalDataSourceQueryOffset;
                 offset = _configurationService.ReadOffset;
                 limit = _configurationService.ReadLimit;
+            }
+            else //if(dataSourceType == DataSourceTypes.API)
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -218,18 +224,21 @@ namespace MiddleWay_BLL.Services
                     case DataSourceTypes.SQL:
                     case DataSourceTypes.MySQL:
                         if (!(string.IsNullOrEmpty(connectionString) ||
-                                       string.IsNullOrEmpty(querySelect) ||
-                                       string.IsNullOrEmpty(queryBody) ||
-                                       string.IsNullOrEmpty(queryOffset)))
+                              string.IsNullOrEmpty(querySelect) ||
+                              string.IsNullOrEmpty(queryBody) ||
+                              string.IsNullOrEmpty(queryOffset)))
                         {
                             dataReader = new ExternalDataSourceService();
                             dataReader.SetConnection(connectionString);
                             dataReader.Select = querySelect;
                             dataReader.Body = queryBody;
                             dataReader.Where = queryWhere;
+                            dataReader.Group = queryGroup;
+                            dataReader.Order = queryOrder;
                             dataReader.Offset = queryOffset;
                             dataReader.ReadOffset = offset;
                             dataReader.ReadLimit = limit;
+                            isConfigured = true;
                         }
                         else
                         {
@@ -238,20 +247,22 @@ namespace MiddleWay_BLL.Services
                         break;
                     case DataSourceTypes.FlatFile:
                         if (!(string.IsNullOrEmpty(filePath) ||
-                                       string.IsNullOrEmpty(delimiter) ||
-                                       string.IsNullOrEmpty(textQualifier)))
+                              string.IsNullOrEmpty(delimiter) ||
+                              string.IsNullOrEmpty(textQualifier)))
                         {
                             fileReader = new FlatFileService();
                             fileReader.FilePath = filePath;
                             fileReader.Delimiter = delimiter;
                             fileReader.TextQualifier = textQualifier;
                             //TODO: Add properties to configure and use Flat File Reader
+                            isConfigured = true;
                         }
                         else
                         {
                             isConfigured = false;
                         }
                         break;
+                    case DataSourceTypes.API:
                     case DataSourceTypes.Other:
                     default:
                         isConfigured = false;
@@ -270,21 +281,17 @@ namespace MiddleWay_BLL.Services
             }
             else
             {
-                if (total < 0)
+                switch (dataSourceType)
                 {
-                    total = GetInputCount();
-                    if (total > 0)
-                    {
-                        return offset < total;
-                    }
-                    else
-                    {
+                    case DataSourceTypes.SQL:
+                    case DataSourceTypes.MySQL:
+                        return dataReader.HasNext(total);
+                    case DataSourceTypes.FlatFile:
+                        return fileReader.HasNext(total);
+                    case DataSourceTypes.API:
+                    case DataSourceTypes.Other:
+                    default:
                         return false;
-                    }
-                }
-                else
-                {
-                    return offset < total;
                 }
             }
         }
@@ -307,6 +314,7 @@ namespace MiddleWay_BLL.Services
                     case DataSourceTypes.FlatFile:
                         total = fileReader.GetCount();
                         return total;
+                    case DataSourceTypes.API:
                     case DataSourceTypes.Other:
                     default:
                         return 0;
@@ -342,11 +350,11 @@ namespace MiddleWay_BLL.Services
                     //return result;
                     //break;
                     case DataSourceTypes.FlatFile:
-                        //var batch = fileReader.ReadNext<T>();
-                        //var transformedBatch = _transformationService.Transform(batch);
-                        //var mappedBatch = _mappingsService.Map(transformedBatch);
-                        throw new NotImplementedException();
+                    //var batch = fileReader.ReadNext<T>();
+                    //var transformedBatch = _transformationService.Transform(batch);
+                    //var mappedBatch = _mappingsService.Map(transformedBatch);
                     //break;
+                    case DataSourceTypes.API:
                     case DataSourceTypes.Other:
                     default:
                         //return null;
@@ -399,8 +407,8 @@ namespace MiddleWay_BLL.Services
                         //batch = fileReader.ReadNext<T>();
                         //var transformedBatch = _transformationService.TransformToDynamic(batch, ProcessSteps.Ingest);
                         //var mappedBatch = _mappingsService.Map<ExpandoObject, T>(transformedBatch, ProcessSteps.Ingest);
-                        throw new NotImplementedException();
                     //break;
+                    case DataSourceTypes.API:
                     case DataSourceTypes.Other:
                     default:
                         //return null;
@@ -425,8 +433,8 @@ namespace MiddleWay_BLL.Services
                         return dataReader.Read<T>(offset, limit);
                     //break;
                     case DataSourceTypes.FlatFile:
-                        throw new NotImplementedException();
                     //break;
+                    case DataSourceTypes.API:
                     case DataSourceTypes.Other:
                     default:
                         //return null;

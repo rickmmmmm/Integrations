@@ -1,15 +1,10 @@
-﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.Models.MiddleWay_BLL;
 using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
-
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
+using MiddleWay_DTO.View_Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using MiddleWay_DTO.ServiceInterfaces;
-using MiddleWay_DTO.RepositoryInterfaces;
-using MiddleWay_DTO.Models.MiddleWay_BLL;
-using MiddleWay_DTO.View_Models;
-using System.Linq;
 
 namespace MiddleWay_BLL.Services
 {
@@ -66,7 +61,7 @@ namespace MiddleWay_BLL.Services
             var notification = new EmailMessageModel
             {
                 //Body = body,
-                Recipients = _configurationService.NotificationSentTo.Split(',').ToList(), // ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                Recipients = _configurationService.NotificationSentTo, // ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                 Sender = _configurationService.NotificationFrom, // ConfigurationManager.AppSettings["notificationFrom"],
                 Subject = "Automatic Notification from Hayes Software Systems",
                 SentDate = DateTime.Now

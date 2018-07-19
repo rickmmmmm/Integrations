@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MiddleWay_DTO.Models.MiddleWay
+﻿namespace MiddleWay_DTO.Models.MiddleWay
 {
     public class InventoryFlatDataModel
     {
@@ -15,6 +11,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public string SiteId { get; set; }
         public string SiteName { get; set; }
         public string Location { get; set; }
+        public string LocationType { get; set; }
         public string Status { get; set; }
         public string DepartmentName { get; set; }
         public string DepartmentId { get; set; }
@@ -25,6 +22,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public string ExpirationDate { get; set; }
         public string InventoryNotes { get; set; }
         public string OrderNumber { get; set; }
+        public string LineNumber { get; set; }
         public string VendorName { get; set; }
         public string VendorAccountNumber { get; set; }
         public string ParentTag { get; set; }

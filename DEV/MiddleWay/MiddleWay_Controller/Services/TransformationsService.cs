@@ -120,7 +120,6 @@ namespace MiddleWay_Controller.Services
 
                                             try
                                             {
-
                                                 if (!string.IsNullOrEmpty(transformation.DestinationColumn))
                                                 {
                                                     propertyName = transformation.DestinationColumn;
@@ -133,8 +132,6 @@ namespace MiddleWay_Controller.Services
                                                 var destinationProperty = outputItem.GetType().GetProperty(propertyName);
                                                 //var destinationType = destinationProperty.GetType();
 
-                                                // perhaps change this to an object <object, Type> to allow post transformation conversion
-
                                                 var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
 
                                                 destinationProperty.SetValue(outputItem, transformedValue);
@@ -142,7 +139,6 @@ namespace MiddleWay_Controller.Services
                                             catch (Exception ex)
                                             {
                                                 //TODO: log error
-
                                                 if (rejectedProperty != null)
                                                 {
                                                     rejectedProperty.SetValue(item, true);
@@ -224,7 +220,6 @@ namespace MiddleWay_Controller.Services
 
                             try
                             {
-
                                 var groupedTransformations = (from transform in transformations
                                                               group transform by transform.SourceColumn into tranformGroup
                                                               select new { SourceColumn = tranformGroup.Key }).ToList();
@@ -263,7 +258,6 @@ namespace MiddleWay_Controller.Services
 
                                             try
                                             {
-
                                                 if (!string.IsNullOrEmpty(transformation.DestinationColumn))
                                                 {
                                                     propertyName = transformation.DestinationColumn;
@@ -276,14 +270,19 @@ namespace MiddleWay_Controller.Services
                                                 if (expandoDict.ContainsKey(propertyName))
                                                 {
                                                     var val = expandoDict[propertyName];
-                                                    destinationType = val.GetType();
+                                                    if (val != null)
+                                                    {
+                                                        destinationType = val.GetType();
+                                                    }
+                                                    else
+                                                    {
+                                                        destinationType = sourceType;
+                                                    }
                                                 }
                                                 else
                                                 {
                                                     destinationType = sourceType;
                                                 }
-
-                                                // perhaps change this to an object <object, Type> to allow post transformation conversion
 
                                                 var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
 
@@ -299,7 +298,7 @@ namespace MiddleWay_Controller.Services
                                             }
                                             catch (Exception ex)
                                             {
-                                                //TODO: log error
+                                                //Log error
                                                 if (rejectedProperty != null)
                                                 {
                                                     rejectedProperty.SetValue(item, true);
@@ -325,7 +324,7 @@ namespace MiddleWay_Controller.Services
                             }
                             catch (Exception ex)
                             {
-                                //TODO: log error
+                                //Log error
                                 if (rejectedProperty != null)
                                 {
                                     rejectedProperty.SetValue(item, true);
@@ -612,6 +611,7 @@ namespace MiddleWay_Controller.Services
             if (destinationType.Name == "String")
             {
                 outputTypeName = "String";
+                isNullable = true;
             }
             else
             {
@@ -630,34 +630,41 @@ namespace MiddleWay_Controller.Services
 
             try
             {
-                switch (outputTypeName)
+                if (isNullable && value == null)
                 {
-                    case "Byte": // int
-                        return QuickCast<T, Byte>(value);
-                    case "Char": // int
-                        return QuickCast<T, Char>(value);
-                    case "Int16": // int
-                        return QuickCast<T, Int16>(value);
-                    case "Int32": // int
-                        return QuickCast<T, Int32>(value);
-                    case "Int64": // long
-                        return QuickCast<T, Int64>(value);
-                    case "Boolean": //bool
-                        return QuickCast<T, Boolean>(value);
-                    case "Single": //float
-                        return QuickCast<T, Single>(value);
-                    case "Double": // double
-                        return QuickCast<T, Double>(value);
-                    case "Decimal": // decimal
-                        return QuickCast<T, Decimal>(value);
-                    case "String": // string
-                        return QuickCast<T, String>(value);
-                    case "DateTime": // DateTime
-                        return QuickCast<T, DateTime>(value);
-                    case "Object": // object
-                                   //return QuickCast < T, Object > (value);
-                    default:
-                        return QuickCast<T, Object>(value);
+                    return null;
+                }
+                else
+                {
+                    switch (outputTypeName)
+                    {
+                        case "Byte": // int
+                            return QuickCast<T, Byte>(value);
+                        case "Char": // int
+                            return QuickCast<T, Char>(value);
+                        case "Int16": // int
+                            return QuickCast<T, Int16>(value);
+                        case "Int32": // int
+                            return QuickCast<T, Int32>(value);
+                        case "Int64": // long
+                            return QuickCast<T, Int64>(value);
+                        case "Boolean": //bool
+                            return QuickCast<T, Boolean>(value);
+                        case "Single": //float
+                            return QuickCast<T, Single>(value);
+                        case "Double": // double
+                            return QuickCast<T, Double>(value);
+                        case "Decimal": // decimal
+                            return QuickCast<T, Decimal>(value);
+                        case "String": // string
+                            return QuickCast<T, String>(value);
+                        case "DateTime": // DateTime
+                            return QuickCast<T, DateTime>(value);
+                        case "Object": // object
+                                       //return QuickCast < T, Object > (value);
+                        default:
+                            return QuickCast<T, Object>(value);
+                    }
                 }
             }
             catch
@@ -842,19 +849,26 @@ namespace MiddleWay_Controller.Services
             {
                 try
                 {
-                    int limit = -1;
-                    if (Int32.TryParse(parameters[0], out limit))
+                    if (value != null)
                     {
-                        if (limit > 0)
+                        int limit = -1;
+                        if (Int32.TryParse(parameters[0], out limit))
                         {
-                            string result = value.ToString();
-                            if (result.Length > limit)
+                            if (limit > 0)
                             {
-                                return result.Substring(0, limit);
+                                string result = value.ToString();
+                                if (result.Length > limit)
+                                {
+                                    return result.Substring(0, limit);
+                                }
+                                else
+                                {
+                                    return result;
+                                }
                             }
                             else
                             {
-                                return result;
+                                return value.ToString();
                             }
                         }
                         else
@@ -864,7 +878,7 @@ namespace MiddleWay_Controller.Services
                     }
                     else
                     {
-                        return value.ToString();
+                        return null;
                     }
                 }
                 catch

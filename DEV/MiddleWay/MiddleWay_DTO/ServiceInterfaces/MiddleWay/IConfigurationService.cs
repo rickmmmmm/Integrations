@@ -1,7 +1,5 @@
 ﻿using MiddleWay_DTO.Models.MiddleWay;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
 {
@@ -14,7 +12,6 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         string ElasticEmailAPIUrl { get; }
         string ElasticSMSAPIUrl { get; }
 
-        
         string Delimiter { get; }
         string TextQualifier { get; }
         string FromName { get; }
@@ -29,14 +26,16 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         string ExternalDataSourceQuerySelect { get; }
         string ExternalDataSourceQueryBody { get; }
         string ExternalDataSourceQueryWhere { get; }
+        string ExternalDataSourceQueryGroup { get; }
+        string ExternalDataSourceQueryOrder { get; }
         string ExternalDataSourceQueryOffset { get; }
         int ReadOffset { get; }
         int ReadLimit { get; }
 
         ConfigurationsModel GetConfigurationByName(string name);
         string GetConfigurationValueByName(string name);
-
         //void ReadConfiguration();
+        List<ConfigurationsModel> GetAllConfigurations();
 
     }
 }

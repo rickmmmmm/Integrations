@@ -1,13 +1,13 @@
 ﻿using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.Models.MiddleWay_BLL;
-using MiddleWay_DTO.RepositoryInterfaces;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using MiddleWay_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 
 namespace MiddleWay_BLL.Services
 {
@@ -58,9 +58,11 @@ namespace MiddleWay_BLL.Services
         public void ProcessAssets(List<string> commands, string parameters = null)
         {
             var taskStepUid = 0;
+            var successful = false;
             try
             {
                 // Start Process Task
+                var processUid = _processesService.GetProcessUid();
                 var processTaskUid = _processTasksService.StartProcessTask(parameters);
                 if (processTaskUid > 0)
                 { // Create record, keep uid
@@ -125,6 +127,7 @@ namespace MiddleWay_BLL.Services
                         {
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
 
+                            batch.ForEach(row => row.ProcessUid = processUid);
                             batch.ForEach(row => row.RowId = rowCount++);
 
                             //var mappedBatch = _mappingsService.Map(batch);
@@ -134,6 +137,7 @@ namespace MiddleWay_BLL.Services
                         }
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, true);
+
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Stage);
 
                         var flatCount = _inventoryFlatService.GetTotal();
@@ -146,10 +150,29 @@ namespace MiddleWay_BLL.Services
 
                             //TODO: Log count of flatdata records returned
 
-                            var transformedData = _transformationService.TransformToDynamic(flatData, ProcessSteps.Ingest);
+                            var transformedData = _transformationService.TransformToDynamic(flatData, ProcessSteps.Stage);
+
+                            //TODO: Get the rejected records of the FlatData and update the Rejected Notes and Rejected values
+                            var errorFlatData = (from data in flatData
+                                                 where data.Rejected
+                                                 select data).ToList();
+
+                            Console.WriteLine(Utilities.ToStringObject(errorFlatData));
+
                             //TODO: Log count of transformed records returned
 
-                            var mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(transformedData, ProcessSteps.Ingest);
+                            var mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(transformedData, ProcessSteps.Stage);
+
+                            //TODO: Get the rejected records of the FlatData and update the Rejected Notes and Rejected values
+                            var transformList = (from data in transformedData
+                                                 select (data as IDictionary<string, object>));
+
+                            var errorData = (from data in transformList
+                                             where data.ContainsKey("Rejected") && (data["Rejected"]).Equals("true")
+                                             select data).ToList();
+
+                            Console.WriteLine(Utilities.ToStringObject(errorData));
+
                             //TODO: Log count of mapped records returned
 
                             //if (!_etlInventoryService.AddRange(transformedData))
@@ -207,7 +230,8 @@ namespace MiddleWay_BLL.Services
                     }
 
                     // End ProcessTask
-                    _processTasksService.EndProcessTask(true);
+                    //_processTasksService.EndProcessTask(true);
+                    successful = true;
                 }
                 else
                 {
@@ -222,6 +246,10 @@ namespace MiddleWay_BLL.Services
                 }
                 //TODO: Log Error
                 throw;
+            }
+            finally
+            {
+                _processTasksService.EndProcessTask(successful);
             }
         }
 

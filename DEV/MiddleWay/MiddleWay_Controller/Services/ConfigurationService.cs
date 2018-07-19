@@ -1,9 +1,8 @@
-﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.Models.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
-using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
@@ -49,6 +48,8 @@ namespace MiddleWay_Controller.Services
         public string ExternalDataSourceQuerySelect { get { return GetConfigurationValueByName("ExternalDataSourceQuerySelect"); } }
         public string ExternalDataSourceQueryBody { get { return GetConfigurationValueByName("ExternalDataSourceQueryBody"); } }
         public string ExternalDataSourceQueryWhere { get { return GetConfigurationValueByName("ExternalDataSourceQueryWhere"); } }
+        public string ExternalDataSourceQueryGroup { get { return GetConfigurationValueByName("ExternalDataSourceQueryGroup"); } }
+        public string ExternalDataSourceQueryOrder { get { return GetConfigurationValueByName("ExternalDataSourceQueryOrder"); } }
         public string ExternalDataSourceQueryOffset { get { return GetConfigurationValueByName("ExternalDataSourceQueryOffset"); } }
         public int ReadOffset {
             get {
@@ -108,6 +109,11 @@ namespace MiddleWay_Controller.Services
         {
             var configurationValue = this._configurationRepository.SelectConfigurationValueByName(_clientConfiguration.Client, _clientConfiguration.ProcessName, name);
             return configurationValue;
+        }
+
+        public List<ConfigurationsModel> GetAllConfigurations()
+        {
+            return _configurationRepository.SelectConfigurations(_clientConfiguration.Client, _clientConfiguration.ProcessName);
         }
 
         #endregion Get Methods

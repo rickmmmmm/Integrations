@@ -1,6 +1,7 @@
 ﻿using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using MiddleWay_Utilities;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -61,43 +62,55 @@ namespace MiddleWay_Controller.Services
                     {
                         List<U> outputItems = new List<U>();
 
+                        bool isDynamicSourceProperty = false;
+                        bool isDynamicDestinationProperty = false;
+                        IDictionary<string, object> dynamicInput = null;
+                        IDictionary<string, object> dynamicOutput = null;
+                        bool hasSourceProperty = false;
+                        object sourceValue = null;
+                        PropertyInfo destinationProperty = null;
+                        bool hasDestinationProperty = false;
+
+
+                        if (items[0] is IDictionary<string, object>)
+                        {
+                            isDynamicSourceProperty = true;
+                        }
+
+                        U outputItem = new U();
+                        if (outputItem is IDictionary<string, object>)
+                        {
+                            isDynamicDestinationProperty = true;
+                        }
+
                         foreach (var item in items)
                         {
-                            U outputItem = new U();
-                            IDictionary<string, object> dynamicInput = null;
-                            IDictionary<string, object> dynamicOutput = null;
-                            bool isDynamicSourceProperty = false;
-                            bool isDynamicDestinationProperty = false;
-                            bool hasSourceProperty = false;
-                            object sourceValue = null;
-                            PropertyInfo destinationProperty = null;
-                            bool hasDestinationProperty = false;
-
-                            if (item is IDictionary<string, object>)
+                            try
                             {
-                                isDynamicSourceProperty = true;
-                                dynamicInput = item as IDictionary<string, object>;
-                            }
+                                outputItem = new U();
+                                dynamicInput = null;
+                                dynamicOutput = null;
+                                hasSourceProperty = false;
+                                sourceValue = null;
+                                destinationProperty = null;
+                                hasDestinationProperty = false;
 
-                            if (outputItem is IDictionary<string, object>)
-                            {
-                                dynamicOutput = outputItem as IDictionary<string, object>;
-                                isDynamicDestinationProperty = true;
-                            }
+                                dynamicInput = isDynamicSourceProperty ? item as IDictionary<string, object> : null;
+                                dynamicOutput = isDynamicDestinationProperty ? outputItem as IDictionary<string, object> : null;
 
-                            foreach (var mapping in mappings)
-                            {
-                                try
+                                foreach (var mapping in mappings)
                                 {
-                                    hasSourceProperty = false;
-                                    sourceValue = null;
-                                    destinationProperty = null;
-                                    hasDestinationProperty = false;
-
-                                    if (!string.IsNullOrEmpty(mapping.SourceColumn))
+                                    try
                                     {
-                                        if (item is IDictionary<string, object>)
+                                        hasSourceProperty = false;
+                                        sourceValue = null;
+                                        destinationProperty = null;
+                                        hasDestinationProperty = false;
+
+                                        if (!string.IsNullOrEmpty(mapping.SourceColumn))
                                         {
+                                            //if (item is IDictionary<string, object>)
+                                            //{
                                             if (isDynamicSourceProperty)
                                             {
                                                 if (dynamicInput.ContainsKey(mapping.SourceColumn))
@@ -106,63 +119,131 @@ namespace MiddleWay_Controller.Services
                                                     sourceValue = dynamicInput[mapping.SourceColumn];
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            var sourceProperty = item.GetType().GetProperty(mapping.SourceColumn);
-                                            hasSourceProperty = (sourceProperty != null);
-                                            sourceValue = sourceProperty.GetValue(item);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        hasSourceProperty = true;
-                                        sourceValue = null;
-                                    }
-
-                                    if (isDynamicDestinationProperty)
-                                    {
-                                        hasDestinationProperty = dynamicOutput.ContainsKey(mapping.DestinationColumn);
-                                    }
-                                    else
-                                    {
-                                        destinationProperty = outputItem.GetType().GetProperty(mapping.DestinationColumn);
-                                        hasDestinationProperty = (destinationProperty != null);
-                                    }
-
-                                    if (isDynamicDestinationProperty)
-                                    {
-                                        if (hasDestinationProperty)
-                                        {
-                                            dynamicOutput[mapping.DestinationColumn] = sourceValue;
-                                        }
-                                        else
-                                        {
-                                            dynamicOutput.Add(mapping.DestinationColumn, sourceValue);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (hasDestinationProperty)
-                                        {
-                                            if (!string.IsNullOrEmpty(mapping.SourceColumn) && hasSourceProperty)
+                                            //}
+                                            else
                                             {
-                                                var outputValue = _transformationsService.QuickCast(sourceValue, destinationProperty.PropertyType);
-                                                destinationProperty.SetValue(outputItem, outputValue);
+                                                var sourceProperty = item.GetType().GetProperty(mapping.SourceColumn);
+                                                hasSourceProperty = (sourceProperty != null);
+                                                sourceValue = sourceProperty.GetValue(item);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            hasSourceProperty = true;
+                                            sourceValue = null;
+                                        }
+
+                                        if (isDynamicDestinationProperty)
+                                        {
+                                            hasDestinationProperty = dynamicOutput.ContainsKey(mapping.DestinationColumn);
+                                        }
+                                        else
+                                        {
+                                            destinationProperty = outputItem.GetType().GetProperty(mapping.DestinationColumn);
+                                            hasDestinationProperty = (destinationProperty != null);
+                                        }
+
+                                        if (isDynamicDestinationProperty)
+                                        {
+                                            if (hasDestinationProperty)
+                                            {
+                                                dynamicOutput[mapping.DestinationColumn] = sourceValue;
+                                            }
+                                            else
+                                            {
+                                                dynamicOutput.Add(mapping.DestinationColumn, sourceValue);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (hasDestinationProperty)
+                                            {
+                                                if (!string.IsNullOrEmpty(mapping.SourceColumn) && hasSourceProperty)
+                                                {
+                                                    var outputValue = _transformationsService.QuickCast(sourceValue, destinationProperty.PropertyType);
+                                                    destinationProperty.SetValue(outputItem, outputValue);
+                                                }
                                             }
                                         }
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        //Log error
+                                        if (isDynamicSourceProperty)
+                                        {
+                                            if (dynamicInput.ContainsKey("Rejected"))
+                                            {
+                                                dynamicInput["Rejected"] = true;
+                                            }
+                                            else
+                                            {
+                                                dynamicInput.Add("Rejected", true);
+                                            }
+                                            if (dynamicInput.ContainsKey("RejectedNotes"))
+                                            {
+                                                var notes = dynamicInput["RejectedNotes"];
+                                                notes = (notes == null ? string.Empty : $"{notes}\n") + $"Source Property: {mapping.SourceColumn}, Destination Property: {mapping.DestinationColumn}; {(!string.IsNullOrEmpty(ex.Message) ? "Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                                dynamicInput["RejectedNotes"] = notes;
+                                            }
+                                            else
+                                            {
+                                                var notes = $"Source Property: {mapping.SourceColumn}, Destination Property: {mapping.DestinationColumn}; {(!string.IsNullOrEmpty(ex.Message) ? "Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                                dynamicInput.Add("RejectedNotes", notes);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var rejectedProperty = item.GetType().GetProperty("Rejected");
+                                            rejectedProperty.SetValue(item, true);
+                                            var rejectedNotesProperty = item.GetType().GetProperty("RejectedNotes");
+                                            var notes = rejectedNotesProperty.GetValue(item);
+                                            notes = (notes == null ? string.Empty : $"{notes}\n") + $"Source Property: {mapping.SourceColumn}, Destination Property: {mapping.DestinationColumn}; {(!string.IsNullOrEmpty(ex.Message) ? "Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                            rejectedNotesProperty.SetValue(item, notes);
+                                        }
+
+                                        continue;
+                                    }
                                 }
-                                catch (Exception ex)
-                                {
-                                    System.Diagnostics.Debug.WriteLine(MiddleWay_Utilities.Utilities.ParseException(ex));
-                                    //Log error
-                                    continue;
-                                }
+
+                                outputItems.Add(outputItem);
+
                             }
-
-                            outputItems.Add(outputItem);
-
+                            catch (Exception ex)
+                            {
+                                //Log error
+                                if (isDynamicSourceProperty)
+                                {
+                                    if (dynamicInput.ContainsKey("Rejected"))
+                                    {
+                                        dynamicInput["Rejected"] = true;
+                                    }
+                                    else
+                                    {
+                                        dynamicInput.Add("Rejected", true);
+                                    }
+                                    if (dynamicInput.ContainsKey("RejectedNotes"))
+                                    {
+                                        var notes = dynamicInput["RejectedNotes"];
+                                        notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                        dynamicInput["RejectedNotes"] = notes;
+                                    }
+                                    else
+                                    {
+                                        var notes = $"{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                        dynamicInput.Add("RejectedNotes", notes);
+                                    }
+                                }
+                                else
+                                {
+                                    var rejectedProperty = item.GetType().GetProperty("Rejected");
+                                    rejectedProperty.SetValue(item, true);
+                                    var rejectedNotesProperty = item.GetType().GetProperty("RejectedNotes");
+                                    var notes = rejectedNotesProperty.GetValue(item);
+                                    notes = (notes == null ? string.Empty : $"{notes}\n") + $"{(!string.IsNullOrEmpty(ex.Message) ? $"Message: {ex.Message}" : Utilities.ParseException(ex))}";
+                                    rejectedNotesProperty.SetValue(item, notes);
+                                }
+                                continue;
+                            }
                         }
 
                         return outputItems;

@@ -1,10 +1,8 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -53,6 +51,7 @@ namespace MiddleWay_Controller.Repositories
                                 SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
+                                LocationType = inventoryFlat.LocationType,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
                                 DepartmentId = inventoryFlat.DepartmentId,
@@ -63,6 +62,7 @@ namespace MiddleWay_Controller.Repositories
                                 ExpirationDate = inventoryFlat.ExpirationDate,
                                 InventoryNotes = inventoryFlat.InventoryNotes,
                                 OrderNumber = inventoryFlat.OrderNumber,
+                                LineNumber = inventoryFlat.LineNumber,
                                 VendorName = inventoryFlat.VendorName,
                                 VendorAccountNumber = inventoryFlat.VendorAccountNumber,
                                 ParentTag = inventoryFlat.ParentTag,
@@ -127,6 +127,7 @@ namespace MiddleWay_Controller.Repositories
                                 SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
+                                LocationType = inventoryFlat.LocationType,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
                                 DepartmentId = inventoryFlat.DepartmentId,
@@ -137,6 +138,7 @@ namespace MiddleWay_Controller.Repositories
                                 ExpirationDate = inventoryFlat.ExpirationDate,
                                 InventoryNotes = inventoryFlat.InventoryNotes,
                                 OrderNumber = inventoryFlat.OrderNumber,
+                                LineNumber = inventoryFlat.LineNumber,
                                 VendorName = inventoryFlat.VendorName,
                                 VendorAccountNumber = inventoryFlat.VendorAccountNumber,
                                 ParentTag = inventoryFlat.ParentTag,
@@ -187,6 +189,7 @@ namespace MiddleWay_Controller.Repositories
                                 SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
+                                LocationType = inventoryFlat.LocationType,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
                                 DepartmentId = inventoryFlat.DepartmentId,
@@ -197,6 +200,7 @@ namespace MiddleWay_Controller.Repositories
                                 ExpirationDate = inventoryFlat.ExpirationDate,
                                 InventoryNotes = inventoryFlat.InventoryNotes,
                                 OrderNumber = inventoryFlat.OrderNumber,
+                                LineNumber = inventoryFlat.LineNumber,
                                 VendorName = inventoryFlat.VendorName,
                                 VendorAccountNumber = inventoryFlat.VendorAccountNumber,
                                 ParentTag = inventoryFlat.ParentTag,
@@ -255,6 +259,7 @@ namespace MiddleWay_Controller.Repositories
                                 SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
+                                LocationType = inventoryFlat.LocationType,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
                                 DepartmentId = inventoryFlat.DepartmentId,
@@ -265,6 +270,7 @@ namespace MiddleWay_Controller.Repositories
                                 ExpirationDate = inventoryFlat.ExpirationDate,
                                 InventoryNotes = inventoryFlat.InventoryNotes,
                                 OrderNumber = inventoryFlat.OrderNumber,
+                                LineNumber = inventoryFlat.LineNumber,
                                 VendorName = inventoryFlat.VendorName,
                                 VendorAccountNumber = inventoryFlat.VendorAccountNumber,
                                 ParentTag = inventoryFlat.ParentTag,
@@ -323,6 +329,7 @@ namespace MiddleWay_Controller.Repositories
                                 SiteId = inventoryFlat.SiteId,
                                 SiteName = inventoryFlat.SiteName,
                                 Location = inventoryFlat.Location,
+                                LocationType = inventoryFlat.LocationType,
                                 Status = inventoryFlat.Status,
                                 DepartmentName = inventoryFlat.DepartmentName,
                                 DepartmentId = inventoryFlat.DepartmentId,
@@ -333,6 +340,7 @@ namespace MiddleWay_Controller.Repositories
                                 ExpirationDate = inventoryFlat.ExpirationDate,
                                 InventoryNotes = inventoryFlat.InventoryNotes,
                                 OrderNumber = inventoryFlat.OrderNumber,
+                                LineNumber = inventoryFlat.LineNumber,
                                 VendorName = inventoryFlat.VendorName,
                                 VendorAccountNumber = inventoryFlat.VendorAccountNumber,
                                 ParentTag = inventoryFlat.ParentTag,
@@ -419,6 +427,7 @@ namespace MiddleWay_Controller.Repositories
                     SiteId = inventoryFlatData.SiteId,
                     SiteName = inventoryFlatData.SiteName,
                     Location = inventoryFlatData.Location,
+                    LocationType = inventoryFlatData.LocationType,
                     Status = inventoryFlatData.Status,
                     DepartmentName = inventoryFlatData.DepartmentName,
                     DepartmentId = inventoryFlatData.DepartmentId,
@@ -429,6 +438,7 @@ namespace MiddleWay_Controller.Repositories
                     ExpirationDate = inventoryFlatData.ExpirationDate,
                     InventoryNotes = inventoryFlatData.InventoryNotes,
                     OrderNumber = inventoryFlatData.OrderNumber,
+                    LineNumber = inventoryFlatData.LineNumber,
                     VendorName = inventoryFlatData.VendorName,
                     VendorAccountNumber = inventoryFlatData.VendorAccountNumber,
                     ParentTag = inventoryFlatData.ParentTag,
@@ -489,6 +499,7 @@ namespace MiddleWay_Controller.Repositories
                         SiteId = inventoryFlatData.SiteId,
                         SiteName = inventoryFlatData.SiteName,
                         Location = inventoryFlatData.Location,
+                        LocationType = inventoryFlatData.LocationType,
                         Status = inventoryFlatData.Status,
                         DepartmentName = inventoryFlatData.DepartmentName,
                         DepartmentId = inventoryFlatData.DepartmentId,
@@ -499,6 +510,7 @@ namespace MiddleWay_Controller.Repositories
                         ExpirationDate = inventoryFlatData.ExpirationDate,
                         InventoryNotes = inventoryFlatData.InventoryNotes,
                         OrderNumber = inventoryFlatData.OrderNumber,
+                        LineNumber = inventoryFlatData.LineNumber,
                         VendorName = inventoryFlatData.VendorName,
                         VendorAccountNumber = inventoryFlatData.VendorAccountNumber,
                         ParentTag = inventoryFlatData.ParentTag,
@@ -554,6 +566,7 @@ namespace MiddleWay_Controller.Repositories
                 inventoryFlatDataToUpdate.SiteId = inventoryFlatData.SiteId;
                 inventoryFlatDataToUpdate.SiteName = inventoryFlatData.SiteName;
                 inventoryFlatDataToUpdate.Location = inventoryFlatData.Location;
+                inventoryFlatDataToUpdate.LocationType = inventoryFlatData.LocationType;
                 inventoryFlatDataToUpdate.Status = inventoryFlatData.Status;
                 inventoryFlatDataToUpdate.DepartmentName = inventoryFlatData.DepartmentName;
                 inventoryFlatDataToUpdate.DepartmentId = inventoryFlatData.DepartmentId;
@@ -564,6 +577,7 @@ namespace MiddleWay_Controller.Repositories
                 inventoryFlatDataToUpdate.ExpirationDate = inventoryFlatData.ExpirationDate;
                 inventoryFlatDataToUpdate.InventoryNotes = inventoryFlatData.InventoryNotes;
                 inventoryFlatDataToUpdate.OrderNumber = inventoryFlatData.OrderNumber;
+                inventoryFlatDataToUpdate.LineNumber = inventoryFlatData.LineNumber;
                 inventoryFlatDataToUpdate.VendorName = inventoryFlatData.VendorName;
                 inventoryFlatDataToUpdate.VendorAccountNumber = inventoryFlatData.VendorAccountNumber;
                 inventoryFlatDataToUpdate.ParentTag = inventoryFlatData.ParentTag;

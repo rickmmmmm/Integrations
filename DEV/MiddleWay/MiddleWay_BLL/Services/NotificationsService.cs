@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MiddleWay_DTO.Models;
-//using DataAccess;
-using System.Configuration;
-using MiddleWay_DTO.RepositoryInterfaces;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
-using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
+﻿using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.Models.MiddleWay_BLL;
-using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+//using DataAccess;
+using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
+using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
+using System;
 
 namespace MiddleWay_BLL.Services
 {
@@ -50,15 +43,15 @@ namespace MiddleWay_BLL.Services
                 {
                     case NotificationType.Email:
 
-                        if (!typeof(EmailMessageModel).IsAssignableFrom(message.GetType()))
+                        var email = (EmailMessageModel)message;
+
+                        if (email != null)
                         {
-                            var email = (EmailMessageModel)message;
+                            email.Recipients = _configurationService.NotificationSentTo;
 
                             if (!string.IsNullOrEmpty(_configurationService.SqlServerDbMailProfileName))
                             {
                                 var mailProfileName = _configurationService.SqlServerDbMailProfileName;
-
-                                var attachment = string.IsNullOrEmpty(email.FileAttachment) ? null : email.FileAttachment;
 
                                 _emailService.Send(mailProfileName, email);
 

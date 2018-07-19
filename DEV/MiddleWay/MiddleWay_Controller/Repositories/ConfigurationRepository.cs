@@ -1,10 +1,8 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
 {
@@ -96,10 +94,40 @@ namespace MiddleWay_Controller.Repositories
                                           where configuration.ConfigurationName.Trim().ToLower() == nameVal
                                              && processes.Client.Trim().ToLower() == clientVal
                                              && processes.ProcessName.Trim().ToLower() == processNameVal
+                                             && configuration.Enabled
                                           select configuration.ConfigurationValue
                                       ).FirstOrDefault();
 
                 return configurationValue;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<ConfigurationsModel> SelectConfigurations(string client, string processName)
+        {
+            try
+            {
+                var clientVal = (client ?? string.Empty).Trim().ToLower();
+                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
+
+                var configurations = (from configuration in _context.Configurations
+                                      join processes in _context.Processes
+                                        on configuration.ProcessUid equals processes.ProcessUid
+                                      where processes.Client.Trim().ToLower() == clientVal
+                                         && processes.ProcessName.Trim().ToLower() == processNameVal
+                                      select new ConfigurationsModel
+                                      {
+                                          ConfigurationUid = configuration.ConfigurationUid,
+                                          ProcessUid = configuration.ProcessUid,
+                                          ConfigurationName = configuration.ConfigurationName,
+                                          ConfigurationValue = configuration.ConfigurationValue,
+                                          Enabled = configuration.Enabled
+                                      }).ToList();
+
+                return configurations;
             }
             catch
             {

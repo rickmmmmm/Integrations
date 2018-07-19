@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Text;
 
 namespace MiddleWay_Utilities
 {
@@ -13,16 +13,16 @@ namespace MiddleWay_Utilities
             var result = new StringBuilder();
             //var message = "";
             //    var stack = "";
-            result.Append(ex.Message);
-            result.AppendLine(ex.StackTrace);
+            result.Append(ex.Message + "\n");
+            result.AppendLine(ex.StackTrace + "\n");
             if (ex.InnerException != null)
             {
                 Exception innerEx;
                 innerEx = ex.InnerException;
                 while (innerEx != null)
                 {
-                    result.Append(innerEx.Message);
-                    result.AppendLine(innerEx.StackTrace);
+                    result.Append(innerEx.Message + "\n");
+                    result.AppendLine(innerEx.StackTrace + "\n");
                     innerEx = innerEx.InnerException;
                 }
             }
@@ -154,7 +154,8 @@ namespace MiddleWay_Utilities
 
             foreach (var value in enumerable)
             {
-                return Utilities.ToStringObject(value);
+                output.Append("\n=============================================\n");
+                output.Append(Utilities.ToStringObject(value));
             }
 
             return output.ToString();

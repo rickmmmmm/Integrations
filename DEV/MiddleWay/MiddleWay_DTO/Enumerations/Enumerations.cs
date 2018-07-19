@@ -37,6 +37,7 @@
         FlatFile = 0,
         SQL = 1,
         MySQL = 2,
+        API = 3,
         Other
     }
 

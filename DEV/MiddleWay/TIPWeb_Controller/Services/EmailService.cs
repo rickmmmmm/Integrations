@@ -1,9 +1,6 @@
 ﻿using MiddleWay_DTO.Models.MiddleWay_BLL;
 using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
 using MiddleWay_DTO.ServiceInterfaces.TIPWeb;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TIPWeb_Controller.Services
 {
@@ -36,13 +33,12 @@ namespace TIPWeb_Controller.Services
             {
                 var attachment = string.IsNullOrEmpty(email.FileAttachment) ? null : email.FileAttachment;
 
-                var recipients = string.Join(";", email.Recipients);
-
-                _emailRepository.Send(profileName, recipients, email.Subject, email.Body, attachment);
+                _emailRepository.Send(profileName, email.Recipients, email.Subject, email.Body, attachment);
             }
             catch
             {
                 //TODO: Log this issue
+                throw;
             }
         }
 

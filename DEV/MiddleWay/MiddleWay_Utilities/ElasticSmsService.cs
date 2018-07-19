@@ -24,14 +24,14 @@ namespace MiddleWay_Utilities
 
             List<NameValueCollection> messageList = new List<NameValueCollection>();
 
-            foreach (var recipient in message.Recipients)
-            {
-                NameValueCollection values = new NameValueCollection();
-                values.Add("apikey", apiKey);
-                values.Add("to", recipient);
-                values.Add("body", message.Body);
-                messageList.Add(values);
-            }
+            //foreach (var recipient in message.Recipients)
+            //{
+            NameValueCollection values = new NameValueCollection();
+            values.Add("apikey", apiKey);
+            values.Add("to", message.Recipients);
+            values.Add("body", message.Body);
+            messageList.Add(values);
+            //}
 
             using (WebClient client = new WebClient())
             {

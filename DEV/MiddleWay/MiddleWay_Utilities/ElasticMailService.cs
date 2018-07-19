@@ -17,14 +17,12 @@ namespace MiddleWay_Utilities
             //var fromName = ConfigurationManager.AppSettings["fromName"];
             //string address = ConfigurationManager.AppSettings["ElasticAPI"];
 
-            var toRecipients = string.Join(",", message.Recipients.ToArray());
-
             //var emailMessage = (EmailMessageModel)message;
             NameValueCollection values = new NameValueCollection();
             values.Add("apikey", apiKey);
             values.Add("from", message.Sender);
             values.Add("fromName", fromName);
-            values.Add("to", toRecipients);
+            values.Add("to", message.Recipients);
             values.Add("subject", message.Subject);
             values.Add("bodyHtml", message.Body);
             values.Add("isTransactional", "true");

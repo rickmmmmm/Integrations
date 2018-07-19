@@ -12,6 +12,7 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         List<ProcessTaskStepsModel> GetLatestProcessTaskSteps(int processUid);
         List<ProcessTaskStepsModel> GetLatestProcessTaskSteps(string client, string processName);
         int BeginTaskStep(int processTaskUid, ProcessSteps stepName);
+        bool EndTaskStep(bool success);
         bool EndTaskStep(int processTaskStepUid, bool success);
         bool EndTaskStep(int processTaskUid, ProcessSteps stepName, bool success);
     }

@@ -1,7 +1,6 @@
 ﻿using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_EDS.Services
 {
@@ -77,6 +76,11 @@ namespace MiddleWay_EDS.Services
 
 
         #region Get Functions
+
+        public bool HasNext(int total)
+        {
+            throw new NotImplementedException();
+        }
 
         public int GetCount()
         {

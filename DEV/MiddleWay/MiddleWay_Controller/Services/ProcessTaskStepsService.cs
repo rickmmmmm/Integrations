@@ -4,7 +4,6 @@ using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MiddleWay_Controller.Services
 {
@@ -14,21 +13,21 @@ namespace MiddleWay_Controller.Services
 
         private IProcessTaskStepsRepository _processTaskStepsRepository;
         //private IClientConfiguration _clientConfiguration;
-        private IProcessTasksService _processTasksService;
+        //private IProcessTasksService _processTasksService;
         //private IConfigurationService _configurationService;
 
-        private int processTaskUid;
+        private int processTaskStepUid;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
-        public ProcessTaskStepsService(IProcessTaskStepsRepository processTaskStepsRepository, IProcessTasksService processTasksService) //IClientConfiguration clientConfiguration, IConfigurationService configurationService, )
+        public ProcessTaskStepsService(IProcessTaskStepsRepository processTaskStepsRepository) //, IProcessTasksService processTasksService , IClientConfiguration clientConfiguration, IConfigurationService configurationService, )
         {
             _processTaskStepsRepository = processTaskStepsRepository;
             //_clientConfiguration = clientConfiguration;
             //_configurationService = configurationService;
-            _processTasksService = processTasksService;
+            //_processTasksService = processTasksService;
         }
 
         #endregion Constructor
@@ -103,8 +102,9 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                Console.WriteLine("Is _processTasksService.GetProcessTaskUid (" + _processTasksService.GetProcessTaskUid  + ") equal to processTaskUid (" + processTaskUid + "): " + (_processTasksService.GetProcessTaskUid == processTaskUid).ToString());
-                return _processTaskStepsRepository.InsertProcessTaskStep(processTaskUid, stepName);
+                //Console.WriteLine("Is _processTasksService.GetProcessTaskUid (" + _processTasksService.GetProcessTaskUid  + ") equal to processTaskUid (" + processTaskUid + "): " + (_processTasksService.GetProcessTaskUid == processTaskUid).ToString());
+                processTaskStepUid = _processTaskStepsRepository.InsertProcessTaskStep(processTaskUid, stepName);
+                return processTaskStepUid;
             }
             catch
             {
@@ -115,6 +115,25 @@ namespace MiddleWay_Controller.Services
         #endregion Add Methods
 
         #region Update Methods
+
+        public bool EndTaskStep(bool success)
+        {
+            try
+            {
+                if (processTaskStepUid > 0)
+                {
+                    return _processTaskStepsRepository.UpdateProcessTaskStep(processTaskStepUid, DateTime.UtcNow, success);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         public bool EndTaskStep(int processTaskStepUid, bool success)
         {
