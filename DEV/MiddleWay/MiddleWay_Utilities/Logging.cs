@@ -5,25 +5,25 @@ namespace MiddleWay_Utilities
 {
     public class Logging
     {
-        public static bool WriteToLog(string ClientCode, string MessageType, string Message, int ProcessTaskID, string ProcessTaskName)
+        public static bool WriteToLog(string message, string processTaskName, int processTaskID = 0, string clientCode = "", string messageType = "")
         {
             // MessageType Should be (Informational, Warning, Successful, Failure)
 
             // Set to defaults if not provided
-            if (String.IsNullOrEmpty(ClientCode))
-                ClientCode = "MiddleWay";
+            if (String.IsNullOrEmpty(clientCode))
+                clientCode = "MiddleWay";
 
-            if (String.IsNullOrEmpty(MessageType))
-                MessageType = "Informational";
+            if (String.IsNullOrEmpty(messageType))
+                messageType = "Informational";
 
-            if (String.IsNullOrEmpty(ProcessTaskID.ToString()))
-                ProcessTaskID = 0;
+            //if (String.IsNullOrEmpty(processTaskID.ToString()))
+            //    processTaskID = 0;
 
-            if (String.IsNullOrEmpty(ProcessTaskName))
-                ProcessTaskName = "Default Process Name";
+            if (String.IsNullOrEmpty(processTaskName))
+                processTaskName = "Default Process Name";
 
-            if (String.IsNullOrEmpty(Message))
-                Message = "Default Message - No Message Provided";
+            if (String.IsNullOrEmpty(message))
+                message = "Default Message - No Message Provided";
 
             //string LogFilePath = "C:\\Temp\\Logs";  // For Testing only
             string LogFilePath = Directory.GetCurrentDirectory() + "\\Logs\\";
@@ -37,12 +37,12 @@ namespace MiddleWay_Utilities
             }
 
             string LogFileDate = System.DateTime.Now.Month.ToString("00") + System.DateTime.Now.Day.ToString("00") + System.DateTime.Now.Year.ToString("0000");
-            string LogFileName = ClientCode + "_" + LogFileDate + ".log";
+            string LogFileName = clientCode + "_" + LogFileDate + ".log";
 
             string LogEntry = "";
 
             // Cleanup message here to remove crt returns, line feeds, and tabs
-            Message=Utilities.CleanupHiddenCharacters(Message);
+            message=Utilities.CleanupHiddenCharacters(message);
 
             if (!File.Exists(LogFilePath))
             {
@@ -52,12 +52,12 @@ namespace MiddleWay_Utilities
 
             if (File.Exists(LogFilePath + LogFileName))
             {
-                LogEntry = System.DateTime.Now.ToString() + "|" + ProcessTaskID.ToString() + "|" + ProcessTaskName + "|" + MessageType + "|" + Message;
+                LogEntry = System.DateTime.Now.ToString() + "|" + processTaskID.ToString() + "|" + processTaskName + "|" + messageType + "|" + message;
             }
             else
             {
                 LogEntry = System.DateTime.Now.ToString() + "|0|Starting|Informational|File Creation" + System.Environment.NewLine;
-                LogEntry = LogEntry + System.DateTime.Now.ToString() + "|" + ProcessTaskID.ToString() + "|" + ProcessTaskName + "|" + MessageType + "|" + Message;
+                LogEntry = LogEntry + System.DateTime.Now.ToString() + "|" + processTaskID.ToString() + "|" + processTaskName + "|" + messageType + "|" + message;
             }
 
             try

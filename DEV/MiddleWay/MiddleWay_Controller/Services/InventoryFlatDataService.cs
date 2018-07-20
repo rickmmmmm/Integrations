@@ -126,15 +126,15 @@ namespace MiddleWay_Controller.Services
 
         #endregion Add Methods
 
-        #region Update Methods
+        #region Change Methods
 
-        public bool Change(InventoryFlatDataModel inventoryFlatData)
+        public bool Edit(InventoryFlatDataModel inventoryFlatModel)
         {
             try
             {
                 var processUid = _processesService.GetProcessUid();
-                inventoryFlatData.ProcessUid = processUid;
-                return _inventoryFlatDataRepository.Update(inventoryFlatData);
+                inventoryFlatModel.ProcessUid = processUid;
+                return _inventoryFlatDataRepository.Update(inventoryFlatModel);
             }
             catch
             {
@@ -142,7 +142,14 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        #endregion Update Methods
+        public bool EditRange(List<InventoryFlatDataModel> inventoryFlatData)
+        {
+            var processUid = _processesService.GetProcessUid();
+            inventoryFlatData.ForEach(x => x.ProcessUid = processUid);
+            return _inventoryFlatDataRepository.UpdateRange(inventoryFlatData);
+        }
+
+        #endregion Change Methods
 
         #region Delete Methods
 

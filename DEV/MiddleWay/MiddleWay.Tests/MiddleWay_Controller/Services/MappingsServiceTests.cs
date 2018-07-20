@@ -53,7 +53,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             data.TryAdd("Site_Name", "001 - Site");
             data.TryAdd("LocationId", "");
             data.TryAdd("LocationName", "Room: Maintenance Room");
-            //data.TryAdd("LocationType", "undefined");
+            data.TryAdd("LocationType", "undefined");
             data.TryAdd("StatusId", "");
             data.TryAdd("Status", "Available");
             data.TryAdd("Department", "None");
@@ -122,7 +122,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 Assert.Equal("", mappedData.EntityId);
                 Assert.Equal("Room: Maintenance Room", mappedData.EntityName);
                 Assert.Equal(0, mappedData.EntityTypeUid);
-                Assert.Equal("Room: Maintenance Room", mappedData.EntityTypeName);
+                Assert.Equal("undefined", mappedData.EntityTypeName);
                 Assert.Equal(0, mappedData.StatusId);
                 Assert.Equal("Available", mappedData.Status);
                 Assert.Equal(0, mappedData.TechDepartmentUid);
@@ -170,6 +170,149 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         }
 
         [Fact]
+        public void Map_dynamicInvalidToEtlInventory()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var mappingsRepository = SetupMockMappingsRepository();
+            var mappings = GetMappingsData(ProcessSteps.Stage);
+            var transformationService = SetupTransformationsService();
+
+            mappingsRepository.Setup(x => x.SelectMappings(clientConfiguration.Object.Client, clientConfiguration.Object.ProcessName, ProcessSteps.Stage)).Returns(mappings.ToList());
+
+            var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
+
+            #region dynamicData
+            var dynamicData = new ExpandoObject();
+            var data = dynamicData as IDictionary<string, object>;
+            data.TryAdd("Uid", 1);
+            data.TryAdd("PUid", 1);
+            data.TryAdd("Row", 1);
+            data.TryAdd("Asset", "A0");
+            data.TryAdd("TagNumber", "Tag001");
+            data.TryAdd("SerialNumber", "1234");
+            data.TryAdd("Site", "001");
+            data.TryAdd("Site_Name", "001 - Site");
+            data.TryAdd("LocationId", "");
+            data.TryAdd("LocationName", "Room: Maintenance Room");
+            data.TryAdd("LocationType", "undefined");
+            data.TryAdd("StatusId", "");
+            data.TryAdd("Status", "Available");
+            data.TryAdd("Department", "None");
+            data.TryAdd("DeptID", "0");
+            data.TryAdd("Funding", "None");
+            data.TryAdd("FundingDesc", "");
+            data.TryAdd("Price", "not a price"); //(decimal?)10.00);
+            data.TryAdd("Purchased", "");
+            data.TryAdd("Expiration", "");
+            data.TryAdd("Notes", "New Broom");
+            data.TryAdd("PO", "");
+            data.TryAdd("Line", null);
+            data.TryAdd("Vendor", "Broom's R Us");
+            data.TryAdd("AccountNumber", "");
+            data.TryAdd("Parent", "");
+            data.TryAdd("Product", "Broom");
+            data.TryAdd("ProductDesc", "Wooden Handle Broom");
+            data.TryAdd("ProductNumber", "001");
+            data.TryAdd("ProductType", "Broom");
+            data.TryAdd("ProductTypeDesc", "Broom");
+            data.TryAdd("Model", "");
+            data.TryAdd("Manufacturer", "Broom's R Us");
+            data.TryAdd("Area", "Floor");
+            data.TryAdd("CustomValue1", "");
+            data.TryAdd("CustomLabel1", "");
+            data.TryAdd("CustomValue2", "");
+            data.TryAdd("CustomLabel2", "");
+            data.TryAdd("CustomValue3", "");
+            data.TryAdd("CustomLabel3", "");
+            data.TryAdd("CustomValue4", "");
+            data.TryAdd("CustomLabel4", "");
+            data.TryAdd("Invoice", "");
+            data.TryAdd("InvoiceDate", "");
+            #endregion dynamicData
+
+            EtlInventoryModel mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(dynamicData, ProcessSteps.Stage);
+
+            Assert.NotNull(mappedData);
+            if (mappedData != null)
+            {
+                _outputHelper.WriteLine(Utilities.ToStringObject(mappedData));
+                Assert.Equal(1, mappedData._ETL_InventoryUid);
+                Assert.Equal(1, mappedData.ProcessUid);
+                Assert.Equal(1, mappedData.RowId);
+                Assert.Equal(0, mappedData.InventoryUid);
+                Assert.Equal("A0", mappedData.AssetId);
+                Assert.Equal("Tag001", mappedData.Tag);
+                Assert.Equal("1234", mappedData.Serial);
+                Assert.Equal(0, mappedData.InventoryTypeUid);
+                Assert.Null(mappedData.InventoryTypeName);
+                Assert.Equal(0, mappedData.ItemUid);
+                Assert.Equal("Broom", mappedData.ProductName);
+                Assert.Equal("Wooden Handle Broom", mappedData.ProductDescription);
+                Assert.Equal("001", mappedData.ProductByNumber);
+                Assert.Equal(0, mappedData.ItemTypeUid);
+                Assert.Equal("Broom", mappedData.ProductTypeName);
+                Assert.Equal("Broom", mappedData.ProductTypeDescription);
+                Assert.Equal("", mappedData.ModelNumber);
+                Assert.Equal(0, mappedData.ManufacturerUid);
+                Assert.Equal("Broom's R Us", mappedData.ManufacturerName);
+                Assert.Equal(0, mappedData.AreaUid);
+                Assert.Equal("Floor", mappedData.AreaName);
+                Assert.Equal(0, mappedData.SiteUid);
+                Assert.Equal("001", mappedData.SiteId);
+                Assert.Equal("001 - Site", mappedData.SiteName);
+                Assert.Equal(0, mappedData.EntityUid);
+                Assert.Equal("", mappedData.EntityId);
+                Assert.Equal("Room: Maintenance Room", mappedData.EntityName);
+                Assert.Equal(0, mappedData.EntityTypeUid);
+                Assert.Equal("undefined", mappedData.EntityTypeName);
+                Assert.Equal(0, mappedData.StatusId);
+                Assert.Equal("Available", mappedData.Status);
+                Assert.Equal(0, mappedData.TechDepartmentUid);
+                Assert.Equal("None", mappedData.DepartmentName);
+                Assert.Equal("0", mappedData.DepartmentId);
+                Assert.Equal(0, mappedData.FundingSourceUid);
+                Assert.Equal("None", mappedData.FundingSource);
+                Assert.Equal("", mappedData.FundingSourceDescription);
+                Assert.Null(mappedData.PurchasePrice);
+                Assert.Null(mappedData.PurchaseDate);
+                Assert.Null(mappedData.ExpirationDate);
+                Assert.Equal("New Broom", mappedData.InventoryNotes);
+                Assert.Null(mappedData.ParentInventoryUid);
+                Assert.Equal("", mappedData.ParentTag);
+                Assert.Equal(0, mappedData.InventorySourceUid);
+                Assert.Null(mappedData.InventorySourceName);
+                Assert.Equal(0, mappedData.PurchaseUid);
+                Assert.Equal("", mappedData.OrderNumber);
+                Assert.Equal(0, mappedData.PurchaseItemDetailUid);
+                Assert.Equal(0, mappedData.LineNumber);
+                Assert.Null(mappedData.AccountCode);
+                Assert.Equal(0, mappedData.VendorUid);
+                Assert.Equal("Broom's R Us", mappedData.VendorName);
+                Assert.Equal("", mappedData.VendorAccountNumber);
+                Assert.Equal(0, mappedData.PurchaseItemShipmentUid);
+                Assert.Equal("", mappedData.InvoiceNumber);
+                Assert.Null(mappedData.InvoiceDate);
+                Assert.Null(mappedData.InventoryExt1Uid);
+                Assert.Null(mappedData.InventoryMeta1Uid);
+                Assert.Equal("", mappedData.CustomField1Label);
+                Assert.Equal("", mappedData.CustomField1Value);
+                Assert.Null(mappedData.InventoryExt2Uid);
+                Assert.Null(mappedData.InventoryMeta2Uid);
+                Assert.Equal("", mappedData.CustomField2Label);
+                Assert.Equal("", mappedData.CustomField2Value);
+                Assert.Null(mappedData.InventoryExt3Uid);
+                Assert.Null(mappedData.InventoryMeta3Uid);
+                Assert.Equal("", mappedData.CustomField3Label);
+                Assert.Equal("", mappedData.CustomField3Value);
+                Assert.Null(mappedData.InventoryExt4Uid);
+                Assert.Null(mappedData.InventoryMeta4Uid);
+                Assert.Equal("", mappedData.CustomField4Label);
+                Assert.Equal("", mappedData.CustomField4Value);
+            }
+        }
+
+
+        [Fact]
         public void Map_InventoryFlatToDynamic()
         {
             var clientConfiguration = SetupMockClientConfiguration();
@@ -190,7 +333,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 SiteId = "001",
                 SiteName = "001 - Site",
                 Location = "Room: Maintenance Room",
-                //LocationType = "Room: Maintenance Room",
+                LocationType = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "None",
                 DepartmentId = "0",
@@ -297,7 +440,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 SiteId = "001",
                 SiteName = "001 - Site",
                 Location = "Room: Maintenance Room",
-                //LocationType = "Room: Maintenance Room",
+                LocationType = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "None",
                 DepartmentId = "0",
@@ -512,7 +655,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "LocationId", DestinationColumn = "EntityId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "LocationName", DestinationColumn = "EntityName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "ETUID", DestinationColumn = "EntityTypeUid", Enabled = true },
-                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "LocationName", DestinationColumn = "EntityTypeName", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "LocationType", DestinationColumn = "EntityTypeName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "", DestinationColumn = "StatusId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "Status", DestinationColumn = "Status", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "", DestinationColumn = "TechDepartmentUid", Enabled = true },

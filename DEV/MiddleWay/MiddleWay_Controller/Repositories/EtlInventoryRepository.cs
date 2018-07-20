@@ -666,93 +666,100 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var etlInventoryToInsert = new EtlInventory
+                if (etlInventoryData == null)
                 {
-                    EtlInventoryUid = 0,
-                    ProcessUid = etlInventoryData.ProcessUid,
-                    RowId = etlInventoryData.RowId,
-                    InventoryUid = etlInventoryData.InventoryUid,
-                    AssetId = etlInventoryData.AssetId,
-                    Tag = etlInventoryData.Tag,
-                    Serial = etlInventoryData.Serial,
-                    InventoryTypeUid = etlInventoryData.InventoryTypeUid,
-                    InventoryTypeName = etlInventoryData.InventoryTypeName,
-                    ItemUid = etlInventoryData.ItemUid,
-                    ProductName = etlInventoryData.ProductName,
-                    ProductDescription = etlInventoryData.ProductDescription,
-                    ProductByNumber = etlInventoryData.ProductByNumber,
-                    ItemTypeUid = etlInventoryData.ItemTypeUid,
-                    ProductTypeName = etlInventoryData.ProductTypeName,
-                    ProductTypeDescription = etlInventoryData.ProductTypeDescription,
-                    ModelNumber = etlInventoryData.ModelNumber,
-                    ManufacturerUid = etlInventoryData.ManufacturerUid,
-                    ManufacturerName = etlInventoryData.ManufacturerName,
-                    AreaUid = etlInventoryData.AreaUid,
-                    AreaName = etlInventoryData.AreaName,
-                    SiteUid = etlInventoryData.SiteUid,
-                    SiteId = etlInventoryData.SiteId,
-                    SiteName = etlInventoryData.SiteName,
-                    EntityUid = etlInventoryData.EntityUid,
-                    EntityId = etlInventoryData.EntityId,
-                    EntityName = etlInventoryData.EntityName,
-                    EntityTypeUid = etlInventoryData.EntityTypeUid,
-                    EntityTypeName = etlInventoryData.EntityTypeName,
-                    StatusId = etlInventoryData.StatusId,
-                    Status = etlInventoryData.Status,
-                    TechDepartmentUid = etlInventoryData.TechDepartmentUid,
-                    DepartmentName = etlInventoryData.DepartmentName,
-                    DepartmentId = etlInventoryData.DepartmentId,
-                    FundingSourceUid = etlInventoryData.FundingSourceUid,
-                    FundingSource = etlInventoryData.FundingSource,
-                    FundingSourceDescription = etlInventoryData.FundingSourceDescription,
-                    PurchasePrice = etlInventoryData.PurchasePrice,
-                    PurchaseDate = etlInventoryData.PurchaseDate,
-                    ExpirationDate = etlInventoryData.ExpirationDate,
-                    InventoryNotes = etlInventoryData.InventoryNotes,
-                    ParentInventoryUid = etlInventoryData.ParentInventoryUid,
-                    ParentTag = etlInventoryData.ParentTag,
-                    InventorySourceUid = etlInventoryData.InventorySourceUid,
-                    InventorySourceName = etlInventoryData.InventorySourceName,
-                    PurchaseUid = etlInventoryData.PurchaseUid,
-                    OrderNumber = etlInventoryData.OrderNumber,
-                    PurchaseItemDetailUid = etlInventoryData.PurchaseItemDetailUid,
-                    LineNumber = etlInventoryData.LineNumber,
-                    AccountCode = etlInventoryData.AccountCode,
-                    VendorUid = etlInventoryData.VendorUid,
-                    VendorName = etlInventoryData.VendorName,
-                    VendorAccountNumber = etlInventoryData.VendorAccountNumber,
-                    PurchaseItemShipmentUid = etlInventoryData.PurchaseItemShipmentUid,
-                    InvoiceNumber = etlInventoryData.InvoiceNumber,
-                    InvoiceDate = etlInventoryData.InvoiceDate,
-                    InventoryExt1Uid = etlInventoryData.InventoryExt1Uid,
-                    InventoryMeta1Uid = etlInventoryData.InventoryMeta1Uid,
-                    CustomField1Label = etlInventoryData.CustomField1Label,
-                    CustomField1Value = etlInventoryData.CustomField1Value,
-                    InventoryExt2Uid = etlInventoryData.InventoryExt2Uid,
-                    InventoryMeta2Uid = etlInventoryData.InventoryMeta2Uid,
-                    CustomField2Label = etlInventoryData.CustomField2Label,
-                    CustomField2Value = etlInventoryData.CustomField2Value,
-                    InventoryExt3Uid = etlInventoryData.InventoryExt3Uid,
-                    InventoryMeta3Uid = etlInventoryData.InventoryMeta3Uid,
-                    CustomField3Label = etlInventoryData.CustomField3Label,
-                    CustomField3Value = etlInventoryData.CustomField3Value,
-                    InventoryExt4Uid = etlInventoryData.InventoryExt4Uid,
-                    InventoryMeta4Uid = etlInventoryData.InventoryMeta4Uid,
-                    CustomField4Label = etlInventoryData.CustomField4Label,
-                    CustomField4Value = etlInventoryData.CustomField4Value,
-                    Rejected = etlInventoryData.Rejected,
-                    RejectedNotes = etlInventoryData.RejectedNotes
-                };
-
-                _context.EtlInventory.Add(etlInventoryToInsert);
-                var result = _context.SaveChanges();
-                if (result == 1)
-                {
-                    return etlInventoryToInsert.EtlInventoryUid;
+                    return -1;
                 }
                 else
                 {
-                    return -1;
+                    var etlInventoryToInsert = new EtlInventory
+                    {
+                        EtlInventoryUid = 0,
+                        ProcessUid = etlInventoryData.ProcessUid,
+                        RowId = etlInventoryData.RowId,
+                        InventoryUid = etlInventoryData.InventoryUid,
+                        AssetId = etlInventoryData.AssetId,
+                        Tag = etlInventoryData.Tag,
+                        Serial = etlInventoryData.Serial,
+                        InventoryTypeUid = etlInventoryData.InventoryTypeUid,
+                        InventoryTypeName = etlInventoryData.InventoryTypeName,
+                        ItemUid = etlInventoryData.ItemUid,
+                        ProductName = etlInventoryData.ProductName,
+                        ProductDescription = etlInventoryData.ProductDescription,
+                        ProductByNumber = etlInventoryData.ProductByNumber,
+                        ItemTypeUid = etlInventoryData.ItemTypeUid,
+                        ProductTypeName = etlInventoryData.ProductTypeName,
+                        ProductTypeDescription = etlInventoryData.ProductTypeDescription,
+                        ModelNumber = etlInventoryData.ModelNumber,
+                        ManufacturerUid = etlInventoryData.ManufacturerUid,
+                        ManufacturerName = etlInventoryData.ManufacturerName,
+                        AreaUid = etlInventoryData.AreaUid,
+                        AreaName = etlInventoryData.AreaName,
+                        SiteUid = etlInventoryData.SiteUid,
+                        SiteId = etlInventoryData.SiteId,
+                        SiteName = etlInventoryData.SiteName,
+                        EntityUid = etlInventoryData.EntityUid,
+                        EntityId = etlInventoryData.EntityId,
+                        EntityName = etlInventoryData.EntityName,
+                        EntityTypeUid = etlInventoryData.EntityTypeUid,
+                        EntityTypeName = etlInventoryData.EntityTypeName,
+                        StatusId = etlInventoryData.StatusId,
+                        Status = etlInventoryData.Status,
+                        TechDepartmentUid = etlInventoryData.TechDepartmentUid,
+                        DepartmentName = etlInventoryData.DepartmentName,
+                        DepartmentId = etlInventoryData.DepartmentId,
+                        FundingSourceUid = etlInventoryData.FundingSourceUid,
+                        FundingSource = etlInventoryData.FundingSource,
+                        FundingSourceDescription = etlInventoryData.FundingSourceDescription,
+                        PurchasePrice = etlInventoryData.PurchasePrice,
+                        PurchaseDate = etlInventoryData.PurchaseDate,
+                        ExpirationDate = etlInventoryData.ExpirationDate,
+                        InventoryNotes = etlInventoryData.InventoryNotes,
+                        ParentInventoryUid = etlInventoryData.ParentInventoryUid,
+                        ParentTag = etlInventoryData.ParentTag,
+                        InventorySourceUid = etlInventoryData.InventorySourceUid,
+                        InventorySourceName = etlInventoryData.InventorySourceName,
+                        PurchaseUid = etlInventoryData.PurchaseUid,
+                        OrderNumber = etlInventoryData.OrderNumber,
+                        PurchaseItemDetailUid = etlInventoryData.PurchaseItemDetailUid,
+                        LineNumber = etlInventoryData.LineNumber,
+                        AccountCode = etlInventoryData.AccountCode,
+                        VendorUid = etlInventoryData.VendorUid,
+                        VendorName = etlInventoryData.VendorName,
+                        VendorAccountNumber = etlInventoryData.VendorAccountNumber,
+                        PurchaseItemShipmentUid = etlInventoryData.PurchaseItemShipmentUid,
+                        InvoiceNumber = etlInventoryData.InvoiceNumber,
+                        InvoiceDate = etlInventoryData.InvoiceDate,
+                        InventoryExt1Uid = etlInventoryData.InventoryExt1Uid,
+                        InventoryMeta1Uid = etlInventoryData.InventoryMeta1Uid,
+                        CustomField1Label = etlInventoryData.CustomField1Label,
+                        CustomField1Value = etlInventoryData.CustomField1Value,
+                        InventoryExt2Uid = etlInventoryData.InventoryExt2Uid,
+                        InventoryMeta2Uid = etlInventoryData.InventoryMeta2Uid,
+                        CustomField2Label = etlInventoryData.CustomField2Label,
+                        CustomField2Value = etlInventoryData.CustomField2Value,
+                        InventoryExt3Uid = etlInventoryData.InventoryExt3Uid,
+                        InventoryMeta3Uid = etlInventoryData.InventoryMeta3Uid,
+                        CustomField3Label = etlInventoryData.CustomField3Label,
+                        CustomField3Value = etlInventoryData.CustomField3Value,
+                        InventoryExt4Uid = etlInventoryData.InventoryExt4Uid,
+                        InventoryMeta4Uid = etlInventoryData.InventoryMeta4Uid,
+                        CustomField4Label = etlInventoryData.CustomField4Label,
+                        CustomField4Value = etlInventoryData.CustomField4Value,
+                        Rejected = etlInventoryData.Rejected,
+                        RejectedNotes = etlInventoryData.RejectedNotes
+                    };
+
+                    _context.EtlInventory.Add(etlInventoryToInsert);
+                    var result = _context.SaveChanges();
+                    if (result == 1)
+                    {
+                        return etlInventoryToInsert.EtlInventoryUid;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
                 }
             }
             catch
@@ -765,89 +772,95 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var dataToInsert = (from data in etlInventoryData
-                                    select new EtlInventory
-                                    {
-                                        EtlInventoryUid = 0,
-                                        ProcessUid = data.ProcessUid,
-                                        RowId = data.RowId,
-                                        InventoryUid = data.InventoryUid,
-                                        AssetId = data.AssetId,
-                                        Tag = data.Tag,
-                                        Serial = data.Serial,
-                                        InventoryTypeUid = data.InventoryTypeUid,
-                                        InventoryTypeName = data.InventoryTypeName,
-                                        ItemUid = data.ItemUid,
-                                        ProductName = data.ProductName,
-                                        ProductDescription = data.ProductDescription,
-                                        ProductByNumber = data.ProductByNumber,
-                                        ItemTypeUid = data.ItemTypeUid,
-                                        ProductTypeName = data.ProductTypeName,
-                                        ProductTypeDescription = data.ProductTypeDescription,
-                                        ModelNumber = data.ModelNumber,
-                                        ManufacturerUid = data.ManufacturerUid,
-                                        ManufacturerName = data.ManufacturerName,
-                                        AreaUid = data.AreaUid,
-                                        AreaName = data.AreaName,
-                                        SiteUid = data.SiteUid,
-                                        SiteId = data.SiteId,
-                                        SiteName = data.SiteName,
-                                        EntityUid = data.EntityUid,
-                                        EntityId = data.EntityId,
-                                        EntityName = data.EntityName,
-                                        EntityTypeUid = data.EntityTypeUid,
-                                        EntityTypeName = data.EntityTypeName,
-                                        StatusId = data.StatusId,
-                                        Status = data.Status,
-                                        TechDepartmentUid = data.TechDepartmentUid,
-                                        DepartmentName = data.DepartmentName,
-                                        DepartmentId = data.DepartmentId,
-                                        FundingSourceUid = data.FundingSourceUid,
-                                        FundingSource = data.FundingSource,
-                                        FundingSourceDescription = data.FundingSourceDescription,
-                                        PurchasePrice = data.PurchasePrice,
-                                        PurchaseDate = data.PurchaseDate,
-                                        ExpirationDate = data.ExpirationDate,
-                                        InventoryNotes = data.InventoryNotes,
-                                        ParentInventoryUid = data.ParentInventoryUid,
-                                        ParentTag = data.ParentTag,
-                                        InventorySourceUid = data.InventorySourceUid,
-                                        InventorySourceName = data.InventorySourceName,
-                                        PurchaseUid = data.PurchaseUid,
-                                        OrderNumber = data.OrderNumber,
-                                        PurchaseItemDetailUid = data.PurchaseItemDetailUid,
-                                        LineNumber = data.LineNumber,
-                                        AccountCode = data.AccountCode,
-                                        VendorUid = data.VendorUid,
-                                        VendorName = data.VendorName,
-                                        VendorAccountNumber = data.VendorAccountNumber,
-                                        PurchaseItemShipmentUid = data.PurchaseItemShipmentUid,
-                                        InvoiceNumber = data.InvoiceNumber,
-                                        InvoiceDate = data.InvoiceDate,
-                                        InventoryExt1Uid = data.InventoryExt1Uid,
-                                        InventoryMeta1Uid = data.InventoryMeta1Uid,
-                                        CustomField1Label = data.CustomField1Label,
-                                        CustomField1Value = data.CustomField1Value,
-                                        InventoryExt2Uid = data.InventoryExt2Uid,
-                                        InventoryMeta2Uid = data.InventoryMeta2Uid,
-                                        CustomField2Label = data.CustomField2Label,
-                                        CustomField2Value = data.CustomField2Value,
-                                        InventoryExt3Uid = data.InventoryExt3Uid,
-                                        InventoryMeta3Uid = data.InventoryMeta3Uid,
-                                        CustomField3Label = data.CustomField3Label,
-                                        CustomField3Value = data.CustomField3Value,
-                                        InventoryExt4Uid = data.InventoryExt4Uid,
-                                        InventoryMeta4Uid = data.InventoryMeta4Uid,
-                                        CustomField4Label = data.CustomField4Label,
-                                        CustomField4Value = data.CustomField4Value,
-                                        Rejected = data.Rejected,
-                                        RejectedNotes = data.RejectedNotes
-                                    });
+                if (etlInventoryData == null || etlInventoryData.Count == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    var dataToInsert = (from data in etlInventoryData
+                                        select new EtlInventory
+                                        {
+                                            EtlInventoryUid = 0,
+                                            ProcessUid = data.ProcessUid,
+                                            RowId = data.RowId,
+                                            InventoryUid = data.InventoryUid,
+                                            AssetId = data.AssetId,
+                                            Tag = data.Tag,
+                                            Serial = data.Serial,
+                                            InventoryTypeUid = data.InventoryTypeUid,
+                                            InventoryTypeName = data.InventoryTypeName,
+                                            ItemUid = data.ItemUid,
+                                            ProductName = data.ProductName,
+                                            ProductDescription = data.ProductDescription,
+                                            ProductByNumber = data.ProductByNumber,
+                                            ItemTypeUid = data.ItemTypeUid,
+                                            ProductTypeName = data.ProductTypeName,
+                                            ProductTypeDescription = data.ProductTypeDescription,
+                                            ModelNumber = data.ModelNumber,
+                                            ManufacturerUid = data.ManufacturerUid,
+                                            ManufacturerName = data.ManufacturerName,
+                                            AreaUid = data.AreaUid,
+                                            AreaName = data.AreaName,
+                                            SiteUid = data.SiteUid,
+                                            SiteId = data.SiteId,
+                                            SiteName = data.SiteName,
+                                            EntityUid = data.EntityUid,
+                                            EntityId = data.EntityId,
+                                            EntityName = data.EntityName,
+                                            EntityTypeUid = data.EntityTypeUid,
+                                            EntityTypeName = data.EntityTypeName,
+                                            StatusId = data.StatusId,
+                                            Status = data.Status,
+                                            TechDepartmentUid = data.TechDepartmentUid,
+                                            DepartmentName = data.DepartmentName,
+                                            DepartmentId = data.DepartmentId,
+                                            FundingSourceUid = data.FundingSourceUid,
+                                            FundingSource = data.FundingSource,
+                                            FundingSourceDescription = data.FundingSourceDescription,
+                                            PurchasePrice = data.PurchasePrice,
+                                            PurchaseDate = data.PurchaseDate,
+                                            ExpirationDate = data.ExpirationDate,
+                                            InventoryNotes = data.InventoryNotes,
+                                            ParentInventoryUid = data.ParentInventoryUid,
+                                            ParentTag = data.ParentTag,
+                                            InventorySourceUid = data.InventorySourceUid,
+                                            InventorySourceName = data.InventorySourceName,
+                                            PurchaseUid = data.PurchaseUid,
+                                            OrderNumber = data.OrderNumber,
+                                            PurchaseItemDetailUid = data.PurchaseItemDetailUid,
+                                            LineNumber = data.LineNumber,
+                                            AccountCode = data.AccountCode,
+                                            VendorUid = data.VendorUid,
+                                            VendorName = data.VendorName,
+                                            VendorAccountNumber = data.VendorAccountNumber,
+                                            PurchaseItemShipmentUid = data.PurchaseItemShipmentUid,
+                                            InvoiceNumber = data.InvoiceNumber,
+                                            InvoiceDate = data.InvoiceDate,
+                                            InventoryExt1Uid = data.InventoryExt1Uid,
+                                            InventoryMeta1Uid = data.InventoryMeta1Uid,
+                                            CustomField1Label = data.CustomField1Label,
+                                            CustomField1Value = data.CustomField1Value,
+                                            InventoryExt2Uid = data.InventoryExt2Uid,
+                                            InventoryMeta2Uid = data.InventoryMeta2Uid,
+                                            CustomField2Label = data.CustomField2Label,
+                                            CustomField2Value = data.CustomField2Value,
+                                            InventoryExt3Uid = data.InventoryExt3Uid,
+                                            InventoryMeta3Uid = data.InventoryMeta3Uid,
+                                            CustomField3Label = data.CustomField3Label,
+                                            CustomField3Value = data.CustomField3Value,
+                                            InventoryExt4Uid = data.InventoryExt4Uid,
+                                            InventoryMeta4Uid = data.InventoryMeta4Uid,
+                                            CustomField4Label = data.CustomField4Label,
+                                            CustomField4Value = data.CustomField4Value,
+                                            Rejected = data.Rejected,
+                                            RejectedNotes = data.RejectedNotes
+                                        });
 
-                _context.EtlInventory.AddRange(dataToInsert);
-                var result = _context.SaveChanges();
-                return (result > 0);
-
+                    _context.EtlInventory.AddRange(dataToInsert);
+                    var result = _context.SaveChanges();
+                    return (result > 0);
+                }
             }
             catch
             {
@@ -859,92 +872,201 @@ namespace MiddleWay_Controller.Repositories
 
         #region Update Methods
 
-        public bool Update(EtlInventoryModel data)
+        public bool Update(EtlInventoryModel etlInventoryData)
         {
             try
             {
-                var dataToUpdate = (from etlInventory in _context.EtlInventory
-                                    where etlInventory.EtlInventoryUid == data._ETL_InventoryUid
-                                    select etlInventory).FirstOrDefault();
+                if (etlInventoryData == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    var etlInventoryToUpdate = (from etlInventory in _context.EtlInventory
+                                                where etlInventory.EtlInventoryUid == etlInventoryData._ETL_InventoryUid
+                                                select etlInventory).FirstOrDefault();
 
-                //dataToUpdate. = etlInventoryData.;
-                dataToUpdate.ProcessUid = data.ProcessUid;
-                dataToUpdate.InventoryUid = data.InventoryUid;
-                dataToUpdate.RowId = data.RowId;
-                dataToUpdate.AssetId = data.AssetId;
-                dataToUpdate.Tag = data.Tag;
-                dataToUpdate.Serial = data.Serial;
-                dataToUpdate.InventoryTypeUid = data.InventoryTypeUid;
-                dataToUpdate.InventoryTypeName = data.InventoryTypeName;
-                dataToUpdate.ItemUid = data.ItemUid;
-                dataToUpdate.ProductName = data.ProductName;
-                dataToUpdate.ProductDescription = data.ProductDescription;
-                dataToUpdate.ProductByNumber = data.ProductByNumber;
-                dataToUpdate.ItemTypeUid = data.ItemTypeUid;
-                dataToUpdate.ProductTypeName = data.ProductTypeName;
-                dataToUpdate.ProductTypeDescription = data.ProductTypeDescription;
-                dataToUpdate.ModelNumber = data.ModelNumber;
-                dataToUpdate.ManufacturerUid = data.ManufacturerUid;
-                dataToUpdate.ManufacturerName = data.ManufacturerName;
-                dataToUpdate.AreaUid = data.AreaUid;
-                dataToUpdate.AreaName = data.AreaName;
-                dataToUpdate.SiteUid = data.SiteUid;
-                dataToUpdate.SiteId = data.SiteId;
-                dataToUpdate.SiteName = data.SiteName;
-                dataToUpdate.EntityUid = data.EntityUid;
-                dataToUpdate.EntityId = data.EntityId;
-                dataToUpdate.EntityName = data.EntityName;
-                dataToUpdate.EntityTypeUid = data.EntityTypeUid;
-                dataToUpdate.EntityTypeName = data.EntityTypeName;
-                dataToUpdate.StatusId = data.StatusId;
-                dataToUpdate.Status = data.Status;
-                dataToUpdate.TechDepartmentUid = data.TechDepartmentUid;
-                dataToUpdate.DepartmentName = data.DepartmentName;
-                dataToUpdate.DepartmentId = data.DepartmentId;
-                dataToUpdate.FundingSourceUid = data.FundingSourceUid;
-                dataToUpdate.FundingSource = data.FundingSource;
-                dataToUpdate.FundingSourceDescription = data.FundingSourceDescription;
-                dataToUpdate.PurchasePrice = data.PurchasePrice;
-                dataToUpdate.PurchaseDate = data.PurchaseDate;
-                dataToUpdate.ExpirationDate = data.ExpirationDate;
-                dataToUpdate.InventoryNotes = data.InventoryNotes;
-                dataToUpdate.ParentInventoryUid = data.ParentInventoryUid;
-                dataToUpdate.ParentTag = data.ParentTag;
-                dataToUpdate.InventorySourceUid = data.InventorySourceUid;
-                dataToUpdate.InventorySourceName = data.InventorySourceName;
-                dataToUpdate.PurchaseUid = data.PurchaseUid;
-                dataToUpdate.OrderNumber = data.OrderNumber;
-                dataToUpdate.PurchaseItemDetailUid = data.PurchaseItemDetailUid;
-                dataToUpdate.LineNumber = data.LineNumber;
-                dataToUpdate.AccountCode = data.AccountCode;
-                dataToUpdate.VendorUid = data.VendorUid;
-                dataToUpdate.VendorName = data.VendorName;
-                dataToUpdate.VendorAccountNumber = data.VendorAccountNumber;
-                dataToUpdate.PurchaseItemShipmentUid = data.PurchaseItemShipmentUid;
-                dataToUpdate.InvoiceNumber = data.InvoiceNumber;
-                dataToUpdate.InvoiceDate = data.InvoiceDate;
-                dataToUpdate.InventoryExt1Uid = data.InventoryExt1Uid;
-                dataToUpdate.InventoryMeta1Uid = data.InventoryMeta1Uid;
-                dataToUpdate.CustomField1Label = data.CustomField1Label;
-                dataToUpdate.CustomField1Value = data.CustomField1Value;
-                dataToUpdate.InventoryExt2Uid = data.InventoryExt2Uid;
-                dataToUpdate.InventoryMeta2Uid = data.InventoryMeta2Uid;
-                dataToUpdate.CustomField2Label = data.CustomField2Label;
-                dataToUpdate.CustomField2Value = data.CustomField2Value;
-                dataToUpdate.InventoryExt3Uid = data.InventoryExt3Uid;
-                dataToUpdate.InventoryMeta3Uid = data.InventoryMeta3Uid;
-                dataToUpdate.CustomField3Label = data.CustomField3Label;
-                dataToUpdate.CustomField3Value = data.CustomField3Value;
-                dataToUpdate.InventoryExt4Uid = data.InventoryExt4Uid;
-                dataToUpdate.InventoryMeta4Uid = data.InventoryMeta4Uid;
-                dataToUpdate.CustomField4Label = data.CustomField4Label;
-                dataToUpdate.CustomField4Value = data.CustomField4Value;
-                dataToUpdate.Rejected = data.Rejected;
-                dataToUpdate.RejectedNotes = data.RejectedNotes;
+                    etlInventoryToUpdate.ProcessUid = etlInventoryData.ProcessUid;
+                    etlInventoryToUpdate.InventoryUid = etlInventoryData.InventoryUid;
+                    etlInventoryToUpdate.RowId = etlInventoryData.RowId;
+                    etlInventoryToUpdate.AssetId = etlInventoryData.AssetId;
+                    etlInventoryToUpdate.Tag = etlInventoryData.Tag;
+                    etlInventoryToUpdate.Serial = etlInventoryData.Serial;
+                    etlInventoryToUpdate.InventoryTypeUid = etlInventoryData.InventoryTypeUid;
+                    etlInventoryToUpdate.InventoryTypeName = etlInventoryData.InventoryTypeName;
+                    etlInventoryToUpdate.ItemUid = etlInventoryData.ItemUid;
+                    etlInventoryToUpdate.ProductName = etlInventoryData.ProductName;
+                    etlInventoryToUpdate.ProductDescription = etlInventoryData.ProductDescription;
+                    etlInventoryToUpdate.ProductByNumber = etlInventoryData.ProductByNumber;
+                    etlInventoryToUpdate.ItemTypeUid = etlInventoryData.ItemTypeUid;
+                    etlInventoryToUpdate.ProductTypeName = etlInventoryData.ProductTypeName;
+                    etlInventoryToUpdate.ProductTypeDescription = etlInventoryData.ProductTypeDescription;
+                    etlInventoryToUpdate.ModelNumber = etlInventoryData.ModelNumber;
+                    etlInventoryToUpdate.ManufacturerUid = etlInventoryData.ManufacturerUid;
+                    etlInventoryToUpdate.ManufacturerName = etlInventoryData.ManufacturerName;
+                    etlInventoryToUpdate.AreaUid = etlInventoryData.AreaUid;
+                    etlInventoryToUpdate.AreaName = etlInventoryData.AreaName;
+                    etlInventoryToUpdate.SiteUid = etlInventoryData.SiteUid;
+                    etlInventoryToUpdate.SiteId = etlInventoryData.SiteId;
+                    etlInventoryToUpdate.SiteName = etlInventoryData.SiteName;
+                    etlInventoryToUpdate.EntityUid = etlInventoryData.EntityUid;
+                    etlInventoryToUpdate.EntityId = etlInventoryData.EntityId;
+                    etlInventoryToUpdate.EntityName = etlInventoryData.EntityName;
+                    etlInventoryToUpdate.EntityTypeUid = etlInventoryData.EntityTypeUid;
+                    etlInventoryToUpdate.EntityTypeName = etlInventoryData.EntityTypeName;
+                    etlInventoryToUpdate.StatusId = etlInventoryData.StatusId;
+                    etlInventoryToUpdate.Status = etlInventoryData.Status;
+                    etlInventoryToUpdate.TechDepartmentUid = etlInventoryData.TechDepartmentUid;
+                    etlInventoryToUpdate.DepartmentName = etlInventoryData.DepartmentName;
+                    etlInventoryToUpdate.DepartmentId = etlInventoryData.DepartmentId;
+                    etlInventoryToUpdate.FundingSourceUid = etlInventoryData.FundingSourceUid;
+                    etlInventoryToUpdate.FundingSource = etlInventoryData.FundingSource;
+                    etlInventoryToUpdate.FundingSourceDescription = etlInventoryData.FundingSourceDescription;
+                    etlInventoryToUpdate.PurchasePrice = etlInventoryData.PurchasePrice;
+                    etlInventoryToUpdate.PurchaseDate = etlInventoryData.PurchaseDate;
+                    etlInventoryToUpdate.ExpirationDate = etlInventoryData.ExpirationDate;
+                    etlInventoryToUpdate.InventoryNotes = etlInventoryData.InventoryNotes;
+                    etlInventoryToUpdate.ParentInventoryUid = etlInventoryData.ParentInventoryUid;
+                    etlInventoryToUpdate.ParentTag = etlInventoryData.ParentTag;
+                    etlInventoryToUpdate.InventorySourceUid = etlInventoryData.InventorySourceUid;
+                    etlInventoryToUpdate.InventorySourceName = etlInventoryData.InventorySourceName;
+                    etlInventoryToUpdate.PurchaseUid = etlInventoryData.PurchaseUid;
+                    etlInventoryToUpdate.OrderNumber = etlInventoryData.OrderNumber;
+                    etlInventoryToUpdate.PurchaseItemDetailUid = etlInventoryData.PurchaseItemDetailUid;
+                    etlInventoryToUpdate.LineNumber = etlInventoryData.LineNumber;
+                    etlInventoryToUpdate.AccountCode = etlInventoryData.AccountCode;
+                    etlInventoryToUpdate.VendorUid = etlInventoryData.VendorUid;
+                    etlInventoryToUpdate.VendorName = etlInventoryData.VendorName;
+                    etlInventoryToUpdate.VendorAccountNumber = etlInventoryData.VendorAccountNumber;
+                    etlInventoryToUpdate.PurchaseItemShipmentUid = etlInventoryData.PurchaseItemShipmentUid;
+                    etlInventoryToUpdate.InvoiceNumber = etlInventoryData.InvoiceNumber;
+                    etlInventoryToUpdate.InvoiceDate = etlInventoryData.InvoiceDate;
+                    etlInventoryToUpdate.InventoryExt1Uid = etlInventoryData.InventoryExt1Uid;
+                    etlInventoryToUpdate.InventoryMeta1Uid = etlInventoryData.InventoryMeta1Uid;
+                    etlInventoryToUpdate.CustomField1Label = etlInventoryData.CustomField1Label;
+                    etlInventoryToUpdate.CustomField1Value = etlInventoryData.CustomField1Value;
+                    etlInventoryToUpdate.InventoryExt2Uid = etlInventoryData.InventoryExt2Uid;
+                    etlInventoryToUpdate.InventoryMeta2Uid = etlInventoryData.InventoryMeta2Uid;
+                    etlInventoryToUpdate.CustomField2Label = etlInventoryData.CustomField2Label;
+                    etlInventoryToUpdate.CustomField2Value = etlInventoryData.CustomField2Value;
+                    etlInventoryToUpdate.InventoryExt3Uid = etlInventoryData.InventoryExt3Uid;
+                    etlInventoryToUpdate.InventoryMeta3Uid = etlInventoryData.InventoryMeta3Uid;
+                    etlInventoryToUpdate.CustomField3Label = etlInventoryData.CustomField3Label;
+                    etlInventoryToUpdate.CustomField3Value = etlInventoryData.CustomField3Value;
+                    etlInventoryToUpdate.InventoryExt4Uid = etlInventoryData.InventoryExt4Uid;
+                    etlInventoryToUpdate.InventoryMeta4Uid = etlInventoryData.InventoryMeta4Uid;
+                    etlInventoryToUpdate.CustomField4Label = etlInventoryData.CustomField4Label;
+                    etlInventoryToUpdate.CustomField4Value = etlInventoryData.CustomField4Value;
+                    etlInventoryToUpdate.Rejected = etlInventoryData.Rejected;
+                    etlInventoryToUpdate.RejectedNotes = etlInventoryData.RejectedNotes;
 
-                _context.EtlInventory.Update(dataToUpdate);
-                var result = _context.SaveChanges();
-                return result == 1;
+                    _context.EtlInventory.Update(etlInventoryToUpdate);
+                    var result = _context.SaveChanges();
+                    return result == 1;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool UpdateRange(List<EtlInventoryModel> etlInventoryData)
+        {
+            try
+            {
+                if (etlInventoryData == null || etlInventoryData.Count == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    var etlInventoryDataToUpdate = (from etlInventory in _context.EtlInventory
+                                                    where (etlInventoryData.Select(x => x._ETL_InventoryUid)).Contains(etlInventory.EtlInventoryUid)
+                                                    select etlInventory).ToList();
+
+                    foreach (var item in etlInventoryDataToUpdate)
+                    {
+
+                        var sourceEtlInventoryData = etlInventoryData.Where(x => x._ETL_InventoryUid == item.EtlInventoryUid).FirstOrDefault();
+
+                        item.InventoryUid = sourceEtlInventoryData.InventoryUid;
+                        item.AssetId = sourceEtlInventoryData.AssetId;
+                        item.Tag = sourceEtlInventoryData.Tag;
+                        item.Serial = sourceEtlInventoryData.Serial;
+                        item.InventoryTypeUid = sourceEtlInventoryData.InventoryTypeUid;
+                        item.InventoryTypeName = sourceEtlInventoryData.InventoryTypeName;
+                        item.ItemUid = sourceEtlInventoryData.ItemUid;
+                        item.ProductName = sourceEtlInventoryData.ProductName;
+                        item.ProductDescription = sourceEtlInventoryData.ProductDescription;
+                        item.ProductByNumber = sourceEtlInventoryData.ProductByNumber;
+                        item.ItemTypeUid = sourceEtlInventoryData.ItemTypeUid;
+                        item.ProductTypeName = sourceEtlInventoryData.ProductTypeName;
+                        item.ProductTypeDescription = sourceEtlInventoryData.ProductTypeDescription;
+                        item.ModelNumber = sourceEtlInventoryData.ModelNumber;
+                        item.ManufacturerUid = sourceEtlInventoryData.ManufacturerUid;
+                        item.ManufacturerName = sourceEtlInventoryData.ManufacturerName;
+                        item.AreaUid = sourceEtlInventoryData.AreaUid;
+                        item.AreaName = sourceEtlInventoryData.AreaName;
+                        item.SiteUid = sourceEtlInventoryData.SiteUid;
+                        item.SiteId = sourceEtlInventoryData.SiteId;
+                        item.SiteName = sourceEtlInventoryData.SiteName;
+                        item.EntityUid = sourceEtlInventoryData.EntityUid;
+                        item.EntityId = sourceEtlInventoryData.EntityId;
+                        item.EntityName = sourceEtlInventoryData.EntityName;
+                        item.EntityTypeUid = sourceEtlInventoryData.EntityTypeUid;
+                        item.EntityTypeName = sourceEtlInventoryData.EntityTypeName;
+                        item.StatusId = sourceEtlInventoryData.StatusId;
+                        item.Status = sourceEtlInventoryData.Status;
+                        item.TechDepartmentUid = sourceEtlInventoryData.TechDepartmentUid;
+                        item.DepartmentName = sourceEtlInventoryData.DepartmentName;
+                        item.DepartmentId = sourceEtlInventoryData.DepartmentId;
+                        item.FundingSourceUid = sourceEtlInventoryData.FundingSourceUid;
+                        item.FundingSource = sourceEtlInventoryData.FundingSource;
+                        item.FundingSourceDescription = sourceEtlInventoryData.FundingSourceDescription;
+                        item.PurchasePrice = sourceEtlInventoryData.PurchasePrice;
+                        item.PurchaseDate = sourceEtlInventoryData.PurchaseDate;
+                        item.ExpirationDate = sourceEtlInventoryData.ExpirationDate;
+                        item.InventoryNotes = sourceEtlInventoryData.InventoryNotes;
+                        item.ParentInventoryUid = sourceEtlInventoryData.ParentInventoryUid;
+                        item.ParentTag = sourceEtlInventoryData.ParentTag;
+                        item.InventorySourceUid = sourceEtlInventoryData.InventorySourceUid;
+                        item.InventorySourceName = sourceEtlInventoryData.InventorySourceName;
+                        item.PurchaseUid = sourceEtlInventoryData.PurchaseUid;
+                        item.OrderNumber = sourceEtlInventoryData.OrderNumber;
+                        item.PurchaseItemDetailUid = sourceEtlInventoryData.PurchaseItemDetailUid;
+                        item.LineNumber = sourceEtlInventoryData.LineNumber;
+                        item.AccountCode = sourceEtlInventoryData.AccountCode;
+                        item.VendorUid = sourceEtlInventoryData.VendorUid;
+                        item.VendorName = sourceEtlInventoryData.VendorName;
+                        item.VendorAccountNumber = sourceEtlInventoryData.VendorAccountNumber;
+                        item.PurchaseItemShipmentUid = sourceEtlInventoryData.PurchaseItemShipmentUid;
+                        item.InvoiceNumber = sourceEtlInventoryData.InvoiceNumber;
+                        item.InvoiceDate = sourceEtlInventoryData.InvoiceDate;
+                        item.InventoryExt1Uid = sourceEtlInventoryData.InventoryExt1Uid;
+                        item.InventoryMeta1Uid = sourceEtlInventoryData.InventoryMeta1Uid;
+                        item.CustomField1Label = sourceEtlInventoryData.CustomField1Label;
+                        item.CustomField1Value = sourceEtlInventoryData.CustomField1Value;
+                        item.InventoryExt2Uid = sourceEtlInventoryData.InventoryExt2Uid;
+                        item.InventoryMeta2Uid = sourceEtlInventoryData.InventoryMeta2Uid;
+                        item.CustomField2Label = sourceEtlInventoryData.CustomField2Label;
+                        item.CustomField2Value = sourceEtlInventoryData.CustomField2Value;
+                        item.InventoryExt3Uid = sourceEtlInventoryData.InventoryExt3Uid;
+                        item.InventoryMeta3Uid = sourceEtlInventoryData.InventoryMeta3Uid;
+                        item.CustomField3Label = sourceEtlInventoryData.CustomField3Label;
+                        item.CustomField3Value = sourceEtlInventoryData.CustomField3Value;
+                        item.InventoryExt4Uid = sourceEtlInventoryData.InventoryExt4Uid;
+                        item.InventoryMeta4Uid = sourceEtlInventoryData.InventoryMeta4Uid;
+                        item.CustomField4Label = sourceEtlInventoryData.CustomField4Label;
+                        item.CustomField4Value = sourceEtlInventoryData.CustomField4Value;
+                        item.Rejected = sourceEtlInventoryData.Rejected;
+                        item.RejectedNotes = sourceEtlInventoryData.RejectedNotes;
+                    }
+
+                    _context.EtlInventory.UpdateRange(etlInventoryDataToUpdate);
+                    var result = _context.SaveChanges();
+                    return result == etlInventoryData.Count;
+                }
             }
             catch
             {

@@ -14,7 +14,8 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         int GetTotal();
         bool Add(InventoryFlatDataModel inventoryFlatData);
         bool AddRange(List<InventoryFlatDataModel> inventoryFlatDataBatch);
-        bool Change(InventoryFlatDataModel inventoryFlatData);
+        bool Edit(InventoryFlatDataModel inventoryFlatModel);
+        bool EditRange(List<InventoryFlatDataModel> inventoryFlatData);
         void ClearData();
     }
 }

@@ -33,6 +33,21 @@ namespace MiddleWay_Utilities
 
         }
 
+        public static string RemoveWhiteSpaceCharacters(StringBuilder value)
+        {
+            return RemoveWhiteSpaceCharacters(value.ToString());
+        }
+
+        public static string RemoveWhiteSpaceCharacters(string value)
+        {
+            return value.Replace("\\r\\n", "", StringComparison.InvariantCultureIgnoreCase)
+                        .Replace("\\r", "", StringComparison.InvariantCultureIgnoreCase)
+                        .Replace("\\n", "", StringComparison.InvariantCultureIgnoreCase)
+                        .Replace("\\v", "", StringComparison.InvariantCultureIgnoreCase)
+                        .Replace("\\f", "", StringComparison.InvariantCultureIgnoreCase)
+                        .Replace("\\t", "    ", StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static string CleanupHiddenCharacters(string data)
         {
             //NewLine, Carriage return, tabs to spaces, other white space cleanup
@@ -126,7 +141,7 @@ namespace MiddleWay_Utilities
                     foreach (var property in properties)
                     {
                         var val = property.GetValue(input);
-                        output.AppendLine(property.Name + ":\t" + (val ?? string.Empty).ToString());
+                        output.AppendLine(property.Name + ":    " + (val ?? "<NULL>").ToString());
                     }
                 }
             }
@@ -141,7 +156,7 @@ namespace MiddleWay_Utilities
 
             foreach (var row in input)
             {
-                output.AppendLine(row.Key + ":\t" + (row.Value ?? string.Empty).ToString());
+                output.AppendLine(row.Key + ":    " + (row.Value ?? "<NULL>").ToString());
             }
 
             return output.ToString();

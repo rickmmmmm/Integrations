@@ -140,14 +140,107 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public bool ValidateEtlInventory()
+        public bool EditRange(List<EtlInventoryModel> items)
         {
-            throw new System.NotImplementedException();
             try
             {
                 var processUid = _processesService.GetProcessUid();
-                
+                items.ForEach(x => x.ProcessUid = processUid);
+                return _etlInventoryRepository.UpdateRange(items);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool ValidateEtlInventory()
+        {
+            try
+            {
+                var processUid = _processesService.GetProcessUid();
+
+                //Validate Tag/Asset/Serial
+                //TODO: Get Configuration for use Tag in Notes
+
+                //Validate Product Name
+                //TODO: Get Configuration for Create Products
+
+                //Validate Product Type
+                //TODO: Get Configuration for Default Product Type
+
+                //Validate Custom Fields
+
+                //Validate Manufacturers
+                //TODO: Get Configuration for Create Manufacturers
+
+                //Validate Funding Sources
+                //TODO: Get Configuration for Create Funding Sources
+
+                //Validate Vendor
+                //TODO: Get Configuration for Create Vendors
+
+                //Validate EntityType
+
+                //Validate Entity (EntityName/EntityID)
+
+                //Validate Status
+
+                //Validate Department
+
+                //Validate Purchase Order (OrderNumber, LineNumber, AccountCode, PurchasePrice, PurchaseDate)
+                //TODO: Get Configuration for Create Purchase Order
+                //TODO: Get Configuration for Create Purchase Details
+                //TODO: Get Configuration for Default Line Number
+
+                //Validate Invoice Data
+                //TODO: Get Configuration for Invoice For Shipment or Order....????
+
+                //Validate Parent Tag
+
                 //TODO: Log count of items saved?
+
+                return false;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool SubmitEtlInventory()
+        {
+            try
+            {
+                var processUid = _processesService.GetProcessUid();
+
+                //Submit Products
+
+                //Submit Manufacturers
+
+                //Submit Funding Sources
+
+                //Submit Vendors
+
+                //Submit Inventory
+
+                //Submit Custom Fields
+
+                //Submit Parent Data
+
+                //Submit Purchase Orders
+
+                //Submit Purchase Details
+
+                //Submit Purchase Shipments
+
+                //Submit Purchase Inventory
+
+                //Submit Invoice Data
+
+                //TODO: Log count of items saved?
+
+                return false;
             }
             catch
             {

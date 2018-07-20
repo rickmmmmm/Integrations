@@ -87,10 +87,10 @@ namespace MiddleWay_Controller.Services
                                 var outputItem = new T();
 
                                 var groupedTransformations = (from transform in transformations
-                                                              group transform by transform.SourceColumn into tranformGroup
-                                                              select new { SourceColumn = tranformGroup.Key }).ToList();
-                                //group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
-                                //select new { tranformGroup.Key.SourceColumn }).ToList();
+                                                                  //group transform by transform.SourceColumn into tranformGroup
+                                                                  //select new { SourceColumn = tranformGroup.Key }).ToList();
+                                                              group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
+                                                              select new { tranformGroup.Key.SourceColumn, tranformGroup.Key.DestinationColumn }).ToList();
 
                                 //var outputProperties = (from transforms in transformations
                                 //                        group transforms by transforms.DestinationColumn into destinationTransforms
@@ -98,11 +98,29 @@ namespace MiddleWay_Controller.Services
 
                                 foreach (var groupedTransformation in groupedTransformations)
                                 {
+                                    bool hasSourceProperty = false;
+                                    bool hasDestinationProperty = false;
+                                    string propertyName = null;
+                                    //Type destinationType;
+
+                                    if (!string.IsNullOrEmpty(groupedTransformation.DestinationColumn))
+                                    {
+                                        propertyName = groupedTransformation.DestinationColumn;
+                                    }
+                                    else
+                                    {
+                                        propertyName = groupedTransformation.SourceColumn;
+                                    }
+
                                     var sourceProperty = item.GetType().GetProperty(groupedTransformation.SourceColumn);
+                                    var destinationProperty = outputItem.GetType().GetProperty(propertyName);
+                                    //var destinationProperty = outputItem.GetType().GetProperty(groupedTransformation.SourceColumn);
+                                    //var destinationType = destinationProperty.GetType();
 
-                                    bool hasSourceProperty = (sourceProperty != null);
+                                    hasSourceProperty = (sourceProperty != null);
+                                    hasDestinationProperty = (destinationProperty != null);
 
-                                    if (hasSourceProperty)
+                                    if (hasSourceProperty && hasDestinationProperty)
                                     {
                                         var transformationGroup = (from transforms in transformations
                                                                    where transforms.SourceColumn == groupedTransformation.SourceColumn
@@ -111,28 +129,15 @@ namespace MiddleWay_Controller.Services
 
                                         var sourceType = sourceProperty.GetType();
                                         object value = sourceProperty.GetValue(item);
+                                        object transformedValue = value;
 
                                         //For each item, map
                                         foreach (var transformation in transformationGroup)
                                         {
-                                            string propertyName = null;
-                                            //Type destinationType;
-
                                             try
                                             {
-                                                if (!string.IsNullOrEmpty(transformation.DestinationColumn))
-                                                {
-                                                    propertyName = transformation.DestinationColumn;
-                                                }
-                                                else
-                                                {
-                                                    propertyName = groupedTransformation.SourceColumn;
-                                                }
-
-                                                var destinationProperty = outputItem.GetType().GetProperty(propertyName);
-                                                //var destinationType = destinationProperty.GetType();
-
-                                                var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
+                                                
+                                                transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, transformedValue);
 
                                                 destinationProperty.SetValue(outputItem, transformedValue);
                                             }
@@ -221,10 +226,10 @@ namespace MiddleWay_Controller.Services
                             try
                             {
                                 var groupedTransformations = (from transform in transformations
-                                                              group transform by transform.SourceColumn into tranformGroup
-                                                              select new { SourceColumn = tranformGroup.Key }).ToList();
-                                //group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
-                                //select new { tranformGroup.Key.SourceColumn }).ToList();
+                                                                  //group transform by transform.SourceColumn into tranformGroup
+                                                                  //select new { SourceColumn = tranformGroup.Key }).ToList();
+                                                              group transform by new { transform.SourceColumn, transform.DestinationColumn } into tranformGroup
+                                                              select new { tranformGroup.Key.SourceColumn, tranformGroup.Key.DestinationColumn }).ToList();
 
                                 //var outputProperties = (from transforms in transformations
                                 //                        group transforms by transforms.DestinationColumn into destinationTransforms
@@ -240,21 +245,29 @@ namespace MiddleWay_Controller.Services
 
                                     bool hasSourceProperty = (sourceProperty != null);
 
-                                    if (hasSourceProperty)
+                                    if (hasSourceProperty || !string.IsNullOrEmpty(groupedTransformation.DestinationColumn))
                                     {
                                         var transformationGroup = (from transforms in transformations
                                                                    where transforms.SourceColumn == groupedTransformation.SourceColumn
+                                                                      && transforms.DestinationColumn == groupedTransformation.DestinationColumn
                                                                    orderby transforms.Order ascending
                                                                    select transforms).ToList();
 
-                                        var sourceType = sourceProperty.GetType();
-                                        object value = sourceProperty.GetValue(item);
+                                        //Type sourceType;
+                                        object value = null;
+                                        if (sourceProperty != null)
+                                        {
+                                            //sourceType = sourceProperty.GetType();
+                                            value = sourceProperty.GetValue(item);
+                                        }
 
                                         //For each item, map
+                                        object transformedValue = value;
+
                                         foreach (var transformation in transformationGroup)
                                         {
                                             string propertyName = null;
-                                            Type destinationType;
+                                            //Type destinationType;
 
                                             try
                                             {
@@ -267,24 +280,24 @@ namespace MiddleWay_Controller.Services
                                                     propertyName = groupedTransformation.SourceColumn;
                                                 }
 
-                                                if (expandoDict.ContainsKey(propertyName))
-                                                {
-                                                    var val = expandoDict[propertyName];
-                                                    if (val != null)
-                                                    {
-                                                        destinationType = val.GetType();
-                                                    }
-                                                    else
-                                                    {
-                                                        destinationType = sourceType;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    destinationType = sourceType;
-                                                }
+                                                //if (expandoDict.ContainsKey(propertyName))
+                                                //{
+                                                //    var val = expandoDict[propertyName];
+                                                //    if (val != null)
+                                                //    {
+                                                //        destinationType = val.GetType();
+                                                //    }
+                                                //    else
+                                                //    {
+                                                //        destinationType = sourceType;
+                                                //    }
+                                                //}
+                                                //else
+                                                //{
+                                                //    destinationType = sourceType;
+                                                //}
 
-                                                var transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, value);
+                                                transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, transformedValue);
 
                                                 if (expandoDict.ContainsKey(propertyName))
                                                 {
@@ -294,7 +307,6 @@ namespace MiddleWay_Controller.Services
                                                 {
                                                     expandoDict.Add(propertyName, transformedValue);
                                                 }
-
                                             }
                                             catch (Exception ex)
                                             {

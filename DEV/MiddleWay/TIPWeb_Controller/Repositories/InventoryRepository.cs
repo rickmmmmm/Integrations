@@ -52,7 +52,7 @@ namespace TIPWeb_Controller.Repositories
                                       select inventory).ToList();
 
                 assetsToUpdate.ForEach(inv => inv.AssetId = "FA" + inv.InventoryUid);
-
+                
                 _context.TblTechInventory.UpdateRange(assetsToUpdate);
 
                 _context.SaveChanges();

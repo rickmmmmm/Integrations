@@ -17,6 +17,7 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         int Insert(InventoryFlatDataModel inventoryFlatData);
         bool InsertRange(List<InventoryFlatDataModel> inventoryFlatDataBatch);
         bool Update(InventoryFlatDataModel inventoryFlatData);
+        bool UpdateRange(List<InventoryFlatDataModel> inventoryFlatData);
         bool Delete(int processUid);
         bool Delete(string client, string processName);
     }

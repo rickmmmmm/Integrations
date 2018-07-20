@@ -15,8 +15,9 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         int Add(EtlInventoryModel item);
         bool AddRange(List<EtlInventoryModel> items);
         bool Edit(EtlInventoryModel item);
+        bool EditRange(List<EtlInventoryModel> items);
         bool Remove(int etlInventoryUid);
-
         bool ValidateEtlInventory();
+        bool SubmitEtlInventory();
     }
 }

@@ -69,7 +69,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void Transform_SingleInventoryFlat()
         {
             var process = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
@@ -103,7 +103,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 ParentTag = "",
                 ProductName = "Broom",
                 ProductDescription = "Wooden Handle Broom",
-                ProductByNumber = "001",
+                ProductByNumber = null,
                 ProductTypeName = "Broom",
                 ProductTypeDescription = "Broom",
                 ModelNumber = "",
@@ -137,7 +137,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void TransformToDynamic_SingleInventoryFlat()
         {
             var process = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Stage);
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
@@ -189,16 +189,23 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 InvoiceDate = ""
             };
 
-            var result = service.TransformToDynamic(inventoryFlat, ProcessSteps.Ingest);
+            var result = service.TransformToDynamic(inventoryFlat, ProcessSteps.Stage);
 
+            if (inventoryFlat.Rejected)
+            {
+                _outputHelper.WriteLine(inventoryFlat.RejectedNotes);
+            }
+            if (result != null)
+            {
+                _outputHelper.WriteLine(Utilities.ToStringObject(result));
+            }
             Assert.NotNull(result);
-            _outputHelper.WriteLine(Utilities.ToStringObject(result));
         }
         [Fact]
         public void Transform_ListInventoryFlat()
         {
             var process = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
@@ -347,7 +354,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void TransformToDynamic_ListInventoryFlat()
         {
             var process = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Stage);
             var clientConfiguration = SetupMockClientConfiguration();
             var transformationsRepository = SetupMockTransformationsRepository(process, transformations);
             var transformationLookupService = SetupMockTransformationLookupService();
@@ -486,7 +493,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 }
             };
 
-            var result = service.TransformToDynamic(inventoryFlatList, ProcessSteps.Ingest);
+            var result = service.TransformToDynamic(inventoryFlatList, ProcessSteps.Stage);
 
             Assert.NotNull(result);
             _outputHelper.WriteLine(Utilities.ToStringObject(result));
@@ -687,7 +694,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void ApplyTransformation_LookupValid()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = GetMockTransformationLookupData();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -705,7 +712,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void ApplyTransformation_LookupInvalid()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = GetMockTransformationLookupData();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -1388,7 +1395,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void Lookup_InvalidLookupValue()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = GetMockTransformationLookupData();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -1406,7 +1413,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void Lookup_ValidLookupValue()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = GetMockTransformationLookupData();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -1424,7 +1431,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void Lookup_ValidInteger()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = GetMockTransformationLookupData();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -1442,7 +1449,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         public void Lookup_FromEmptyList()
         {
             var processes = GetMockProcessData();
-            var transformations = GetMockTransformationData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
             var transformationLookups = (new List<TransformationLookup>()).AsQueryable();
 
             var clientConfiguration = SetupMockClientConfiguration();
@@ -1984,9 +1991,11 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             return processes;
         }
 
-        protected IQueryable<Transformations> GetMockTransformationData()
+        protected IQueryable<Transformations> GetMockTransformationData(ProcessSteps stepName)
         {
-            return new List<Transformations>
+            if (stepName == ProcessSteps.Ingest)
+            {
+                return new List<Transformations>
                 {
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "quickcast", Parameters = "", SourceColumn = "InventoryFlatDataUid", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "quickcast", Parameters = "", SourceColumn = "ProcessUid", DestinationColumn = "", Enabled = true, Order = 0 },
@@ -2012,7 +2021,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductName", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductDescription", DestinationColumn = "", Enabled = true, Order = 0 },
-                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[\"00\"]", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "default", Parameters = "[00]", SourceColumn = "ProductByNumber", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeName", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ProductTypeDescription", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "ModelNumber", DestinationColumn = "", Enabled = true, Order = 0 },
@@ -2029,6 +2038,63 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InvoiceNumber", DestinationColumn = "", Enabled = true, Order = 0 },
                     new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), Function = "", Parameters = "", SourceColumn = "InvoiceDate", DestinationColumn = "", Enabled = true, Order = 0 },
                 }.AsQueryable();
+            }
+            else if (stepName == ProcessSteps.Stage)
+            {
+                return new List<Transformations>
+                {
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "", Parameters = "", SourceColumn = "AssetId", DestinationColumn = "AssetId", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "", Parameters = "", SourceColumn = "Tag", DestinationColumn = "Tag", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "", Parameters = "", SourceColumn = "Serial", DestinationColumn = "Serial", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "[Tagged]", SourceColumn = "InventoryTypeName", DestinationColumn = "InventoryTypeName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "ProductName", DestinationColumn = "ProductName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[1000]", SourceColumn = "ProductDescription", DestinationColumn = "ProductDescription", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "ProductByNumber", DestinationColumn = "ProductByNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "[0]", SourceColumn = "ProductByNumber", DestinationColumn = "ProductByNumber", Enabled = true, Order = 2 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "ProductTypeName", DestinationColumn = "ProductTypeName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[1000]", SourceColumn = "ProductTypeDescription", DestinationColumn = "ProductTypeDescription", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[500]", SourceColumn = "ModelNumber", DestinationColumn = "ModelNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "ManufacturerName", DestinationColumn = "ManufacturerName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "AreaName", DestinationColumn = "AreaName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "SiteId", DestinationColumn = "SiteId", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "SiteName", DestinationColumn = "SiteName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "[]", SourceColumn = "", DestinationColumn = "EntityId", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "Location", DestinationColumn = "EntityName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[1000]", SourceColumn = "Location", DestinationColumn = "EntityTypeName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "Status", DestinationColumn = "Status", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "DepartmentName", DestinationColumn = "DepartmentName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "DepartmentId", DestinationColumn = "DepartmentId", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[500]", SourceColumn = "FundingSource", DestinationColumn = "FundingSource", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[500]", SourceColumn = "FundingSourceDescription", DestinationColumn = "FundingSourceDescription", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "quickcast", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "PurchasePrice", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "PurchasePrice", DestinationColumn = "PurchasePrice", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "quickcast", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "PurchaseDate", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "PurchaseDate", DestinationColumn = "PurchaseDate", Enabled = true, Order = 2 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "quickcast", Parameters = "", SourceColumn = "ExpirationDate", DestinationColumn = "ExpirationDate", Enabled = true, Order = 0 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "ExpirationDate", DestinationColumn = "ExpirationDate", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "", Parameters = "", SourceColumn = "InventoryNotes", DestinationColumn = "InventoryNotes", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "ParentTag", DestinationColumn = "ParentTag", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "InventorySourceName", DestinationColumn = "InventorySourceName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "", Parameters = "", SourceColumn = "OrderNumber", DestinationColumn = "OrderNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "default", Parameters = "", SourceColumn = "LineNumber", DestinationColumn = "LineNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[100]", SourceColumn = "VendorName", DestinationColumn = "VendorName", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "VendorAccountNumber", DestinationColumn = "VendorAccountNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "InvoiceNumber", DestinationColumn = "InvoiceNumber", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "InvoiceDate", DestinationColumn = "InvoiceDate", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField1Label", DestinationColumn = "CustomField1Label", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField1Value", DestinationColumn = "CustomField1Value", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField2Label", DestinationColumn = "CustomField2Label", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField2Value", DestinationColumn = "CustomField2Value", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField3Label", DestinationColumn = "CustomField3Label", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField3Value", DestinationColumn = "CustomField3Value", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField4Label", DestinationColumn = "CustomField4Label", Enabled = true, Order = 1 },
+                    new Transformations { TransformationUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(),  Function = "truncate", Parameters = "[50]", SourceColumn = "CustomField4Value", DestinationColumn = "CustomField4Value", Enabled = true, Order = 1 }
+                }.AsQueryable();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         protected IQueryable<TransformationLookup> GetMockTransformationLookupData()

@@ -18,6 +18,7 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         int Insert(EtlInventoryModel etlInventoryData);
         bool InsertRange(List<EtlInventoryModel> etlInventoryData);
         bool Update(EtlInventoryModel etlInventoryData);
+        bool UpdateRange(List<EtlInventoryModel> etlInventoryData);
         bool Delete(int processUid);
         bool Delete(string client, string processName);
     }

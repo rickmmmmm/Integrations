@@ -288,73 +288,81 @@ namespace MiddleWay
         {
             //Get configuration service, if no configuration stop processing and log error
             var configurationService = serviceProvider.GetService<IConfigurationService>();
-            var clientConfiguration = serviceProvider.GetService<IClientConfiguration>();  //TODO: Read client/process configuration from parameters not app settings
+            var clientConfiguration = serviceProvider.GetService<IClientConfiguration>();
 
-            if (!configurationService.HasConfiguration)
+            try
             {
-                // Configuration Not Loaded
-                Console.WriteLine($"Configuration Not Loaded or Invalid for Client: {clientConfiguration.Client} and ProcessName: {clientConfiguration.ProcessName}");
-                Environment.Exit(0);
-            }
-            else
-            {
-                //TODO: Perform Cleanup of old data (ProcessTasks, ProcessTaskSteps, ProcessTaskErrors, etc...)
-                //if (commands.Count > 0)
-                //{
-                //ReadParameters(commands);
-                //string choice = args[0];
-                var options = ProcessInput.ReadOptions(commands);
-
-                switch (options[0])
+                if (!configurationService.HasConfiguration)
                 {
-                    case "-p":
-                        PurchaseOrderMenu(options);
-                        break;
-                    case "-e":
-                        ExportFileOptions(options);
-                        break;
-                    case "-c":
-                        ChargesMenu(options);
-                        break;
-                    case "-m":
-                        MobileDeviceManagementMenu();
-                        break;
-                    case "-a":
-                        AssetsMenu(commands, "Test"); // commands.GetAllArguments
-                        break;
-                    case "-pc":
-                        PrintConfiguration();
-                        break;
-                    default:
-                        break;
+                    // Configuration Not Loaded
+                    Console.WriteLine($"Configuration Not Loaded or Invalid for Client: {clientConfiguration.Client} and ProcessName: {clientConfiguration.ProcessName}");
+                    Environment.Exit(0);
                 }
+                else
+                {
+                    //TODO: Perform Cleanup of old data (ProcessTasks, ProcessTaskSteps, ProcessTaskErrors, etc...)
+                    //if (commands.Count > 0)
+                    //{
+                    //ReadParameters(commands);
+                    //string choice = args[0];
+                    var options = ProcessInput.ReadOptions(commands);
 
-                Environment.Exit(0);
-                //}
-                //else
-                //{
-                //    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
+                    switch (options[0])
+                    {
+                        case "-p":
+                            PurchaseOrderMenu(options);
+                            break;
+                        case "-e":
+                            ExportFileOptions(options);
+                            break;
+                        case "-c":
+                            ChargesMenu(options);
+                            break;
+                        case "-m":
+                            MobileDeviceManagementMenu();
+                            break;
+                        case "-a":
+                            AssetsMenu(commands, "Test"); // commands.GetAllArguments
+                            break;
+                        case "-pc":
+                            PrintConfiguration();
+                            break;
+                        default:
+                            break;
+                    }
 
-                //    Console.WriteLine("Shall we play a game? (Y)es (N)o");
-                //    string gameplay = Console.ReadLine().ToLower();
+                    Environment.Exit(0);
+                    //}
+                    //else
+                    //{
+                    //    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
 
-                //    if (gameplay == "n")
-                //    {
-                //        Environment.Exit(0);
-                //    }
+                    //    Console.WriteLine("Shall we play a game? (Y)es (N)o");
+                    //    string gameplay = Console.ReadLine().ToLower();
 
-                //    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
+                    //    if (gameplay == "n")
+                    //    {
+                    //        Environment.Exit(0);
+                    //    }
 
-                //    ReadInput();
-                //}
+                    //    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
+
+                    //    ReadInput();
+                    //}
+                }
+                //Remove "bad" data
+                //log actions to console
+                //Map file import objects to model objects
+                //Submit changes to db
+                //upsert to Db
+                //Send notifications
+                //Dispose of remaining objects
             }
-            //Remove "bad" data
-            //log actions to console
-            //Map file import objects to model objects
-            //Submit changes to db
-            //upsert to Db
-            //Send notifications
-            //Dispose of remaining objects
+            catch (Exception ex)
+            {
+                Logging.WriteToLog(Utilities.ParseException(ex), clientConfiguration.Client + " - " + clientConfiguration.ProcessName);
+                throw ex;
+            }
         }
 
         //private static void ReadParameters(List<string> commands)
@@ -917,7 +925,6 @@ namespace MiddleWay
             var assetsService = serviceProvider.GetService<IAssetsService>();
 
             assetsService.ProcessAssets(commands, parameters);
-
         }
 
         public static void PrintConfiguration()

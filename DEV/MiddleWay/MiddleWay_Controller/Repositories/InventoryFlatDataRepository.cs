@@ -416,79 +416,13 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var inventoryFlatToInsert = new InventoryFlatData()
-                {
-                    InventoryFlatDataUid = 0,
-                    ProcessUid = inventoryFlatData.ProcessUid,
-                    RowId = inventoryFlatData.RowId,
-                    AssetId = inventoryFlatData.AssetId,
-                    Tag = inventoryFlatData.Tag,
-                    Serial = inventoryFlatData.Serial,
-                    SiteId = inventoryFlatData.SiteId,
-                    SiteName = inventoryFlatData.SiteName,
-                    Location = inventoryFlatData.Location,
-                    LocationType = inventoryFlatData.LocationType,
-                    Status = inventoryFlatData.Status,
-                    DepartmentName = inventoryFlatData.DepartmentName,
-                    DepartmentId = inventoryFlatData.DepartmentId,
-                    FundingSource = inventoryFlatData.FundingSource,
-                    FundingSourceDescription = inventoryFlatData.FundingSourceDescription,
-                    PurchasePrice = inventoryFlatData.PurchasePrice,
-                    PurchaseDate = inventoryFlatData.PurchaseDate,
-                    ExpirationDate = inventoryFlatData.ExpirationDate,
-                    InventoryNotes = inventoryFlatData.InventoryNotes,
-                    OrderNumber = inventoryFlatData.OrderNumber,
-                    LineNumber = inventoryFlatData.LineNumber,
-                    VendorName = inventoryFlatData.VendorName,
-                    VendorAccountNumber = inventoryFlatData.VendorAccountNumber,
-                    ParentTag = inventoryFlatData.ParentTag,
-                    ProductName = inventoryFlatData.ProductName,
-                    ProductDescription = inventoryFlatData.ProductTypeDescription,
-                    ProductByNumber = inventoryFlatData.ProductByNumber,
-                    ProductTypeName = inventoryFlatData.ProductTypeName,
-                    ProductTypeDescription = inventoryFlatData.ProductTypeDescription,
-                    ModelNumber = inventoryFlatData.ModelNumber,
-                    ManufacturerName = inventoryFlatData.ManufacturerName,
-                    AreaName = inventoryFlatData.AreaName,
-                    CustomField1Value = inventoryFlatData.CustomField1Value,
-                    CustomField1Label = inventoryFlatData.CustomField1Label,
-                    CustomField2Value = inventoryFlatData.CustomField2Value,
-                    CustomField2Label = inventoryFlatData.CustomField2Label,
-                    CustomField3Value = inventoryFlatData.CustomField3Value,
-                    CustomField3Label = inventoryFlatData.CustomField3Label,
-                    CustomField4Value = inventoryFlatData.CustomField4Value,
-                    CustomField4Label = inventoryFlatData.CustomField4Label,
-                    InvoiceNumber = inventoryFlatData.InvoiceNumber,
-                    InvoiceDate = inventoryFlatData.InvoiceDate,
-                    Rejected = inventoryFlatData.Rejected,
-                    RejectedNotes = inventoryFlatData.RejectedNotes
-                };
-
-                _context.InventoryFlatData.Add(inventoryFlatToInsert);
-                var result = _context.SaveChanges();
-
-                if (result == 1)
-                {
-                    return inventoryFlatToInsert.InventoryFlatDataUid;
-                }
-                else
+                if (inventoryFlatData == null)
                 {
                     return -1;
                 }
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public bool InsertRange(List<InventoryFlatDataModel> inventoryFlatDataBatch)
-        {
-            try
-            {
-                foreach (var inventoryFlatData in inventoryFlatDataBatch)
+                else
                 {
-                    var inventoryFlatDataToInsert = new InventoryFlatData()
+                    var inventoryFlatToInsert = new InventoryFlatData()
                     {
                         InventoryFlatDataUid = 0,
                         ProcessUid = inventoryFlatData.ProcessUid,
@@ -535,11 +469,92 @@ namespace MiddleWay_Controller.Repositories
                         Rejected = inventoryFlatData.Rejected,
                         RejectedNotes = inventoryFlatData.RejectedNotes
                     };
-                    _context.InventoryFlatData.Add(inventoryFlatDataToInsert);
-                }
-                var result = _context.SaveChanges();
 
-                return result == inventoryFlatDataBatch.Count();
+                    _context.InventoryFlatData.Add(inventoryFlatToInsert);
+                    var result = _context.SaveChanges();
+
+                    if (result == 1)
+                    {
+                        return inventoryFlatToInsert.InventoryFlatDataUid;
+                    }
+                    else
+                    {
+                        return -1;
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool InsertRange(List<InventoryFlatDataModel> inventoryFlatData)
+        {
+            try
+            {
+                if (inventoryFlatData == null || inventoryFlatData.Count == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    foreach (var item in inventoryFlatData)
+                    {
+                        var inventoryFlatDataToInsert = new InventoryFlatData()
+                        {
+                            InventoryFlatDataUid = 0,
+                            ProcessUid = item.ProcessUid,
+                            RowId = item.RowId,
+                            AssetId = item.AssetId,
+                            Tag = item.Tag,
+                            Serial = item.Serial,
+                            SiteId = item.SiteId,
+                            SiteName = item.SiteName,
+                            Location = item.Location,
+                            LocationType = item.LocationType,
+                            Status = item.Status,
+                            DepartmentName = item.DepartmentName,
+                            DepartmentId = item.DepartmentId,
+                            FundingSource = item.FundingSource,
+                            FundingSourceDescription = item.FundingSourceDescription,
+                            PurchasePrice = item.PurchasePrice,
+                            PurchaseDate = item.PurchaseDate,
+                            ExpirationDate = item.ExpirationDate,
+                            InventoryNotes = item.InventoryNotes,
+                            OrderNumber = item.OrderNumber,
+                            LineNumber = item.LineNumber,
+                            VendorName = item.VendorName,
+                            VendorAccountNumber = item.VendorAccountNumber,
+                            ParentTag = item.ParentTag,
+                            ProductName = item.ProductName,
+                            ProductDescription = item.ProductTypeDescription,
+                            ProductByNumber = item.ProductByNumber,
+                            ProductTypeName = item.ProductTypeName,
+                            ProductTypeDescription = item.ProductTypeDescription,
+                            ModelNumber = item.ModelNumber,
+                            ManufacturerName = item.ManufacturerName,
+                            AreaName = item.AreaName,
+                            CustomField1Value = item.CustomField1Value,
+                            CustomField1Label = item.CustomField1Label,
+                            CustomField2Value = item.CustomField2Value,
+                            CustomField2Label = item.CustomField2Label,
+                            CustomField3Value = item.CustomField3Value,
+                            CustomField3Label = item.CustomField3Label,
+                            CustomField4Value = item.CustomField4Value,
+                            CustomField4Label = item.CustomField4Label,
+                            InvoiceNumber = item.InvoiceNumber,
+                            InvoiceDate = item.InvoiceDate,
+                            Rejected = item.Rejected,
+                            RejectedNotes = item.RejectedNotes
+                        };
+
+                        _context.InventoryFlatData.Add(inventoryFlatDataToInsert);
+                    }
+                    var result = _context.SaveChanges();
+
+                    return result == inventoryFlatData.Count();
+                }
             }
             catch
             {
@@ -555,57 +570,64 @@ namespace MiddleWay_Controller.Repositories
         {
             try
             {
-                var inventoryFlatDataToUpdate = (from inventoryFlat in _context.InventoryFlatData
-                                                 where inventoryFlat.InventoryFlatDataUid == inventoryFlatData.InventoryFlatDataUid
-                                                 select inventoryFlat).FirstOrDefault();
+                if (inventoryFlatData == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    var inventoryFlatDataToUpdate = (from inventoryFlat in _context.InventoryFlatData
+                                                     where inventoryFlat.InventoryFlatDataUid == inventoryFlatData.InventoryFlatDataUid
+                                                     select inventoryFlat).FirstOrDefault();
 
-                inventoryFlatDataToUpdate.RowId = inventoryFlatData.RowId;
-                inventoryFlatDataToUpdate.AssetId = inventoryFlatData.AssetId;
-                inventoryFlatDataToUpdate.Tag = inventoryFlatData.Tag;
-                inventoryFlatDataToUpdate.Serial = inventoryFlatData.Serial;
-                inventoryFlatDataToUpdate.SiteId = inventoryFlatData.SiteId;
-                inventoryFlatDataToUpdate.SiteName = inventoryFlatData.SiteName;
-                inventoryFlatDataToUpdate.Location = inventoryFlatData.Location;
-                inventoryFlatDataToUpdate.LocationType = inventoryFlatData.LocationType;
-                inventoryFlatDataToUpdate.Status = inventoryFlatData.Status;
-                inventoryFlatDataToUpdate.DepartmentName = inventoryFlatData.DepartmentName;
-                inventoryFlatDataToUpdate.DepartmentId = inventoryFlatData.DepartmentId;
-                inventoryFlatDataToUpdate.FundingSource = inventoryFlatData.FundingSource;
-                inventoryFlatDataToUpdate.FundingSourceDescription = inventoryFlatData.FundingSourceDescription;
-                inventoryFlatDataToUpdate.PurchasePrice = inventoryFlatData.PurchasePrice;
-                inventoryFlatDataToUpdate.PurchaseDate = inventoryFlatData.PurchaseDate;
-                inventoryFlatDataToUpdate.ExpirationDate = inventoryFlatData.ExpirationDate;
-                inventoryFlatDataToUpdate.InventoryNotes = inventoryFlatData.InventoryNotes;
-                inventoryFlatDataToUpdate.OrderNumber = inventoryFlatData.OrderNumber;
-                inventoryFlatDataToUpdate.LineNumber = inventoryFlatData.LineNumber;
-                inventoryFlatDataToUpdate.VendorName = inventoryFlatData.VendorName;
-                inventoryFlatDataToUpdate.VendorAccountNumber = inventoryFlatData.VendorAccountNumber;
-                inventoryFlatDataToUpdate.ParentTag = inventoryFlatData.ParentTag;
-                inventoryFlatDataToUpdate.ProductName = inventoryFlatData.ProductName;
-                inventoryFlatDataToUpdate.ProductDescription = inventoryFlatData.ProductTypeDescription;
-                inventoryFlatDataToUpdate.ProductByNumber = inventoryFlatData.ProductByNumber;
-                inventoryFlatDataToUpdate.ProductTypeName = inventoryFlatData.ProductTypeName;
-                inventoryFlatDataToUpdate.ProductTypeDescription = inventoryFlatData.ProductTypeDescription;
-                inventoryFlatDataToUpdate.ModelNumber = inventoryFlatData.ModelNumber;
-                inventoryFlatDataToUpdate.ManufacturerName = inventoryFlatData.ManufacturerName;
-                inventoryFlatDataToUpdate.AreaName = inventoryFlatData.AreaName;
-                inventoryFlatDataToUpdate.CustomField1Value = inventoryFlatData.CustomField1Value;
-                inventoryFlatDataToUpdate.CustomField1Label = inventoryFlatData.CustomField1Label;
-                inventoryFlatDataToUpdate.CustomField2Value = inventoryFlatData.CustomField2Value;
-                inventoryFlatDataToUpdate.CustomField2Label = inventoryFlatData.CustomField2Label;
-                inventoryFlatDataToUpdate.CustomField3Value = inventoryFlatData.CustomField3Value;
-                inventoryFlatDataToUpdate.CustomField3Label = inventoryFlatData.CustomField3Label;
-                inventoryFlatDataToUpdate.CustomField4Value = inventoryFlatData.CustomField4Value;
-                inventoryFlatDataToUpdate.CustomField4Label = inventoryFlatData.CustomField4Label;
-                inventoryFlatDataToUpdate.InvoiceNumber = inventoryFlatData.InvoiceNumber;
-                inventoryFlatDataToUpdate.InvoiceDate = inventoryFlatData.InvoiceDate;
-                inventoryFlatDataToUpdate.Rejected = inventoryFlatData.Rejected;
-                inventoryFlatDataToUpdate.RejectedNotes = inventoryFlatData.RejectedNotes;
+                    inventoryFlatDataToUpdate.RowId = inventoryFlatData.RowId;
+                    inventoryFlatDataToUpdate.AssetId = inventoryFlatData.AssetId;
+                    inventoryFlatDataToUpdate.Tag = inventoryFlatData.Tag;
+                    inventoryFlatDataToUpdate.Serial = inventoryFlatData.Serial;
+                    inventoryFlatDataToUpdate.SiteId = inventoryFlatData.SiteId;
+                    inventoryFlatDataToUpdate.SiteName = inventoryFlatData.SiteName;
+                    inventoryFlatDataToUpdate.Location = inventoryFlatData.Location;
+                    inventoryFlatDataToUpdate.LocationType = inventoryFlatData.LocationType;
+                    inventoryFlatDataToUpdate.Status = inventoryFlatData.Status;
+                    inventoryFlatDataToUpdate.DepartmentName = inventoryFlatData.DepartmentName;
+                    inventoryFlatDataToUpdate.DepartmentId = inventoryFlatData.DepartmentId;
+                    inventoryFlatDataToUpdate.FundingSource = inventoryFlatData.FundingSource;
+                    inventoryFlatDataToUpdate.FundingSourceDescription = inventoryFlatData.FundingSourceDescription;
+                    inventoryFlatDataToUpdate.PurchasePrice = inventoryFlatData.PurchasePrice;
+                    inventoryFlatDataToUpdate.PurchaseDate = inventoryFlatData.PurchaseDate;
+                    inventoryFlatDataToUpdate.ExpirationDate = inventoryFlatData.ExpirationDate;
+                    inventoryFlatDataToUpdate.InventoryNotes = inventoryFlatData.InventoryNotes;
+                    inventoryFlatDataToUpdate.OrderNumber = inventoryFlatData.OrderNumber;
+                    inventoryFlatDataToUpdate.LineNumber = inventoryFlatData.LineNumber;
+                    inventoryFlatDataToUpdate.VendorName = inventoryFlatData.VendorName;
+                    inventoryFlatDataToUpdate.VendorAccountNumber = inventoryFlatData.VendorAccountNumber;
+                    inventoryFlatDataToUpdate.ParentTag = inventoryFlatData.ParentTag;
+                    inventoryFlatDataToUpdate.ProductName = inventoryFlatData.ProductName;
+                    inventoryFlatDataToUpdate.ProductDescription = inventoryFlatData.ProductTypeDescription;
+                    inventoryFlatDataToUpdate.ProductByNumber = inventoryFlatData.ProductByNumber;
+                    inventoryFlatDataToUpdate.ProductTypeName = inventoryFlatData.ProductTypeName;
+                    inventoryFlatDataToUpdate.ProductTypeDescription = inventoryFlatData.ProductTypeDescription;
+                    inventoryFlatDataToUpdate.ModelNumber = inventoryFlatData.ModelNumber;
+                    inventoryFlatDataToUpdate.ManufacturerName = inventoryFlatData.ManufacturerName;
+                    inventoryFlatDataToUpdate.AreaName = inventoryFlatData.AreaName;
+                    inventoryFlatDataToUpdate.CustomField1Value = inventoryFlatData.CustomField1Value;
+                    inventoryFlatDataToUpdate.CustomField1Label = inventoryFlatData.CustomField1Label;
+                    inventoryFlatDataToUpdate.CustomField2Value = inventoryFlatData.CustomField2Value;
+                    inventoryFlatDataToUpdate.CustomField2Label = inventoryFlatData.CustomField2Label;
+                    inventoryFlatDataToUpdate.CustomField3Value = inventoryFlatData.CustomField3Value;
+                    inventoryFlatDataToUpdate.CustomField3Label = inventoryFlatData.CustomField3Label;
+                    inventoryFlatDataToUpdate.CustomField4Value = inventoryFlatData.CustomField4Value;
+                    inventoryFlatDataToUpdate.CustomField4Label = inventoryFlatData.CustomField4Label;
+                    inventoryFlatDataToUpdate.InvoiceNumber = inventoryFlatData.InvoiceNumber;
+                    inventoryFlatDataToUpdate.InvoiceDate = inventoryFlatData.InvoiceDate;
+                    inventoryFlatDataToUpdate.Rejected = inventoryFlatData.Rejected;
+                    inventoryFlatDataToUpdate.RejectedNotes = inventoryFlatData.RejectedNotes;
 
-                _context.InventoryFlatData.Update(inventoryFlatDataToUpdate);
-                var result = _context.SaveChanges();
+                    _context.InventoryFlatData.Update(inventoryFlatDataToUpdate);
+                    var result = _context.SaveChanges();
 
-                return result == 1;
+                    return result == 1;
+                }
             }
             catch
             {
@@ -613,6 +635,78 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
+        public bool UpdateRange(List<InventoryFlatDataModel> inventoryFlatData)
+        {
+            try
+            {
+                if (inventoryFlatData == null || inventoryFlatData.Count == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    var inventoryFlatDataToUpdate = (from inventoryFlat in _context.InventoryFlatData
+                                                     where (inventoryFlatData.Select(x => x.InventoryFlatDataUid)).Contains(inventoryFlat.InventoryFlatDataUid)
+                                                     select inventoryFlat).ToList();
+
+                    foreach (var item in inventoryFlatDataToUpdate)
+                    {
+                        var sourceInventoryFlatData = inventoryFlatData.Where(row => row.InventoryFlatDataUid == item.InventoryFlatDataUid).FirstOrDefault();
+
+                        item.AssetId = sourceInventoryFlatData.AssetId;
+                        item.Tag = sourceInventoryFlatData.Tag;
+                        item.Serial = sourceInventoryFlatData.Serial;
+                        item.SiteId = sourceInventoryFlatData.SiteId;
+                        item.SiteName = sourceInventoryFlatData.SiteName;
+                        item.Location = sourceInventoryFlatData.Location;
+                        item.LocationType = sourceInventoryFlatData.LocationType;
+                        item.Status = sourceInventoryFlatData.Status;
+                        item.DepartmentName = sourceInventoryFlatData.DepartmentName;
+                        item.DepartmentId = sourceInventoryFlatData.DepartmentId;
+                        item.FundingSource = sourceInventoryFlatData.FundingSource;
+                        item.FundingSourceDescription = sourceInventoryFlatData.FundingSourceDescription;
+                        item.PurchasePrice = sourceInventoryFlatData.PurchasePrice;
+                        item.PurchaseDate = sourceInventoryFlatData.PurchaseDate;
+                        item.ExpirationDate = sourceInventoryFlatData.ExpirationDate;
+                        item.InventoryNotes = sourceInventoryFlatData.InventoryNotes;
+                        item.OrderNumber = sourceInventoryFlatData.OrderNumber;
+                        item.LineNumber = sourceInventoryFlatData.LineNumber;
+                        item.VendorName = sourceInventoryFlatData.VendorName;
+                        item.VendorAccountNumber = sourceInventoryFlatData.VendorAccountNumber;
+                        item.ParentTag = sourceInventoryFlatData.ParentTag;
+                        item.ProductName = sourceInventoryFlatData.ProductName;
+                        item.ProductDescription = sourceInventoryFlatData.ProductDescription;
+                        item.ProductByNumber = sourceInventoryFlatData.ProductByNumber;
+                        item.ProductTypeName = sourceInventoryFlatData.ProductTypeName;
+                        item.ProductTypeDescription = sourceInventoryFlatData.ProductTypeDescription;
+                        item.ModelNumber = sourceInventoryFlatData.ModelNumber;
+                        item.ManufacturerName = sourceInventoryFlatData.ManufacturerName;
+                        item.AreaName = sourceInventoryFlatData.AreaName;
+                        item.CustomField1Value = sourceInventoryFlatData.CustomField1Value;
+                        item.CustomField1Label = sourceInventoryFlatData.CustomField1Label;
+                        item.CustomField2Value = sourceInventoryFlatData.CustomField2Value;
+                        item.CustomField2Label = sourceInventoryFlatData.CustomField2Label;
+                        item.CustomField3Value = sourceInventoryFlatData.CustomField3Value;
+                        item.CustomField3Label = sourceInventoryFlatData.CustomField3Label;
+                        item.CustomField4Value = sourceInventoryFlatData.CustomField4Value;
+                        item.CustomField4Label = sourceInventoryFlatData.CustomField4Label;
+                        item.InvoiceNumber = sourceInventoryFlatData.InvoiceNumber;
+                        item.InvoiceDate = sourceInventoryFlatData.InvoiceDate;
+                        item.Rejected = sourceInventoryFlatData.Rejected;
+                        item.RejectedNotes = sourceInventoryFlatData.RejectedNotes;
+                    }
+
+                    _context.InventoryFlatData.UpdateRange(inventoryFlatDataToUpdate);
+                    var result = _context.SaveChanges();
+
+                    return result == inventoryFlatData.Count;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         #endregion Update Functions
 
