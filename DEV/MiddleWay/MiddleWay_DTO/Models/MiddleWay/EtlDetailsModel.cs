@@ -7,7 +7,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
     public class EtlDetailsModel
     {
         public int _ETL_DetailUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public int PurchaseItemDetailUid { get; set; }
         public int PurchaseUid { get; set; }

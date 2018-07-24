@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[_ETL_Products] (
     [_ETL_ProductsUID]       INT            IDENTITY (1, 1) NOT NULL,
+    [ProcessTaskUid]         INT            NOT NULL,
     [RowID]                  INT            NOT NULL,
-    [ProcessUid]             INT            NOT NULL,
     [ProductUID]             INT            NOT NULL,
     [ProductNumber]          VARCHAR (50)   NOT NULL,
     [ProductName]            VARCHAR (100)  NOT NULL,
@@ -24,10 +24,10 @@
     [CustomField3]           VARCHAR (1000) NULL,
     [Active]                 BIT            NOT NULL,
     [AllowUntagged]          BIT            NOT NULL,
-    [Rejected]               BIT            NOT NULL CONSTRAINT [DF__ETL_Products_Rejected] DEFAULT 0,
+    [Rejected]               BIT            NOT NULL CONSTRAINT [DF__ETL_Products_Rejected] DEFAULT ((0)),
     [RejectedNotes]          TEXT           NULL
     CONSTRAINT [PK__ETL_Products] PRIMARY KEY CLUSTERED ([_ETL_ProductsUID] ASC),
-    CONSTRAINT [FK__ETL_Products_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+    CONSTRAINT [FK__ETL_Products_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 );
 
 

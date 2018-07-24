@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[PurchaseInvoiceFlatData] (
     [PurchaseInvoiceFlatDataUID] INT            IDENTITY (1, 1) NOT NULL,
-    [ProcessUid]                 INT            NOT NULL,
+    [ProcessTaskUid]             INT            NOT NULL,
     [RowID]                      INT            NOT NULL,
     [OrderNumber]                VARCHAR (MAX)  NULL,
     [LineNumber]                 VARCHAR (MAX)  NULL,
@@ -14,9 +14,9 @@
     [InvoicePrice]               VARCHAR (MAX)  NULL,
     [Quantity]                   VARCHAR (MAX)  NULL,
     [LineAmount]                 VARCHAR (MAX)  NULL,
-    [Rejected]                   BIT            NOT NULL CONSTRAINT [DF_PurchaseInvoiceFlatData_Rejected] DEFAULT 0,
+    [Rejected]                   BIT            NOT NULL CONSTRAINT [DF_PurchaseInvoiceFlatData_Rejected] DEFAULT ((0)),
     [RejectedNotes]              TEXT           NULL,
     CONSTRAINT [PK_PurchaseInvoiceFlatData] PRIMARY KEY CLUSTERED ([PurchaseInvoiceFlatDataUID] ASC),
-    CONSTRAINT [FK_PurchaseInvoiceFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+    CONSTRAINT [FK_PurchaseInvoiceFlatData_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 );
 

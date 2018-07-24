@@ -25,7 +25,7 @@ namespace MiddleWay_Controller.Repositories
 
         #region Select Functions
 
-        public List<InventoryFlatDataModel> Select(int processUid, int offset, int limit)
+        public List<InventoryFlatDataModel> Select(int processTaskUid, int offset, int limit)
         {
             try
             {
@@ -39,11 +39,11 @@ namespace MiddleWay_Controller.Repositories
                 }
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
-                            where inventoryFlat.ProcessUid == processUid
+                            where inventoryFlat.ProcessTaskUid == processTaskUid
                             select new InventoryFlatDataModel
                             {
                                 InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
-                                ProcessUid = inventoryFlat.ProcessUid,
+                                ProcessTaskUid = inventoryFlat.ProcessTaskUid,
                                 RowId = inventoryFlat.RowId,
                                 AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
@@ -96,7 +96,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<InventoryFlatDataModel> Select(string client, string processName, int offset, int limit)
+        public List<InventoryFlatDataModel> SelectLatest(string client, string processName, int offset, int limit)
         {
             try
             {
@@ -112,14 +112,19 @@ namespace MiddleWay_Controller.Repositories
                 }
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
-                            join processes in _context.Processes
-                                on inventoryFlat.ProcessUid equals processes.ProcessUid
-                            where processes.Client.Trim().ToLower() == clientVal
-                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                            join processTask in (
+                                from processes in _context.Processes
+                                join latestProcessTasks in _context.ProcessTasks
+                                    on processes.ProcessUid equals latestProcessTasks.ProcessUid
+                                where processes.Client.Trim().ToLower() == clientVal
+                                   && processes.ProcessName.Trim().ToLower() == processNameVal
+                                group latestProcessTasks by new { processes.Client, processes.ProcessName } into latestProcessTasksGroup
+                                select new { ProcessTaskUid = latestProcessTasksGroup.Max(x => x.ProcessTaskUid) })
+                                on inventoryFlat.ProcessTaskUid equals processTask.ProcessTaskUid
                             select new InventoryFlatDataModel
                             {
                                 InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
-                                ProcessUid = inventoryFlat.ProcessUid,
+                                ProcessTaskUid = inventoryFlat.ProcessTaskUid,
                                 RowId = inventoryFlat.RowId,
                                 AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
@@ -181,7 +186,7 @@ namespace MiddleWay_Controller.Repositories
                             select new InventoryFlatDataModel
                             {
                                 InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
-                                ProcessUid = inventoryFlat.ProcessUid,
+                                ProcessTaskUid = inventoryFlat.ProcessTaskUid,
                                 RowId = inventoryFlat.RowId,
                                 AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
@@ -234,24 +239,21 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public InventoryFlatDataModel SelectByAssetId(string client, string processName, string assetId)
+        public InventoryFlatDataModel SelectByAssetId(int processTaskUid, string assetId)
         {
             try
             {
-                var clientVal = (client ?? string.Empty).Trim().ToLower();
-                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var assetIdVal = (assetId ?? string.Empty).Trim().ToLower();
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
-                            join processes in _context.Processes
-                               on inventoryFlat.ProcessUid equals processes.ProcessUid
-                            where processes.Client.Trim().ToLower() == clientVal
-                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                            join processTasks in _context.ProcessTasks
+                               on inventoryFlat.ProcessTaskUid equals processTasks.ProcessTaskUid
+                            where processTasks.ProcessTaskUid == processTaskUid
                                && inventoryFlat.AssetId.Trim().ToLower() == assetIdVal
                             select new InventoryFlatDataModel
                             {
                                 InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
-                                ProcessUid = inventoryFlat.ProcessUid,
+                                ProcessTaskUid = inventoryFlat.ProcessTaskUid,
                                 RowId = inventoryFlat.RowId,
                                 AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
@@ -304,24 +306,21 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public InventoryFlatDataModel SelectByTag(string client, string processName, string tag)
+        public InventoryFlatDataModel SelectByTag(int processTaskUid, string tag)
         {
             try
             {
-                var clientVal = (client ?? string.Empty).Trim().ToLower();
-                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var tagVal = (tag ?? string.Empty).Trim().ToLower();
 
                 var data = (from inventoryFlat in _context.InventoryFlatData
-                            join processes in _context.Processes
-                               on inventoryFlat.ProcessUid equals processes.ProcessUid
-                            where processes.Client.Trim().ToLower() == clientVal
-                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                            join processTasks in _context.ProcessTasks
+                               on inventoryFlat.ProcessTaskUid equals processTasks.ProcessTaskUid
+                            where processTasks.ProcessTaskUid == processTaskUid
                                && inventoryFlat.AssetId.Trim().ToLower() == tagVal
                             select new InventoryFlatDataModel
                             {
                                 InventoryFlatDataUid = inventoryFlat.InventoryFlatDataUid,
-                                ProcessUid = inventoryFlat.ProcessUid,
+                                ProcessTaskUid = inventoryFlat.ProcessTaskUid,
                                 RowId = inventoryFlat.RowId,
                                 AssetId = inventoryFlat.AssetId,
                                 Tag = inventoryFlat.Tag,
@@ -374,12 +373,12 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public int GetTotal(int processUid)
+        public int GetTotal(int processTaskUid)
         {
             try
             {
                 return (from inventoryFlat in _context.InventoryFlatData
-                        where inventoryFlat.ProcessUid == processUid
+                        where inventoryFlat.ProcessTaskUid == processTaskUid
                         select inventoryFlat).Count();
             }
             catch
@@ -388,7 +387,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public int GetTotal(string client, string processName)
+        public int GetTotalLatest(string client, string processName)
         {
             try
             {
@@ -396,10 +395,15 @@ namespace MiddleWay_Controller.Repositories
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 return (from inventoryFlat in _context.InventoryFlatData
-                        join processes in _context.Processes
-                               on inventoryFlat.ProcessUid equals processes.ProcessUid
-                        where processes.Client.Trim().ToLower() == clientVal
-                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                        join processTask in (
+                               from processes in _context.Processes
+                               join latestProcessTasks in _context.ProcessTasks
+                                   on processes.ProcessUid equals latestProcessTasks.ProcessUid
+                               where processes.Client.Trim().ToLower() == clientVal
+                                  && processes.ProcessName.Trim().ToLower() == processNameVal
+                               group latestProcessTasks by new { processes.Client, processes.ProcessName } into latestProcessTasksGroup
+                               select new { ProcessTaskUid = latestProcessTasksGroup.Max(x => x.ProcessTaskUid) })
+                              on inventoryFlat.ProcessTaskUid equals processTask.ProcessTaskUid
                         select inventoryFlat).Count();
             }
             catch
@@ -425,7 +429,7 @@ namespace MiddleWay_Controller.Repositories
                     var inventoryFlatToInsert = new InventoryFlatData()
                     {
                         InventoryFlatDataUid = 0,
-                        ProcessUid = inventoryFlatData.ProcessUid,
+                        ProcessTaskUid = inventoryFlatData.ProcessTaskUid,
                         RowId = inventoryFlatData.RowId,
                         AssetId = inventoryFlatData.AssetId,
                         Tag = inventoryFlatData.Tag,
@@ -504,7 +508,7 @@ namespace MiddleWay_Controller.Repositories
                         var inventoryFlatDataToInsert = new InventoryFlatData()
                         {
                             InventoryFlatDataUid = 0,
-                            ProcessUid = item.ProcessUid,
+                            ProcessTaskUid = item.ProcessTaskUid,
                             RowId = item.RowId,
                             AssetId = item.AssetId,
                             Tag = item.Tag,
@@ -712,12 +716,30 @@ namespace MiddleWay_Controller.Repositories
 
         #region Delete Functions
 
-        public bool Delete(int processUid)
+        public bool Delete(int inventoryFlatDataUid)
         {
             try
             {
                 var inventoryData = (from inventoryFlatData in _context.InventoryFlatData
-                                     where inventoryFlatData.ProcessUid == processUid
+                                     where inventoryFlatData.InventoryFlatDataUid == inventoryFlatDataUid
+                                     select inventoryFlatData);
+
+                _context.InventoryFlatData.RemoveRange(inventoryData);
+                var result = _context.SaveChanges();
+                return (result > 0);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool DeleteAll(int processTaskUid)
+        {
+            try
+            {
+                var inventoryData = (from inventoryFlatData in _context.InventoryFlatData
+                                     where inventoryFlatData.ProcessTaskUid == processTaskUid
                                      select inventoryFlatData);
 
                 _context.InventoryFlatData.RemoveRange(inventoryData);
@@ -730,7 +752,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public bool Delete(string client, string processName)
+        public bool DeleteAll(string client, string processName)
         {
             try
             {
@@ -738,8 +760,10 @@ namespace MiddleWay_Controller.Repositories
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 var inventoryData = (from inventoryFlatData in _context.InventoryFlatData
+                                     join processTasks in _context.ProcessTasks
+                                       on inventoryFlatData.ProcessTaskUid equals processTasks.ProcessTaskUid
                                      join processes in _context.Processes
-                                       on inventoryFlatData.ProcessUid equals processes.ProcessUid
+                                       on processTasks.ProcessUid equals processes.ProcessUid
                                      where processes.Client.Trim().ToLower() == clientVal
                                         && processes.ProcessName.Trim().ToLower() == processNameVal
                                      select inventoryFlatData);

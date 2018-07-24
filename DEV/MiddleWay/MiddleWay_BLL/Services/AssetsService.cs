@@ -110,14 +110,14 @@ namespace MiddleWay_BLL.Services
 
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Stage);
 
-                        var flatCount = _inventoryFlatService.GetTotal();
+                        var flatCount = _inventoryFlatService.GetTotal(processTaskUid);
                         var limit = _configurationService.ReadLimit;
                         var currentCount = 0;
                         recordCount = 0;
                         //Perform flat to ETL table mappings, transformations then insert (in a loop)
                         while (currentCount < flatCount)
                         {
-                            var flatData = _inventoryFlatService.Get(currentCount, limit);
+                            var flatData = _inventoryFlatService.Get(processTaskUid, currentCount, limit);
 
                             var transformedData = _transformationService.TransformToDynamic(flatData, ProcessSteps.Stage);
 
@@ -140,7 +140,7 @@ namespace MiddleWay_BLL.Services
                                              select new InventoryFlatDataModel
                                              {
                                                  InventoryFlatDataUid = data.ContainsKey("InventoryFlatDataUid") ? Int32.Parse(data["InventoryFlatDataUid"].ToString()) : 0,
-                                                 ProcessUid = data.ContainsKey("ProcessUid") ? Int32.Parse(data["ProcessUid"].ToString()) : 0,
+                                                 ProcessTaskUid = data.ContainsKey("ProcessTaskUid") ? Int32.Parse(data["ProcessTaskUid"].ToString()) : 0,
                                                  RowId = data.ContainsKey("RowId") ? Int32.Parse(data["RowId"].ToString()) : 0,
                                                  AssetId = data.ContainsKey("AssetId") ? data["AssetId"].ToString() : string.Empty,
                                                  Tag = data.ContainsKey("Tag") ? data["Tag"].ToString() : string.Empty,
@@ -212,7 +212,7 @@ namespace MiddleWay_BLL.Services
                         //    switch (options[i])
                         //    {
                         //        case "MergeProducts":
-                        //            //Use transformation lookup to convert possibles to a single result?
+                        //            //Use transformation lookup to convert possibilities to a single result?
                         //            break;
                         //        default:
                         //            break;
@@ -220,6 +220,8 @@ namespace MiddleWay_BLL.Services
                         //}
 
                         //_processTaskStepsService.EndTaskStep(taskStepUid, true);
+
+                        return;
 
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
 

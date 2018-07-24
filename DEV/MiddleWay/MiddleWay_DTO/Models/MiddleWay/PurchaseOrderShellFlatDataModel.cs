@@ -7,7 +7,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
     public class PurchaseOrderShellFlatDataModel
     {
         public int PurchaseOrderShellFlatDataUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public string OrderNumber { get; set; }
         public string PurchaseDate { get; set; }

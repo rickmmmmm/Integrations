@@ -44,7 +44,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var dynamicData = new ExpandoObject();
             var data = dynamicData as IDictionary<string, object>;
             data.TryAdd("Uid", 1);
-            data.TryAdd("PUid", 1);
+            data.TryAdd("PTUid", 1);
             data.TryAdd("Row", 1);
             data.TryAdd("Asset", "A0");
             data.TryAdd("TagNumber", "Tag001");
@@ -95,7 +95,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             {
                 _outputHelper.WriteLine(Utilities.ToStringObject(mappedData));
                 Assert.Equal(1, mappedData._ETL_InventoryUid);
-                Assert.Equal(1, mappedData.ProcessUid);
+                Assert.Equal(1, mappedData.ProcessTaskUid);
                 Assert.Equal(1, mappedData.RowId);
                 Assert.Equal(0, mappedData.InventoryUid);
                 Assert.Equal("A0", mappedData.AssetId);
@@ -185,7 +185,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var dynamicData = new ExpandoObject();
             var data = dynamicData as IDictionary<string, object>;
             data.TryAdd("Uid", 1);
-            data.TryAdd("PUid", 1);
+            data.TryAdd("PTUid", 1);
             data.TryAdd("Row", 1);
             data.TryAdd("Asset", "A0");
             data.TryAdd("TagNumber", "Tag001");
@@ -237,7 +237,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             {
                 _outputHelper.WriteLine(Utilities.ToStringObject(mappedData));
                 Assert.Equal(1, mappedData._ETL_InventoryUid);
-                Assert.Equal(1, mappedData.ProcessUid);
+                Assert.Equal(1, mappedData.ProcessTaskUid);
                 Assert.Equal(1, mappedData.RowId);
                 Assert.Equal(0, mappedData.InventoryUid);
                 Assert.Equal("A0", mappedData.AssetId);
@@ -325,7 +325,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlat = new InventoryFlatDataModel
             {
                 InventoryFlatDataUid = 1,
-                ProcessUid = 1,
+                ProcessTaskUid = 1,
                 RowId = 1,
                 AssetId = "A0",
                 Tag = "Tag001",
@@ -376,7 +376,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             {
                 var data = mappedData as IDictionary<string, object>;
                 Assert.Equal(1, data["_ETL_InventoryUid"]);
-                Assert.Equal(1, data["ProcessUid"]);
+                Assert.Equal(1, data["ProcessTaskUid"]);
                 Assert.Equal(1, data["RowId"]);
                 Assert.Equal("A0", data["AssetId"]);
                 Assert.Equal("Tag001", data["Tag"]);
@@ -432,7 +432,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlat = new InventoryFlatDataModel
             {
                 InventoryFlatDataUid = 1,
-                ProcessUid = 1,
+                ProcessTaskUid = 1,
                 RowId = 1,
                 AssetId = "A0",
                 Tag = "Tag001",
@@ -483,7 +483,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             {
                 //var data = mappedData as IDictionary<string, object>;
                 Assert.Equal(1, data._ETL_InventoryUid);
-                Assert.Equal(1, data.ProcessUid);
+                Assert.Equal(1, data.ProcessTaskUid);
                 Assert.Equal(1, data.RowId);
                 Assert.Equal("A0", data.AssetId);
                 Assert.Equal("Tag001", data.Tag);
@@ -581,7 +581,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 return new List<MappingsModel>
                 {
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "InventoryFlatDataUid", DestinationColumn = "_ETL_InventoryUid", Enabled = true },
-                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProcessUid", DestinationColumn = "ProcessUid", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProcessTaskUid", DestinationColumn = "ProcessTaskUid", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "RowId", DestinationColumn = "RowId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "AssetId", DestinationColumn = "AssetId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Tag", DestinationColumn = "Tag", Enabled = true },
@@ -628,7 +628,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 return new List<MappingsModel>
                 {
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "Uid", DestinationColumn = "_ETL_InventoryUid", Enabled = true },
-                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "PUid", DestinationColumn = "ProcessUid", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "PTUid", DestinationColumn = "ProcessTaskUid", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "Row", DestinationColumn = "RowId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "Iuid", DestinationColumn = "InventoryUid", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Stage.ToString(), SourceColumn = "Asset", DestinationColumn = "AssetId", Enabled = true },

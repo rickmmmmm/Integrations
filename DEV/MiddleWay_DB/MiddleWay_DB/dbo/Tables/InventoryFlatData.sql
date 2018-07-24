@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[InventoryFlatData] (
     [InventoryFlatDataUID]     INT           IDENTITY (1, 1) NOT NULL,
-    [ProcessUid]               INT           NOT NULL,
+    [ProcessTaskUid]           INT           NOT NULL,
     [RowID]                    INT           NOT NULL,
     [AssetID]                  VARCHAR (MAX) NULL,
     [Tag]                      VARCHAR (MAX) NULL,
@@ -41,10 +41,10 @@
     [CustomField4Label]        VARCHAR (MAX) NULL,
     [InvoiceNumber]            VARCHAR (MAX) NULL,
     [InvoiceDate]              VARCHAR (MAX) NULL,
-    [Rejected]                 BIT           CONSTRAINT [DF_InventoryFlatData_Rejected] DEFAULT 0 NOT NULL,
+    [Rejected]                 BIT           CONSTRAINT [DF_InventoryFlatData_Rejected] DEFAULT ((0)) NOT NULL,
     [RejectedNotes]            TEXT          NULL,
     CONSTRAINT [PK_InventoryFlatData] PRIMARY KEY CLUSTERED ([InventoryFlatDataUID] ASC),
-    CONSTRAINT [FK_InventoryFlatData_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+    CONSTRAINT [FK_InventoryFlatData_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 );
 
 

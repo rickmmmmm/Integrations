@@ -1,9 +1,10 @@
 CREATE TABLE [dbo].[_ETL_RawFile](
-    [RowID] [int] IDENTITY(1,1) NOT NULL,
-    [ProcessUid]  [INT] NOT NULL,
-    [RawData] [varchar](max) NULL,
-    [RawDataModified] [varchar](max) NULL,
-    CONSTRAINT [PK__ETL_RawFile] PRIMARY KEY CLUSTERED ([RowID] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+    [RowID]             [INT] IDENTITY(1,1) NOT NULL,
+    [ProcessTaskUid]    [INT] NOT NULL,
+    [RawData]           [VARCHAR](MAX) NULL,
+    [RawDataModified]   [VARCHAR](MAX) NULL,
+    CONSTRAINT [PK__ETL_RawFile] PRIMARY KEY CLUSTERED ([RowID] ASC),
+    CONSTRAINT [FK__ETL_RawFile_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

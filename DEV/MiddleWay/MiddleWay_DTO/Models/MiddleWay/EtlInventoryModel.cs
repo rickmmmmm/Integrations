@@ -7,7 +7,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
     public class EtlInventoryModel
     {
         public int _ETL_InventoryUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public int InventoryUid { get; set; }
         public string AssetId { get; set; }

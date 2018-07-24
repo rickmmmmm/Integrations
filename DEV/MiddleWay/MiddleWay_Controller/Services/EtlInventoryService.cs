@@ -11,18 +11,18 @@ namespace MiddleWay_Controller.Services
 
         private IEtlInventoryRepository _etlInventoryRepository;
         private IClientConfiguration _clientConfiguration;
-        private IProcessesService _processesService;
+        private IProcessTasksService _processTasksService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
         public EtlInventoryService(IEtlInventoryRepository etlInventoryRepository, IClientConfiguration clientConfiguration,
-                                   IProcessesService processesService)
+                                   IProcessTasksService processTasksService)
         {
             _etlInventoryRepository = etlInventoryRepository;
             _clientConfiguration = clientConfiguration;
-            _processesService = processesService;
+            _processTasksService = processTasksService;
         }
 
         #endregion Constructor
@@ -41,11 +41,11 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public EtlInventoryModel GetByTag(string client, string processName, string tag)
+        public EtlInventoryModel GetByTag(int processTaskUid, string tag)
         {
             try
             {
-                return _etlInventoryRepository.SelectByTag(client, processName, tag);
+                return _etlInventoryRepository.SelectByTag(processTaskUid, tag);
             }
             catch
             {
@@ -53,11 +53,11 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public EtlInventoryModel GetByAsset(string client, string processName, string assetId)
+        public EtlInventoryModel GetByAsset(int processTaskUid, string assetId)
         {
             try
             {
-                return _etlInventoryRepository.SelectByAssetId(client, processName, assetId);
+                return _etlInventoryRepository.SelectByAssetId(processTaskUid, assetId);
             }
             catch
             {
@@ -77,11 +77,59 @@ namespace MiddleWay_Controller.Services
         //    }
         //}
 
-        public EtlInventoryModel GetByInventoryId(string client, string processName, int inventoryUid)
+        public EtlInventoryModel GetByInventoryId(int processTaskUid, int inventoryUid)
         {
             try
             {
-                return _etlInventoryRepository.SelectByInventoryUid(client, processName, inventoryUid);
+                return _etlInventoryRepository.SelectByInventoryUid(processTaskUid, inventoryUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<EtlInventoryModel> Get(int processTaskUid, int offset, int limit)
+        {
+            try
+            {
+                return _etlInventoryRepository.Select(processTaskUid, offset, limit);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<EtlInventoryModel> GetLatest(int offset, int limit)
+        {
+            try
+            {
+                return _etlInventoryRepository.SelectLatest(_clientConfiguration.Client, _clientConfiguration.ProcessName, offset, limit);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int GetTotal(int processTaskUid)
+        {
+            try
+            {
+                return _etlInventoryRepository.GetTotal(processTaskUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int GetTotalLatest()
+        {
+            try
+            {
+                return _etlInventoryRepository.GetTotalLatest(_clientConfiguration.Client, _clientConfiguration.ProcessName);
             }
             catch
             {
@@ -97,8 +145,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                item.ProcessUid = processUid;
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                item.ProcessTaskUid = processTaskUid;
                 return _etlInventoryRepository.Insert(item);
             }
             catch
@@ -111,8 +159,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                items.ForEach(row => row.ProcessUid = processUid);
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                items.ForEach(row => row.ProcessTaskUid = processTaskUid);
                 return _etlInventoryRepository.InsertRange(items);
                 //TODO: Log count of items saved?
             }
@@ -130,8 +178,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                item.ProcessUid = processUid;
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                item.ProcessTaskUid = processTaskUid;
                 return _etlInventoryRepository.Update(item);
             }
             catch
@@ -144,8 +192,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                items.ForEach(x => x.ProcessUid = processUid);
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                items.ForEach(x => x.ProcessTaskUid = processTaskUid);
                 return _etlInventoryRepository.UpdateRange(items);
             }
             catch
@@ -158,7 +206,7 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
 
                 //Validate Tag/Asset/Serial
                 //TODO: Get Configuration for use Tag in Notes
@@ -197,6 +245,7 @@ namespace MiddleWay_Controller.Services
                 //TODO: Get Configuration for Invoice For Shipment or Order....????
 
                 //Validate Parent Tag
+                //TODO: Get Configuration for Fail Invalid Parent Tag Relationships
 
                 //TODO: Log count of items saved?
 
@@ -212,7 +261,7 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
 
                 //Submit Products
 
@@ -257,6 +306,30 @@ namespace MiddleWay_Controller.Services
             try
             {
                 return _etlInventoryRepository.Delete(etlInventoryUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool RemoveAll()
+        {
+            try
+            {
+                return _etlInventoryRepository.DeleteAll(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool RemoveAll(int processTaskUid)
+        {
+            try
+            {
+                return _etlInventoryRepository.DeleteAll(processTaskUid);
             }
             catch
             {

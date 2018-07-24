@@ -7,18 +7,19 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
 {
     public interface IInventoryFlatDataRepository
     {
-        List<InventoryFlatDataModel> Select(int processUid, int offset, int limit);
-        List<InventoryFlatDataModel> Select(string client, string processName, int offset, int limit);
+        List<InventoryFlatDataModel> Select(int processTaskUid, int offset, int limit);
+        List<InventoryFlatDataModel> SelectLatest(string client, string processName, int offset, int limit);
         InventoryFlatDataModel Select(int inventoryFlatDataUid);
-        InventoryFlatDataModel SelectByAssetId(string client, string processName, string assetId);
-        InventoryFlatDataModel SelectByTag(string  client, string  processName, string  tag);
-        int GetTotal(int processUid);
-        int GetTotal(string client, string processName);
+        InventoryFlatDataModel SelectByAssetId(int processTaskUid, string assetId);
+        InventoryFlatDataModel SelectByTag(int processTaskUid, string tag);
+        int GetTotal(int processTaskUid);
+        int GetTotalLatest(string client, string processName);
         int Insert(InventoryFlatDataModel inventoryFlatData);
         bool InsertRange(List<InventoryFlatDataModel> inventoryFlatDataBatch);
         bool Update(InventoryFlatDataModel inventoryFlatData);
         bool UpdateRange(List<InventoryFlatDataModel> inventoryFlatData);
-        bool Delete(int processUid);
-        bool Delete(string client, string processName);
+        bool Delete(int inventoryFlatDataUid);
+        bool DeleteAll(int processTaskUid);
+        bool DeleteAll(string client, string processName);
     }
 }

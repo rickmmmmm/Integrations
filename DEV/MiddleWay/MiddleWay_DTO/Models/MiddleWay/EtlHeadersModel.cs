@@ -7,7 +7,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
     public class EtlHeadersModel
     {
         public int _ETL_HeaderUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int PurchaseUid { get; set; }
         public int OrderNumber { get; set; }
         public int StatusId { get; set; }

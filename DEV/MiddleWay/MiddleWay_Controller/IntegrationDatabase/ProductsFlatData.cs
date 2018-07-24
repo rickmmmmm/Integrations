@@ -6,7 +6,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
     public partial class ProductsFlatData
     {
         public int ProductsFlatDataUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
@@ -27,6 +27,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public bool Rejected { get; set; }
         public string RejectedNotes { get; set; }
 
-        public Processes ProcessU { get; set; }
+        public ProcessTasks ProcessTaskU { get; set; }
     }
 }

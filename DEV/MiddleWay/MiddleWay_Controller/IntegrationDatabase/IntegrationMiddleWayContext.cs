@@ -178,11 +178,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.TechDepartmentUid).HasColumnName("TechDepartmentUID");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.EtlDetails)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ETL_Details_Processes");
+                    .HasConstraintName("FK__ETL_Details_ProcessTasks");
             });
 
             modelBuilder.Entity<EtlHeaders>(entity =>
@@ -244,11 +244,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.EtlHeaders)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ETL_Headers_Processes");
+                    .HasConstraintName("FK__ETL_Headers_ProcessTasks");
             });
 
             modelBuilder.Entity<EtlInventory>(entity =>
@@ -486,11 +486,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorUid).HasColumnName("VendorUID");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.EtlInventory)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ETL_Inventory_Processes");
+                    .HasConstraintName("FK__ETL_Inventory_ProcessTasks");
             });
 
             modelBuilder.Entity<EtlProducts>(entity =>
@@ -573,11 +573,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.SuggestedPrice).HasColumnType("decimal(18, 0)");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.EtlProducts)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ETL_Products_Processes");
+                    .HasConstraintName("FK__ETL_Products_ProcessTasks");
             });
 
             modelBuilder.Entity<EtlRawFile>(entity =>
@@ -591,6 +591,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
                 entity.Property(e => e.RawData).IsUnicode(false);
 
                 entity.Property(e => e.RawDataModified).IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessTaskU)
+                    .WithMany(p => p.EtlRawFile)
+                    .HasForeignKey(d => d.ProcessTaskUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ETL_RawFile_ProcessTasks");
             });
 
             modelBuilder.Entity<EtlShipments>(entity =>
@@ -641,11 +647,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.TicketedDate).HasColumnType("datetime");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.EtlShipments)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ETL_Shipments_Processes");
+                    .HasConstraintName("FK__ETL_Shipments_ProcessTasks");
             });
 
             modelBuilder.Entity<InventoryFlatData>(entity =>
@@ -694,6 +700,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.InvoiceNumber).IsUnicode(false);
 
+                entity.Property(e => e.LineNumber).IsUnicode(false);
+
                 entity.Property(e => e.Location).IsUnicode(false);
 
                 entity.Property(e => e.LocationType).IsUnicode(false);
@@ -703,8 +711,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
                 entity.Property(e => e.ModelNumber).IsUnicode(false);
 
                 entity.Property(e => e.OrderNumber).IsUnicode(false);
-
-                entity.Property(e => e.LineNumber).IsUnicode(false);
 
                 entity.Property(e => e.ParentTag).IsUnicode(false);
 
@@ -742,11 +748,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorName).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.InventoryFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_InventoryFlatData_Processes");
+                    .HasConstraintName("FK_InventoryFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<Mappings>(entity =>
@@ -759,6 +765,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsUnicode(false);
 
                 entity.Property(e => e.SourceColumn)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StepName)
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -904,11 +915,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.SuggestedPrice).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.ProductsFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ProductsFlatData_Processes");
+                    .HasConstraintName("FK_ProductsFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<PurchaseInvoiceFlatData>(entity =>
@@ -945,11 +956,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.RowId).HasColumnName("RowID");
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.PurchaseInvoiceFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseInvoiceFlatData_Processes");
+                    .HasConstraintName("FK_PurchaseInvoiceFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<PurchaseOrderDetailShipmentFlatData>(entity =>
@@ -1044,11 +1055,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorName).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.PurchaseOrderDetailShipmentFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseOrderDetailShipmentFlatData_Processes");
+                    .HasConstraintName("FK_PurchaseOrderDetailShipmentFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<PurchaseOrderFlatData>(entity =>
@@ -1117,11 +1128,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorName).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.PurchaseOrderFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseOrderFlatData_Processes");
+                    .HasConstraintName("FK_PurchaseOrderFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<PurchaseOrderShellFlatData>(entity =>
@@ -1160,11 +1171,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.VendorName).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.PurchaseOrderShellFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseOrderShellFlatData_Processes");
+                    .HasConstraintName("FK_PurchaseOrderShellFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<PurchaseShipmentFlatData>(entity =>
@@ -1209,11 +1220,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.TicketedDate).IsUnicode(false);
 
-                entity.HasOne(d => d.ProcessU)
+                entity.HasOne(d => d.ProcessTaskU)
                     .WithMany(p => p.PurchaseShipmentFlatData)
-                    .HasForeignKey(d => d.ProcessUid)
+                    .HasForeignKey(d => d.ProcessTaskUid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseShipmentFlatData_Processes");
+                    .HasConstraintName("FK_PurchaseShipmentFlatData_ProcessTasks");
             });
 
             modelBuilder.Entity<TransformationLookup>(entity =>
@@ -1262,6 +1273,11 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsUnicode(false);
 
                 entity.Property(e => e.SourceColumn)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StepName)
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);

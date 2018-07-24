@@ -35,7 +35,7 @@ namespace MiddleWay_Controller.Repositories
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
                                      RowId = etlInventory.RowId,
-                                     ProcessUid = etlInventory.ProcessUid,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
                                      Tag = etlInventory.Tag,
@@ -117,24 +117,21 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public EtlInventoryModel SelectByAssetId(string client, string processName, string assetId)
+        public EtlInventoryModel SelectByAssetId(int processTaskUid, string assetId)
         {
             try
             {
-                var clientVal = (client ?? string.Empty).Trim().ToLower();
-                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var assetIdVal = (assetId ?? string.Empty).Trim().ToLower();
 
                 var inventory = (from etlInventory in _context.EtlInventory
-                                 join processes in _context.Processes
-                                    on etlInventory.ProcessUid equals processes.ProcessUid
-                                 where processes.Client.Trim().ToLower() == clientVal
-                                    && processes.ProcessName.Trim().ToLower() == processNameVal
+                                 join processTasks in _context.ProcessTasks
+                                    on etlInventory.ProcessTaskUid equals processTasks.ProcessTaskUid
+                                 where processTasks.ProcessTaskUid == processTaskUid
                                     && etlInventory.AssetId.Trim().ToLower() == assetIdVal
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessUid = etlInventory.ProcessUid,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
@@ -217,23 +214,19 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public EtlInventoryModel SelectByInventoryUid(string client, string processName, int inventoryUid)
+        public EtlInventoryModel SelectByInventoryUid(int processTaskUid, int inventoryUid)
         {
             try
             {
-                var clientVal = (client ?? string.Empty).Trim().ToLower();
-                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
-
                 var inventory = (from etlInventory in _context.EtlInventory
-                                 join processes in _context.Processes
-                                    on etlInventory.ProcessUid equals processes.ProcessUid
-                                 where processes.Client.Trim().ToLower() == clientVal
-                                    && processes.ProcessName.Trim().ToLower() == processNameVal
+                                 join processTasks in _context.ProcessTasks
+                                    on etlInventory.ProcessTaskUid equals processTasks.ProcessTaskUid
+                                 where processTasks.ProcessTaskUid == processTaskUid
                                     && etlInventory.InventoryUid == inventoryUid
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessUid = etlInventory.ProcessUid,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
@@ -316,24 +309,21 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public EtlInventoryModel SelectByTag(string client, string processName, string tag)
+        public EtlInventoryModel SelectByTag(int processTaskUid, string tag)
         {
             try
             {
-                var clientVal = (client ?? string.Empty).Trim().ToLower();
-                var processNameVal = (processName ?? string.Empty).Trim().ToLower();
                 var tagVal = (tag ?? string.Empty).Trim().ToLower();
 
                 var inventory = (from etlInventory in _context.EtlInventory
-                                 join processes in _context.Processes
-                                    on etlInventory.ProcessUid equals processes.ProcessUid
-                                 where processes.Client.Trim().ToLower() == clientVal
-                                    && processes.ProcessName.Trim().ToLower() == processNameVal
+                                 join processTasks in _context.ProcessTasks
+                                    on etlInventory.ProcessTaskUid equals processTasks.ProcessTaskUid
+                                 where processTasks.ProcessTaskUid == processTaskUid
                                     && etlInventory.Tag.Trim().ToLower() == tagVal
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessUid = etlInventory.ProcessUid,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
@@ -416,7 +406,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<EtlInventoryModel> Select(int processUid, int offset, int limit)
+        public List<EtlInventoryModel> Select(int processTaskUid, int offset, int limit)
         {
             try
             {
@@ -430,11 +420,11 @@ namespace MiddleWay_Controller.Repositories
                 }
 
                 var inventoryList = (from etlInventory in _context.EtlInventory
-                                     where etlInventory.ProcessUid == processUid
+                                     where etlInventory.ProcessTaskUid == processTaskUid
                                      select new EtlInventoryModel
                                      {
                                          _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                         ProcessUid = etlInventory.ProcessUid,
+                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          RowId = etlInventory.RowId,
                                          InventoryUid = etlInventory.InventoryUid,
                                          AssetId = etlInventory.AssetId,
@@ -517,7 +507,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public List<EtlInventoryModel> Select(string client, string processName, int offset, int limit)
+        public List<EtlInventoryModel> SelectLatest(string client, string processName, int offset, int limit)
         {
             try
             {
@@ -534,14 +524,19 @@ namespace MiddleWay_Controller.Repositories
                 }
 
                 var inventoryList = (from etlInventory in _context.EtlInventory
-                                     join processes in _context.Processes
-                                    on etlInventory.ProcessUid equals processes.ProcessUid
-                                     where processes.Client.Trim().ToLower() == clientVal
-                                        && processes.ProcessName.Trim().ToLower() == processNameVal
+                                     join processTask in (
+                                        from processes in _context.Processes
+                                        join latestProcessTasks in _context.ProcessTasks
+                                            on processes.ProcessUid equals latestProcessTasks.ProcessUid
+                                        where processes.Client.Trim().ToLower() == clientVal
+                                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                                        group latestProcessTasks by new { processes.Client, processes.ProcessName } into latestProcessTasksGroup
+                                        select new { ProcessTaskUid = latestProcessTasksGroup.Max(x => x.ProcessTaskUid) })
+                                        on etlInventory.ProcessTaskUid equals processTask.ProcessTaskUid
                                      select new EtlInventoryModel
                                      {
                                          _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                         ProcessUid = etlInventory.ProcessUid,
+                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          RowId = etlInventory.RowId,
                                          InventoryUid = etlInventory.InventoryUid,
                                          AssetId = etlInventory.AssetId,
@@ -624,12 +619,12 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public int GetTotal(int processUid)
+        public int GetTotal(int processTaskUid)
         {
             try
             {
                 return (from etlInventory in _context.EtlInventory
-                        where etlInventory.ProcessUid == processUid
+                        where etlInventory.ProcessTaskUid == processTaskUid
                         select 1).Count();
             }
             catch
@@ -638,7 +633,7 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public int GetTotal(string client, string processName)
+        public int GetTotalLatest(string client, string processName)
         {
             try
             {
@@ -646,10 +641,15 @@ namespace MiddleWay_Controller.Repositories
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
                 return (from etlInventory in _context.EtlInventory
-                        join processes in _context.Processes
-                       on etlInventory.ProcessUid equals processes.ProcessUid
-                        where processes.Client.Trim().ToLower() == clientVal
-                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                        join processTask in (
+                            from processes in _context.Processes
+                            join latestProcessTasks in _context.ProcessTasks
+                                on processes.ProcessUid equals latestProcessTasks.ProcessUid
+                            where processes.Client.Trim().ToLower() == clientVal
+                               && processes.ProcessName.Trim().ToLower() == processNameVal
+                            group latestProcessTasks by new { processes.Client, processes.ProcessName } into latestProcessTasksGroup
+                            select new { ProcessTaskUid = latestProcessTasksGroup.Max(x => x.ProcessTaskUid) })
+                            on etlInventory.ProcessTaskUid equals processTask.ProcessTaskUid
                         select 1).Count();
             }
             catch
@@ -675,7 +675,7 @@ namespace MiddleWay_Controller.Repositories
                     var etlInventoryToInsert = new EtlInventory
                     {
                         EtlInventoryUid = 0,
-                        ProcessUid = etlInventoryData.ProcessUid,
+                        ProcessTaskUid = etlInventoryData.ProcessTaskUid,
                         RowId = etlInventoryData.RowId,
                         InventoryUid = etlInventoryData.InventoryUid,
                         AssetId = etlInventoryData.AssetId,
@@ -782,7 +782,7 @@ namespace MiddleWay_Controller.Repositories
                                         select new EtlInventory
                                         {
                                             EtlInventoryUid = 0,
-                                            ProcessUid = data.ProcessUid,
+                                            ProcessTaskUid = data.ProcessTaskUid,
                                             RowId = data.RowId,
                                             InventoryUid = data.InventoryUid,
                                             AssetId = data.AssetId,
@@ -886,7 +886,7 @@ namespace MiddleWay_Controller.Repositories
                                                 where etlInventory.EtlInventoryUid == etlInventoryData._ETL_InventoryUid
                                                 select etlInventory).FirstOrDefault();
 
-                    etlInventoryToUpdate.ProcessUid = etlInventoryData.ProcessUid;
+                    //etlInventoryToUpdate.ProcessTaskUid = etlInventoryData.ProcessTaskUid;
                     etlInventoryToUpdate.InventoryUid = etlInventoryData.InventoryUid;
                     etlInventoryToUpdate.RowId = etlInventoryData.RowId;
                     etlInventoryToUpdate.AssetId = etlInventoryData.AssetId;
@@ -1078,18 +1078,18 @@ namespace MiddleWay_Controller.Repositories
 
         #region Delete Methods
 
-        public bool Delete(int processUid)
+        public bool Delete(int etlInventoryUid)
         {
             try
             {
                 var dataToDelete = (from etlinventory in _context.EtlInventory
-                                    where etlinventory.ProcessUid == processUid
+                                    where etlinventory.EtlInventoryUid == etlInventoryUid
                                     select etlinventory);
 
                 _context.EtlInventory.RemoveRange(dataToDelete);
                 var result = _context.SaveChanges();
 
-                return result > 1;
+                return result >= 0;
             }
             catch
             {
@@ -1097,24 +1097,48 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
-        public bool Delete(string client, string processName)
+        public bool DeleteAll(int processTaskUid)
+        {
+            try
+            {
+                var dataToDelete = (from etlinventory in _context.EtlInventory
+                                    where etlinventory.ProcessTaskUid == processTaskUid
+                                    select etlinventory);
+
+                _context.EtlInventory.RemoveRange(dataToDelete);
+                var result = _context.SaveChanges();
+
+                return result >= 0;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public bool DeleteAll(string client, string processName)
         {
             try
             {
                 var clientVal = (client ?? string.Empty).Trim().ToLower();
                 var processNameVal = (processName ?? string.Empty).Trim().ToLower();
 
-                var dataToDelete = (from etlinventory in _context.EtlInventory
-                                    join processes in _context.Processes
-                                        on etlinventory.ProcessUid equals processes.ProcessUid
-                                    where processes.Client.Trim().ToLower() == clientVal
-                                       && processes.ProcessName.Trim().ToLower() == processNameVal
-                                    select etlinventory);
+                var dataToDelete = (from etlInventory in _context.EtlInventory
+                                    join processTask in (
+                                        from processes in _context.Processes
+                                        join latestProcessTasks in _context.ProcessTasks
+                                            on processes.ProcessUid equals latestProcessTasks.ProcessUid
+                                        where processes.Client.Trim().ToLower() == clientVal
+                                           && processes.ProcessName.Trim().ToLower() == processNameVal
+                                        group latestProcessTasks by new { processes.Client, processes.ProcessName } into latestProcessTasksGroup
+                                        select new { ProcessTaskUid = latestProcessTasksGroup.Max(x => x.ProcessTaskUid) })
+                                        on etlInventory.ProcessTaskUid equals processTask.ProcessTaskUid
+                                    select etlInventory);
 
                 _context.EtlInventory.RemoveRange(dataToDelete);
                 var result = _context.SaveChanges();
 
-                return result > 1;
+                return result >= 0;
             }
             catch
             {

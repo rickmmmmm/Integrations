@@ -79,7 +79,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlat = new InventoryFlatDataModel
             {
                 InventoryFlatDataUid = 1,
-                ProcessUid = 1,
+                ProcessTaskUid = 1,
                 RowId = 1,
                 AssetId = "A0",
                 Tag = "Tag001",
@@ -147,7 +147,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlat = new InventoryFlatDataModel
             {
                 InventoryFlatDataUid = 1,
-                ProcessUid = 1,
+                ProcessTaskUid = 1,
                 RowId = 1,
                 AssetId = "A0",
                 Tag = "Tag001",
@@ -215,7 +215,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlatList = new List<InventoryFlatDataModel> {
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 1,
                     AssetId = "A0",
                     Tag = "Tag",
@@ -258,7 +258,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 },
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 2,
                     AssetId = "A1",
                     Tag = "Tag1",
@@ -301,7 +301,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 },
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 3,
                     AssetId = "0",
                     Tag = "Dustpan1",
@@ -364,7 +364,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var inventoryFlatList = new List<InventoryFlatDataModel> {
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 1,
                     AssetId = "A0",
                     Tag = "Tag",
@@ -407,7 +407,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 },
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 2,
                     AssetId = "A1",
                     Tag = "Tag1",
@@ -450,7 +450,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 },
                 new InventoryFlatDataModel() {
                     InventoryFlatDataUid = 0,
-                    ProcessUid = 1,
+                    ProcessTaskUid = 1,
                     RowId = 3,
                     AssetId = "0",
                     Tag = "Dustpan1",

@@ -3,7 +3,7 @@
     public class InventoryFlatDataModel
     {
         public int InventoryFlatDataUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public string AssetId { get; set; }
         public string Tag { get; set; }

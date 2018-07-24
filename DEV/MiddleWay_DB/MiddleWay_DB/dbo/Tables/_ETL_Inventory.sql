@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[_ETL_Inventory] (
     [_ETL_InventoryUID]        INT            IDENTITY (1, 1) NOT NULL,
+    [ProcessTaskUid]           INT            NOT NULL,
     [RowID]                    INT            NOT NULL,
-    [ProcessUid]               INT            NOT NULL,
     [InventoryUID]             INT            CONSTRAINT [DF__ETL_Inventory_InventoryUID] DEFAULT ((0)) NOT NULL,
     [AssetID]                  VARCHAR (100)  NULL,
     [Tag]                      VARCHAR (50)   NOT NULL,
@@ -71,10 +71,10 @@
     [InventoryMeta4UID]        INT            NULL,
     [CustomField4Label]        VARCHAR (50)   NULL,
     [CustomField4Value]        VARCHAR (50)   NULL,
-    [Rejected]                 BIT            NOT NULL CONSTRAINT [DF__ETL_Inventory_Rejected] DEFAULT 0,
+    [Rejected]                 BIT            NOT NULL CONSTRAINT [DF__ETL_Inventory_Rejected] DEFAULT ((0)),
     [RejectedNotes]            TEXT           NULL
     CONSTRAINT [PK__ETL_Inventory] PRIMARY KEY CLUSTERED ([_ETL_InventoryUID] ASC),
-    CONSTRAINT [FK__ETL_Inventory_Processes] FOREIGN KEY ([ProcessUid]) REFERENCES [dbo].[Processes] ([ProcessUid])
+    CONSTRAINT [FK__ETL_Inventory_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 );
 
 

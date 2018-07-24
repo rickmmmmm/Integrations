@@ -7,7 +7,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
     public class ProductsFlatDataModel
     {
         public int ProductsFlatDataUid { get; set; }
-        public int ProcessUid { get; set; }
+        public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }

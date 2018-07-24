@@ -13,29 +13,41 @@ namespace MiddleWay_Controller.Services
 
         private IInventoryFlatDataRepository _inventoryFlatDataRepository;
         private IClientConfiguration _clientConfiguration;
-        private IProcessesService _processesService;
+        private IProcessTasksService _processTasksService;
 
         #endregion Private Variables and Properties
 
         #region Constructor
 
         public InventoryFlatDataService(IInventoryFlatDataRepository inventoryFlatDataRepository, IClientConfiguration clientConfiguration,
-                                        IProcessesService processesService)
+                                        IProcessTasksService processTasksService)
         {
             _inventoryFlatDataRepository = inventoryFlatDataRepository;
             _clientConfiguration = clientConfiguration;
-            _processesService = processesService;
+            _processTasksService = processTasksService;
         }
 
         #endregion Constructor
 
         #region Get Methods
 
-        public List<InventoryFlatDataModel> Get(int offset, int limit)
+        public List<InventoryFlatDataModel> Get(int processTaskUid, int offset, int limit)
         {
             try
             {
-                return _inventoryFlatDataRepository.Select(_clientConfiguration.Client, _clientConfiguration.ProcessName, offset, limit);
+                return _inventoryFlatDataRepository.Select(processTaskUid, offset, limit);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public List<InventoryFlatDataModel> GetLatest(int offset, int limit)
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.SelectLatest(_clientConfiguration.Client, _clientConfiguration.ProcessName, offset, limit);
             }
             catch
             {
@@ -55,11 +67,11 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public InventoryFlatDataModel GetByAssetId(string assetId)
+        public InventoryFlatDataModel GetByAssetId(int processTaskUid, string assetId)
         {
             try
             {
-                return _inventoryFlatDataRepository.SelectByAssetId(_clientConfiguration.Client, _clientConfiguration.ProcessName, assetId);
+                return _inventoryFlatDataRepository.SelectByAssetId(processTaskUid, assetId);
             }
             catch
             {
@@ -67,11 +79,11 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public InventoryFlatDataModel GetByTag(string tag)
+        public InventoryFlatDataModel GetByTag(int processTaskUid, string tag)
         {
             try
             {
-                return _inventoryFlatDataRepository.SelectByTag(_clientConfiguration.Client, _clientConfiguration.ProcessName, tag);
+                return _inventoryFlatDataRepository.SelectByTag(processTaskUid, tag);
             }
             catch
             {
@@ -79,11 +91,23 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public int GetTotal()
+        public int GetTotal(int processTaskUid)
         {
             try
             {
-                return _inventoryFlatDataRepository.GetTotal(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                return _inventoryFlatDataRepository.GetTotal(processTaskUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public int GetTotalLatest()
+        {
+            try
+            {
+                return _inventoryFlatDataRepository.GetTotalLatest(_clientConfiguration.Client, _clientConfiguration.ProcessName);
             }
             catch
             {
@@ -99,8 +123,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                inventoryFlatData.ProcessUid = processUid;
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                inventoryFlatData.ProcessTaskUid = processTaskUid;
                 var inventoryFlatDataUid = _inventoryFlatDataRepository.Insert(inventoryFlatData);
                 return (inventoryFlatDataUid > 0);
             }
@@ -114,8 +138,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                inventoryFlatDataBatch.ForEach(row => row.ProcessUid = processUid);
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                inventoryFlatDataBatch.ForEach(row => row.ProcessTaskUid = processTaskUid);
                 return _inventoryFlatDataRepository.InsertRange(inventoryFlatDataBatch);
             }
             catch
@@ -132,8 +156,8 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                var processUid = _processesService.GetProcessUid();
-                inventoryFlatModel.ProcessUid = processUid;
+                var processTaskUid = _processTasksService.GetProcessTaskUid;
+                inventoryFlatModel.ProcessTaskUid = processTaskUid;
                 return _inventoryFlatDataRepository.Update(inventoryFlatModel);
             }
             catch
@@ -144,8 +168,8 @@ namespace MiddleWay_Controller.Services
 
         public bool EditRange(List<InventoryFlatDataModel> inventoryFlatData)
         {
-            var processUid = _processesService.GetProcessUid();
-            inventoryFlatData.ForEach(x => x.ProcessUid = processUid);
+            var processTaskUid = _processTasksService.GetProcessTaskUid;
+            inventoryFlatData.ForEach(x => x.ProcessTaskUid = processTaskUid);
             return _inventoryFlatDataRepository.UpdateRange(inventoryFlatData);
         }
 
@@ -153,11 +177,35 @@ namespace MiddleWay_Controller.Services
 
         #region Delete Methods
 
+        public void Remove(int processTaskUid)
+        {
+            try
+            {
+                _inventoryFlatDataRepository.Delete(processTaskUid);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         public void ClearData()
         {
             try
             {
-                _inventoryFlatDataRepository.Delete(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                _inventoryFlatDataRepository.DeleteAll(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void ClearData(int processTaskUid)
+        {
+            try
+            {
+                _inventoryFlatDataRepository.DeleteAll(processTaskUid);
             }
             catch
             {
