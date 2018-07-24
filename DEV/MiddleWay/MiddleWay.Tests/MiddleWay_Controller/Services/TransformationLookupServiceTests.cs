@@ -144,9 +144,22 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
 
             var service = new TransformationLookupService(transformationLookupRepository, clientConfiguration.Object);
 
-            var lookup = service.GetTransformationLookupValue(1, "test", "0");
+            var lookup = service.GetTransformationLookupValue(1, "test", "-1");
 
-            Assert.NotNull(lookup);
+            Assert.Null(lookup);
+        }
+
+        [Fact]
+        public void GetTransformationLookupValue_GetInvalidByProcessUidAndLookupKeysKeepValue()
+        {
+            var clientConfiguration = SetupClientConfiguration();
+            var transformationLookupRepository = SetupTransformationLookupRepository(GetMockProcessData(), GetMockTransformationLookupData());
+
+            var service = new TransformationLookupService(transformationLookupRepository, clientConfiguration.Object);
+
+            var lookup = service.GetTransformationLookupValue(1, "test", "-1", true);
+
+            Assert.Equal("-1", lookup);
         } // string (int processUid, string transformationLookupKey, string key);
 
         //[Fact]
@@ -160,7 +173,6 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
         //    var sut = new TransformationLookupService(mockTransformationLookupRepository.Object, mockClientConfiguration.Object);
 
         //    var result = sut.GetTransformationLookupValue(0);
-
 
         //    //Assert.Equal(null, result);
         //    Assert.Null(result);

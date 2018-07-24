@@ -10,9 +10,9 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         TransformationLookupModel GetTransformationLookup(int transformationLookupUid);
         string GetTransformationLookupValue(int transformationLookupUid);
         TransformationLookupModel GetTransformationLookup(int processUid, string transformationLookupKey, string key);
-        string GetTransformationLookupValue(int processUid, string transformationLookupKey, string key);
+        string GetTransformationLookupValue(int processUid, string transformationLookupKey, string key, bool keepKeyValue = false);
         TransformationLookupModel GetTransformationLookup(string transformationLookupKey, string key);
-        string GetTransformationLookupValue(string transformationLookupKey, string key);
+        string GetTransformationLookupValue(string transformationLookupKey, string key, bool keepKeyValue = false);
         List<TransformationLookupModel> GetTransformationLookupData(string transformationLookupKey);
         List<TransformationLookupModel> GetTransformationLookupData(int processUid, string transformationLookupKey);
     }

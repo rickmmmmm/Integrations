@@ -65,12 +65,19 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public string GetTransformationLookupValue(int processUid, string transformationLookupKey, string key)
+        public string GetTransformationLookupValue(int processUid, string transformationLookupKey, string key, bool keepKeyValue = false)
         {
             try
             {
                 var value = _transformationLookupRepository.SelectTransformationLookupValue(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
-                return value;
+                if (value == null && keepKeyValue)
+                {
+                    return key;
+                }
+                else
+                {
+                    return value;
+                }
             }
             catch
             {
@@ -91,12 +98,19 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public string GetTransformationLookupValue(string transformationLookupKey, string key)
+        public string GetTransformationLookupValue(string transformationLookupKey, string key, bool keepKeyValue = false)
         {
             try
             {
                 var value = _transformationLookupRepository.SelectTransformationLookupValue(_clientConfiguration.Client, _clientConfiguration.ProcessName, transformationLookupKey, key);
-                return value;
+                if (value == null && keepKeyValue)
+                {
+                    return key;
+                }
+                else
+                {
+                    return value;
+                }
             }
             catch
             {

@@ -136,7 +136,7 @@ namespace MiddleWay_Controller.Services
                                         {
                                             try
                                             {
-                                                
+
                                                 transformedValue = ApplyTransformation(transformation.Function, transformation.Parameters, transformedValue);
 
                                                 destinationProperty.SetValue(outputItem, transformedValue);
@@ -753,11 +753,17 @@ namespace MiddleWay_Controller.Services
 
         public string Lookup<T>(T value, List<string> parameters)
         {
-            if (parameters != null && parameters.Count == 1 && parameters[0] != null)
+            if (parameters != null && parameters.Count >= 1 && parameters[0] != null)
             {
                 try
                 {
-                    var lookupValue = _transformationLookupService.GetTransformationLookupValue(parameters[0], value.ToString());
+                    bool keepValue = false;
+                    if (parameters.Count == 2) // Second parameter must be true or false
+                    {
+                        keepValue = Boolean.Parse(parameters[1]);
+                    }
+
+                    var lookupValue = _transformationLookupService.GetTransformationLookupValue(parameters[0], value.ToString(), keepValue);
 
                     return lookupValue;
 

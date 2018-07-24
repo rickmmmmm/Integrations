@@ -709,6 +709,24 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             Assert.Equal("one", result);
         }
         [Fact]
+        public void ApplyTransformation_LookupValidKeepKeyValue()
+        {
+            var processes = GetMockProcessData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
+            var transformationLookups = GetMockTransformationLookupData();
+
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(processes, transformations);
+            var transformationLookupRepository = SetupMockTransformationLookupRepository(processes, transformationLookups);
+            var transformationLookupService = SetupMockTransformationLookupService(transformationLookupRepository, clientConfiguration);
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService);
+
+            var result = service.ApplyTransformation("lookup", "[test][true]", 1);
+
+            Assert.Equal("one", result);
+        }
+        [Fact]
         public void ApplyTransformation_LookupInvalid()
         {
             var processes = GetMockProcessData();
@@ -725,6 +743,24 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             var result = service.ApplyTransformation("lookup", "[test]", -1);
 
             Assert.Null(result);
+        }
+        [Fact]
+        public void ApplyTransformation_LookupInvalidKeepKeyValue()
+        {
+            var processes = GetMockProcessData();
+            var transformations = GetMockTransformationData(ProcessSteps.Ingest);
+            var transformationLookups = GetMockTransformationLookupData();
+
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository(processes, transformations);
+            var transformationLookupRepository = SetupMockTransformationLookupRepository(processes, transformationLookups);
+            var transformationLookupService = SetupMockTransformationLookupService(transformationLookupRepository, clientConfiguration);
+
+            var service = new TransformationsService(transformationsRepository, clientConfiguration.Object, transformationLookupService);
+
+            var result = service.ApplyTransformation("lookup", "[test][true]", -1);
+
+            Assert.Equal("-1", result);
         }
         [Fact]
         public void ApplyTransformation_SplitValid()
@@ -1355,7 +1391,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             //Setup method calls to use
             var transformationLookupService = SetupMockTransformationLookupService();
             //Setup method calls to use
-            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, null)).Returns(string.Empty);
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, null, false)).Returns(string.Empty);
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            Assert.Throws<NullReferenceException>(() => service.Lookup<string>(null, new List<string> { string.Empty }));
+        }
+        [Fact]
+        public void Lookup_NullKeepKeyValue()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, null, true)).Returns(string.Empty);
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
@@ -1369,11 +1419,27 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             //Setup method calls to use
             var transformationLookupService = SetupMockTransformationLookupService();
             //Setup method calls to use
-            transformationLookupService.Setup(x => x.GetTransformationLookupValue("test", string.Empty)).Returns(string.Empty);
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue("test", string.Empty, false)).Returns(string.Empty);
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
             var result = service.Lookup(string.Empty, new List<string> { "test" });
+
+            Assert.Equal(string.Empty, result);
+        }
+        [Fact]
+        public void Lookup_EmptyStringKeepKeyValue()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue("test", string.Empty, true)).Returns(string.Empty);
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            var result = service.Lookup(string.Empty, new List<string> { "test", "true" });
 
             Assert.Equal(string.Empty, result);
         }
@@ -1385,7 +1451,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
             //Setup method calls to use
             var transformationLookupService = SetupMockTransformationLookupService();
             //Setup method calls to use
-            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, "valid")).Returns(string.Empty);
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, "valid", false)).Returns(string.Empty);
+
+            var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
+
+            Assert.Throws<ArgumentNullException>(() => service.Lookup("valid", new List<string>()));
+        }
+        [Fact]
+        public void Lookup_EmptyParametersKeepKeyValue()
+        {
+            var clientConfiguration = SetupMockClientConfiguration();
+            var transformationsRepository = SetupMockTransformationsRepository();
+            //Setup method calls to use
+            var transformationLookupService = SetupMockTransformationLookupService();
+            //Setup method calls to use
+            transformationLookupService.Setup(x => x.GetTransformationLookupValue(string.Empty, "valid", true)).Returns(string.Empty);
 
             var service = new TransformationsService(transformationsRepository.Object, clientConfiguration.Object, transformationLookupService.Object);
 
