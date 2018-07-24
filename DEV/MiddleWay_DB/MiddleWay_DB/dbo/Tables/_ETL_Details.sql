@@ -14,6 +14,7 @@
     [FundingSource]            VARCHAR (500)  NULL,
     [FundingSourceDescription] VARCHAR (500)  NULL,
     [ItemUID]                  INT            NOT NULL,
+    [ProductNumber]            VARCHAR (50)   NULL,
     [ProductName]              VARCHAR (100)  NULL,
     [ProductDescription]       VARCHAR (1000) NULL,
     [ItemTypeUID]              INT            NOT NULL,

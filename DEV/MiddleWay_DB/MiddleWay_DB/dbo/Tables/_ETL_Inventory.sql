@@ -9,6 +9,7 @@
     [InventoryTypeUID]         INT            CONSTRAINT [DF__ETL_Inventory_InventoryTypeUID] DEFAULT ((0)) NOT NULL,
     [InventoryTypeName]        VARCHAR (100)  NOT NULL,
     [ItemUID]                  INT            CONSTRAINT [DF__ETL_Inventory_ItemUID] DEFAULT ((0)) NOT NULL,
+    [ProductNumber]            VARCHAR (50)   NULL,
     [ProductName]              VARCHAR (100)  NULL,
     [ProductDescription]       VARCHAR (1000) NULL,
     [ProductByNumber]          VARCHAR (50)   NULL,

@@ -11,6 +11,7 @@
     [VendorAccountNumber]   VARCHAR (50)   NULL,
     [SiteUID]               INT            NOT NULL,
     [SiteID]                VARCHAR (100)  NULL,
+    [SiteName]              VARCHAR (100)  NULL,
     [PurchaseDate]          DATETIME       NULL,
     [EstimatedDeliveryDate] DATETIME       NULL,
     [Notes]                 VARCHAR (1000) NULL,

@@ -8,6 +8,7 @@
     [LineNumber]              INT           NOT NULL,
     [ShippedToSiteUID]        INT           NOT NULL,
     [SiteID]                  VARCHAR (100) NULL,
+    [SiteName]                VARCHAR (100) NULL,
     [TicketNumber]            INT           NULL,
     [QuantityShipped]         INT           NOT NULL,
     [TicketedByUserID]        INT           NULL,

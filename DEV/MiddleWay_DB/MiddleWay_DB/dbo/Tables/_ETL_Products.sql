@@ -2,7 +2,7 @@
     [_ETL_ProductsUID]       INT            IDENTITY (1, 1) NOT NULL,
     [ProcessTaskUid]         INT            NOT NULL,
     [RowID]                  INT            NOT NULL,
-    [ProductUID]             INT            NOT NULL,
+    [ItemUID]                INT            NOT NULL,
     [ProductNumber]          VARCHAR (50)   NOT NULL,
     [ProductName]            VARCHAR (100)  NOT NULL,
     [ProductDescription]     VARCHAR (1000) NOT NULL,
