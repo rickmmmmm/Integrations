@@ -1,19 +1,37 @@
 ﻿/*
- *  sp_ETL_Inventory_ValidateItems
+ *  sp_ValidateItems
  *  Perform Product searches by Product Name, Product Description and Product By Number
  *  Get the highest ItemUID for the matching product if multiples
  *  If the CreateProducts configuration is not set Reject 
+ *  Reject sets ItemUID to -1 and Rejected to true, add Reject Notes
  */
-CREATE PROCEDURE [sp_ETL_Inventory_ValidateItems]
-    (@ProcessUid AS INT, @ProcessTaskUid AS INT)
+CREATE PROCEDURE [dbo].[sp_ValidateItems]
+    (@ProcessUid AS INT, @ProcessTaskUid AS INT, @SourceProcess AS INT)
 AS
     BEGIN
-        DECLARE @CreateProducts AS BIT,
-                @TargetDatabase AS VARCHAR(100);
+        DECLARE @CreateProducts         AS BIT,
+                @TargetDatabase         AS VARCHAR(100),
+                @SourceTable            AS VARCHAR(100),
+                @AllowStackingErrors    AS BIT;
 
         --Set a default starting value
         SET @CreateProducts = 0;
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
+        SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        --Check that Target Database is not null or empty
+        IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
+            BEGIN
+                ;
+                THROW 50000, 'Target Database Name is empty.', 1;
+            END
+
+        --Check that Source Table is not null or empty
+        IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
+            BEGIN
+                ;
+                THROW 50000, 'Source Table could not be verified.', 1;
+            END
 
         SELECT
             @CreateProducts = (
@@ -26,12 +44,16 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-        --Check that Target Database is not null or empty
-        IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
-            BEGIN
-                ;
-                THROW 50000, 'Target Database Name is empty.', 1;
-            END
+        SELECT
+            @AllowStackingErrors = (
+                CASE 
+                    WHEN UPPER(LTRIM(RTRIM(ConfigurationValue))) = 'TRUE' OR LTRIM(RTRIM(ConfigurationValue)) = '1' THEN 1
+                    ELSE 0
+                END)
+        FROM [Configurations]
+        WHERE ConfigurationName = 'AllowStackingErrors' 
+          AND ProcessUid = @ProcessUid
+          AND Enabled = 1;
 
         -- Match the Item by Name
         --SELECT TargetItem.ItemUID, TargetItem.ProductName, SourceItem.ItemName, SourceItem.ItemUID
@@ -50,6 +72,7 @@ AS
                 SourceItem.ItemName IS NOT NULL
             AND TargetItem.ProductName IS NOT NULL
             AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
             GROUP BY
                 SourceItem.ItemName
             ) SourceItem
@@ -58,7 +81,8 @@ AS
             SourceItem.ItemName IS NOT NULL
         AND TargetItem.ProductName IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid;
+        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
 
         -- Match the Item by Description
         --SELECT TargetItem.ProductName, TargetItem.ProductDescription, SourceItem.ItemDescription, SourceItem.ItemUID
@@ -77,6 +101,7 @@ AS
                 SourceItem.ItemDescription IS NOT NULL
             AND TargetItem.ProductDescription IS NOT NULL
             AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
             GROUP BY
                 SourceItem.ItemDescription
             ) SourceItem
@@ -85,7 +110,8 @@ AS
             SourceItem.ItemDescription IS NOT NULL
         AND TargetItem.ProductDescription IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid;
+        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
 
         -- Match the Item by ItemNumber
         --SELECT TargetItem.ProductName, TargetItem.ProductByNumber, SourceItem.ItemNumber, SourceItem.ItemUID
@@ -104,6 +130,7 @@ AS
                 SourceItem.ItemNumber IS NOT NULL
             AND TargetItem.ProductByNumber IS NOT NULL
             AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
             GROUP BY
                 SourceItem.ItemNumber
             ) SourceItem
@@ -112,7 +139,8 @@ AS
             SourceItem.ItemNumber IS NOT NULL
         AND TargetItem.ProductByNumber IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid;
+        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
 
         --Reject All Products Not matched where Product Name is NULL
         UPDATE TargetItem SET Rejected = 1, ItemUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductName; ProductName is NULL or Empty'
@@ -122,7 +150,8 @@ AS
             TargetItem.ItemUID = 0
         AND (TargetItem.ProductName IS NULL OR
                 LTRIM(RTRIM(TargetItem.ProductName)) = '')
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid;
+        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
 
         IF @CreateProducts = 0
             BEGIN
@@ -132,7 +161,8 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
                 WHERE 
                     TargetItem.ItemUID = 0
-                AND TargetItem.ProcessTaskUID = @ProcessTaskUid;
+                AND TargetItem.ProcessTaskUID = @ProcessTaskUid
+                AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
             END
 
     END --End Procedure

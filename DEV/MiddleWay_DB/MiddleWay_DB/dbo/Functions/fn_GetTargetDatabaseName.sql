@@ -1,10 +1,15 @@
-﻿CREATE FUNCTION [dbo].[fn_GetTargetDatabaseName]
+﻿/*
+ *  fn_GetTargetDatabaseName
+ *  Extract the SQL Target DatabaseName from the TIPWebConnection
+ *      configuration for the specified ProcessUid
+ */
+CREATE FUNCTION [dbo].[fn_GetTargetDatabaseName]
     (@ProcessUid AS INT)
 RETURNS VARCHAR(100)
 AS
-BEGIN
-    DECLARE @TargetDatabase AS VARCHAR(100),
-            @FirstIndex     AS INT
+    BEGIN
+        DECLARE @TargetDatabase AS VARCHAR(100),
+                @FirstIndex     AS INT
 
         SELECT
             @TargetDatabase = LTRIM(RTRIM(ConfigurationValue))
@@ -37,4 +42,4 @@ BEGIN
             END
 
         RETURN @TargetDatabase;
-END
+    END

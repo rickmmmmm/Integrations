@@ -22,7 +22,7 @@
     [ProductTypeDescription]   VARCHAR (1000) NULL,
     [QuantityOrdered]          INT            NOT NULL,
     [QuantityReceived]         INT            NOT NULL,
-    [PurchasePrice]            DECIMAL (18)   NOT NULL,
+    [PurchasePrice]            DECIMAL (18)   NULL,
     [AccountCode]              VARCHAR (100)  NULL,
     [TechDepartmentUID]        INT            NULL,
     [DepartmentName]           VARCHAR (50)   NULL,

@@ -261,4 +261,16 @@
         Upload,
         Export
     }
+
+    public enum ProcessSources
+    {
+        PrintConfiguration = 0,
+        Assets = 1,
+        PurchaseOrder = 2,
+        PurchaseDetails = 3,
+        PurchaseShipments = 4,
+        Charges = 5,
+        ExportFile = 6,
+        MobileDeviceManagement = 7
+    }
 }
