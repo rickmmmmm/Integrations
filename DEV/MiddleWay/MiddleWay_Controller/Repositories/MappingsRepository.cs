@@ -1,6 +1,6 @@
 ﻿using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_DTO.Enumerations;
-using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using System.Collections.Generic;
 using System.Linq;

@@ -56,10 +56,15 @@ namespace MiddleWay
 #if DEBUG
                 Console.Write("Press Enter to quit");
                 Console.Read();
-#else
-                Environment.Exit(0);
+                //#else
+                //                Environment.Exit(0);
 #endif
             }
+            finally
+            {
+                Environment.Exit(0);
+            }
+
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -331,7 +336,7 @@ namespace MiddleWay
                             break;
                     }
 
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                     //}
                     //else
                     //{

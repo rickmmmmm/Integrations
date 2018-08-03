@@ -43,19 +43,31 @@
     [InventoryNotes]           VARCHAR (3000) NULL,
     [ParentInventoryUID]       INT            NULL,
     [ParentTag]                VARCHAR (50)   NULL,
+    [ContainerUID]             INT            NULL,
+    [ContainerNumber]          VARCHAR (50)   NULL,
     [InventorySourceUID]       INT            NOT NULL,
     [InventorySourceName]      VARCHAR (100)  NULL,
     [PurchaseUID]              INT            NOT NULL,
     [OrderNumber]              VARCHAR (50)   NOT NULL,
-    [PurchaseItemDetailUID]    INT            NOT NULL,
-    [LineNumber]               INT            NOT NULL,
-    [AccountCode]              VARCHAR (100)  NULL,
+    [PurchaseSiteUID]          INT            CONSTRAINT [DF__ETL_Inventory_PurchaseSiteUID] DEFAULT ((0)) NOT NULL,
+    [PurchaseSiteID]           VARCHAR (100)  NULL,
+    [PurchaseSiteName]         VARCHAR (100)  NULL,
     [VendorUID]                INT            NOT NULL,
     [VendorName]               VARCHAR (100)  NULL,
     [VendorAccountNumber]      VARCHAR (50)   NULL,
+    [PurchaseItemDetailUID]    INT            NOT NULL,
+    [LineNumber]               INT            NOT NULL,
+    [AccountCode]              VARCHAR (100)  NULL,
+    [SiteAddedSiteUID]         INT            CONSTRAINT [DF__ETL_Inventory_SiteAddedSiteUID] DEFAULT ((0)) NOT NULL,
+    [SiteAddedSiteID]          VARCHAR (100)  NULL,
+    [SiteAddedSiteName]        VARCHAR (100)  NULL,
     [PurchaseItemShipmentUID]  INT            NOT NULL,
+    [ShippedToSiteUID]         INT            CONSTRAINT [DF__ETL_Inventory_ShippedToSiteUID] DEFAULT ((0)) NOT NULL,
+    [ShippedToSiteID]          VARCHAR (100)  NULL,
+    [ShippedToSiteName]        VARCHAR (100)  NULL,
     [InvoiceNumber]            VARCHAR (25)   NULL,
     [InvoiceDate]              DATE           NULL,
+    [PurchaseInventoryUID]     INT            NOT NULL,
     [InventoryExt1UID]         INT            NULL,
     [InventoryMeta1UID]        INT            NULL,
     [CustomField1Label]        VARCHAR (50)   NULL,
@@ -77,8 +89,3 @@
     CONSTRAINT [PK__ETL_Inventory] PRIMARY KEY CLUSTERED ([_ETL_InventoryUID] ASC),
     CONSTRAINT [FK__ETL_Inventory_ProcessTasks] FOREIGN KEY ([ProcessTaskUid]) REFERENCES [dbo].[ProcessTasks] ([ProcessTaskUid])
 );
-
-
-
-
-

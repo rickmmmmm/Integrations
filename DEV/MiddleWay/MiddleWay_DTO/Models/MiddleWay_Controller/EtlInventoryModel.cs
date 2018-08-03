@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.Models.MiddleWay
+namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
     public class EtlInventoryModel
     {
@@ -16,6 +16,7 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public int InventoryTypeUid { get; set; }
         public string InventoryTypeName { get; set; }
         public int ItemUid { get; set; }
+        public string ProductNumber { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
         public string ProductByNumber { get; set; }
@@ -49,19 +50,31 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public string InventoryNotes { get; set; }
         public int? ParentInventoryUid { get; set; }
         public string ParentTag { get; set; }
+        public int? ContainerUid { get; set; }
+        public string ContainerNumber { get; set; }
         public int InventorySourceUid { get; set; }
         public string InventorySourceName { get; set; }
         public int PurchaseUid { get; set; }
         public string OrderNumber { get; set; }
-        public int PurchaseItemDetailUid { get; set; }
-        public int LineNumber { get; set; }
-        public string AccountCode { get; set; }
+        public int PurchaseSiteUid { get; set; }
+        public string PurchaseSiteId { get; set; }
+        public string PurchaseSiteName { get; set; }
         public int VendorUid { get; set; }
         public string VendorName { get; set; }
         public string VendorAccountNumber { get; set; }
+        public int PurchaseItemDetailUid { get; set; }
+        public int LineNumber { get; set; }
+        public string AccountCode { get; set; }
+        public int SiteAddedSiteUid { get; set; }
+        public string SiteAddedSiteId { get; set; }
+        public string SiteAddedSiteName { get; set; }
         public int PurchaseItemShipmentUid { get; set; }
+        public int ShippedToSiteUid { get; set; }
+        public string ShippedToSiteId { get; set; }
+        public string ShippedToSiteName { get; set; }
         public string InvoiceNumber { get; set; }
         public DateTime? InvoiceDate { get; set; }
+        public int PurchaseInventoryUid { get; set; }
         public int? InventoryExt1Uid { get; set; }
         public int? InventoryMeta1Uid { get; set; }
         public string CustomField1Label { get; set; }

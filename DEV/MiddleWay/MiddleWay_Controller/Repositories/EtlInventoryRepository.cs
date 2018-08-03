@@ -1,7 +1,10 @@
-﻿using MiddleWay_Controller.IntegrationDatabase;
-using MiddleWay_DTO.Models.MiddleWay;
+﻿using Microsoft.EntityFrameworkCore;
+using MiddleWay_Controller.IntegrationDatabase;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace MiddleWay_Controller.Repositories
@@ -43,6 +46,7 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryTypeUid = etlInventory.InventoryTypeUid,
                                      InventoryTypeName = etlInventory.InventoryTypeName,
                                      ItemUid = etlInventory.ItemUid,
+                                     ProductNumber = etlInventory.ProductNumber,
                                      ProductName = etlInventory.ProductName,
                                      ProductDescription = etlInventory.ProductDescription,
                                      ProductByNumber = etlInventory.ProductByNumber,
@@ -76,19 +80,31 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryNotes = etlInventory.InventoryNotes,
                                      ParentInventoryUid = etlInventory.ParentInventoryUid,
                                      ParentTag = etlInventory.ParentTag,
+                                     ContainerUid = etlInventory.ContainerUid,
+                                     ContainerNumber = etlInventory.ContainerNumber,
                                      InventorySourceUid = etlInventory.InventorySourceUid,
                                      InventorySourceName = etlInventory.InventorySourceName,
                                      PurchaseUid = etlInventory.PurchaseUid,
                                      OrderNumber = etlInventory.OrderNumber,
-                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                     LineNumber = etlInventory.LineNumber,
-                                     AccountCode = etlInventory.AccountCode,
+                                     PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                     PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                     PurchaseSiteName = etlInventory.PurchaseSiteName,
                                      VendorUid = etlInventory.VendorUid,
                                      VendorName = etlInventory.VendorName,
                                      VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                     LineNumber = etlInventory.LineNumber,
+                                     AccountCode = etlInventory.AccountCode,
+                                     SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                     SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                     SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                      PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                     ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                     ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                     ShippedToSiteName = etlInventory.ShippedToSiteName,
                                      InvoiceNumber = etlInventory.InvoiceNumber,
                                      InvoiceDate = etlInventory.InvoiceDate,
+                                     PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                      InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                      InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                      CustomField1Label = etlInventory.CustomField1Label,
@@ -131,8 +147,8 @@ namespace MiddleWay_Controller.Repositories
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
                                      Tag = etlInventory.Tag,
@@ -140,6 +156,7 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryTypeUid = etlInventory.InventoryTypeUid,
                                      InventoryTypeName = etlInventory.InventoryTypeName,
                                      ItemUid = etlInventory.ItemUid,
+                                     ProductNumber = etlInventory.ProductNumber,
                                      ProductName = etlInventory.ProductName,
                                      ProductDescription = etlInventory.ProductDescription,
                                      ProductByNumber = etlInventory.ProductByNumber,
@@ -173,19 +190,31 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryNotes = etlInventory.InventoryNotes,
                                      ParentInventoryUid = etlInventory.ParentInventoryUid,
                                      ParentTag = etlInventory.ParentTag,
+                                     ContainerUid = etlInventory.ContainerUid,
+                                     ContainerNumber = etlInventory.ContainerNumber,
                                      InventorySourceUid = etlInventory.InventorySourceUid,
                                      InventorySourceName = etlInventory.InventorySourceName,
                                      PurchaseUid = etlInventory.PurchaseUid,
                                      OrderNumber = etlInventory.OrderNumber,
-                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                     LineNumber = etlInventory.LineNumber,
-                                     AccountCode = etlInventory.AccountCode,
+                                     PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                     PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                     PurchaseSiteName = etlInventory.PurchaseSiteName,
                                      VendorUid = etlInventory.VendorUid,
                                      VendorName = etlInventory.VendorName,
                                      VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                     LineNumber = etlInventory.LineNumber,
+                                     AccountCode = etlInventory.AccountCode,
+                                     SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                     SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                     SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                      PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                     ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                     ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                     ShippedToSiteName = etlInventory.ShippedToSiteName,
                                      InvoiceNumber = etlInventory.InvoiceNumber,
                                      InvoiceDate = etlInventory.InvoiceDate,
+                                     PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                      InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                      InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                      CustomField1Label = etlInventory.CustomField1Label,
@@ -226,8 +255,8 @@ namespace MiddleWay_Controller.Repositories
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
                                      Tag = etlInventory.Tag,
@@ -235,6 +264,7 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryTypeUid = etlInventory.InventoryTypeUid,
                                      InventoryTypeName = etlInventory.InventoryTypeName,
                                      ItemUid = etlInventory.ItemUid,
+                                     ProductNumber = etlInventory.ProductNumber,
                                      ProductName = etlInventory.ProductName,
                                      ProductDescription = etlInventory.ProductDescription,
                                      ProductByNumber = etlInventory.ProductByNumber,
@@ -268,19 +298,31 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryNotes = etlInventory.InventoryNotes,
                                      ParentInventoryUid = etlInventory.ParentInventoryUid,
                                      ParentTag = etlInventory.ParentTag,
+                                     ContainerUid = etlInventory.ContainerUid,
+                                     ContainerNumber = etlInventory.ContainerNumber,
                                      InventorySourceUid = etlInventory.InventorySourceUid,
                                      InventorySourceName = etlInventory.InventorySourceName,
                                      PurchaseUid = etlInventory.PurchaseUid,
                                      OrderNumber = etlInventory.OrderNumber,
-                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                     LineNumber = etlInventory.LineNumber,
-                                     AccountCode = etlInventory.AccountCode,
+                                     PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                     PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                     PurchaseSiteName = etlInventory.PurchaseSiteName,
                                      VendorUid = etlInventory.VendorUid,
                                      VendorName = etlInventory.VendorName,
                                      VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                     LineNumber = etlInventory.LineNumber,
+                                     AccountCode = etlInventory.AccountCode,
+                                     SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                     SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                     SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                      PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                     ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                     ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                     ShippedToSiteName = etlInventory.ShippedToSiteName,
                                      InvoiceNumber = etlInventory.InvoiceNumber,
                                      InvoiceDate = etlInventory.InvoiceDate,
+                                     PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                      InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                      InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                      CustomField1Label = etlInventory.CustomField1Label,
@@ -323,8 +365,8 @@ namespace MiddleWay_Controller.Repositories
                                  select new EtlInventoryModel
                                  {
                                      _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      RowId = etlInventory.RowId,
+                                     ProcessTaskUid = etlInventory.ProcessTaskUid,
                                      InventoryUid = etlInventory.InventoryUid,
                                      AssetId = etlInventory.AssetId,
                                      Tag = etlInventory.Tag,
@@ -332,6 +374,7 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryTypeUid = etlInventory.InventoryTypeUid,
                                      InventoryTypeName = etlInventory.InventoryTypeName,
                                      ItemUid = etlInventory.ItemUid,
+                                     ProductNumber = etlInventory.ProductNumber,
                                      ProductName = etlInventory.ProductName,
                                      ProductDescription = etlInventory.ProductDescription,
                                      ProductByNumber = etlInventory.ProductByNumber,
@@ -365,19 +408,31 @@ namespace MiddleWay_Controller.Repositories
                                      InventoryNotes = etlInventory.InventoryNotes,
                                      ParentInventoryUid = etlInventory.ParentInventoryUid,
                                      ParentTag = etlInventory.ParentTag,
+                                     ContainerUid = etlInventory.ContainerUid,
+                                     ContainerNumber = etlInventory.ContainerNumber,
                                      InventorySourceUid = etlInventory.InventorySourceUid,
                                      InventorySourceName = etlInventory.InventorySourceName,
                                      PurchaseUid = etlInventory.PurchaseUid,
                                      OrderNumber = etlInventory.OrderNumber,
-                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                     LineNumber = etlInventory.LineNumber,
-                                     AccountCode = etlInventory.AccountCode,
+                                     PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                     PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                     PurchaseSiteName = etlInventory.PurchaseSiteName,
                                      VendorUid = etlInventory.VendorUid,
                                      VendorName = etlInventory.VendorName,
                                      VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                     PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                     LineNumber = etlInventory.LineNumber,
+                                     AccountCode = etlInventory.AccountCode,
+                                     SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                     SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                     SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                      PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                     ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                     ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                     ShippedToSiteName = etlInventory.ShippedToSiteName,
                                      InvoiceNumber = etlInventory.InvoiceNumber,
                                      InvoiceDate = etlInventory.InvoiceDate,
+                                     PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                      InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                      InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                      CustomField1Label = etlInventory.CustomField1Label,
@@ -424,8 +479,8 @@ namespace MiddleWay_Controller.Repositories
                                      select new EtlInventoryModel
                                      {
                                          _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          RowId = etlInventory.RowId,
+                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          InventoryUid = etlInventory.InventoryUid,
                                          AssetId = etlInventory.AssetId,
                                          Tag = etlInventory.Tag,
@@ -433,6 +488,7 @@ namespace MiddleWay_Controller.Repositories
                                          InventoryTypeUid = etlInventory.InventoryTypeUid,
                                          InventoryTypeName = etlInventory.InventoryTypeName,
                                          ItemUid = etlInventory.ItemUid,
+                                         ProductNumber = etlInventory.ProductNumber,
                                          ProductName = etlInventory.ProductName,
                                          ProductDescription = etlInventory.ProductDescription,
                                          ProductByNumber = etlInventory.ProductByNumber,
@@ -466,19 +522,31 @@ namespace MiddleWay_Controller.Repositories
                                          InventoryNotes = etlInventory.InventoryNotes,
                                          ParentInventoryUid = etlInventory.ParentInventoryUid,
                                          ParentTag = etlInventory.ParentTag,
+                                         ContainerUid = etlInventory.ContainerUid,
+                                         ContainerNumber = etlInventory.ContainerNumber,
                                          InventorySourceUid = etlInventory.InventorySourceUid,
                                          InventorySourceName = etlInventory.InventorySourceName,
                                          PurchaseUid = etlInventory.PurchaseUid,
                                          OrderNumber = etlInventory.OrderNumber,
-                                         PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                         LineNumber = etlInventory.LineNumber,
-                                         AccountCode = etlInventory.AccountCode,
+                                         PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                         PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                         PurchaseSiteName = etlInventory.PurchaseSiteName,
                                          VendorUid = etlInventory.VendorUid,
                                          VendorName = etlInventory.VendorName,
                                          VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                         PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                         LineNumber = etlInventory.LineNumber,
+                                         AccountCode = etlInventory.AccountCode,
+                                         SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                         SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                         SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                          PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                         ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                         ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                         ShippedToSiteName = etlInventory.ShippedToSiteName,
                                          InvoiceNumber = etlInventory.InvoiceNumber,
                                          InvoiceDate = etlInventory.InvoiceDate,
+                                         PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                          InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                          InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                          CustomField1Label = etlInventory.CustomField1Label,
@@ -536,8 +604,8 @@ namespace MiddleWay_Controller.Repositories
                                      select new EtlInventoryModel
                                      {
                                          _ETL_InventoryUid = etlInventory.EtlInventoryUid,
-                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          RowId = etlInventory.RowId,
+                                         ProcessTaskUid = etlInventory.ProcessTaskUid,
                                          InventoryUid = etlInventory.InventoryUid,
                                          AssetId = etlInventory.AssetId,
                                          Tag = etlInventory.Tag,
@@ -545,6 +613,7 @@ namespace MiddleWay_Controller.Repositories
                                          InventoryTypeUid = etlInventory.InventoryTypeUid,
                                          InventoryTypeName = etlInventory.InventoryTypeName,
                                          ItemUid = etlInventory.ItemUid,
+                                         ProductNumber = etlInventory.ProductNumber,
                                          ProductName = etlInventory.ProductName,
                                          ProductDescription = etlInventory.ProductDescription,
                                          ProductByNumber = etlInventory.ProductByNumber,
@@ -578,19 +647,31 @@ namespace MiddleWay_Controller.Repositories
                                          InventoryNotes = etlInventory.InventoryNotes,
                                          ParentInventoryUid = etlInventory.ParentInventoryUid,
                                          ParentTag = etlInventory.ParentTag,
+                                         ContainerUid = etlInventory.ContainerUid,
+                                         ContainerNumber = etlInventory.ContainerNumber,
                                          InventorySourceUid = etlInventory.InventorySourceUid,
                                          InventorySourceName = etlInventory.InventorySourceName,
                                          PurchaseUid = etlInventory.PurchaseUid,
                                          OrderNumber = etlInventory.OrderNumber,
-                                         PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
-                                         LineNumber = etlInventory.LineNumber,
-                                         AccountCode = etlInventory.AccountCode,
+                                         PurchaseSiteUid = etlInventory.PurchaseSiteUid,
+                                         PurchaseSiteId = etlInventory.PurchaseSiteId,
+                                         PurchaseSiteName = etlInventory.PurchaseSiteName,
                                          VendorUid = etlInventory.VendorUid,
                                          VendorName = etlInventory.VendorName,
                                          VendorAccountNumber = etlInventory.VendorAccountNumber,
+                                         PurchaseItemDetailUid = etlInventory.PurchaseItemDetailUid,
+                                         LineNumber = etlInventory.LineNumber,
+                                         AccountCode = etlInventory.AccountCode,
+                                         SiteAddedSiteUid = etlInventory.SiteAddedSiteUid,
+                                         SiteAddedSiteId = etlInventory.SiteAddedSiteId,
+                                         SiteAddedSiteName = etlInventory.SiteAddedSiteName,
                                          PurchaseItemShipmentUid = etlInventory.PurchaseItemShipmentUid,
+                                         ShippedToSiteUid = etlInventory.ShippedToSiteUid,
+                                         ShippedToSiteId = etlInventory.ShippedToSiteId,
+                                         ShippedToSiteName = etlInventory.ShippedToSiteName,
                                          InvoiceNumber = etlInventory.InvoiceNumber,
                                          InvoiceDate = etlInventory.InvoiceDate,
+                                         PurchaseInventoryUid = etlInventory.PurchaseInventoryUid,
                                          InventoryExt1Uid = etlInventory.InventoryExt1Uid,
                                          InventoryMeta1Uid = etlInventory.InventoryMeta1Uid,
                                          CustomField1Label = etlInventory.CustomField1Label,
@@ -675,8 +756,8 @@ namespace MiddleWay_Controller.Repositories
                     var etlInventoryToInsert = new EtlInventory
                     {
                         EtlInventoryUid = 0,
-                        ProcessTaskUid = etlInventoryData.ProcessTaskUid,
                         RowId = etlInventoryData.RowId,
+                        ProcessTaskUid = etlInventoryData.ProcessTaskUid,
                         InventoryUid = etlInventoryData.InventoryUid,
                         AssetId = etlInventoryData.AssetId,
                         Tag = etlInventoryData.Tag,
@@ -684,6 +765,7 @@ namespace MiddleWay_Controller.Repositories
                         InventoryTypeUid = etlInventoryData.InventoryTypeUid,
                         InventoryTypeName = etlInventoryData.InventoryTypeName,
                         ItemUid = etlInventoryData.ItemUid,
+                        ProductNumber = etlInventoryData.ProductNumber,
                         ProductName = etlInventoryData.ProductName,
                         ProductDescription = etlInventoryData.ProductDescription,
                         ProductByNumber = etlInventoryData.ProductByNumber,
@@ -717,19 +799,31 @@ namespace MiddleWay_Controller.Repositories
                         InventoryNotes = etlInventoryData.InventoryNotes,
                         ParentInventoryUid = etlInventoryData.ParentInventoryUid,
                         ParentTag = etlInventoryData.ParentTag,
+                        ContainerUid = etlInventoryData.ContainerUid,
+                        ContainerNumber = etlInventoryData.ContainerNumber,
                         InventorySourceUid = etlInventoryData.InventorySourceUid,
                         InventorySourceName = etlInventoryData.InventorySourceName,
                         PurchaseUid = etlInventoryData.PurchaseUid,
                         OrderNumber = etlInventoryData.OrderNumber,
-                        PurchaseItemDetailUid = etlInventoryData.PurchaseItemDetailUid,
-                        LineNumber = etlInventoryData.LineNumber,
-                        AccountCode = etlInventoryData.AccountCode,
+                        PurchaseSiteUid = etlInventoryData.PurchaseSiteUid,
+                        PurchaseSiteId = etlInventoryData.PurchaseSiteId,
+                        PurchaseSiteName = etlInventoryData.PurchaseSiteName,
                         VendorUid = etlInventoryData.VendorUid,
                         VendorName = etlInventoryData.VendorName,
                         VendorAccountNumber = etlInventoryData.VendorAccountNumber,
+                        PurchaseItemDetailUid = etlInventoryData.PurchaseItemDetailUid,
+                        LineNumber = etlInventoryData.LineNumber,
+                        AccountCode = etlInventoryData.AccountCode,
+                        SiteAddedSiteUid = etlInventoryData.SiteAddedSiteUid,
+                        SiteAddedSiteId = etlInventoryData.SiteAddedSiteId,
+                        SiteAddedSiteName = etlInventoryData.SiteAddedSiteName,
                         PurchaseItemShipmentUid = etlInventoryData.PurchaseItemShipmentUid,
+                        ShippedToSiteUid = etlInventoryData.ShippedToSiteUid,
+                        ShippedToSiteId = etlInventoryData.ShippedToSiteId,
+                        ShippedToSiteName = etlInventoryData.ShippedToSiteName,
                         InvoiceNumber = etlInventoryData.InvoiceNumber,
                         InvoiceDate = etlInventoryData.InvoiceDate,
+                        PurchaseInventoryUid = etlInventoryData.PurchaseInventoryUid,
                         InventoryExt1Uid = etlInventoryData.InventoryExt1Uid,
                         InventoryMeta1Uid = etlInventoryData.InventoryMeta1Uid,
                         CustomField1Label = etlInventoryData.CustomField1Label,
@@ -781,9 +875,9 @@ namespace MiddleWay_Controller.Repositories
                     var dataToInsert = (from data in etlInventoryData
                                         select new EtlInventory
                                         {
-                                            EtlInventoryUid = 0,
-                                            ProcessTaskUid = data.ProcessTaskUid,
+                                            EtlInventoryUid = data._ETL_InventoryUid,
                                             RowId = data.RowId,
+                                            ProcessTaskUid = data.ProcessTaskUid,
                                             InventoryUid = data.InventoryUid,
                                             AssetId = data.AssetId,
                                             Tag = data.Tag,
@@ -791,6 +885,7 @@ namespace MiddleWay_Controller.Repositories
                                             InventoryTypeUid = data.InventoryTypeUid,
                                             InventoryTypeName = data.InventoryTypeName,
                                             ItemUid = data.ItemUid,
+                                            ProductNumber = data.ProductNumber,
                                             ProductName = data.ProductName,
                                             ProductDescription = data.ProductDescription,
                                             ProductByNumber = data.ProductByNumber,
@@ -824,19 +919,31 @@ namespace MiddleWay_Controller.Repositories
                                             InventoryNotes = data.InventoryNotes,
                                             ParentInventoryUid = data.ParentInventoryUid,
                                             ParentTag = data.ParentTag,
+                                            ContainerUid = data.ContainerUid,
+                                            ContainerNumber = data.ContainerNumber,
                                             InventorySourceUid = data.InventorySourceUid,
                                             InventorySourceName = data.InventorySourceName,
                                             PurchaseUid = data.PurchaseUid,
                                             OrderNumber = data.OrderNumber,
-                                            PurchaseItemDetailUid = data.PurchaseItemDetailUid,
-                                            LineNumber = data.LineNumber,
-                                            AccountCode = data.AccountCode,
+                                            PurchaseSiteUid = data.PurchaseSiteUid,
+                                            PurchaseSiteId = data.PurchaseSiteId,
+                                            PurchaseSiteName = data.PurchaseSiteName,
                                             VendorUid = data.VendorUid,
                                             VendorName = data.VendorName,
                                             VendorAccountNumber = data.VendorAccountNumber,
+                                            PurchaseItemDetailUid = data.PurchaseItemDetailUid,
+                                            LineNumber = data.LineNumber,
+                                            AccountCode = data.AccountCode,
+                                            SiteAddedSiteUid = data.SiteAddedSiteUid,
+                                            SiteAddedSiteId = data.SiteAddedSiteId,
+                                            SiteAddedSiteName = data.SiteAddedSiteName,
                                             PurchaseItemShipmentUid = data.PurchaseItemShipmentUid,
+                                            ShippedToSiteUid = data.ShippedToSiteUid,
+                                            ShippedToSiteId = data.ShippedToSiteId,
+                                            ShippedToSiteName = data.ShippedToSiteName,
                                             InvoiceNumber = data.InvoiceNumber,
                                             InvoiceDate = data.InvoiceDate,
+                                            PurchaseInventoryUid = data.PurchaseInventoryUid,
                                             InventoryExt1Uid = data.InventoryExt1Uid,
                                             InventoryMeta1Uid = data.InventoryMeta1Uid,
                                             CustomField1Label = data.CustomField1Label,
@@ -1071,6 +1178,225 @@ namespace MiddleWay_Controller.Repositories
             catch
             {
                 throw;
+            }
+        }
+
+        public bool ValidateTags(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.SetCommandTimeout(600);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateTags @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch(Exception ex)
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateItems(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateItems @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateItemTypes(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateItemTypes @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateCustomFields(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateCustomFields @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateManufacturers(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateManufacturers @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateAreas(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateAreas @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateSites(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateSites @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateDepartments(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateDepartments @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateFundingSources(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateFundingSources @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateVendors(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateVendors @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+        public bool ValidateStatus(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateStatus @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool ValidatePurchaseOrders(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidatePurchaseOrders @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
             }
         }
 

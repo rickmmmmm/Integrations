@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace MiddleWay_Controller.IntegrationDatabase
+namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
-    public partial class EtlHeaders
+    public class EtlHeadersModel
     {
-        public int EtlHeaderUid { get; set; }
+        public int _ETL_HeaderUid { get; set; }
         public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public int PurchaseUid { get; set; }
@@ -22,10 +23,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public DateTime? EstimatedDeliveryDate { get; set; }
         public string Notes { get; set; }
         public string Other1 { get; set; }
-        public string Frn { get; set; }
+        public string FRN { get; set; }
         public bool Rejected { get; set; }
         public string RejectedNotes { get; set; }
-
-        public ProcessTasks ProcessTaskU { get; set; }
     }
 }

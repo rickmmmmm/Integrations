@@ -13,12 +13,32 @@ AS
                 @DefaultProductType     AS VARCHAR(50),
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @AllowStackingErrors    AS BIT;
+                @AllowStackingErrors    AS BIT,
+                @ErrorCode              AS INT;
+
+        SET NOCOUNT ON;
 
         SET @CreateProductTypes = 0;
         SET @DefaultProductType = 'Unassigned';
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
+            END
+
         SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
+            END
 
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
@@ -41,14 +61,31 @@ AS
                     ELSE 0
                 END)
         FROM [Configurations]
-        WHERE ConfigurationName = 'CreateProductTypes' 
+        WHERE ConfigurationName = 'CreateProductTypes'
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+          IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for CreateProductTypes', 1;
+            END
+
         SELECT @DefaultProductType = UPPER(LTRIM(RTRIM(ConfigurationValue)))
         FROM [Configurations] 
-        WHERE ConfigurationName = 'DefaultProductType' AND ProcessUid = @ProcessUid
+        WHERE ConfigurationName = 'DefaultProductType'
+          AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+          IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for DefaultProductType', 1;
+            END
 
         SELECT
             @AllowStackingErrors = (
@@ -60,6 +97,14 @@ AS
         WHERE ConfigurationName = 'AllowStackingErrors' 
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         /*
          * Check if there is a match by Product Type Name, then by Produt Type Description (if not null)
@@ -82,6 +127,14 @@ AS
         AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
         AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ProductTypes by Name', 1;
+            END
+
         --Get Matches by ProductTypeDescription
         --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription, SourceItemTypes.ItemTypeName, SourceItemTypes.ItemTypeDescription, SourceItemTypes.ItemTypeUID
         UPDATE TargetItemTypes SET TargetItemTypes.ItemTypeUID = SourceItemTypes.ItemTypeUID
@@ -96,6 +149,14 @@ AS
         AND TargetItemTypes.ItemTypeUID = 0
         AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
         AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ProductTypes by Description', 1;
+            END
 
         PRINT N'@CreateProductTypes: ' + CAST(@CreateProductTypes AS VARCHAR)
 
@@ -112,6 +173,15 @@ AS
                 AND TargetItemTypes.ItemTypeUID = 0
                 AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where the ProductTypeName is Null or Empty', 1;
+                    END
+
             END
         ELSE
             BEGIN
@@ -122,6 +192,14 @@ AS
                 SELECT @ItemTypeUID = ItemTypeUID
                 FROM TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
                 WHERE UPPER(LTRIM(RTRIM(SourceItemTypes.ItemTypeName))) = @DefaultProductType
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to match the DefaultProductType by Name', 1;
+                    END
 
                 PRINT N'DefaultProduct ItemTypeUID: ' + CAST(@ItemTypeUID AS VARCHAR)
 
@@ -140,6 +218,15 @@ AS
                         AND TargetItemTypes.ItemTypeUID = 0
                         AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
                         AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed to reject records where the ProductTypeName is Null or Empty', 1;
+                            END
+
                     END
                 ELSE
                     BEGIN
@@ -154,7 +241,19 @@ AS
                             TargetItemTypes.ItemTypeUID = 0
                         AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
                         AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed to set the DefaultProductType on ProductTypes not matched', 1;
+                            END
                     END
             END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

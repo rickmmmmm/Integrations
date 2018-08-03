@@ -1,4 +1,4 @@
-﻿using MiddleWay_DTO.Models.MiddleWay;
+﻿using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System.Collections.Generic;

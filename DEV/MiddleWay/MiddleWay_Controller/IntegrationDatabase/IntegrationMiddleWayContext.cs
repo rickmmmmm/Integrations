@@ -58,6 +58,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public virtual DbSet<InventoryFlatData> InventoryFlatData { get; set; }
         public virtual DbSet<Mappings> Mappings { get; set; }
         public virtual DbSet<Processes> Processes { get; set; }
+        public virtual DbSet<ProcessSource> ProcessSource { get; set; }
         public virtual DbSet<ProcessTasks> ProcessTasks { get; set; }
         public virtual DbSet<ProcessTasksErrors> ProcessTasksErrors { get; set; }
         public virtual DbSet<ProcessTaskSteps> ProcessTaskSteps { get; set; }
@@ -145,6 +146,10 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.ProductNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ProductTypeDescription)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
@@ -163,12 +168,16 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.RowId).HasColumnName("RowID");
 
-                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUID");
-
-                entity.Property(e => e.SiteId)
-                    .HasColumnName("SiteID")
+                entity.Property(e => e.SiteAddedSiteId)
+                    .HasColumnName("SiteAddedSiteID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUID");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50)
@@ -226,6 +235,10 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.SiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.SiteUid).HasColumnName("SiteUID");
 
                 entity.Property(e => e.Status)
@@ -273,6 +286,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasColumnName("AssetID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.ContainerNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ContainerUid).HasColumnName("ContainerUID");
 
                 entity.Property(e => e.CustomField1Label)
                     .HasMaxLength(50)
@@ -425,6 +444,10 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.ProductNumber)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ProductTypeDescription)
                     .HasMaxLength(1000)
                     .IsUnicode(false);
@@ -436,11 +459,24 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
 
+                entity.Property(e => e.PurchaseInventoryUid).HasColumnName("PurchaseInventoryUID");
+
                 entity.Property(e => e.PurchaseItemDetailUid).HasColumnName("PurchaseItemDetailUID");
 
                 entity.Property(e => e.PurchaseItemShipmentUid).HasColumnName("PurchaseItemShipmentUID");
 
                 entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.PurchaseSiteId)
+                    .HasColumnName("PurchaseSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseSiteUid).HasColumnName("PurchaseSiteUID");
 
                 entity.Property(e => e.PurchaseUid).HasColumnName("PurchaseUID");
 
@@ -451,6 +487,28 @@ namespace MiddleWay_Controller.IntegrationDatabase
                 entity.Property(e => e.Serial)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteId)
+                    .HasColumnName("ShippedToSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
+
+                entity.Property(e => e.SiteAddedSiteId)
+                    .HasColumnName("SiteAddedSiteID")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteUid).HasColumnName("SiteAddedSiteUID");
 
                 entity.Property(e => e.SiteId)
                     .HasColumnName("SiteID")
@@ -525,6 +583,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.ItemTypeUid).HasColumnName("ItemTypeUID");
 
+                entity.Property(e => e.ItemUid).HasColumnName("ItemUID");
+
                 entity.Property(e => e.ManufacturerName)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -559,8 +619,6 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.ProductUid).HasColumnName("ProductUID");
 
                 entity.Property(e => e.RejectedNotes).HasColumnType("text");
 
@@ -626,12 +684,16 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.RowId).HasColumnName("RowID");
 
-                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
-
-                entity.Property(e => e.SiteId)
-                    .HasColumnName("SiteID")
+                entity.Property(e => e.ShippedToSiteId)
+                    .HasColumnName("ShippedToSiteID")
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteName)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteUid).HasColumnName("ShippedToSiteUID");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(50)
@@ -660,11 +722,15 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.InventoryFlatDataUid).HasColumnName("InventoryFlatDataUID");
 
+                entity.Property(e => e.AccountCode).IsUnicode(false);
+
                 entity.Property(e => e.AreaName).IsUnicode(false);
 
                 entity.Property(e => e.AssetId)
                     .HasColumnName("AssetID")
                     .IsUnicode(false);
+
+                entity.Property(e => e.ContainerNumber).IsUnicode(false);
 
                 entity.Property(e => e.CustomField1Label).IsUnicode(false);
 
@@ -702,9 +768,13 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.LineNumber).IsUnicode(false);
 
-                entity.Property(e => e.Location).IsUnicode(false);
+                entity.Property(e => e.LocationId)
+                    .HasColumnName("LocationID")
+                    .IsUnicode(false);
 
-                entity.Property(e => e.LocationType).IsUnicode(false);
+                entity.Property(e => e.LocationName).IsUnicode(false);
+
+                entity.Property(e => e.LocationTypeName).IsUnicode(false);
 
                 entity.Property(e => e.ManufacturerName).IsUnicode(false);
 
@@ -728,11 +798,29 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.PurchasePrice).IsUnicode(false);
 
+                entity.Property(e => e.PurchaseSiteId)
+                    .HasColumnName("PurchaseSiteID")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PurchaseSiteName).IsUnicode(false);
+
                 entity.Property(e => e.RejectedNotes).HasColumnType("text");
 
                 entity.Property(e => e.RowId).HasColumnName("RowID");
 
                 entity.Property(e => e.Serial).IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteId)
+                    .HasColumnName("ShippedToSiteID")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShippedToSiteName).IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteId)
+                    .HasColumnName("SiteAddedSiteID")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SiteAddedSiteName).IsUnicode(false);
 
                 entity.Property(e => e.SiteId)
                     .HasColumnName("SiteID")
@@ -802,6 +890,28 @@ namespace MiddleWay_Controller.IntegrationDatabase
                 entity.Property(e => e.ProcessName)
                     .IsRequired()
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ProcessSource>(entity =>
+            {
+                entity.HasKey(e => e.ProcessSourceUid);
+
+                entity.Property(e => e.ProcessSourceUid).ValueGeneratedNever();
+
+                entity.Property(e => e.ProcessSourceDescription)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProcessSourceName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProcessSourceTable)
+                    .IsRequired()
+                    .HasMaxLength(100)
                     .IsUnicode(false);
             });
 

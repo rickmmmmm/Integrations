@@ -1,5 +1,5 @@
 ﻿using MiddleWay_DTO.Enumerations;
-using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.Models.MiddleWay_BLL;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay_BLL;
@@ -77,7 +77,7 @@ namespace MiddleWay_BLL.Services
                     _notificationService.Send(message);
 
                     //Delete flat table records for process
-                    _inventoryFlatService.ClearData();
+                    _inventoryFlatService.ClearData(); //TODO: This needs to be changed to a date driven cleanup
 
                     _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
@@ -145,10 +145,20 @@ namespace MiddleWay_BLL.Services
                                                  AssetId = data.ContainsKey("AssetId") ? data["AssetId"].ToString() : string.Empty,
                                                  Tag = data.ContainsKey("Tag") ? data["Tag"].ToString() : string.Empty,
                                                  Serial = data.ContainsKey("Serial") ? data["Serial"].ToString() : string.Empty,
+                                                 ProductNumber = data.ContainsKey("ProductNumber") ? data["ProductNumber"].ToString() : string.Empty,
+                                                 ProductName = data.ContainsKey("ProductName") ? data["ProductName"].ToString() : string.Empty,
+                                                 ProductDescription = data.ContainsKey("ProductDescription") ? data["ProductDescription"].ToString() : string.Empty,
+                                                 ProductByNumber = data.ContainsKey("ProductByNumber") ? data["ProductByNumber"].ToString() : string.Empty,
+                                                 ProductTypeName = data.ContainsKey("ProductTypeName") ? data["ProductTypeName"].ToString() : string.Empty,
+                                                 ProductTypeDescription = data.ContainsKey("ProductTypeDescription") ? data["ProductTypeDescription"].ToString() : string.Empty,
+                                                 ModelNumber = data.ContainsKey("ModelNumber") ? data["ModelNumber"].ToString() : string.Empty,
+                                                 ManufacturerName = data.ContainsKey("ManufacturerName") ? data["ManufacturerName"].ToString() : string.Empty,
+                                                 AreaName = data.ContainsKey("AreaName") ? data["AreaName"].ToString() : string.Empty,
                                                  SiteId = data.ContainsKey("SiteId") ? data["SiteId"].ToString() : string.Empty,
                                                  SiteName = data.ContainsKey("SiteName") ? data["SiteName"].ToString() : string.Empty,
-                                                 Location = data.ContainsKey("Location") ? data["Location"].ToString() : string.Empty,
-                                                 LocationType = data.ContainsKey("LocationType") ? data["LocationType"].ToString() : string.Empty,
+                                                 LocationId = data.ContainsKey("LocationId") ? data["LocationId"].ToString() : string.Empty,
+                                                 LocationName = data.ContainsKey("LocationName") ? data["LocationName"].ToString() : string.Empty,
+                                                 LocationTypeName = data.ContainsKey("LocationTypeName") ? data["LocationTypeName"].ToString() : string.Empty,
                                                  Status = data.ContainsKey("Status") ? data["Status"].ToString() : string.Empty,
                                                  DepartmentName = data.ContainsKey("DepartmentName") ? data["DepartmentName"].ToString() : string.Empty,
                                                  DepartmentId = data.ContainsKey("DepartmentId") ? data["DepartmentId"].ToString() : string.Empty,
@@ -158,19 +168,21 @@ namespace MiddleWay_BLL.Services
                                                  PurchaseDate = data.ContainsKey("PurchaseDate") ? data["PurchaseDate"].ToString() : string.Empty,
                                                  ExpirationDate = data.ContainsKey("ExpirationDate") ? data["ExpirationDate"].ToString() : string.Empty,
                                                  InventoryNotes = data.ContainsKey("InventoryNotes") ? data["InventoryNotes"].ToString() : string.Empty,
+                                                 ParentTag = data.ContainsKey("ParentTag") ? data["ParentTag"].ToString() : string.Empty,
+                                                 ContainerNumber = data.ContainsKey("ContainerNumber") ? data["ContainerNumber"].ToString() : string.Empty,
                                                  OrderNumber = data.ContainsKey("OrderNumber") ? data["OrderNumber"].ToString() : string.Empty,
+                                                 PurchaseSiteId = data.ContainsKey("PurchaseSiteId") ? data["PurchaseSiteId"].ToString() : string.Empty,
+                                                 PurchaseSiteName = data.ContainsKey("PurchaseSiteName") ? data["PurchaseSiteName"].ToString() : string.Empty,
                                                  LineNumber = data.ContainsKey("LineNumber") ? data["LineNumber"].ToString() : string.Empty,
+                                                 AccountCode = data.ContainsKey("AccountCode") ? data["AccountCode"].ToString() : string.Empty,
+                                                 SiteAddedSiteId = data.ContainsKey("SiteAddedSiteId") ? data["SiteAddedSiteId"].ToString() : string.Empty,
+                                                 SiteAddedSiteName = data.ContainsKey("SiteAddedSiteName") ? data["SiteAddedSiteName"].ToString() : string.Empty,
                                                  VendorName = data.ContainsKey("VendorName") ? data["VendorName"].ToString() : string.Empty,
                                                  VendorAccountNumber = data.ContainsKey("VendorAccountNumber") ? data["VendorAccountNumber"].ToString() : string.Empty,
-                                                 ParentTag = data.ContainsKey("ParentTag") ? data["ParentTag"].ToString() : string.Empty,
-                                                 ProductName = data.ContainsKey("ProductName") ? data["ProductName"].ToString() : string.Empty,
-                                                 ProductDescription = data.ContainsKey("ProductDescription") ? data["ProductDescription"].ToString() : string.Empty,
-                                                 ProductByNumber = data.ContainsKey("ProductByNumber") ? data["ProductByNumber"].ToString() : string.Empty,
-                                                 ProductTypeName = data.ContainsKey("ProductTypeName") ? data["ProductTypeName"].ToString() : string.Empty,
-                                                 ProductTypeDescription = data.ContainsKey("ProductTypeDescription") ? data["ProductTypeDescription"].ToString() : string.Empty,
-                                                 ModelNumber = data.ContainsKey("ModelNumber") ? data["ModelNumber"].ToString() : string.Empty,
-                                                 ManufacturerName = data.ContainsKey("ManufacturerName") ? data["ManufacturerName"].ToString() : string.Empty,
-                                                 AreaName = data.ContainsKey("AreaName") ? data["AreaName"].ToString() : string.Empty,
+                                                 ShippedToSiteId = data.ContainsKey("ShippedToSiteId") ? data["ShippedToSiteId"].ToString() : string.Empty,
+                                                 ShippedToSiteName = data.ContainsKey("ShippedToSiteName") ? data["ShippedToSiteName"].ToString() : string.Empty,
+                                                 InvoiceNumber = data.ContainsKey("InvoiceNumber") ? data["InvoiceNumber"].ToString() : string.Empty,
+                                                 InvoiceDate = data.ContainsKey("InvoiceDate") ? data["InvoiceDate"].ToString() : string.Empty,
                                                  CustomField1Value = data.ContainsKey("CustomField1Value") ? data["CustomField1Value"].ToString() : string.Empty,
                                                  CustomField1Label = data.ContainsKey("CustomField1Label") ? data["CustomField1Label"].ToString() : string.Empty,
                                                  CustomField2Value = data.ContainsKey("CustomField2Value") ? data["CustomField2Value"].ToString() : string.Empty,
@@ -179,8 +191,6 @@ namespace MiddleWay_BLL.Services
                                                  CustomField3Label = data.ContainsKey("CustomField3Label") ? data["CustomField3Label"].ToString() : string.Empty,
                                                  CustomField4Value = data.ContainsKey("CustomField4Value") ? data["CustomField4Value"].ToString() : string.Empty,
                                                  CustomField4Label = data.ContainsKey("CustomField4Label") ? data["CustomField4Label"].ToString() : string.Empty,
-                                                 InvoiceNumber = data.ContainsKey("InvoiceNumber") ? data["InvoiceNumber"].ToString() : string.Empty,
-                                                 InvoiceDate = data.ContainsKey("InvoiceDate") ? data["InvoiceDate"].ToString() : string.Empty,
                                                  Rejected = data.ContainsKey("Rejected") ? Boolean.Parse(data["Rejected"].ToString()) : false,
                                                  RejectedNotes = data.ContainsKey("RejectedNotes") ? data["RejectedNotes"].ToString() : string.Empty
                                              }).ToList();
@@ -221,21 +231,21 @@ namespace MiddleWay_BLL.Services
 
                         //_processTaskStepsService.EndTaskStep(taskStepUid, true);
 
-                        return;
-
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
 
                         // Validate ETLInventory data on TIPWeb
-                        var validationPassed = _etlInventoryService.ValidateEtlInventory();
+                      var validationPassed = _etlInventoryService.ValidateEtlInventory(processUid, processTaskUid, 0);// processSources);
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
+
+                        return;
 
                         if (validationPassed)
                         {
                             taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Upload);
 
                             // Submit valid ETLInventory data to TIPWeb
-                            validationPassed = _etlInventoryService.SubmitEtlInventory();
+                            validationPassed = _etlInventoryService.SubmitEtlInventory(processUid, processTaskUid, 0);// processSources);
 
                             _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
                         }

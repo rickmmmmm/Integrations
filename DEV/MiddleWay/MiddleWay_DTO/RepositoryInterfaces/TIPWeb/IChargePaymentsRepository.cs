@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MiddleWay_DTO.Models.TIPWeb;
+using MiddleWay_DTO.Models.TIPWeb_Controller;
 using MiddleWay_DTO.View_Models;
 
 namespace MiddleWay_DTO.RepositoryInterfaces.TIPWeb

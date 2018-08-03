@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace MiddleWay_Controller.IntegrationDatabase
+namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
-    public partial class EtlProducts
+    public class EtlProductsModel
     {
-        public int EtlProductsUid { get; set; }
+        public int _ETL_ProductsUid { get; set; }
         public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public int ItemUid { get; set; }
@@ -32,7 +33,5 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public bool AllowUntagged { get; set; }
         public bool Rejected { get; set; }
         public string RejectedNotes { get; set; }
-
-        public ProcessTasks ProcessTaskU { get; set; }
     }
 }

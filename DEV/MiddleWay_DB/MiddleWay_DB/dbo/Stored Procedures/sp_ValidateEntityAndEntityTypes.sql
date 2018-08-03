@@ -13,11 +13,31 @@ AS
                 @DefaultRoomType        AS VARCHAR(100),
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @AllowStackingErrors    AS BIT;
+                @AllowStackingErrors    AS BIT,
+                @ErrorCode                  AS INT;
+
+        SET NOCOUNT ON;
 
         SET @CreateRooms = 0;
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
-        --SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
+            END
+
+        SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
+            END
 
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
@@ -44,15 +64,39 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for CreateRooms', 1;
+            END
+
         SELECT @DefaultRoom = UPPER(LTRIM(RTRIM(ConfigurationValue)))
         FROM [Configurations] 
         WHERE ConfigurationName = 'DefaultRoom' AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for Default Room', 1;
+            END
+
         SELECT @DefaultRoomType = UPPER(LTRIM(RTRIM(ConfigurationValue)))
         FROM [Configurations] 
         WHERE ConfigurationName = 'DefaultRoomType' AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for DefaultRoomType', 1;
+            END
 
         SELECT
             @AllowStackingErrors = (
@@ -65,6 +109,13 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         -- Match the EntityID to RoomNumber
         --SELECT TargetEntity.EntityName, TargetEntity.EntityID, TargetEntity.EntityName, SourceRoom.RoomNumber, SourceRoom.RoomUID, SourceRoom.RoomTypeUID, SourceRoom.SiteUID
@@ -82,6 +133,14 @@ AS
         AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
         AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match EntityID to Room Number', 1;
+            END
+
         -- Match the EntityName to RoomNumber
         --SELECT TargetEntity.EntityName, TargetEntity.EntityID, TargetEntity.EntityName, SourceRoom.RoomNumber, SourceRoom.RoomUID, SourceRoom.RoomTypeUID, SourceRoom.SiteUID
         UPDATE TargetEntity SET TargetEntity.EntityUID = SourceRoom.RoomUID, TargetEntity.EntityTypeUID = 2
@@ -98,6 +157,13 @@ AS
         AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
         AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match EntityName to RoomNumber', 1;
+            END
 
         --IF CreateRoom is false set all remaining Entities to match defaults
         IF @CreateRooms = 0
@@ -116,6 +182,14 @@ AS
                 AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to set all remaining Entities to default values', 1;
+                    END
+
                 --Reject all remaining entites
                 --SELECT TargetEntity.EntityUID, TargetEntity.EntityID, TargetEntity.EntityName
                 UPDATE TargetEntity SET Rejected = 1, EntityUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: EntityID/EntityName; EntityID/EntityName could not be matched'
@@ -125,6 +199,14 @@ AS
                     TargetEntity.EntityUID = 0
                 AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject unvalid entities', 1;
+                    END
             END
         ELSE
             BEGIN
@@ -141,6 +223,18 @@ AS
                      LTRIM(RTRIM(TargetEntity.EntityName)) = '')
                 AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject all Entities where the EntityID and EntityName are Empty or Null', 1;
+                    END
             END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

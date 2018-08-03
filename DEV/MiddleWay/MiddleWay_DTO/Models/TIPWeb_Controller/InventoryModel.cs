@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MiddleWay_DTO.Enumerations;
 
-namespace MiddleWay_DTO.Models.TIPWeb
+namespace MiddleWay_DTO.Models.TIPWeb_Controller
 {
     public class InventoryModel
     {

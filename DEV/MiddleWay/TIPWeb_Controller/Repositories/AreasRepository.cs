@@ -1,6 +1,6 @@
 ﻿using TIPWeb_Controller.DataProvider;
 using TIPWeb_Controller.EF_DAL;
-using MiddleWay_DTO.Models.TIPWeb;
+using MiddleWay_DTO.Models.TIPWeb_Controller;
 using System.Linq;
 
 namespace TIPWeb_Controller.Repositories

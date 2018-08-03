@@ -13,7 +13,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string OrderNumber { get; set; }
         public int LineNumber { get; set; }
         public int ShippedToSiteUid { get; set; }
-        public string SiteId { get; set; }
+        public string ShippedToSiteId { get; set; }
+        public string ShippedToSiteName { get; set; }
         public int? TicketNumber { get; set; }
         public int QuantityShipped { get; set; }
         public int? TicketedByUserId { get; set; }

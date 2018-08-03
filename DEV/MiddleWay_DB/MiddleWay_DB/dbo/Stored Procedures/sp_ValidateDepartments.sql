@@ -11,12 +11,32 @@ AS
         DECLARE @DefaultDepartmentUID   AS INT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @AllowStackingErrors    AS BIT;
+                @AllowStackingErrors    AS BIT,
+                @ErrorCode              AS INT;
+
+        SET NOCOUNT ON;
 
         SET @DefaultDepartmentUID = 0;
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
-        --SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
-        
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
+            END
+
+        SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
+            END
+
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
@@ -36,6 +56,14 @@ AS
         WHERE ConfigurationName = 'DefaultDepartmentUID' AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for DefaultDepartmentUID', 1;
+            END
+
         SELECT
             @AllowStackingErrors = (
                 CASE 
@@ -47,6 +75,13 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         -- Match the Department by Name
         --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.DepartmentID, TargetDepartment.DepartmentName, SourceDepartment.DepartmentName, SourceDepartment.TechDepartmentUID
@@ -63,6 +98,13 @@ AS
         AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
         AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match Departments by Name', 1;
+            END
 
         --Match the Department by ID
         --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.DepartmentID, TargetDepartment.DepartmentName, SourceDepartment.DepartmentID, SourceDepartment.TechDepartmentUID
@@ -79,6 +121,13 @@ AS
         AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
         AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match Departments by DepartmentID', 1;
+            END
 
         --if the TIPWeb Database is departments and the Default Department is 0 reject all 
         DECLARE @DepartmentCount AS INT
@@ -89,6 +138,14 @@ AS
         WHERE 
             SourceDepartment.TechDepartmentUID > 0
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Department Settings of the Target Database', 1;
+            END
+
         IF @DepartmentCount > 0 AND @DefaultDepartmentUID = 0
             BEGIN
                 --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.TechDepartmentUID
@@ -97,6 +154,14 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject Invalid Departments', 1;
+                    END
             END
         ELSE
             BEGIN
@@ -107,6 +172,18 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to set all non-matches to DefaultDepartmentUID', 1;
+                    END
             END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

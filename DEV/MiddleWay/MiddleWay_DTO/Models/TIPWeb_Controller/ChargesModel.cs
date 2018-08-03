@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MiddleWay_DTO.Models.TIPWeb
+namespace MiddleWay_DTO.Models.TIPWeb_Controller
 {
     public class ChargeModel
     {

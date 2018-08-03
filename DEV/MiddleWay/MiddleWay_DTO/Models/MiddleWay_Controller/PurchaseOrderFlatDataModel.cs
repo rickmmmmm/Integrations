@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiddleWay_DTO.Models.MiddleWay
+namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
-    public class PurchaseOrderDetailShipmentFlatDataModel
+    public class PurchaseOrderFlatDataModel
     {
-        public int PurchaseOrderDetailShipmentFlatDataUid { get; set; }
+        public int PurchaseOrderFlatDataUid { get; set; }
         public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public string OrderNumber { get; set; }
@@ -33,18 +33,6 @@ namespace MiddleWay_DTO.Models.MiddleWay
         public string DepartmentId { get; set; }
         public string CFDA { get; set; }
         public string IsAssociated { get; set; }
-        public string ShippedToSiteId { get; set; }
-        public string ShippedToSiteName { get; set; }
-        public string ShippedToSiteAddress { get; set; }
-        public string ShippedToSiteCity { get; set; }
-        public string ShippedToSiteState { get; set; }
-        public string ShippedToSiteZip { get; set; }
-        public string TicketNumber { get; set; }
-        public string QuantityShipped { get; set; }
-        public string TicketedBy { get; set; }
-        public string TicketedDate { get; set; }
-        public string InvoiceNumber { get; set; }
-        public string InvoiceDate { get; set; }
         public bool Rejected { get; set; }
         public string RejectedNotes { get; set; }
     }

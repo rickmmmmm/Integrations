@@ -11,12 +11,32 @@ AS
         DECLARE @DefaulStatusID         AS INT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @AllowStackingErrors    AS BIT;
+                @AllowStackingErrors    AS BIT,
+                @ErrorCode                  AS INT;
+
+        SET NOCOUNT ON;
 
         --SET @CreateRooms = 0;
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
-        --SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
-        
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
+            END
+
+        SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
+            END
+
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
@@ -31,10 +51,18 @@ AS
                 THROW 50000, 'Source Table could not be verified.', 1;
             END
 
-        SELECT DefaulStatusID = CAST(ConfigurationValue AS INT)
+        SELECT @DefaulStatusID = CAST(ConfigurationValue AS INT)
         FROM [Configurations] 
-        WHERE ConfigurationName = 'DefaulStatusID' AND ProcessUid = @ProcessUid
+        WHERE ConfigurationName = 'DefaultStatusID' AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for DefaultStatusID', 1;
+            END
 
         SELECT
             @AllowStackingErrors = (
@@ -46,6 +74,14 @@ AS
         WHERE ConfigurationName = 'AllowStackingErrors' 
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         -- Match the Status to StatusDesc
         --SELECT TargetStatus.StatusID, TargetStatus.Status, SourceStatus.statusID, SourceStatus.statusDesc, SourceStatus.StatusTypeUID
@@ -63,6 +99,14 @@ AS
         AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
         AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match status by description', 1;
+            END
+
         --Set all remaining entries to default values
         --SELECT TargetStatus.StatusID, TargetStatus.Status, SourceStatus.statusID, SourceStatus.statusDesc, SourceStatus.StatusTypeUID
         UPDATE TargetStatus SET TargetStatus.StatusID = SourceStatus.statusID, TargetStatus.Status = SourceStatus.statusDesc
@@ -76,6 +120,14 @@ AS
         AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
         AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set the default status', 1;
+            END
+
         --Reject all remaining entries
         --SELECT TargetStatus.StatusID, TargetStatus.Status
         UPDATE TargetStatus SET Rejected = 1, StatusID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Status; Status could not be matched'
@@ -85,5 +137,17 @@ AS
             TargetStatus.StatusID = 0
         AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
         AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the status could not be matched', 1;
+            END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

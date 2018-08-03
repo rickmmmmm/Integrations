@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiddleWay_DTO.Models.TIPWeb
+namespace MiddleWay_DTO.Models.TIPWeb_Controller
 {
     public class ChargePaymentsModel
     {

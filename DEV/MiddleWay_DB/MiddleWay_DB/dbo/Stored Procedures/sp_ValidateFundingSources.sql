@@ -5,20 +5,40 @@
  *      to default or reject them
  */
 CREATE PROCEDURE [dbo].[sp_ValidateFundingSources]
-    (@ProcessUid AS INT, @ProcessTaskUid AS INT, @SourceProcess AS INT)
+    (@ProcessUid AS INT, @ProcessTaskUid AS INT, @SourceProcess AS INT)--, @ErrorMessage AS VARCHAR(1000) OUTPUT)
 AS
     BEGIN
         DECLARE @CreateFundingSources       AS BIT,
                 @DefaultFundingSourceUID    AS INT,
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
-                @AllowStackingErrors        AS BIT;
+                @AllowStackingErrors        AS BIT,
+                @ErrorCode                  AS INT;
+
+        SET NOCOUNT ON;
 
         SET @CreateFundingSources = 0;
         --SET @DefaultFundingSource = 'None';
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Unable to determine the Target Database for the Process', 1;
+            END
+
         SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
-        
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Unable to determine the Source Table for the Process', 1;
+            END
+
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
@@ -44,10 +64,26 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for CreateFundingSources', 1;
+            END
+
         SELECT @DefaultFundingSourceUID = CAST(ConfigurationValue AS INT)
         FROM [Configurations] 
         WHERE ConfigurationName = 'DefaultFundingSourceUID' AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for DefaultFundingSourceUID', 1;
+            END
 
         SELECT
             @AllowStackingErrors = (
@@ -59,6 +95,14 @@ AS
         WHERE ConfigurationName = 'AllowStackingErrors' 
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         -- Match the Funding Source by Name
         --SELECT TargetFundingSource.FundingSourceUID, TargetFundingSource.FundingSource, TargetFundingSource.FundingSourceDescription, SourceFundingSource.FundingSource, SourceFundingSource.FundingSourceUID
@@ -75,6 +119,14 @@ AS
         AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
         AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match Funding Sources by Name', 1;
+            END
+
         -- Match the Funding Source by Description
         --SELECT TargetFundingSource.FundingSourceUID, TargetFundingSource.FundingSource, TargetFundingSource.FundingSourceDescription, SourceFundingSource.FundingSource, SourceFundingSource.FundingSourceUID
         UPDATE TargetFundingSource SET TargetFundingSource.FundingSourceUID = SourceFundingSource.FundingSourceUID
@@ -90,6 +142,14 @@ AS
         AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
         AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match Funding Sources by Description', 1;
+            END
+
         IF @CreateFundingSources = 0
             BEGIN
                 IF @DefaultFundingSourceUID IS NOT NULL
@@ -102,6 +162,14 @@ AS
                             TargetFundingSource.FundingSourceUID = 0
                         AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
                         AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed set the Default Funding Source', 1;
+            END
                     END
                 ELSE
                     BEGIN
@@ -113,7 +181,19 @@ AS
                             TargetFundingSource.FundingSourceUID = 0
                         AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
                         AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed to reject unmatched Funding Source records', 1;
+                            END
                     END
             END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

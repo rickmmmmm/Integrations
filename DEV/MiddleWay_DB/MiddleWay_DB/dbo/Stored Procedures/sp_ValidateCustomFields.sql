@@ -13,12 +13,32 @@ AS
         DECLARE @CreateCustomFields     AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @AllowStackingErrors    AS BIT;
+                @AllowStackingErrors    AS BIT,
+                @ErrorCode                  AS INT;
+
+        SET NOCOUNT ON;
 
         SET @CreateCustomFields = 0;
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
+            END
+
         SET @SourceTable = [dbo].[fn_GetSourceTable](@SourceProcess);
-        
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
+            END
+
         --Check that Target Database is not null or empty
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
@@ -44,6 +64,14 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
+          IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for CreateCustomFields', 1;
+            END
+
         SELECT
             @AllowStackingErrors = (
                 CASE 
@@ -55,9 +83,13 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-        SELECT UPPER(LTRIM(RTRIM(ConfigurationValue)))
-        FROM [Configurations] 
-        WHERE ConfigurationName = '' AND ProcessUid = @ProcessUid;
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
 
         /*
          *  For rows that have a valid ItemTypeUID
@@ -89,6 +121,14 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match MetaUID1 by Label', 1;
+            END
+
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField2Label, TargetCustomFields.InventoryMeta2UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta2UID = SourceInventoryMeta.InventoryMetaUID
         FROM
@@ -105,6 +145,14 @@ AS
         AND UPPER(LTRIM(RTRIM(TargetCustomFields.CustomField2Label))) = UPPER(LTRIM(RTRIM(SourceInventoryMeta.InventoryMetaLabel)))
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match MetaUID2 by Label', 1;
+            END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField3Label, TargetCustomFields.InventoryMeta3UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta3UID = SourceInventoryMeta.InventoryMetaUID
@@ -123,6 +171,14 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match MetaUID3 by Label', 1;
+            END
+
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField4Label, TargetCustomFields.InventoryMeta4UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta4UID = SourceInventoryMeta.InventoryMetaUID
         FROM
@@ -140,6 +196,13 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match MetaUID4 by Label', 1;
+            END
 
         -- Get the ExtUID (if any) of existing Assets
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.InventoryExt1UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
@@ -158,8 +221,16 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ExtUID1 by Inventory and MetaUID', 1;
+            END
+
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.InventoryExt2UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
-        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = SourceInventoryExt.InventoryExtUID
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt2UID = SourceInventoryExt.InventoryExtUID
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         LEFT JOIN
@@ -174,8 +245,16 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ExtUID2 by Inventory and MetaUID', 1;
+            END
+
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.InventoryExt3UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
-        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = SourceInventoryExt.InventoryExtUID
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt3UID = SourceInventoryExt.InventoryExtUID
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         LEFT JOIN
@@ -190,8 +269,16 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ExtUID3 by Inventory and MetaUID', 1;
+            END
+
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.InventoryExt4UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
-        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = SourceInventoryExt.InventoryExtUID
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt4UID = SourceInventoryExt.InventoryExtUID
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         LEFT JOIN
@@ -206,6 +293,13 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match ExtUID4 by Inventory and MetaUID', 1;
+            END
 
         --IF MetaUID > 0 AND SourceInventoryMeta.InventoryMetaRequired is true and CustomFieldValue IS NULL OR Empty reject rows
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label, TargetCustomFields.CustomField1Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
@@ -225,6 +319,14 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Meta1 Value is required but Empty', 1;
+            END
+
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label, TargetCustomFields.CustomField2Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; The Value for ' + CustomField2Label + ' is NULL or Empty'
         FROM
@@ -241,6 +343,14 @@ AS
                 LTRIM(RTRIM(TargetCustomFields.CustomField2Value)) = '')
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Meta2 Value is required but Empty', 1;
+            END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label, TargetCustomFields.CustomField3Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; The Value for ' + CustomField3Label + ' is NULL or Empty'
@@ -259,6 +369,14 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Meta3 Value is required but Empty', 1;
+            END
+
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label, TargetCustomFields.CustomField4Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
         UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; The Value for ' + CustomField4Label + ' is NULL or Empty'
         FROM
@@ -275,6 +393,14 @@ AS
                 LTRIM(RTRIM(TargetCustomFields.CustomField4Value)) = '')
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Meta4 Value is required but Empty', 1;
+            END
 
         /*  IF CreateCustomFields is false 
          *      IF ItemTypeUid = 0 AND CustomLabel IS NOT NULL (or empty) reject rows
@@ -293,6 +419,14 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField1 cannot be created', 1;
+                    END
+
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
@@ -303,6 +437,14 @@ AS
                 AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField2 cannot be created', 1;
+                    END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
@@ -315,6 +457,14 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField3 cannot be created', 1;
+                    END
+
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
@@ -326,6 +476,13 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField4 cannot be created', 1;
+                    END
 
                 --*  IF ItemTypeUID > 0 AND MetaUID = 0 AND CustomLabel IS NOT NULL (or empty) reject rows
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label, TargetCustomFields.ProductTypeName
@@ -340,6 +497,14 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField1 could not be found', 1;
+                    END
+
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label, TargetCustomFields.ProductTypeName
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
@@ -351,6 +516,14 @@ AS
                 AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField2 could not be found', 1;
+                    END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label, TargetCustomFields.ProductTypeName
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
@@ -364,6 +537,14 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField3 could not be found', 1;
+                    END
+
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label, TargetCustomFields.ProductTypeName
                 UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
@@ -376,6 +557,18 @@ AS
                 AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
 
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to reject records where CustomField4 could not be found', 1;
+                    END
+
             END
+
+        SET NOCOUNT OFF;
+
+        RETURN 0;
 
     END --End Procedure

@@ -3,7 +3,7 @@ using TIPWeb_Controller.EF_DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MiddleWay_DTO.Models.TIPWeb;
+using MiddleWay_DTO.Models.TIPWeb_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
 using MiddleWay_DTO.Models.MiddleWay_BLL; //TODO: Modify?
 

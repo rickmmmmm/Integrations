@@ -1,4 +1,4 @@
-﻿using MiddleWay_DTO.Models.MiddleWay;
+﻿using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using System.Collections.Generic;
@@ -202,54 +202,62 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public bool ValidateEtlInventory()
+        public bool ValidateEtlInventory(int processUid, int processTaskUid, int processSource)
         {
             try
             {
-                var processTaskUid = _processTasksService.GetProcessTaskUid;
-
-                //Validate Tag/Asset/Serial
-                //TODO: Get Configuration for use Tag in Notes
-
-                //Validate Product Name
-                //TODO: Get Configuration for Create Products
-
-                //Validate Product Type
-                //TODO: Get Configuration for Default Product Type
-
-                //Validate Custom Fields
-
-                //Validate Manufacturers
-                //TODO: Get Configuration for Create Manufacturers
-
-                //Validate Funding Sources
-                //TODO: Get Configuration for Create Funding Sources
-
-                //Validate Vendor
-                //TODO: Get Configuration for Create Vendors
-
-                //Validate EntityType
-
-                //Validate Entity (EntityName/EntityID)
-
-                //Validate Status
-
-                //Validate Department
-
-                //Validate Purchase Order (OrderNumber, LineNumber, AccountCode, PurchasePrice, PurchaseDate)
-                //TODO: Get Configuration for Create Purchase Order
-                //TODO: Get Configuration for Create Purchase Details
-                //TODO: Get Configuration for Default Line Number
-
-                //Validate Invoice Data
-                //TODO: Get Configuration for Invoice For Shipment or Order....????
-
-                //Validate Parent Tag
-                //TODO: Get Configuration for Fail Invalid Parent Tag Relationships
+                if (!_etlInventoryRepository.ValidateTags(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateItems(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateItemTypes(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateCustomFields(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateManufacturers(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateAreas(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateSites(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateDepartments(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateFundingSources(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateVendors(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidateStatus(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
+                if (!_etlInventoryRepository.ValidatePurchaseOrders(processUid, processTaskUid, processSource))
+                {
+                    return false;
+                }
 
                 //TODO: Log count of items saved?
 
-                return false;
+                return true;
             }
             catch
             {
@@ -257,12 +265,10 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public bool SubmitEtlInventory()
+        public bool SubmitEtlInventory(int processUid, int processTaskUid, int processSource)
         {
             try
             {
-                var processTaskUid = _processTasksService.GetProcessTaskUid;
-
                 //Submit Products
 
                 //Submit Manufacturers

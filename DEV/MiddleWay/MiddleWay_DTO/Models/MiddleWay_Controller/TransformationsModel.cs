@@ -1,4 +1,4 @@
-﻿namespace MiddleWay_DTO.Models.MiddleWay
+﻿namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
     public class TransformationsModel
     {

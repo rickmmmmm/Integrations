@@ -1,6 +1,6 @@
 ﻿using MiddleWay_Controller.Services;
 using MiddleWay_DTO.Enumerations;
-using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 using MiddleWay_Utilities;
@@ -330,10 +330,20 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 AssetId = "A0",
                 Tag = "Tag001",
                 Serial = "1234",
+                ProductNumber = "",
+                ProductName = "Broom",
+                ProductDescription = "Wooden Handle Broom",
+                ProductByNumber = "001",
+                ProductTypeName = "Broom",
+                ProductTypeDescription = "Broom",
+                ModelNumber = "",
+                ManufacturerName = "Broom's R Us",
+                AreaName = "Floor",
                 SiteId = "001",
                 SiteName = "001 - Site",
-                Location = "Room: Maintenance Room",
-                LocationType = "Room: Maintenance Room",
+                LocationId = "",
+                LocationName = "Room: Maintenance Room",
+                LocationTypeName = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "None",
                 DepartmentId = "0",
@@ -343,18 +353,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 PurchaseDate = "",
                 ExpirationDate = "",
                 InventoryNotes = "New Broom",
+                ParentTag = "",
+                ContainerNumber = "",
                 OrderNumber = "",
+                PurchaseSiteId = "District",
+                PurchaseSiteName = "",
                 VendorName = "Broom's R Us",
                 VendorAccountNumber = "",
-                ParentTag = "",
-                ProductName = "Broom",
-                ProductDescription = "Wooden Handle Broom",
-                ProductByNumber = "001",
-                ProductTypeName = "Broom",
-                ProductTypeDescription = "Broom",
-                ModelNumber = "",
-                ManufacturerName = "Broom's R Us",
-                AreaName = "Floor",
+                LineNumber = "0",
+                AccountCode= "",
+                SiteAddedSiteId = "001",
+                SiteAddedSiteName = "",
+                ShippedToSiteId = "001",
+                ShippedToSiteName = "",
+                InvoiceNumber = "",
+                InvoiceDate = "",
                 CustomField1Value = "",
                 CustomField1Label = "",
                 CustomField2Value = "",
@@ -362,9 +375,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 CustomField3Value = "",
                 CustomField3Label = "",
                 CustomField4Value = "",
-                CustomField4Label = "",
-                InvoiceNumber = "",
-                InvoiceDate = ""
+                CustomField4Label = ""
             };
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
@@ -381,6 +392,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 Assert.Equal("A0", data["AssetId"]);
                 Assert.Equal("Tag001", data["Tag"]);
                 Assert.Equal("1234", data["Serial"]);
+                Assert.Equal("", data["ProductNumber"]);
                 Assert.Equal("Broom", data["ProductName"]);
                 Assert.Equal("Wooden Handle Broom", data["ProductDescription"]);
                 Assert.Equal("001", data["ProductByNumber"]);
@@ -437,10 +449,20 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 AssetId = "A0",
                 Tag = "Tag001",
                 Serial = "1234",
+                ProductNumber = "",
+                ProductName = "Broom",
+                ProductDescription = "Wooden Handle Broom",
+                ProductByNumber = "001",
+                ProductTypeName = "Broom",
+                ProductTypeDescription = "Broom",
+                ModelNumber = "",
+                ManufacturerName = "Broom's R Us",
+                AreaName = "Floor",
                 SiteId = "001",
                 SiteName = "001 - Site",
-                Location = "Room: Maintenance Room",
-                LocationType = "Room: Maintenance Room",
+                LocationId = "",
+                LocationName = "Room: Maintenance Room",
+                LocationTypeName = "Room: Maintenance Room",
                 Status = "Available",
                 DepartmentName = "None",
                 DepartmentId = "0",
@@ -450,18 +472,21 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 PurchaseDate = "",
                 ExpirationDate = "",
                 InventoryNotes = "New Broom",
+                ParentTag = "",
+                ContainerNumber = "",
                 OrderNumber = "",
+                PurchaseSiteId = "District",
+                PurchaseSiteName = "",
                 VendorName = "Broom's R Us",
                 VendorAccountNumber = "",
-                ParentTag = "",
-                ProductName = "Broom",
-                ProductDescription = "Wooden Handle Broom",
-                ProductByNumber = "001",
-                ProductTypeName = "Broom",
-                ProductTypeDescription = "Broom",
-                ModelNumber = "",
-                ManufacturerName = "Broom's R Us",
-                AreaName = "Floor",
+                LineNumber = "0",
+                AccountCode = "",
+                SiteAddedSiteId = "001",
+                SiteAddedSiteName = "",
+                ShippedToSiteId = "001",
+                ShippedToSiteName = "",
+                InvoiceNumber = "",
+                InvoiceDate = "",
                 CustomField1Value = "",
                 CustomField1Label = "",
                 CustomField2Value = "",
@@ -469,9 +494,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                 CustomField3Value = "",
                 CustomField3Label = "",
                 CustomField4Value = "",
-                CustomField4Label = "",
-                InvoiceNumber = "",
-                InvoiceDate = ""
+                CustomField4Label = ""
             };
 
             var _mappingsService = new MappingsService(mappingsRepository.Object, clientConfiguration.Object, transformationService);
@@ -586,6 +609,7 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "AssetId", DestinationColumn = "AssetId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Tag", DestinationColumn = "Tag", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Serial", DestinationColumn = "Serial", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProductNumber", DestinationColumn = "ProductNumber", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProductName", DestinationColumn = "ProductName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProductDescription", DestinationColumn = "ProductDescription", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "ProductByNumber", DestinationColumn = "ProductByNumber", Enabled = true },
@@ -596,8 +620,8 @@ namespace MiddleWay.Tests.MiddleWay_Controller.Services
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "AreaName", DestinationColumn = "AreaName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "SiteId", DestinationColumn = "SiteId", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "SiteName", DestinationColumn = "SiteName", Enabled = true },
-                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Location", DestinationColumn = "EntityName", Enabled = true },
-                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Location", DestinationColumn = "EntityTypeName", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "LocationName", DestinationColumn = "EntityName", Enabled = true },
+                    new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "LocationTypeName", DestinationColumn = "EntityTypeName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "Status", DestinationColumn = "Status", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "DepartmentName", DestinationColumn = "DepartmentName", Enabled = true },
                     new MappingsModel { MappingsUid  = 0, ProcessUid = 1, StepName = ProcessSteps.Ingest.ToString(), SourceColumn = "DepartmentId", DestinationColumn = "DepartmentId", Enabled = true },

@@ -6,7 +6,7 @@ using Xunit;
 using Moq;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
-using MiddleWay_DTO.Models.MiddleWay;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using System.Linq;
 using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_Controller.Repositories;

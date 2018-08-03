@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace MiddleWay_Controller.IntegrationDatabase
+namespace MiddleWay_DTO.Models.MiddleWay_Controller
 {
-    public partial class EtlDetails
+    public class EtlDetailsModel
     {
-        public int EtlDetailUid { get; set; }
+        public int _ETL_DetailUid { get; set; }
         public int ProcessTaskUid { get; set; }
         public int RowId { get; set; }
         public int PurchaseItemDetailUid { get; set; }
@@ -31,14 +32,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public int QuantityReceived { get; set; }
         public decimal? PurchasePrice { get; set; }
         public string AccountCode { get; set; }
-        public int? TechDepartmentUid { get; set; }
+        public int TechDepartmentUid { get; set; }
         public string DepartmentName { get; set; }
         public string DepartmentId { get; set; }
-        public string Cfda { get; set; }
+        public string CFDA { get; set; }
         public bool IsAssociated { get; set; }
         public bool Rejected { get; set; }
         public string RejectedNotes { get; set; }
-
-        public ProcessTasks ProcessTaskU { get; set; }
     }
 }
