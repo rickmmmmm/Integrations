@@ -33,7 +33,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -43,17 +43,24 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
             END
 
+        --Check that Target Database is not null or empty
+        IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
+            BEGIN
+                ;
+                THROW 100000, 'Target Database Name is empty.', 1;
+            END;
+
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT
@@ -69,7 +76,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for RequirePurchaseOrder', 1;
@@ -88,7 +95,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for MatchByOrderNumberOnly', 1;
@@ -107,7 +114,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateNewPurchaseOrders', 1;
@@ -126,7 +133,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for MatchByProductAndLineOnly', 1;
@@ -145,7 +152,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateNewPurchaseDetails', 1;
@@ -159,7 +166,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for DefaultLineNumber', 1;
@@ -178,7 +185,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateNewPurchaseShipments', 1;
@@ -197,10 +204,46 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
+            END
+
+
+        PRINT N'Match the Inventory to existing Purchase Inventory';
+        --SELECT TargetPurchaseInventory.PurchaseItemShipmentUID, TargetPurchaseInventory.InventoryUID, TargetPurchaseInventory.Tag, TargetPurchaseInventory.AssetID, TargetPurchaseInventory.ShippedToSiteUID,
+        --       SourcePurchaseInventory.PurchaseItemShipmentUID, SourcePurchaseInventory.InventoryUID, SourcePurchaseItemDetails.PurchaseItemDetailUID, SourcePurchases.PurchaseUID
+        UPDATE TargetPurchaseInventory
+        SET TargetPurchaseInventory.PurchaseInventoryUID = SourcePurchaseInventory.PurchaseInventoryUID, TargetPurchaseInventory.PurchaseItemShipmentUID = SourcePurchaseItemShipments.PurchaseItemShipmentUID,
+            TargetPurchaseInventory.PurchaseItemDetailUID = SourcePurchaseItemDetails.PurchaseItemDetailUID, TargetPurchaseInventory.PurchaseUID = SourcePurchases.PurchaseUID
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseInventory
+        INNER JOIN
+            TipWebHostedChicagoPS.dbo.tblTechPurchaseInventory SourcePurchaseInventory
+            ON TargetPurchaseInventory.InventoryUID = SourcePurchaseInventory.InventoryUID
+        INNER JOIN
+            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseItemShipments
+            ON SourcePurchaseInventory.PurchaseItemShipmentUID = SourcePurchaseItemShipments.PurchaseItemShipmentUID
+        INNER JOIN
+            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseItemDetails
+            ON SourcePurchaseItemShipments.PurchaseItemDetailUID = SourcePurchaseItemDetails.PurchaseItemDetailUID
+        INNER JOIN
+            TipWebHostedChicagoPS.dbo.tblTechPurchases SourcePurchases
+            ON SourcePurchaseItemDetails.PurchaseUID = SourcePurchases.PurchaseUID
+        WHERE
+            TargetPurchaseInventory.InventoryUID > 0
+        --AND TargetPurchaseInventory.PurchaseItemShipmentUID > 0
+        --AND TargetPurchaseInventory.PurchaseUID > 0
+        AND TargetPurchaseInventory.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetPurchaseInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to match Purchase Inventory by InventoryUID', 1;
             END
 
         PRINT N'Check RequirePurchaseOrder';
@@ -208,7 +251,6 @@ AS
         IF @RequirePurchaseOrder = 1
             BEGIN
                 PRINT N'Reject rows where the OrderNumber is empty';
-
                 --Reject any rows where the OrderNumber is empty
                 --SELECT TargetPurchase.OrderNumber, TargetPurchase.PurchaseDate, TargetPurchase.VendorUID, TargetPurchase.VendorName
                 UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: OrderNumber; OrderNumber cannot be Null or Empty'
@@ -223,12 +265,11 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the OrderNumber is Null or Empty', 1;
                     END
-
             END
 
         IF @MatchByOrderNumberOnly = 1
@@ -251,12 +292,11 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match Purchase Orders by Order Number only', 1;
                     END
-
             END
         ELSE
             BEGIN
@@ -266,21 +306,19 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match Purchase Orders', 1;
                     END
-
             END
 
         PRINT N'Check Create New Purchase Orders';
 
         IF @CreateNewPurchaseOrders = 0
             BEGIN
-                PRINT N'Reject rows where the OrderNumber could not be matched';
 
-                --Reject all unmatched Purchase Orders
+                PRINT N'Reject rows where the OrderNumber could not be matched';
                 --SELECT TargetPurchase.PurchaseUID, TargetPurchase.OrderNumber
                 UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: OrderNumber; OrderNumber could not be matched'
                 FROM
@@ -292,7 +330,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the OrderNumber could not be matched', 1;
@@ -301,21 +339,21 @@ AS
             END
         ELSE
             BEGIN
-                PRINT N'Reject rows where PurchaseDate is NULL';
 
-                --If Purchase date is Null reject
+                PRINT N'Reject rows where PurchaseDate is NULL';
                 --SELECT TargetPurchase.PurchaseUID, TargetPurchase.OrderNumber, TargetPurchase.PurchaseDate
                 UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseDate; PurchaseDate is Null'
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchase
                 WHERE
-                    TargetPurchase.PurchaseDate IS NULL
+                    TargetPurchase.PurchaseUID = 0
+                AND TargetPurchase.PurchaseDate IS NULL
                 AND TargetPurchase.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchase.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the PurchaseDate is Null', 1;
@@ -333,13 +371,14 @@ AS
                 FROM 
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
                 WHERE
-                    TargetPurchaseDetails.LineNumber < 0
+                    TargetPurchaseDetails.PurchaseItemDetailUID = 0
+                AND TargetPurchaseDetails.LineNumber < 0
                 AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to set the Default Line Number for Details', 1;
@@ -350,9 +389,8 @@ AS
         --Validate Details
         IF @MatchByProductAndLineOnly = 1
             BEGIN
-                PRINT N'Lookup Detail by ItemUID and LineNumber';
 
-                --Match ItemDetails by ItemUID and LineNumber
+                PRINT N'Lookup Detail by ItemUID and LineNumber';
                 --SELECT TargetPurchaseDetails.PurchaseItemDetailUID, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.LineNumber, 
                 --       SourcePurchaseDetails.PurchaseItemDetailUID, SourcePurchaseDetails.ItemUID, SourcePurchaseDetails.LineNumber
                 UPDATE TargetPurchaseDetails SET TargetPurchaseDetails.PurchaseItemDetailUID = SourcePurchaseDetails.PurchaseItemDetailUID
@@ -364,15 +402,15 @@ AS
                     AND TargetPurchaseDetails.ItemUID = SourcePurchaseDetails.ItemUID
                     AND TargetPurchaseDetails.LineNumber = SourcePurchaseDetails.LineNumber
                 WHERE
-                    TargetPurchaseDetails.PurchaseItemDetailUID = 0
+                    TargetPurchaseDetails.PurchaseUID > 0
+                AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
-                AND TargetPurchaseDetails.PurchaseUID > 0
                 AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match Details by ItemUID and LineNumber', 1;
@@ -381,8 +419,8 @@ AS
             END
         ELSE
             BEGIN
-                PRINT N'Lookup Details by ALL Fields';
 
+                PRINT N'Lookup Details by ALL Fields';
                 --Lookup line details by PurchaseUid, ItemUid, FundingSourceUid, SiteAddedSiteUid, 
                 --  DepartmentUid, Price, AccountCode (convert null to empty on both sides) and LineNumber
                 --SELECT TargetPurchaseDetails.PurchaseItemDetailUID, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.FundingSourceUID, 
@@ -403,15 +441,15 @@ AS
                     AND UPPER(LTRIM(RTRIM(ISNULL(TargetPurchaseDetails.AccountCode, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourcePurchaseDetails.AccountCode, ''))))
                     AND TargetPurchaseDetails.LineNumber = SourcePurchaseDetails.LineNumber
                 WHERE
-                    TargetPurchaseDetails.PurchaseItemDetailUID = 0
+                    TargetPurchaseDetails.PurchaseUID > 0
+                AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
-                AND TargetPurchaseDetails.PurchaseUID > 0
                 AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match Details by ItemUID, FundingSourceUID, SiteAddedSiteUID, TechDepartmentUID, PurchasePrice, AccountCode and LineNumber', 1;
@@ -423,9 +461,8 @@ AS
 
         IF @CreateNewPurchaseDetails = 1
             BEGIN
-                PRINT N'Reject rows where PurchasePrice is NULL';
 
-                --If Purchase Price is NULL reject
+                PRINT N'Reject rows where PurchasePrice is NULL';
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
                 UPDATE TargetPurchaseDetails SET Rejected = 1, PurchaseItemDetailUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchasePrice; PurchasePrice is Null'
                 FROM
@@ -439,7 +476,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where PurchasePrice is Null', 1;
@@ -448,6 +485,7 @@ AS
             END
         ELSE
             BEGIN
+
                 PRINT N'Reject where PurchaseDetail could not be matched';
                 --If ItemDetailUID = 0 reject
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
@@ -455,13 +493,14 @@ AS
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
                 WHERE
-                    TargetPurchaseDetails.PurchaseItemDetailUID = 0
+                    TargetPurchaseDetails.PurchaseUID > 0
+                AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the Purchase Detail could not be matched', 1;
@@ -470,8 +509,6 @@ AS
             END
 
         PRINT N'Validate Shipments';
-
-        --Validate Shipments
         --Match to existing Shipments by ShipToSite
         --SELECT TargetPurchaseShipments.PurchaseItemShipmentUID, TargetPurchaseShipments.ItemUID, TargetPurchaseShipments.ProductName, TargetPurchaseShipments.LineNumber, TargetPurchaseShipments.ShippedToSiteUID,
         --       SourcePurchaseShipments.PurchaseItemDetailUID, SourcePurchaseShipments.ShippedToSiteUID, SourcePurchaseShipments.InvoiceDate, 
@@ -481,7 +518,8 @@ AS
             IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
         INNER JOIN
             TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
-            ON TargetPurchaseShipments.ShippedToSiteUID = SourcePurchaseShipments.ShippedToSiteUID
+            ON TargetPurchaseShipments.PurchaseItemDetailUID = SourcePurchaseShipments.PurchaseItemDetailUID AND
+               TargetPurchaseShipments.ShippedToSiteUID = SourcePurchaseShipments.ShippedToSiteUID
         WHERE
             TargetPurchaseShipments.PurchaseItemShipmentUID = 0
         AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
@@ -491,7 +529,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Shipments by ShipToSite', 1;
@@ -504,17 +542,19 @@ AS
                 --Reject any unmatched Shipments
                 PRINT N'Reject PurchaseShipments that could not be matched';
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
-                UPDATE TargetPurchaseDetails SET Rejected = 1, PurchaseItemShipmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseItemShipmentUID; PurchaseItemShipmentUID could not be matched'
+                UPDATE TargetPurchaseShipments SET Rejected = 1, PurchaseItemShipmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseItemShipmentUID; PurchaseItemShipmentUID could not be matched'
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
                 WHERE
-                    TargetPurchaseDetails.PurchaseItemShipmentUID = 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                    TargetPurchaseShipments.PurchaseUID > 0
+                AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
+                AND TargetPurchaseShipments.PurchaseItemShipmentUID = 0
+                AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
+                AND (TargetPurchaseShipments.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the Shipment could not be matched', 1;

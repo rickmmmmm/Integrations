@@ -43,7 +43,7 @@
     [InventoryNotes]           VARCHAR (3000) NULL,
     [ParentInventoryUID]       INT            NULL,
     [ParentTag]                VARCHAR (50)   NULL,
-    [ContainerUID]             INT            NULL,
+    [ContainerUID]             INT            CONSTRAINT [DF__ETL_Inventory_ContainerUID] DEFAULT ((0)) NOT NULL,
     [ContainerNumber]          VARCHAR (50)   NULL,
     [InventorySourceUID]       INT            NOT NULL,
     [InventorySourceName]      VARCHAR (100)  NULL,

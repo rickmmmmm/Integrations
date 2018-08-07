@@ -62,12 +62,13 @@ namespace MiddleWay_BLL.Services
             var rejectCount = 0;
             try
             {
+                Console.WriteLine("Starting Process");
                 // Start Process Task
                 var processUid = _processesService.GetProcessUid();
                 var processTaskUid = _processTasksService.StartProcessTask(parameters);
                 if (processTaskUid > 0)
                 { // Create record, keep uid
-
+                    Console.WriteLine("Starting CleanUp Step");
                     taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.CleanUp);
 
                     // Send start process email
@@ -81,16 +82,20 @@ namespace MiddleWay_BLL.Services
 
                     _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
+                    Console.WriteLine("Starting Ingest Step");
+
                     taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Ingest);
 
                     //Read data from source (in batches) - Read Input (Loop)
                     var total = _inputService.GetInputCount();
+                    Console.WriteLine(total.ToString() + " records for process");
                     if (total > 0)
                     {
                         var rowCount = 1;
                         //  PER BATCH
                         //      Apply mappings and move to flat tables, catch and store errors
                         //      Apply transformations and move to stage tables, catch and store errors
+                        Console.WriteLine("Processing Input");
                         while (_inputService.HasNext())
                         {
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
@@ -107,6 +112,8 @@ namespace MiddleWay_BLL.Services
                         //TODO: Log count of source data records returned
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, true);
+
+                        Console.WriteLine("Starting Stage Step");
 
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Stage);
 
@@ -211,6 +218,8 @@ namespace MiddleWay_BLL.Services
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
+                        //Console.WriteLine("Starting ProcessCommands Step");
+
                         //taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.ProcessCommands);
 
                         //// Process options
@@ -231,24 +240,28 @@ namespace MiddleWay_BLL.Services
 
                         //_processTaskStepsService.EndTaskStep(taskStepUid, true);
 
+                        Console.WriteLine("Starting Validate Step");
+
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
 
                         // Validate ETLInventory data on TIPWeb
-                      var validationPassed = _etlInventoryService.ValidateEtlInventory(processUid, processTaskUid, 0);// processSources);
+                        var validationPassed = _etlInventoryService.ValidateEtlInventory(processUid, processTaskUid, 0);// sourceProcess);
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
 
-                        return;
-
                         if (validationPassed)
                         {
+                            Console.WriteLine("Starting Upload Step");
+
                             taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Upload);
 
                             // Submit valid ETLInventory data to TIPWeb
-                            validationPassed = _etlInventoryService.SubmitEtlInventory(processUid, processTaskUid, 0);// processSources);
+                            validationPassed = _etlInventoryService.SubmitEtlInventory(processUid, processTaskUid, 0);// sourceProcess);
 
                             _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
                         }
+
+                        //TODO: What now....
                     }
                     else
                     {

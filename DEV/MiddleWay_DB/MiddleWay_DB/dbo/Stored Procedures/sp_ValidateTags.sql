@@ -23,7 +23,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -33,7 +33,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
@@ -43,14 +43,14 @@ AS
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
                 ;
-                THROW 50000, 'Target Database Name is empty.', 1;
+                THROW 100000, 'Target Database Name is empty.', 1;
             END
 
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT
@@ -66,7 +66,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for UseTagInNotesValidation', 1;
@@ -85,15 +85,36 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
             END
 
+        PRINT N'Reject where Tag is NULL or Empty';
+        --SELECT RowID, Tag
+        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is NULL or Empty'
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+        WHERE 
+            TargetInventory.InventoryUID = 0
+        AND (TargetInventory.Tag IS NULL OR
+             LTRIM(RTRIM(TargetInventory.Tag)) = '')
+        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
+        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
+            END
+
         PRINT N'Reject Duplicate Tags in the Data';
         --SELECT TargetInventory.Tag, TargetInventory.AssetID, DuplicateTags.Repeats
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN '' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is repeated ' + CAST(DuplicateTags.Repeats AS VARCHAR) + N' times in the source data'
+        UPDATE TargetInventory
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN '' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is repeated ' + CAST(DuplicateTags.Repeats AS VARCHAR) + N' times in the source data'
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
         INNER JOIN (
@@ -121,7 +142,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Tag is duplicated', 1;
@@ -174,7 +195,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Inventory by AssetUID', 1;
@@ -189,17 +210,17 @@ AS
             TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
             ON UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag)))
         WHERE
-            TargetInventory.Tag IS NOT NULL
+            TargetInventory.InventoryUID = 0
+        AND TargetInventory.Tag IS NOT NULL
         AND LTRIM(RTRIM(TargetInventory.Tag)) <> ''
-        AND SourceInventory.AssetID IS NOT NULL
-        AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''
-        AND TargetInventory.InventoryUID = 0
+        AND (SourceInventory.AssetID IS NULL OR
+             LTRIM(RTRIM(SourceInventory.AssetID)) = '')
         AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
         AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Inventory by Tag', 1;
@@ -219,6 +240,8 @@ AS
                 TargetInventory.InventoryUID = 0
             AND TargetInventory.Serial IS NOT NULL
             AND LTRIM(RTRIM(TargetInventory.Serial)) <> ''
+            AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
+            AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
             GROUP BY
                 UPPER(LTRIM(RTRIM(TargetInventory.Serial)))
             HAVING
@@ -236,6 +259,8 @@ AS
                 WHERE 
                     SourceInventory.Serial IS NOT NULL
                 AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''
+                AND (SourceInventory.AssetID IS NULL OR
+                     LTRIM(RTRIM(SourceInventory.AssetID)) = '')
                 GROUP BY
                     SourceInventory.Serial
                 HAVING
@@ -247,6 +272,8 @@ AS
             WHERE
                 SourceInventory.Serial IS NOT NULL
             AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''
+            AND (SourceInventory.AssetID IS NULL OR
+                 LTRIM(RTRIM(SourceInventory.AssetID)) = '')
             ) AS SourceInventory
             ON UPPER(LTRIM(RTRIM(TargetInventory.Serial))) = SourceInventory.Serial
         WHERE
@@ -258,7 +285,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Inventory by Serial', 1;
@@ -281,7 +308,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to create the temporary table #Tags', 1;
@@ -299,7 +326,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to create the temporary table #ContainsTag', 1;
@@ -326,7 +353,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to add Tags to match in TagNotes to the #Tags table', 1;
@@ -336,7 +363,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to get the Total Tags to match in TagNotes', 1;
@@ -351,7 +378,7 @@ AS
 
                         IF @@ERROR <> 0
                             BEGIN
-                                SET @ErrorCode = @@ERROR + 50000;
+                                SET @ErrorCode = @@ERROR + 100000;
                                 --SET @ErrorMessage = ;
                                 --RETURN @ErrorCode;
                                 THROW @ErrorCode, 'Failed to get the next Tag to search', 1;
@@ -364,12 +391,14 @@ AS
                             TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
                         WHERE
                             SourceInventory.InventoryNotes IS NOT NULL
-                        AND UPPER(LTRIM(RTRIM(SourceInventory.InventoryNotes))) LIKE '%TAG: ' + @TagSearch + '%';
+                        AND UPPER(LTRIM(RTRIM(SourceInventory.InventoryNotes))) LIKE '%TAG: ' + @TagSearch + '%'
+                        AND (SourceInventory.AssetID IS NULL OR
+                             LTRIM(RTRIM(SourceInventory.AssetID)) = '');
                         --AND CONTAINS(SourceInventory.InventoryNotes, @TagSearch);
 
                         IF @@ERROR <> 0
                             BEGIN
-                                SET @ErrorCode = @@ERROR + 50000;
+                                SET @ErrorCode = @@ERROR + 100000;
                                 --SET @ErrorMessage = ;
                                 --RETURN @ErrorCode;
                                 THROW @ErrorCode, 'Failed to find Tags in the TagNotes', 1;
@@ -423,7 +452,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match Inventory that has a single match in TagNotes', 1;
@@ -433,7 +462,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to Drop the #Tags table', 1;
@@ -443,7 +472,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 50000;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to Drop the #ContainsTag table', 1;
@@ -451,28 +480,7 @@ AS
 
             END
 
-        PRINT N'Reject where Tag is NULL or Empty';
-        --SELECT RowID, Tag
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is NULL or Empty'
-        FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
-        WHERE 
-            TargetInventory.InventoryUID = 0
-        AND (TargetInventory.Tag IS NULL OR
-             LTRIM(RTRIM(TargetInventory.Tag)) = '')
-        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
-
-        IF @@ERROR <> 0
-            BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
-                --SET @ErrorMessage = ;
-                --RETURN @ErrorCode;
-                THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
-            END
-
         PRINT N'Reject Tags that have a duplicate InventoryUID match';
-
         --SELECT RowID, Tag
         UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset; The Asset/Tag search found multiple records match the same Inventory'
         FROM
@@ -497,10 +505,32 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR + 50000;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records that have multiple matches to the same Inventory', 1;
+            END
+
+        PRINT N'Reject where Tag matches but AssetUID does not';
+        --SELECT RowID, Tag
+        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag/AssetUID; Tag matches but AssetUID does not.'
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+        INNER JOIN
+            TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+            ON UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag)))
+        WHERE
+            TargetInventory.InventoryUID = 0
+        AND UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) <> UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
+        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
+        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
             END
 
         SET NOCOUNT OFF;

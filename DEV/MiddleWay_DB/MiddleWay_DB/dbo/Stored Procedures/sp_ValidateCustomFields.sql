@@ -14,7 +14,7 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode                  AS INT;
+                @ErrorCode              AS INT;
 
         SET NOCOUNT ON;
 
@@ -23,7 +23,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -33,7 +33,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
@@ -43,14 +43,14 @@ AS
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
                 ;
-                THROW 50000, 'Target Database Name is empty.', 1;
+                THROW 100000, 'Target Database Name is empty.', 1;
             END;
 
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT 
@@ -66,7 +66,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateCustomFields', 1;
@@ -85,7 +85,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
@@ -123,7 +123,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match MetaUID1 by Label', 1;
@@ -148,7 +148,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match MetaUID2 by Label', 1;
@@ -173,7 +173,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match MetaUID3 by Label', 1;
@@ -198,7 +198,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match MetaUID4 by Label', 1;
@@ -223,7 +223,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ExtUID1 by Inventory and MetaUID', 1;
@@ -247,7 +247,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ExtUID2 by Inventory and MetaUID', 1;
@@ -271,7 +271,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ExtUID3 by Inventory and MetaUID', 1;
@@ -295,7 +295,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ExtUID4 by Inventory and MetaUID', 1;
@@ -321,7 +321,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Meta1 Value is required but Empty', 1;
@@ -346,7 +346,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Meta2 Value is required but Empty', 1;
@@ -371,7 +371,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Meta3 Value is required but Empty', 1;
@@ -396,11 +396,161 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Meta4 Value is required but Empty', 1;
             END
+
+
+        --Set the MetaUID of all Assets to zero where the Label is not null and the MetaUID is NULL
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta1UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryMeta1UID IS NULL
+        AND TargetCustomFields.CustomField1Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set Meta1UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta2UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryMeta2UID IS NULL
+        AND TargetCustomFields.CustomField2Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set Meta2UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta3UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryMeta3UID IS NULL
+        AND TargetCustomFields.CustomField3Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set Meta3UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta4UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryMeta4UID IS NULL
+        AND TargetCustomFields.CustomField4Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set Meta4UID to zero', 1;
+            END
+
+
+        -- Set the ExtUID of unrejected existing Assets to 0 where the label is not null
+        --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.InventoryExt1UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryExt1UID IS NULL
+        AND TargetCustomFields.CustomField1Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set the Ext1UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt2UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryExt2UID IS NULL
+        AND TargetCustomFields.CustomField2Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set the Ext2UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt3UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryExt3UID IS NULL
+        AND TargetCustomFields.CustomField3Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set the Ext3UID to zero', 1;
+            END
+
+        UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt4UID = 0
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+        WHERE
+            TargetCustomFields.InventoryExt4UID IS NULL
+        AND TargetCustomFields.CustomField4Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
+        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to set the Ext4UID to zero', 1;
+            END
+
 
         /*  IF CreateCustomFields is false 
          *      IF ItemTypeUid = 0 AND CustomLabel IS NOT NULL (or empty) reject rows
@@ -409,7 +559,7 @@ AS
         IF @CreateCustomFields = 0
             BEGIN
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryMeta1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -421,14 +571,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField1 cannot be created', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryMeta2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -440,14 +590,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField2 cannot be created', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryMeta3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -459,14 +609,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField3 cannot be created', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryMeta4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -478,7 +628,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField4 cannot be created', 1;
@@ -486,7 +636,7 @@ AS
 
                 --*  IF ItemTypeUID > 0 AND MetaUID = 0 AND CustomLabel IS NOT NULL (or empty) reject rows
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryExt1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -499,14 +649,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField1 could not be found', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryExt2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -519,14 +669,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField2 could not be found', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryExt3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -539,14 +689,14 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField3 could not be found', 1;
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                UPDATE TargetCustomFields SET InventoryExt4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
                 WHERE
@@ -559,7 +709,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where CustomField4 could not be found', 1;

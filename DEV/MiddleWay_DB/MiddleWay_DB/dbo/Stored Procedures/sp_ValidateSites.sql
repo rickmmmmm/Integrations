@@ -13,11 +13,13 @@ AS
                 @AllowStackingErrors    AS BIT,
                 @ErrorCode              AS INT;
 
+        SET NOCOUNT ON;
+
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -27,7 +29,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
@@ -37,14 +39,14 @@ AS
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
                 ;
-                THROW 50000, 'Target Database Name is empty.', 1;
+                THROW 100000, 'Target Database Name is empty.', 1;
             END;
 
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT
@@ -60,7 +62,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
@@ -83,7 +85,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Site by SiteID', 1;
@@ -106,7 +108,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Site by SiteName', 1;
@@ -129,7 +131,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Sites by SiteID in the SiteName', 1;
@@ -151,7 +153,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the SiteID and SiteName are Null or Empty', 1;
@@ -169,7 +171,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Site could not be matched', 1;
@@ -193,7 +195,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match PurchaseSite by PurchaseSiteID', 1;
@@ -216,7 +218,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Site by PurchaseSiteName', 1;
@@ -239,7 +241,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Sites by PurchaseSiteID in the SiteName', 1;
@@ -261,7 +263,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the PurchaseSiteID and PurchaseSiteName are Null or Empty', 1;
@@ -279,7 +281,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the PurchaseSite could not be matched', 1;
@@ -302,7 +304,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match SiteAddedSite by SiteAddedSiteID', 1;
@@ -325,7 +327,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Site by SiteAddedSiteName', 1;
@@ -348,7 +350,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Sites by SiteAddedSiteID in the SiteName', 1;
@@ -370,7 +372,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the SiteAddedSiteID and SiteAddedSiteName are Null or Empty', 1;
@@ -388,7 +390,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the SiteAddedSite could not be matched', 1;
@@ -412,7 +414,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ShippedToSite by ShippedToSiteID', 1;
@@ -435,7 +437,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Site by ShippedToSiteName', 1;
@@ -458,7 +460,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Sites by ShippedToSiteID in the SiteName', 1;
@@ -480,7 +482,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the ShippedToSiteID and ShippedToSiteName are Null or Empty', 1;
@@ -498,7 +500,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the ShippedToSite could not be matched', 1;

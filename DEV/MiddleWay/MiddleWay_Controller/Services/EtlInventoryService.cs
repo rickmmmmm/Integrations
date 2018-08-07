@@ -202,55 +202,55 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public bool ValidateEtlInventory(int processUid, int processTaskUid, int processSource)
+        public bool ValidateEtlInventory(int processUid, int processTaskUid, int sourceProcess)
         {
             try
             {
-                if (!_etlInventoryRepository.ValidateTags(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateTags(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateItems(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateItems(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateItemTypes(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateItemTypes(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateCustomFields(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateCustomFields(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateManufacturers(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateManufacturers(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateAreas(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateAreas(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateSites(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateSites(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateDepartments(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateDepartments(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateFundingSources(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateFundingSources(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateVendors(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateVendors(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidateStatus(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidateStatus(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                if (!_etlInventoryRepository.ValidatePurchaseOrders(processUid, processTaskUid, processSource))
+                if (!_etlInventoryRepository.ValidatePurchaseOrders(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
@@ -265,37 +265,63 @@ namespace MiddleWay_Controller.Services
             }
         }
 
-        public bool SubmitEtlInventory(int processUid, int processTaskUid, int processSource)
+        public bool SubmitEtlInventory(int processUid, int processTaskUid, int sourceProcess)
         {
             try
             {
-                //Submit Products
-
-                //Submit Manufacturers
-
-                //Submit Funding Sources
-
                 //Submit Vendors
-
-                //Submit Inventory
-
-                //Submit Custom Fields
-
-                //Submit Parent Data
-
-                //Submit Purchase Orders
-
+                if (!_etlInventoryRepository.SubmitVendors(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit Manufacturers
+                if (!_etlInventoryRepository.SubmitManufacturers(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit Areas
+                if (!_etlInventoryRepository.SubmitAreas(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit Funding Sources
+                if (!_etlInventoryRepository.SubmitFundingSources(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit Items
+                if (!_etlInventoryRepository.SubmitItems(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
                 //Submit Purchase Details
-
+                if (!_etlInventoryRepository.SubmitPurchaseItemDetails(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
                 //Submit Purchase Shipments
-
+                if (!_etlInventoryRepository.SubmitPurchaseItemShipments(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit Inventory
+                if (!_etlInventoryRepository.SubmitInventory(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
                 //Submit Purchase Inventory
-
-                //Submit Invoice Data
-
+                if (!_etlInventoryRepository.SubmitPurchaseInventory(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
+                //Submit InventoryExt
+                if (!_etlInventoryRepository.SubmitInventoryExt(processUid, processTaskUid, sourceProcess))
+                {
+                    return false;
+                }
                 //TODO: Log count of items saved?
 
-                return false;
+                return true;
             }
             catch
             {

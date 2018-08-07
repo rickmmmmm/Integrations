@@ -24,7 +24,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -34,7 +34,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
@@ -44,14 +44,14 @@ AS
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
                 ;
-                THROW 50000, 'Target Database Name is empty.', 1;
+                THROW 100000, 'Target Database Name is empty.', 1;
             END;
 
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT 
@@ -67,7 +67,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateProductTypes', 1;
@@ -81,7 +81,7 @@ AS
 
           IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for DefaultProductType', 1;
@@ -100,7 +100,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
@@ -129,7 +129,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ProductTypes by Name', 1;
@@ -152,7 +152,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match ProductTypes by Description', 1;
@@ -176,7 +176,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject records where the ProductTypeName is Null or Empty', 1;
@@ -195,7 +195,7 @@ AS
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to match the DefaultProductType by Name', 1;
@@ -209,7 +209,8 @@ AS
 
                         --If Product Type Name is null or empty reject
                         --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription
-                        UPDATE TargetItemTypes SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductTypeName; ProductTypeName is NULL or Empty'
+                        UPDATE TargetItemTypes
+                        SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductTypeName; ProductTypeName is NULL or Empty'
                         FROM 
                             IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
                         WHERE 
@@ -221,7 +222,7 @@ AS
 
                         IF @@ERROR <> 0
                             BEGIN
-                                SET @ErrorCode = @@ERROR;
+                                SET @ErrorCode = @@ERROR + 100000;
                                 --SET @ErrorMessage = ;
                                 --RETURN @ErrorCode;
                                 THROW @ErrorCode, 'Failed to reject records where the ProductTypeName is Null or Empty', 1;
@@ -244,7 +245,7 @@ AS
 
                         IF @@ERROR <> 0
                             BEGIN
-                                SET @ErrorCode = @@ERROR;
+                                SET @ErrorCode = @@ERROR + 100000;
                                 --SET @ErrorMessage = ;
                                 --RETURN @ErrorCode;
                                 THROW @ErrorCode, 'Failed to set the DefaultProductType on ProductTypes not matched', 1;

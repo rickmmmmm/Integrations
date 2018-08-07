@@ -21,7 +21,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Target Database for the Process', 1;
@@ -31,7 +31,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to determine the Source Table for the Process', 1;
@@ -41,14 +41,14 @@ AS
         IF @TargetDatabase IS NULL OR LEN(@TargetDatabase) = 0
             BEGIN
                 ;
-                THROW 50000, 'Target Database Name is empty.', 1;
+                THROW 100000, 'Target Database Name is empty.', 1;
             END;
 
         --Check that Source Table is not null or empty
         IF @SourceTable IS NULL OR LEN(@SourceTable) = 0
             BEGIN
                 ;
-                THROW 50000, 'Source Table could not be verified.', 1;
+                THROW 100000, 'Source Table could not be verified.', 1;
             END
 
         SELECT @DefaultDepartmentUID = CAST(ConfigurationValue AS INT)
@@ -58,7 +58,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for DefaultDepartmentUID', 1;
@@ -77,7 +77,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
@@ -100,7 +100,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Departments by Name', 1;
@@ -123,7 +123,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to match Departments by DepartmentID', 1;
@@ -140,7 +140,7 @@ AS
 
         IF @@ERROR <> 0
             BEGIN
-                SET @ErrorCode = @@ERROR;
+                SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Department Settings of the Target Database', 1;
@@ -154,10 +154,12 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
+                AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
+                AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to reject Invalid Departments', 1;
@@ -172,10 +174,12 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
+                AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
+                AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
 
                 IF @@ERROR <> 0
                     BEGIN
-                        SET @ErrorCode = @@ERROR;
+                        SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
                         THROW @ErrorCode, 'Failed to set all non-matches to DefaultDepartmentUID', 1;

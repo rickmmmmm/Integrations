@@ -31,6 +31,17 @@ namespace MiddleWay_DTO.RepositoryInterfaces.MiddleWay
         bool ValidateVendors(int processUid, int processTaskUid, int sourceProcess);
         bool ValidateStatus(int processUid, int processTaskUid, int sourceProcess);
         bool ValidatePurchaseOrders(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitVendors(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitManufacturers(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitAreas(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitFundingSources(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitItems(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitPurchaseItemDetails(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitPurchaseItemShipments(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitInventory(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitPurchaseInventory(int processUid, int processTaskUid, int sourceProcess);
+        bool SubmitInventoryExt(int processUid, int processTaskUid, int sourceProcess);
+
         bool Delete(int etlInventoryUid);
         bool DeleteAll(int processTaskUid);
         bool DeleteAll(string client, string processName);

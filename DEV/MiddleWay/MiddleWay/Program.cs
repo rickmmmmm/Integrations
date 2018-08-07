@@ -42,9 +42,11 @@ namespace MiddleWay
                 var commands = args.ToList();
 
                 //var inputProcess = new ProcessInput(commands);
+                Console.WriteLine("Begining MiddleWay Main Process");
 
                 if (ConfigureServices(services, commands))
                 {
+                    Console.WriteLine("Services Configured. Building Service Provider");
                     serviceProvider = services.BuildServiceProvider();
 
                     RunProcess(commands);
@@ -72,7 +74,7 @@ namespace MiddleWay
         {
             try
             {
-
+                Console.WriteLine("Configuring Injection Services");
                 //        //setup our DI
                 //        var serviceProvider = new ServiceCollection()
                 //            .AddLogging()
@@ -297,6 +299,7 @@ namespace MiddleWay
 
             try
             {
+                Console.WriteLine("Running Process. Checking Configuration");
                 if (!configurationService.HasConfiguration)
                 {
                     // Configuration Not Loaded
@@ -311,6 +314,7 @@ namespace MiddleWay
                     //ReadParameters(commands);
                     //string choice = args[0];
                     var options = ProcessInput.ReadOptions(commands);
+                    Console.WriteLine("Determining Process to Run");
 
                     switch (options[0])
                     {
@@ -927,6 +931,7 @@ namespace MiddleWay
 
         public static void AssetsMenu(List<string> commands, string parameters = null) //List<string> options
         {
+            Console.WriteLine("Starting Asset Process");
             var assetsService = serviceProvider.GetService<IAssetsService>();
 
             assetsService.ProcessAssets(commands, parameters);

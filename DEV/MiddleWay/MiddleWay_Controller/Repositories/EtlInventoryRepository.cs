@@ -1400,6 +1400,196 @@ namespace MiddleWay_Controller.Repositories
             }
         }
 
+        public bool SubmitVendors(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_Vendors @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitManufacturers(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_Manufacturers @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitAreas(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_Areas @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitFundingSources(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_FundingSources @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitItems(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_Items @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitPurchaseItemDetails(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_PurchaseItemDetails @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitPurchaseItemShipments(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_PurchaseItemShipments @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitInventory(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_Inventory @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitPurchaseInventory(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_PurchaseInventory @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
+        public bool SubmitInventoryExt(int processUid, int processTaskUid, int sourceProcess)
+        {
+            try
+            {
+                SqlParameter returnValue = new SqlParameter("@returnCode", System.Data.SqlDbType.Int);
+                returnValue.Direction = System.Data.ParameterDirection.Output;
+                SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
+                SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
+                SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
+                _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_AddUpdate_InventoryExt @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
+                return ((int)returnValue.Value) == 0;
+            }
+            catch
+            {
+                //TODO: Log Error returned by Procedure
+                return false;
+            }
+        }
+
         #endregion Update Methods
 
         #region Delete Methods

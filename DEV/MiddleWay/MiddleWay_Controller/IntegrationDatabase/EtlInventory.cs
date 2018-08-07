@@ -49,7 +49,7 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string InventoryNotes { get; set; }
         public int? ParentInventoryUid { get; set; }
         public string ParentTag { get; set; }
-        public int? ContainerUid { get; set; }
+        public int ContainerUid { get; set; }
         public string ContainerNumber { get; set; }
         public int InventorySourceUid { get; set; }
         public string InventorySourceName { get; set; }
