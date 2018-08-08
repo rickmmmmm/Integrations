@@ -1,6 +1,7 @@
 ﻿using MiddleWay_DTO.Models.MiddleWay_Controller;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
+using System;
 using System.Collections.Generic;
 
 namespace MiddleWay_Controller.Services
@@ -206,55 +207,67 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Tags");
                 if (!_etlInventoryRepository.ValidateTags(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Items");
                 if (!_etlInventoryRepository.ValidateItems(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Item Types");
                 if (!_etlInventoryRepository.ValidateItemTypes(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Custom Fields");
                 if (!_etlInventoryRepository.ValidateCustomFields(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Manufacturers");
                 if (!_etlInventoryRepository.ValidateManufacturers(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Areas");
                 if (!_etlInventoryRepository.ValidateAreas(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Sites");
                 if (!_etlInventoryRepository.ValidateSites(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Departments");
                 if (!_etlInventoryRepository.ValidateDepartments(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Funding Sources");
                 if (!_etlInventoryRepository.ValidateFundingSources(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Vendors");
                 if (!_etlInventoryRepository.ValidateVendors(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Status");
                 if (!_etlInventoryRepository.ValidateStatus(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validate Purchase Orders");
                 if (!_etlInventoryRepository.ValidatePurchaseOrders(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Validations Complete");
                 //TODO: Log count of items saved?
 
                 return true;
@@ -269,57 +282,58 @@ namespace MiddleWay_Controller.Services
         {
             try
             {
-                //Submit Vendors
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Vendors");
                 if (!_etlInventoryRepository.SubmitVendors(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Manufacturers
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Manufacturers");
                 if (!_etlInventoryRepository.SubmitManufacturers(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Areas
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Areas");
                 if (!_etlInventoryRepository.SubmitAreas(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Funding Sources
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Funding Sources");
                 if (!_etlInventoryRepository.SubmitFundingSources(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Items
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Items");
                 if (!_etlInventoryRepository.SubmitItems(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Purchase Details
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Purchase Details");
                 if (!_etlInventoryRepository.SubmitPurchaseItemDetails(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Purchase Shipments
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Purchase Shipments");
                 if (!_etlInventoryRepository.SubmitPurchaseItemShipments(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Inventory
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Inventory");
                 if (!_etlInventoryRepository.SubmitInventory(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit Purchase Inventory
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Purchase Inventory");
                 if (!_etlInventoryRepository.SubmitPurchaseInventory(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
-                //Submit InventoryExt
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit InventoryExt");
                 if (!_etlInventoryRepository.SubmitInventoryExt(processUid, processTaskUid, sourceProcess))
                 {
                     return false;
                 }
                 //TODO: Log count of items saved?
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Submit Complete");
 
                 return true;
             }

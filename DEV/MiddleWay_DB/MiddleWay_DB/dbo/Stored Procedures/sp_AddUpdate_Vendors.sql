@@ -10,11 +10,14 @@ AS
         DECLARE @CreateVendors            AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
+                @Notes                  AS VARCHAR(100),
                 @ErrorCode              AS INT;
 
         SET NOCOUNT ON;
 
         SET @CreateVendors = 0;
+        SET @Notes = '';
+
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
 
         IF @@ERROR <> 0
@@ -60,12 +63,27 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-          IF @@ERROR <> 0
+        IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for CreateVendors', 1;
+            END
+
+        SELECT
+            @Notes = REPLACE(ISNULL(ConfigurationValue, 'MiddleWay Integration - {DATE}'), '{DATE}', CONVERT(VARCHAR(8), GETDATE(), 1))
+        FROM [Configurations]
+        WHERE ConfigurationName = 'InsertNotes'
+          AND ProcessUid = @ProcessUid
+          AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for InsertNotes', 1;
             END
 
         IF @CreateVendors = 1
@@ -74,7 +92,7 @@ AS
                 INSERT INTO TipWebHostedChicagoPS.dbo.tblVendor
                     (VendorName, Contact, Address, Address2, City, State, Zip, Phone, Fax, Email, AccountNumber, CampusID, Notes, Active, UserID, ModifiedDate, ApplicationUID)
                 SELECT DISTINCT
-                    TargetVendor.VendorName, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TargetVendor.VendorAccountNumber, NULL, 'NOTES', 1, 0, GETDATE(), 2
+                    TargetVendor.VendorName, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TargetVendor.VendorAccountNumber, NULL, @Notes, 1, 0, GETDATE(), 2
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
                 WHERE

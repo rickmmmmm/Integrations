@@ -11,12 +11,15 @@ AS
                 @UpdateProductName      AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
+                @Notes                  AS VARCHAR(100),
                 @ErrorCode              AS INT;
 
         SET NOCOUNT ON;
 
         SET @CreateProducts = 0;
         SET @UpdateProductName = 0;
+        SET @Notes = '';
+
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
 
         IF @@ERROR <> 0
@@ -62,7 +65,7 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-          IF @@ERROR <> 0
+        IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
@@ -81,12 +84,27 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-          IF @@ERROR <> 0
+        IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for UpdateProductName', 1;
+            END
+
+        SELECT
+            @Notes = REPLACE(ISNULL(ConfigurationValue, 'MiddleWay Integration - {DATE}'), '{DATE}', CONVERT(VARCHAR(8), GETDATE(), 1))
+        FROM [Configurations]
+        WHERE ConfigurationName = 'InsertNotes'
+          AND ProcessUid = @ProcessUid
+          AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for InsertNotes', 1;
             END
 
         IF @CreateProducts = 1
@@ -100,18 +118,18 @@ AS
                         @SuggestedPrice AS DECIMAL,
                         @AreaUID AS INT,
                         @PRODNUM AS INT,
-                        @COUNT AS INT;
+                        @COUNT AS INT
 
                 SET @COUNT = 0;
-                SELECT @PRODNUM = Value FROM TipWebHostedChicagoPS.dbo.tblUnvCounter WHERE CounterUID = 4;
+                SELECT @PRODNUM = Value FROM TipWebHostedChicagoPS.dbo.tblUnvCounter WHERE CounterUID = 4
 
-                IF @@ERROR <> 0
-                    BEGIN
-                        SET @ErrorCode = @@ERROR + 100000;
-                        --SET @ErrorMessage = ;
-                        --RETURN @ErrorCode;
-                        THROW @ErrorCode, 'Failed to get the Next Value for ProductNumber', 1;
-                    END
+                            IF @@ERROR <> 0
+                                BEGIN
+                                    SET @ErrorCode = @@ERROR + 100000;
+                                    --SET @ErrorMessage = ;
+                                    --RETURN @ErrorCode;
+                                    THROW @ErrorCode, 'Failed to create new Products', 1;
+                                END
 
                 --Get all 
                 DECLARE NewItems CURSOR READ_ONLY
@@ -175,7 +193,7 @@ AS
                             @ManufacturerUID,
                             @SuggestedPrice,
                             @AreaUID,
-                            '', --NOTES
+                            @Notes,
                             NULL,
                             0,
                             0,

@@ -42,25 +42,30 @@ namespace MiddleWay
                 var commands = args.ToList();
 
                 //var inputProcess = new ProcessInput(commands);
-                Console.WriteLine("Begining MiddleWay Main Process");
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Begining MiddleWay Main Process");
 
                 if (ConfigureServices(services, commands))
                 {
-                    Console.WriteLine("Services Configured. Building Service Provider");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Services Configured. Building Service Provider");
                     serviceProvider = services.BuildServiceProvider();
 
                     RunProcess(commands);
+//#if DEBUG
+//                    Console.Write("Press Enter to quit");
+//                    Console.Read();
+//#endif
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Error Caught");
                 PrintToConsole(Utilities.ParseException(ex));
-#if DEBUG
-                Console.Write("Press Enter to quit");
-                Console.Read();
-                //#else
-                //                Environment.Exit(0);
-#endif
+//#if DEBUG
+//                Console.Write("Press Enter to quit");
+//                Console.Read();
+//                //#else
+//                //                Environment.Exit(0);
+//#endif
             }
             finally
             {
@@ -74,7 +79,7 @@ namespace MiddleWay
         {
             try
             {
-                Console.WriteLine("Configuring Injection Services");
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Configuring Injection Services");
                 //        //setup our DI
                 //        var serviceProvider = new ServiceCollection()
                 //            .AddLogging()
@@ -160,7 +165,7 @@ namespace MiddleWay
                             //    }
                             //    else
                             //    {
-                            //        Console.WriteLine("The TIPWeb database connection is Not configured");
+                            //        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - The TIPWeb database connection is Not configured");
                             //        //throw new ArgumentNullException("The TIPWeb database connection is Not configured");
                             //        return false;
                             //    }
@@ -168,34 +173,34 @@ namespace MiddleWay
                             //}
                             //else
                             //{
-                            //    Console.WriteLine("Configuration not setup for Client \"" + client + "\" and Process Name \"" + processName + "\"");
+                            //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Configuration not setup for Client \"" + client + "\" and Process Name \"" + processName + "\"");
                             //    return false;
                             //}
                         }
                         else
                         {
-                            Console.WriteLine("The Integration database connection is Not configured");
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - The Integration database connection is Not configured");
                             //throw new ArgumentNullException("The Integration database connection is Not configured");
                             return false;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Process Name value is not configured");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Process Name value is not configured");
                         //throw new ArgumentNullException("Process Name value is not configured");
                         return false;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Client value is not configured");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Client value is not configured");
                     //throw new ArgumentNullException("Client value is not configured");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An exception occurred Injecting Data Dependencies");
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - An exception occurred Injecting Data Dependencies");
                 Console.WriteLine(Utilities.ParseException(ex));
                 //throw new Exception("Exception caught in InjectDataDependencies...", ex);
                 return false;
@@ -299,7 +304,7 @@ namespace MiddleWay
 
             try
             {
-                Console.WriteLine("Running Process. Checking Configuration");
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Running Process. Checking Configuration");
                 if (!configurationService.HasConfiguration)
                 {
                     // Configuration Not Loaded
@@ -314,7 +319,7 @@ namespace MiddleWay
                     //ReadParameters(commands);
                     //string choice = args[0];
                     var options = ProcessInput.ReadOptions(commands);
-                    Console.WriteLine("Determining Process to Run");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Determining Process to Run");
 
                     switch (options[0])
                     {
@@ -344,9 +349,9 @@ namespace MiddleWay
                     //}
                     //else
                     //{
-                    //    Console.WriteLine("Welcome to Hayes Integration Console Application. Please select from the below options:");
+                    //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Welcome to Hayes Integration Console Application. Please select from the below options:");
 
-                    //    Console.WriteLine("Shall we play a game? (Y)es (N)o");
+                    //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Shall we play a game? (Y)es (N)o");
                     //    string gameplay = Console.ReadLine().ToLower();
 
                     //    if (gameplay == "n")
@@ -354,7 +359,7 @@ namespace MiddleWay
                     //        Environment.Exit(0);
                     //    }
 
-                    //    Console.WriteLine("What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
+                    //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - What kind of integration are you looking to do? (P)urchase Order, (M)obile Device Management, (E)xport, (C)harges, (Q)uit");
 
                     //    ReadInput();
                     //}
@@ -436,7 +441,7 @@ namespace MiddleWay
         //            Environment.Exit(0);
         //            break;
         //        default:
-        //            Console.WriteLine("Not a recognized option. Please select a valid option. Enter (Q)uit to exit.");
+        //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Not a recognized option. Please select a valid option. Enter (Q)uit to exit.");
         //            ReadInput();
         //            break;
         //    }
@@ -447,7 +452,7 @@ namespace MiddleWay
         //    //string[] options = new string[10];
         //    var options = new List<string>();
 
-        //    Console.WriteLine("Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
+        //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Would you like to add items to the TIPWEB-IT Catalog from this file? (Y)es (N)o");
         //    string response = Console.ReadLine().ToLower();
 
         //    switch (response)
@@ -463,7 +468,7 @@ namespace MiddleWay
         //            break;
         //    }
 
-        //    Console.WriteLine("Would you like to add vendors to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
+        //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Would you like to add vendors to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
         //    response = Console.ReadLine().ToLower();
 
         //    switch (response)
@@ -478,7 +483,7 @@ namespace MiddleWay
         //            break;
         //    }
 
-        //    Console.WriteLine("Would you like to add funding sources to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
+        //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Would you like to add funding sources to the TIPWEB-IT Vendor list from file? (Y)es (N)o");
         //    response = Console.ReadLine().ToLower();
 
         //    switch (response)
@@ -500,7 +505,7 @@ namespace MiddleWay
         private static void ChargesMenu(List<string> args)
         {
             //Is this an import or export?
-            //Console.WriteLine("Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
+            //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
             //string choice = string.IsNullOrEmpty(args[1]) ? Console.ReadLine().ToLower() : args[1];
 
             //var chargesService = serviceProvider.GetService<IChargesService>();
@@ -524,12 +529,12 @@ namespace MiddleWay
 
             //if (choice == "i")
             //{
-            //    Console.WriteLine("Paste import filename below:");
+            //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Paste import filename below:");
             //    string importFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
 
             //    if (!fileTasks.checkFile(importFileName))
             //    {
-            //        Console.WriteLine("File not valid.");
+            //        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - File not valid.");
 
             //        if (args[3] == "--batch")
             //        {
@@ -547,7 +552,7 @@ namespace MiddleWay
             //        }
             //        catch (Exception e)
             //        {
-            //            Console.WriteLine("There was an error processing the import. Exception: ");
+            //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - There was an error processing the import. Exception: ");
             //            Console.WriteLine(e.Message);
             //            //_repo.logError("There was an error processing the import file " + importFileName, e.Message.Replace("'", "''"));
 
@@ -567,7 +572,7 @@ namespace MiddleWay
             //}
             //else if (choice == "e")
             //{
-            //    Console.WriteLine("Paste export filename below:");
+            //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Paste export filename below:");
             //    string exportFileName = string.IsNullOrEmpty(args[2]) ? Console.ReadLine() : args[2];
 
             //    if (fileTasks.checkFile(exportFileName))
@@ -626,7 +631,7 @@ namespace MiddleWay
 
         public static void ExportFileOptions(List<string> options)
         {
-            //Console.WriteLine("Which export option would you like to do? (R)eceived Tags");
+            //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Which export option would you like to do? (R)eceived Tags");
             //string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
 
             //switch (response)
@@ -642,7 +647,7 @@ namespace MiddleWay
 
         private static void ProcessReceivedTagsExport(string[] options)
         {
-            //Console.WriteLine("Paste Export File Name below:");
+            //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Paste Export File Name below:");
             //string file = string.IsNullOrEmpty(options[2]) ? Console.ReadLine() : options[2];
 
             //var inventoryService = serviceProvider.GetService<IInventoryService>();
@@ -659,14 +664,14 @@ namespace MiddleWay
             //    fileTasks.createExportFile(results, file);
             //}
 
-            Console.WriteLine("Completed...");
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Completed...");
             Environment.Exit(0);
 
         }
 
         public static void MobileDeviceManagementMenu()
         {
-            Console.WriteLine("Mobile Device Management not implemented yet.");
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Mobile Device Management not implemented yet.");
             //throw new NotImplementedException();
         }
 
@@ -697,7 +702,7 @@ namespace MiddleWay
             //}
             //else
             //{
-            //    Console.WriteLine("Paste Import File Name below:");
+            //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Paste Import File Name below:");
             //    file = Console.ReadLine();
             //}
 
@@ -708,7 +713,7 @@ namespace MiddleWay
             //}
             //else if (!fileTasks.checkFile(file))
             //{
-            //    Console.WriteLine("File does not exist. Please provide a valid file url.");
+            //    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - File does not exist. Please provide a valid file url.");
             //    if (options[5] == "--batch")
             //    {
             //        Environment.Exit(0);
@@ -855,7 +860,7 @@ namespace MiddleWay
             //                _repo.addShipmentInfo();
             //            }
 
-            //            Console.WriteLine("Completed. Where would you like the rejected order file stored? Enter file name below:");
+            //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Completed. Where would you like the rejected order file stored? Enter file name below:");
             //            string rejectFile = string.IsNullOrEmpty(options[7]) ? Console.ReadLine() : options[7];
 
             //            var rejects = _repo.getRejectionsFromLastImport();
@@ -889,10 +894,10 @@ namespace MiddleWay
             //            }
             //            catch (Exception e)
             //            {
-            //                Console.WriteLine("Error cleaning up data file info. Exception Message: " + e.Message);
+            //                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Error cleaning up data file info. Exception Message: " + e.Message);
             //            }
 
-            //            Console.WriteLine("Integration Completed. Press Any Key To Exit Application...");
+            //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Integration Completed. Press Any Key To Exit Application...");
 
             //            if (options[5] == "--batch")
             //            {
@@ -903,8 +908,8 @@ namespace MiddleWay
             //        }
             //        else
             //        {
-            //            Console.WriteLine("No valid data uploaded. Please fix issues in file and re-upload.");
-            //            Console.WriteLine("Press Any Key To Continue...");
+            //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - No valid data uploaded. Please fix issues in file and re-upload.");
+            //            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Press Any Key To Continue...");
             //            if (options[5] == "--batch")
             //            {
             //                Environment.Exit(0);
@@ -916,8 +921,8 @@ namespace MiddleWay
             //    catch (Exception e)
             //    {
 
-            //        Console.WriteLine("An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
-            //        Console.WriteLine("Press Any Key To Continue...");
+            //        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - An error occurred while parsing file " + file + " to .NET object. Error Message:" + e.Message);
+            //        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Press Any Key To Continue...");
 
             //        if (options[5] == "--batch")
             //        {
@@ -931,7 +936,7 @@ namespace MiddleWay
 
         public static void AssetsMenu(List<string> commands, string parameters = null) //List<string> options
         {
-            Console.WriteLine("Starting Asset Process");
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Asset Process");
             var assetsService = serviceProvider.GetService<IAssetsService>();
 
             assetsService.ProcessAssets(commands, parameters);

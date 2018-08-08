@@ -11,12 +11,15 @@ AS
                 @UpdateAssetUID         AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
+                @Notes                  AS VARCHAR(100),
                 @ErrorCode              AS INT;
 
         SET NOCOUNT ON;
 
         SET @UpdateSerial = 0;
         SET @UpdateAssetUID = 0;
+        SET @Notes = '';
+
         SET @TargetDatabase = [dbo].[fn_GetTargetDatabaseName](@ProcessUid);
 
         IF @@ERROR <> 0
@@ -62,7 +65,7 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-          IF @@ERROR <> 0
+        IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
@@ -81,12 +84,27 @@ AS
           AND ProcessUid = @ProcessUid
           AND Enabled = 1;
 
-          IF @@ERROR <> 0
+        IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
                 --SET @ErrorMessage = ;
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for UpdateAssetUID', 1;
+            END
+
+        SELECT
+            @Notes = REPLACE(ISNULL(ConfigurationValue, 'MiddleWay Integration - {DATE}'), '{DATE}', CONVERT(VARCHAR(8), GETDATE(), 1))
+        FROM [Configurations]
+        WHERE ConfigurationName = 'InsertNotes'
+          AND ProcessUid = @ProcessUid
+          AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for InsertNotes', 1;
             END
 
         IF @UpdateSerial = 1
@@ -165,7 +183,7 @@ AS
              AssetID, BulkUpdated, InventorySourceUID, ContainerUID)
         SELECT
             InventoryTypeUID, ItemUID, SiteUID, EntityUID, EntityTypeUID, StatusID, TechDepartmentUID, 
-            Tag, Serial, FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, InventoryNotes, 
+            Tag, Serial, FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, ISNULL(InventoryNotes, '') + ' ' + @Notes, 
             0, GETDATE(), 0, GETDATE(), 0, ParentInventoryUID, 
             AssetID, 0, InventorySourceUID, ContainerUID
         FROM

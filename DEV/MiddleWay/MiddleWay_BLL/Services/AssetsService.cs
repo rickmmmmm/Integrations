@@ -62,13 +62,13 @@ namespace MiddleWay_BLL.Services
             var rejectCount = 0;
             try
             {
-                Console.WriteLine("Starting Process");
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Process");
                 // Start Process Task
                 var processUid = _processesService.GetProcessUid();
                 var processTaskUid = _processTasksService.StartProcessTask(parameters);
                 if (processTaskUid > 0)
                 { // Create record, keep uid
-                    Console.WriteLine("Starting CleanUp Step");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting CleanUp Step");
                     taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.CleanUp);
 
                     // Send start process email
@@ -82,20 +82,20 @@ namespace MiddleWay_BLL.Services
 
                     _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
-                    Console.WriteLine("Starting Ingest Step");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Ingest Step");
 
                     taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Ingest);
 
                     //Read data from source (in batches) - Read Input (Loop)
                     var total = _inputService.GetInputCount();
-                    Console.WriteLine(total.ToString() + " records for process");
+                    Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - {total.ToString()} records for process");
                     if (total > 0)
                     {
                         var rowCount = 1;
                         //  PER BATCH
                         //      Apply mappings and move to flat tables, catch and store errors
                         //      Apply transformations and move to stage tables, catch and store errors
-                        Console.WriteLine("Processing Input");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Processing Input");
                         while (_inputService.HasNext())
                         {
                             var batch = _inputService.ReadNext<InventoryFlatDataModel>();
@@ -113,7 +113,7 @@ namespace MiddleWay_BLL.Services
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
-                        Console.WriteLine("Starting Stage Step");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Stage Step");
 
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Stage);
 
@@ -124,18 +124,22 @@ namespace MiddleWay_BLL.Services
                         //Perform flat to ETL table mappings, transformations then insert (in a loop)
                         while (currentCount < flatCount)
                         {
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Processing rows {currentCount} to {currentCount + limit}.");
                             var flatData = _inventoryFlatService.Get(processTaskUid, currentCount, limit);
 
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Tranforming Data");
                             var transformedData = _transformationService.TransformToDynamic(flatData, ProcessSteps.Stage);
-
+                            
                             // Get the rejected records of the FlatData and update the Rejected Notes and Rejected values
                             var errorFlatData = (from data in flatData
                                                  where data.Rejected
                                                  select data).ToList();
 
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Transformation rejected {errorFlatData.Count} rows");
                             _inventoryFlatService.EditRange(errorFlatData); //Console.WriteLine(Utilities.ToStringObject(errorFlatData));
                             rejectCount += errorFlatData.Count;
 
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Mapping Data");
                             var mappedData = _mappingsService.Map<ExpandoObject, EtlInventoryModel>(transformedData, ProcessSteps.Stage);
 
                             // Get the rejected records of the FlatData and update the Rejected Notes and Rejected values
@@ -202,10 +206,12 @@ namespace MiddleWay_BLL.Services
                                                  RejectedNotes = data.ContainsKey("RejectedNotes") ? data["RejectedNotes"].ToString() : string.Empty
                                              }).ToList();
 
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Mapping rejected {errorData.Count} rows");
                             _inventoryFlatService.EditRange(errorData); //Console.WriteLine(Utilities.ToStringObject(errorData));
                             rejectCount += errorData.Count;
 
                             //if (!_etlInventoryService.AddRange(transformedData))
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Adding {mappedData.Count} rows to Stage data");
                             if (!_etlInventoryService.AddRange(mappedData))
                             {
                                 //TODO: Log Error
@@ -218,7 +224,7 @@ namespace MiddleWay_BLL.Services
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, true);
 
-                        //Console.WriteLine("Starting ProcessCommands Step");
+                        //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting ProcessCommands Step");
 
                         //taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.ProcessCommands);
 
@@ -240,7 +246,7 @@ namespace MiddleWay_BLL.Services
 
                         //_processTaskStepsService.EndTaskStep(taskStepUid, true);
 
-                        Console.WriteLine("Starting Validate Step");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Validate Step");
 
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
 
@@ -251,7 +257,7 @@ namespace MiddleWay_BLL.Services
 
                         if (validationPassed)
                         {
-                            Console.WriteLine("Starting Upload Step");
+                            Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Upload Step");
 
                             taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Upload);
 
