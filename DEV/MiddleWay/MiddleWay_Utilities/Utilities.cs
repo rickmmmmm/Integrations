@@ -175,5 +175,22 @@ namespace MiddleWay_Utilities
 
             return output.ToString();
         }
+
+        public static string ListToString(List<string> list)
+        {
+            StringBuilder result = new StringBuilder();
+            foreach(var item in list)
+            {
+                if (result.Length == 0)
+                {
+                    result.Append(item);
+                } else
+                {
+                    result.Append(" " + item);
+                }
+            }
+
+            return result.ToString();
+        }
     }
 }

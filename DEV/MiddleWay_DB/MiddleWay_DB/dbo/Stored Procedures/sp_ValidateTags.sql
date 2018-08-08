@@ -482,7 +482,7 @@ AS
 
         PRINT N'Reject Tags that have a duplicate InventoryUID match';
         --SELECT RowID, Tag
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset; The Asset/Tag search found multiple records match the same Inventory'
+        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset/Tag; The Asset/Tag search found multiple records match the same Inventory'
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
         INNER JOIN (
@@ -492,6 +492,8 @@ AS
                 IntegrationMiddleWay.dbo._ETL_Inventory DuplicateInventory
             WHERE
                 DuplicateInventory.InventoryUID > 0
+                AND DuplicateInventory.ProcessTaskUid = @ProcessTaskUid
+                AND (DuplicateInventory.Rejected = 0 OR @AllowStackingErrors = 1)
             GROUP BY
                 DuplicateInventory.InventoryUID
             HAVING
@@ -532,6 +534,50 @@ AS
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
             END
+
+        PRINT N'Reject where AssetUID matches more than one Inventory';
+        --SELECT TargetInventory.Tag, TargetInventory.AssetID--, SourceInventory.Tag, SourceInventory.AssetID, SourceInventory.InventoryUID
+        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset; The Asset search found multiple records match different Inventory'
+        FROM
+            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+        INNER JOIN (
+            SELECT
+                SourceInventory.AssetID
+            FROM 
+                IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            INNER JOIN
+                TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
+            WHERE
+                TargetInventory.InventoryUID = 0
+            AND TargetInventory.AssetID IS NOT NULL
+            AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+            AND SourceInventory.AssetID IS NOT NULL
+            AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''
+            AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
+            AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+            GROUP BY
+                SourceInventory.AssetID
+            HAVING
+                COUNT(SourceInventory.InventoryUID) > 1
+            ) RepeatedAssets
+            ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(RepeatedAssets.AssetID)))
+        WHERE
+            TargetInventory.AssetID IS NOT NULL
+        AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+        AND TargetInventory.InventoryUID = 0
+        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
+        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to reject records where the AssetUID is duplicated in the Source Data', 1;
+            END
+
 
         SET NOCOUNT OFF;
 

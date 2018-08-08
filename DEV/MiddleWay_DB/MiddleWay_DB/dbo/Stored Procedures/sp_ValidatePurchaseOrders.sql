@@ -233,8 +233,6 @@ AS
             ON SourcePurchaseItemDetails.PurchaseUID = SourcePurchases.PurchaseUID
         WHERE
             TargetPurchaseInventory.InventoryUID > 0
-        --AND TargetPurchaseInventory.PurchaseItemShipmentUID > 0
-        --AND TargetPurchaseInventory.PurchaseUID > 0
         AND TargetPurchaseInventory.ProcessTaskUID = @ProcessTaskUid
         AND (TargetPurchaseInventory.Rejected = 0 OR @AllowStackingErrors = 1);
 
@@ -469,7 +467,6 @@ AS
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
                 WHERE
                     TargetPurchaseDetails.PurchaseItemDetailUID = 0
-                --AND TargetPurchaseDetails.PurchaseUID = 0
                 AND TargetPurchaseDetails.PurchasePrice IS NULL
                 AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
                 AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);

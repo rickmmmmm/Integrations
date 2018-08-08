@@ -37,6 +37,7 @@ namespace MiddleWay_Controller.Repositories
                                    ProcessUid = processes.ProcessUid,
                                    Client = processes.Client,
                                    ProcessName = processes.ProcessName,
+                                   ProcessSourceUid = processes.ProcessSourceUid,
                                    Description = processes.Description,
                                    Enabled = processes.Enabled,
                                    CreatedDate = processes.CreatedDate
@@ -66,6 +67,7 @@ namespace MiddleWay_Controller.Repositories
                                    ProcessUid = processes.ProcessUid,
                                    Client = processes.Client,
                                    ProcessName = processes.ProcessName,
+                                   ProcessSourceUid = processes.ProcessSourceUid,
                                    Description = processes.Description,
                                    Enabled = processes.Enabled,
                                    CreatedDate = processes.CreatedDate

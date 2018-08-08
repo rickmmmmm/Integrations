@@ -216,12 +216,12 @@ AS
                TargetInventory.StatusID = SourceInventory.StatusUID AND
                TargetInventory.TechDepartmentUID = SourceInventory.TechDepartmentUID AND
                UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag))) AND
-               UPPER(LTRIM(RTRIM(TargetInventory.Serial))) = UPPER(LTRIM(RTRIM(SourceInventory.Serial))) AND
+               UPPER(LTRIM(RTRIM(ISNULL(TargetInventory.Serial, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceInventory.Serial, '')))) AND
                TargetInventory.FundingSourceUID = SourceInventory.FundingSourceUID AND
-               TargetInventory.PurchasePrice = SourceInventory.PurchasePrice AND
-               TargetInventory.PurchaseDate = SourceInventory.PurchaseDate AND
-               TargetInventory.ExpirationDate = SourceInventory.ExpirationDate AND
-               TargetInventory.ParentInventoryUID = SourceInventory.ParentInventoryUID AND
+               --ISNULL(TargetInventory.PurchasePrice, 0) = ISNULL(SourceInventory.PurchasePrice, 0) AND
+               --TargetInventory.PurchaseDate = SourceInventory.PurchaseDate AND
+               --TargetInventory.ExpirationDate = SourceInventory.ExpirationDate AND
+               --TargetInventory.ParentInventoryUID = SourceInventory.ParentInventoryUID AND
                TargetInventory.AssetID = SourceInventory.AssetID AND
                TargetInventory.InventorySourceUID = SourceInventory.InventorySourceUID AND
                TargetInventory.ContainerUID = SourceInventory.ContainerUID

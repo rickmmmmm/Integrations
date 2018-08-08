@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using MiddleWay_Utilities;
 
 namespace MiddleWay_BLL.Services
 {
@@ -54,7 +55,7 @@ namespace MiddleWay_BLL.Services
 
         #region Get Functions
 
-        public void ProcessAssets(List<string> commands, string parameters = null)
+        public void ProcessAssets(int processUid, List<string> commands)
         {
             var taskStepUid = 0;
             var successful = false;
@@ -64,7 +65,8 @@ namespace MiddleWay_BLL.Services
             {
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Process");
                 // Start Process Task
-                var processUid = _processesService.GetProcessUid();
+                //var processUid = _processesService.GetProcessUid();
+                var parameters = Utilities.ListToString(commands);
                 var processTaskUid = _processTasksService.StartProcessTask(parameters);
                 if (processTaskUid > 0)
                 { // Create record, keep uid

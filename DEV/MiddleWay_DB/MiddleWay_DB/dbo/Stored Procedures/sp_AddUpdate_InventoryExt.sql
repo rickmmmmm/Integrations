@@ -49,7 +49,7 @@ AS
 
         --Update Existing Ext values
         UPDATE SourceInventoryExt
-        SET SourceInventoryExt.InventoryExtValue = TargetCustomFields.CustomField1Value
+        SET SourceInventoryExt.InventoryExtValue = ISNULL(TargetCustomFields.CustomField1Value, '')
         FROM
             TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
         LEFT JOIN
@@ -61,6 +61,8 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
 
+        PRINT N'Updated Ext1Value: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
+
         IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
@@ -68,9 +70,9 @@ AS
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to update the Ext1Value of the Source Inventory', 1;
             END
-            
+
         UPDATE SourceInventoryExt
-        SET SourceInventoryExt.InventoryExtValue = TargetCustomFields.CustomField2Value
+        SET SourceInventoryExt.InventoryExtValue = ISNULL(TargetCustomFields.CustomField2Value, '')
         FROM
             TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
         LEFT JOIN
@@ -82,6 +84,8 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
 
+        PRINT N'Updated Ext2Value: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
+
         IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
@@ -91,7 +95,7 @@ AS
             END
 
         UPDATE SourceInventoryExt
-        SET SourceInventoryExt.InventoryExtValue = TargetCustomFields.CustomField3Value
+        SET SourceInventoryExt.InventoryExtValue = ISNULL(TargetCustomFields.CustomField3Value, '')
         FROM
             TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
         LEFT JOIN
@@ -103,6 +107,8 @@ AS
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
 
+        PRINT N'Updated Ext3Value: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
+
         IF @@ERROR <> 0
             BEGIN
                 SET @ErrorCode = @@ERROR + 100000;
@@ -112,7 +118,7 @@ AS
             END
 
         UPDATE SourceInventoryExt
-        SET SourceInventoryExt.InventoryExtValue = TargetCustomFields.CustomField4Value
+        SET SourceInventoryExt.InventoryExtValue = ISNULL(TargetCustomFields.CustomField4Value, '')
         FROM
             TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
         LEFT JOIN
@@ -123,6 +129,8 @@ AS
         AND TargetCustomFields.InventoryExt4UID > 0
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Updated Ext4Value: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -136,17 +144,19 @@ AS
         INSERT INTO TipWebHostedChicagoPS.dbo.tblTechInventoryExt --SourceInventoryExt
             (InventoryUID, InventoryMetaUID, InventoryExtValue)
         SELECT
-            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Value
+            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, ISNULL(TargetCustomFields.CustomField1Value, '')
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         WHERE
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt1UID = 0
         AND TargetCustomFields.InventoryMeta1UID > 0
-        AND TargetCustomFields.CustomField1Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Value)) <> ''
+        AND TargetCustomFields.CustomField1Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Inserted new InventoryExt1 Fields: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -169,10 +179,12 @@ AS
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt1UID = 0
         AND TargetCustomFields.InventoryMeta1UID > 0
-        AND TargetCustomFields.CustomField1Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Value)) <> ''
+        AND TargetCustomFields.CustomField1Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Matched InventoryExt1 records: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -185,17 +197,19 @@ AS
         INSERT INTO TipWebHostedChicagoPS.dbo.tblTechInventoryExt --SourceInventoryExt
             (InventoryUID, InventoryMetaUID, InventoryExtValue)
         SELECT
-            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Value
+            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, ISNULL(TargetCustomFields.CustomField2Value, '')
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         WHERE
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt2UID = 0
         AND TargetCustomFields.InventoryMeta2UID > 0
-        AND TargetCustomFields.CustomField2Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Value)) <> ''
+        AND TargetCustomFields.CustomField2Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Inserted new InventoryExt2 Fields: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -218,10 +232,12 @@ AS
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt2UID = 0
         AND TargetCustomFields.InventoryMeta2UID > 0
-        AND TargetCustomFields.CustomField2Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Value)) <> ''
+        AND TargetCustomFields.CustomField2Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Matched InventoryExt2 records: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -234,17 +250,19 @@ AS
         INSERT INTO TipWebHostedChicagoPS.dbo.tblTechInventoryExt --SourceInventoryExt
             (InventoryUID, InventoryMetaUID, InventoryExtValue)
         SELECT
-            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Value
+            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, ISNULL(TargetCustomFields.CustomField3Value, '')
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         WHERE
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt3UID = 0
         AND TargetCustomFields.InventoryMeta3UID > 0
-        AND TargetCustomFields.CustomField3Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Value)) <> ''
+        AND TargetCustomFields.CustomField3Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Inserted new InventoryExt3 Fields: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -267,10 +285,12 @@ AS
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt3UID = 0
         AND TargetCustomFields.InventoryMeta3UID > 0
-        AND TargetCustomFields.CustomField3Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Value)) <> ''
+        AND TargetCustomFields.CustomField3Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Matched InventoryExt3 records: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -283,17 +303,19 @@ AS
         INSERT INTO TipWebHostedChicagoPS.dbo.tblTechInventoryExt --SourceInventoryExt
             (InventoryUID, InventoryMetaUID, InventoryExtValue)
         SELECT
-            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Value
+            TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, ISNULL(TargetCustomFields.CustomField4Value, '')
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
         WHERE
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt4UID = 0
         AND TargetCustomFields.InventoryMeta4UID > 0
-        AND TargetCustomFields.CustomField4Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Value)) <> ''
+        AND TargetCustomFields.CustomField4Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Inserted new InventoryExt4 Fields: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN
@@ -316,10 +338,12 @@ AS
             TargetCustomFields.InventoryUID > 0
         AND TargetCustomFields.InventoryExt4UID = 0
         AND TargetCustomFields.InventoryMeta4UID > 0
-        AND TargetCustomFields.CustomField4Value IS NOT NULL
-        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Value)) <> ''
+        AND TargetCustomFields.CustomField4Label IS NOT NULL
+        AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
         AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
         AND TargetCustomFields.Rejected = 0;
+
+        PRINT N'Matched InventoryExt4 records: ' + CAST(@@ROWCOUNT AS VARCHAR(100));
 
         IF @@ERROR <> 0
             BEGIN

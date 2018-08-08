@@ -1,4 +1,5 @@
-﻿using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
+﻿using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
 
 namespace MiddleWay_Controller.Services
@@ -46,6 +47,33 @@ namespace MiddleWay_Controller.Services
             {
                 var process = this._processesRepository.SelectProcess(client, processName);
                 return process.ProcessUid;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public ProcessSources GetProcessSource() {
+            try
+            {
+                var process = this._processesRepository.SelectProcess(_clientConfiguration.Client, _clientConfiguration.ProcessName);
+                var result = (ProcessSources)process.ProcessSourceUid;
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public ProcessSources GetProcessSource(string client, string processName)
+        {
+            try
+            {
+                var process = this._processesRepository.SelectProcess(client, processName);
+                var result = (ProcessSources)process.ProcessSourceUid;
+                return result;
             }
             catch
             {

@@ -790,6 +790,8 @@ namespace MiddleWay_Controller.IntegrationDatabase
 
                 entity.Property(e => e.ProductName).IsUnicode(false);
 
+                entity.Property(e => e.ProductNumber).IsUnicode(false);
+
                 entity.Property(e => e.ProductTypeDescription).IsUnicode(false);
 
                 entity.Property(e => e.ProductTypeName).IsUnicode(false);
@@ -891,6 +893,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.ProcessSourceU)
+                    .WithMany(p => p.Processes)
+                    .HasForeignKey(d => d.ProcessSourceUid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Processes_ProcessSource");
             });
 
             modelBuilder.Entity<ProcessSource>(entity =>

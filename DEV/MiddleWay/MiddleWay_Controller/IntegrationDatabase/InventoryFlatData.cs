@@ -39,12 +39,12 @@ namespace MiddleWay_Controller.IntegrationDatabase
         public string OrderNumber { get; set; }
         public string PurchaseSiteId { get; set; }
         public string PurchaseSiteName { get; set; }
+        public string VendorName { get; set; }
+        public string VendorAccountNumber { get; set; }
         public string LineNumber { get; set; }
         public string AccountCode { get; set; }
         public string SiteAddedSiteId { get; set; }
         public string SiteAddedSiteName { get; set; }
-        public string VendorName { get; set; }
-        public string VendorAccountNumber { get; set; }
         public string ShippedToSiteId { get; set; }
         public string ShippedToSiteName { get; set; }
         public string InvoiceNumber { get; set; }

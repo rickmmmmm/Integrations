@@ -4,6 +4,7 @@ using MiddleWay_BLL.Services;
 using MiddleWay_Controller.IntegrationDatabase;
 using MiddleWay_Controller.Repositories;
 using MiddleWay_Controller.Services;
+using MiddleWay_DTO.Enumerations;
 using MiddleWay_DTO.RepositoryInterfaces.MiddleWay;
 using MiddleWay_DTO.RepositoryInterfaces.TIPWeb;
 using MiddleWay_DTO.ServiceInterfaces.MiddleWay;
@@ -50,22 +51,22 @@ namespace MiddleWay
                     serviceProvider = services.BuildServiceProvider();
 
                     RunProcess(commands);
-//#if DEBUG
-//                    Console.Write("Press Enter to quit");
-//                    Console.Read();
-//#endif
+                    //#if DEBUG
+                    //                    Console.Write("Press Enter to quit");
+                    //                    Console.Read();
+                    //#endif
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Error Caught");
                 PrintToConsole(Utilities.ParseException(ex));
-//#if DEBUG
-//                Console.Write("Press Enter to quit");
-//                Console.Read();
-//                //#else
-//                //                Environment.Exit(0);
-//#endif
+                //#if DEBUG
+                //                Console.Write("Press Enter to quit");
+                //                Console.Read();
+                //                //#else
+                //                //                Environment.Exit(0);
+                //#endif
             }
             finally
             {
@@ -301,6 +302,8 @@ namespace MiddleWay
             //Get configuration service, if no configuration stop processing and log error
             var configurationService = serviceProvider.GetService<IConfigurationService>();
             var clientConfiguration = serviceProvider.GetService<IClientConfiguration>();
+            var _processesService = serviceProvider.GetService<IProcessesService>();
+            var processSource = ProcessSources.PrintConfiguration;
 
             try
             {
@@ -318,27 +321,64 @@ namespace MiddleWay
                     //{
                     //ReadParameters(commands);
                     //string choice = args[0];
-                    var options = ProcessInput.ReadOptions(commands);
+                    var processUid = _processesService.GetProcessUid();
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Determining Process to Run");
 
-                    switch (options[0])
+                    var options = ProcessInput.ReadOptions(commands);
+                    if (options != null && options.Count > 0 && !string.IsNullOrEmpty(options[0]))
                     {
-                        case "-p":
-                            PurchaseOrderMenu(options);
+                        switch (options[0])
+                        {
+                            case "-p":
+                                processSource = ProcessSources.PurchaseOrder;
+                                break;
+                            case "-d":
+                                processSource = ProcessSources.PurchaseDetails;
+                                break;
+                            case "-s":
+                                processSource = ProcessSources.PurchaseShipments;
+                                break;
+                            case "-e":
+                                processSource = ProcessSources.ExportFile;
+                                break;
+                            case "-c":
+                                processSource = ProcessSources.Charges;
+                                break;
+                            case "-m":
+                                processSource = ProcessSources.MobileDeviceManagement;
+                                break;
+                            case "-a":
+                                processSource = ProcessSources.Assets;
+                                break;
+                            case "-pc":
+                            default:
+                                processSource = ProcessSources.PrintConfiguration;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        processSource = _processesService.GetProcessSource();
+                    }
+
+                    switch (processSource)
+                    {
+                        case ProcessSources.PurchaseOrder:
+                            PurchaseOrderMenu(processUid, commands);
                             break;
-                        case "-e":
-                            ExportFileOptions(options);
+                        case ProcessSources.ExportFile:
+                            ExportFileOptions(processUid, commands);
                             break;
-                        case "-c":
-                            ChargesMenu(options);
+                        case ProcessSources.Charges:
+                            ChargesMenu(processUid, commands);
                             break;
-                        case "-m":
+                        case ProcessSources.MobileDeviceManagement:
                             MobileDeviceManagementMenu();
                             break;
-                        case "-a":
-                            AssetsMenu(commands, "Test"); // commands.GetAllArguments
+                        case ProcessSources.Assets:
+                            AssetsMenu(processUid, commands);
                             break;
-                        case "-pc":
+                        case ProcessSources.PrintConfiguration:
                             PrintConfiguration();
                             break;
                         default:
@@ -502,7 +542,7 @@ namespace MiddleWay
         //    return options;
         //}
 
-        private static void ChargesMenu(List<string> args)
+        private static void ChargesMenu(int processUid, List<string> commands)
         {
             //Is this an import or export?
             //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
@@ -629,7 +669,7 @@ namespace MiddleWay
             return options;
         }
 
-        public static void ExportFileOptions(List<string> options)
+        public static void ExportFileOptions(int processUid, List<string> commands)
         {
             //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Which export option would you like to do? (R)eceived Tags");
             //string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
@@ -675,7 +715,7 @@ namespace MiddleWay
             //throw new NotImplementedException();
         }
 
-        public static void PurchaseOrderMenu(List<string> options)
+        public static void PurchaseOrderMenu(int processUid, List<string> commands)
         {
             //create necessary objects
 
@@ -934,12 +974,12 @@ namespace MiddleWay
             //}
         }
 
-        public static void AssetsMenu(List<string> commands, string parameters = null) //List<string> options
+        public static void AssetsMenu(int processUid, List<string> commands) //List<string> options
         {
             Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Asset Process");
             var assetsService = serviceProvider.GetService<IAssetsService>();
 
-            assetsService.ProcessAssets(commands, parameters);
+            assetsService.ProcessAssets(processUid, commands);
         }
 
         public static void PrintConfiguration()

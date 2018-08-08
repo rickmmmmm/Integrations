@@ -118,18 +118,18 @@ AS
                         @SuggestedPrice AS DECIMAL,
                         @AreaUID AS INT,
                         @PRODNUM AS INT,
-                        @COUNT AS INT
+                        @COUNT AS INT;
 
                 SET @COUNT = 0;
-                SELECT @PRODNUM = Value FROM TipWebHostedChicagoPS.dbo.tblUnvCounter WHERE CounterUID = 4
+                SELECT @PRODNUM = Value FROM TipWebHostedChicagoPS.dbo.tblUnvCounter WHERE CounterUID = 4;
 
-                            IF @@ERROR <> 0
-                                BEGIN
-                                    SET @ErrorCode = @@ERROR + 100000;
-                                    --SET @ErrorMessage = ;
-                                    --RETURN @ErrorCode;
-                                    THROW @ErrorCode, 'Failed to create new Products', 1;
-                                END
+                IF @@ERROR <> 0
+                    BEGIN
+                        SET @ErrorCode = @@ERROR + 100000;
+                        --SET @ErrorMessage = ;
+                        --RETURN @ErrorCode;
+                        THROW @ErrorCode, 'Failed to get the Next Value for ProductNumber', 1;
+                    END
 
                 --Get all 
                 DECLARE NewItems CURSOR READ_ONLY
@@ -218,7 +218,7 @@ AS
                         SET @COUNT = @COUNT + 1;
 
                         FETCH NEXT FROM NewItems
-                            INTO @ProductName, @ProductTypeUID, @Model, @ManufacturerUID, @SuggestedPrice, @AreaUID;
+                            INTO @ProductName, @ProductDescription, @ProductTypeUID, @Model, @ManufacturerUID, @SuggestedPrice, @AreaUID;
 
                     END
 
@@ -233,9 +233,9 @@ AS
                 INNER JOIN
                     TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
                     ON UPPER(LTRIM(RTRIM(TargetItem.ProductName))) = UPPER(LTRIM(RTRIM(SourceItem.ItemName))) AND
-                       UPPER(LTRIM(RTRIM(TargetItem.ProductDescription))) = UPPER(LTRIM(RTRIM(SourceItem.ItemDescription))) AND
+                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ProductDescription, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ItemDescription, '')))) AND
                        TargetItem.ItemTypeUID = SourceItem.ItemTypeUID AND
-                       UPPER(LTRIM(RTRIM(TargetItem.ModelNumber))) = UPPER(LTRIM(RTRIM(SourceItem.ModelNumber))) AND
+                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ModelNumber, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ModelNumber, '')))) AND
                        TargetItem.ManufacturerUID = SourceItem.ManufacturerUID AND
                        TargetItem.PurchasePrice = SourceItem.ItemSuggestedPrice AND
                        TargetItem.AreaUID = SourceItem.AreaUID
