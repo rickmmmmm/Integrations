@@ -323,7 +323,7 @@ namespace MiddleWay
                     //string choice = args[0];
                     var processUid = _processesService.GetProcessUid();
                     Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Determining Process to Run");
-
+                    //TODO: Add a Break/Separator to Reject notes
                     var options = ProcessInput.ReadOptions(commands);
                     if (options != null && options.Count > 0 && !string.IsNullOrEmpty(options[0]))
                     {
@@ -364,19 +364,19 @@ namespace MiddleWay
                     switch (processSource)
                     {
                         case ProcessSources.PurchaseOrder:
-                            PurchaseOrderMenu(processUid, commands);
+                            PurchaseOrderMenu(processUid, commands, processSource);
                             break;
                         case ProcessSources.ExportFile:
-                            ExportFileOptions(processUid, commands);
+                            ExportFileOptions(processUid, commands, processSource);
                             break;
                         case ProcessSources.Charges:
-                            ChargesMenu(processUid, commands);
+                            ChargesMenu(processUid, commands, processSource);
                             break;
                         case ProcessSources.MobileDeviceManagement:
                             MobileDeviceManagementMenu();
                             break;
                         case ProcessSources.Assets:
-                            AssetsMenu(processUid, commands);
+                            AssetsMenu(processUid, commands, processSource);
                             break;
                         case ProcessSources.PrintConfiguration:
                             PrintConfiguration();
@@ -542,7 +542,7 @@ namespace MiddleWay
         //    return options;
         //}
 
-        private static void ChargesMenu(int processUid, List<string> commands)
+        private static void ChargesMenu(int processUid, List<string> commands, ProcessSources processSource)
         {
             //Is this an import or export?
             //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Are you wanting to (i)mport payments, (e)xport charge data, (im)port and export all charge data?");
@@ -669,7 +669,7 @@ namespace MiddleWay
             return options;
         }
 
-        public static void ExportFileOptions(int processUid, List<string> commands)
+        public static void ExportFileOptions(int processUid, List<string> commands, ProcessSources processSource)
         {
             //Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Which export option would you like to do? (R)eceived Tags");
             //string response = string.IsNullOrEmpty(options[1]) ? Console.ReadLine().ToLower() : options[1];
@@ -715,7 +715,7 @@ namespace MiddleWay
             //throw new NotImplementedException();
         }
 
-        public static void PurchaseOrderMenu(int processUid, List<string> commands)
+        public static void PurchaseOrderMenu(int processUid, List<string> commands, ProcessSources processSource)
         {
             //create necessary objects
 
@@ -974,12 +974,12 @@ namespace MiddleWay
             //}
         }
 
-        public static void AssetsMenu(int processUid, List<string> commands) //List<string> options
+        public static void AssetsMenu(int processUid, List<string> commands, ProcessSources processSource) //List<string> options
         {
             Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Starting Asset Process");
             var assetsService = serviceProvider.GetService<IAssetsService>();
 
-            assetsService.ProcessAssets(processUid, commands);
+            assetsService.ProcessAssets(processUid, commands, processSource);
         }
 
         public static void PrintConfiguration()

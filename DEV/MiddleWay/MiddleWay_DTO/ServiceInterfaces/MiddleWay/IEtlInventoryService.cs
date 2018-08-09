@@ -1,4 +1,5 @@
-﻿using MiddleWay_DTO.Models.MiddleWay_Controller;
+﻿using MiddleWay_DTO.Enumerations;
+using MiddleWay_DTO.Models.MiddleWay_Controller;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,7 +24,7 @@ namespace MiddleWay_DTO.ServiceInterfaces.MiddleWay
         bool Remove(int etlInventoryUid);
         bool RemoveAll();
         bool RemoveAll(int processTaskUid);
-        bool ValidateEtlInventory(int processUid, int processTaskUid, int processSource);
-        bool SubmitEtlInventory(int processUid, int processTaskUid, int processSource);
+        bool ValidateEtlInventory(int processUid, int processTaskUid, ProcessSources processSource);
+        bool SubmitEtlInventory(int processUid, int processTaskUid, ProcessSources processSource);
     }
 }

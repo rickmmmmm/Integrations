@@ -55,7 +55,7 @@ namespace MiddleWay_BLL.Services
 
         #region Get Functions
 
-        public void ProcessAssets(int processUid, List<string> commands)
+        public void ProcessAssets(int processUid, List<string> commands, ProcessSources processSource)
         {
             var taskStepUid = 0;
             var successful = false;
@@ -253,7 +253,7 @@ namespace MiddleWay_BLL.Services
                         taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Validate);
 
                         // Validate ETLInventory data on TIPWeb
-                        var validationPassed = _etlInventoryService.ValidateEtlInventory(processUid, processTaskUid, 0);// sourceProcess);
+                        var validationPassed = _etlInventoryService.ValidateEtlInventory(processUid, processTaskUid, processSource);
 
                         _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
 
@@ -264,7 +264,7 @@ namespace MiddleWay_BLL.Services
                             taskStepUid = _processTaskStepsService.BeginTaskStep(processTaskUid, ProcessSteps.Upload);
 
                             // Submit valid ETLInventory data to TIPWeb
-                            validationPassed = _etlInventoryService.SubmitEtlInventory(processUid, processTaskUid, 0);// sourceProcess);
+                            validationPassed = _etlInventoryService.SubmitEtlInventory(processUid, processTaskUid, processSource);
 
                             _processTaskStepsService.EndTaskStep(taskStepUid, validationPassed);
                         }
