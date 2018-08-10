@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CsvHelper;
-using CsvHelper.Configuration;
+//using CsvHelper;
+//using CsvHelper.Configuration;
 //using Model;
 using System.Configuration;
 using MiddleWay_DTO.DTO_Models.TIPWeb;
-using PapaParse.Net;
+//using PapaParse.Net;
 using System.Diagnostics;
 using MiddleWay_DTO.Models.MiddleWay_BLL;
 
@@ -38,80 +38,82 @@ namespace MiddleWay_Utilities
 
         public List<Dictionary<string, string>> readCSV(string filename)
         {
-            var rows = new List<Dictionary<string, string>>();
+            throw new NotImplementedException();
+            //var rows = new List<Dictionary<string, string>>();
 
-            var config = new PapaParse.Net.Config()
-            {
-                worker = true,
-                header = true,
-                skipEmptyLines = true,
-                delimiter = ",",
-                quoteChar = '\'',
-                chunkSize = 5000
-            };
-
-            var parseHandler = new ParserHandle(config);
-
-            var parseConfig = new Config()
-            {
-                worker = true,
-                header = true,
-                skipEmptyLines = true,
-                delimiter = ",",
-                quoteChar = '\'',
-               // chunk = (result, parseHandle) =>
-               // {
-               //     Debug.WriteLine(result.dataWithHeader);
-               // },
-               // step = (result, parseHandle) =>
-               //{
-               //    Result a = result;
-               //    //data.push(_.head(result.data));
-               //    //if (result.errors.length) {
-               //    //    console.log(`Row data: ${result.data}`);
-               //    //    result.errors.map(error => {
-               //    //        console.log(chalk.red(`Row error: ${error.message}`));
-               //    //    });
-               //    //}
-
-               //},
-                complete = (parsed) =>
-                {
-                    rows.AddRange(parsed.dataWithHeader);
-                }
-            };
-
-            using (FileStream stream = File.OpenRead(filename))
-            {
-                Papa.parse(stream, parseConfig);
-            }
-
-            //string line;
-            //using (var fileReader = new StreamReader(filename))
+            //var config = new PapaParse.Net.Config()
             //{
-            //    while ((line = fileReader.ReadLine()) != null)
-            //    {
-            //        Papa.parse(line, parseConfig);
-            //    }
+            //    worker = true,
+            //    header = true,
+            //    skipEmptyLines = true,
+            //    delimiter = ",",
+            //    quoteChar = '\'',
+            //    chunkSize = 5000
+            //};
 
-            //    fileReader.Close();
+            //var parseHandler = new ParserHandle(config);
+
+            //var parseConfig = new Config()
+            //{
+            //    worker = true,
+            //    header = true,
+            //    skipEmptyLines = true,
+            //    delimiter = ",",
+            //    quoteChar = '\'',
+            //   // chunk = (result, parseHandle) =>
+            //   // {
+            //   //     Debug.WriteLine(result.dataWithHeader);
+            //   // },
+            //   // step = (result, parseHandle) =>
+            //   //{
+            //   //    Result a = result;
+            //   //    //data.push(_.head(result.data));
+            //   //    //if (result.errors.length) {
+            //   //    //    console.log(`Row data: ${result.data}`);
+            //   //    //    result.errors.map(error => {
+            //   //    //        console.log(chalk.red(`Row error: ${error.message}`));
+            //   //    //    });
+            //   //    //}
+
+            //   //},
+            //    complete = (parsed) =>
+            //    {
+            //        rows.AddRange(parsed.dataWithHeader);
+            //    }
+            //};
+
+            //using (FileStream stream = File.OpenRead(filename))
+            //{
+            //    Papa.parse(stream, parseConfig);
             //}
 
-            return rows;
+            ////string line;
+            ////using (var fileReader = new StreamReader(filename))
+            ////{
+            ////    while ((line = fileReader.ReadLine()) != null)
+            ////    {
+            ////        Papa.parse(line, parseConfig);
+            ////    }
+
+            ////    fileReader.Close();
+            ////}
+
+            //return rows;
         }
 
         // Received Tags Export.... (Read Option e)
         public void createExportFile(List<ReceivedTagsExportFile> results, string fileName, string delimiter, char textQualifier)
         {
-            using (StreamWriter writer = File.AppendText(fileName))
-            {
-                var csv = new CsvWriter(writer);
-                csv.Configuration.Delimiter = delimiter; // ConfigurationManager.AppSettings["delimiter"];
-                csv.Configuration.Quote = textQualifier; //  ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
-                csv.Configuration.QuoteAllFields = true;
+            throw new NotImplementedException();
+            //using (StreamWriter writer = File.AppendText(fileName))
+            //{
+            //    var csv = new CsvWriter(writer);
+            //    csv.Configuration.Delimiter = delimiter; // ConfigurationManager.AppSettings["delimiter"];
+            //    csv.Configuration.Quote = textQualifier; //  ConfigurationManager.AppSettings["textQualifier"].ToCharArray()[0];
+            //    csv.Configuration.QuoteAllFields = true;
 
-                csv.WriteRecords(results);
-            }
+            //    csv.WriteRecords(results);
+            //}
         }
 
         ///UNUSED
@@ -154,12 +156,11 @@ namespace MiddleWay_Utilities
 
 
 
-        //TODO:
-        //Convert file to object
+        //TODO: Convert file to object
         //
     }
 
-    public sealed class PurchaseOrderClassMap : ClassMap<PurchaseOrderDto>
+    public sealed class PurchaseOrderClassMap //: ClassMap<PurchaseOrderDto>
     {
         public PurchaseOrderClassMap()
         {
@@ -179,9 +180,7 @@ namespace MiddleWay_Utilities
             //Map(u => u.ShippedToSite).Name(ConfigurationManager.AppSettings["ShippedToSite"]);
             //Map(u => u.QuantityShipped).Name(ConfigurationManager.AppSettings["QuantityShipped"]);
             //Map(u => u.Notes).Name(ConfigurationManager.AppSettings["Notes"]);
-
-
-
         }
     }
+
 }

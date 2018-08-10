@@ -12,7 +12,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -109,15 +110,18 @@ AS
         PRINT N'Set Default Area'
 
         --If AreaName IS Null or Empty set to DefaultArea
-        UPDATE TargetArea SET TargetArea.AreaName = @DefaultArea
+        SET @Statement = '
+        UPDATE TargetArea SET TargetArea.AreaName = ''' + @DefaultArea + '''
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
         WHERE
             (TargetArea.AreaName IS NULL OR
-             LTRIM(RTRIM(TargetArea.AreaName)) = '')
+             LTRIM(RTRIM(TargetArea.AreaName)) = '''')
         AND TargetArea.AreaUID = 0
-        AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetArea.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetArea.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -131,6 +135,7 @@ AS
 
         --Match Areas By Name
         --SELECT TargetArea.AreaUID, TargetArea.AreaName, SourceArea.AreaName, SourceArea.AreaUID
+        SET @Statement = '
         UPDATE TargetArea SET TargetArea.AreaUID = SourceArea.AreaUID
         FROM
             IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
@@ -144,23 +149,25 @@ AS
                 ON UPPER(LTRIM(RTRIM(TargetArea.AreaName))) = UPPER(LTRIM(RTRIM(SourceArea.AreaName)))
             WHERE
                 (SourceArea.AreaName IS NOT NULL AND
-                 LTRIM(RTRIM(SourceArea.AreaName)) <> '')
+                 LTRIM(RTRIM(SourceArea.AreaName)) <> '''')
             AND (TargetArea.AreaName IS NOT NULL AND
-                 LTRIM(RTRIM(TargetArea.AreaName)) <> '')
-            AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetArea.Rejected = 0 OR @AllowStackingErrors = 1)
+                 LTRIM(RTRIM(TargetArea.AreaName)) <> '''')
+            AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetArea.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceArea.AreaName
             ) SourceArea
             ON UPPER(LTRIM(RTRIM(TargetArea.AreaName))) = UPPER(LTRIM(RTRIM(SourceArea.AreaName)))
         WHERE 
             (SourceArea.AreaName IS NOT NULL AND
-             LTRIM(RTRIM(SourceArea.AreaName)) <> '')
+             LTRIM(RTRIM(SourceArea.AreaName)) <> '''')
         AND (TargetArea.AreaName IS NOT NULL AND
-             LTRIM(RTRIM(TargetArea.AreaName)) <> '')
+             LTRIM(RTRIM(TargetArea.AreaName)) <> '''')
         AND TargetArea.AreaUID = 0
-        AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetArea.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetArea.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -175,14 +182,18 @@ AS
                 PRINT N'Rejected where AreaName is Null or Empty'
                 --If AreaName IS Null or Empty then Reject
                 --SELECT TargetArea.AreaUID, TargetArea.AreaUID
-                UPDATE TargetArea SET Rejected = 1, AreaUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: AreaName; AreaName is NULL or Empty'
+                SET @Statement = '
+                UPDATE TargetArea 
+                SET Rejected = 1, AreaUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: AreaName; AreaName is NULL or Empty''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
                 WHERE
                     TargetArea.AreaName IS NULL 
-                 OR LTRIM(RTRIM(TargetArea.AreaName)) = ''
-                AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetArea.Rejected = 0 OR @AllowStackingErrors = 1);
+                 OR LTRIM(RTRIM(TargetArea.AreaName)) = ''''
+                AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetArea.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -198,15 +209,19 @@ AS
                 PRINT N'Rejected where AreaName could not be matched'
                 --If AreaUID = 0 then Reject
                 --SELECT TargetArea.AreaUID, TargetArea.AreaUID
-                UPDATE TargetArea SET Rejected = 1, AreaUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: AreaName; AreaName could not be Matched'
+                SET @Statement = '
+                UPDATE TargetArea 
+                SET Rejected = 1, AreaUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: AreaName; AreaName could not be Matched''
                 FROM
                     IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
                 WHERE
                     TargetArea.AreaUID = 0
                 AND (TargetArea.AreaName IS NULL OR
-                     LTRIM(RTRIM(TargetArea.AreaName)) = '')
-                AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetArea.Rejected = 0 OR @AllowStackingErrors = 1);
+                     LTRIM(RTRIM(TargetArea.AreaName)) = '''')
+                AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetArea.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

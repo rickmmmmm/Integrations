@@ -12,7 +12,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode                  AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -85,19 +86,22 @@ AS
 
         -- Match the Status to StatusDesc
         --SELECT TargetStatus.StatusID, TargetStatus.Status, SourceStatus.statusID, SourceStatus.statusDesc, SourceStatus.StatusTypeUID
+        SET @Statement = '
         UPDATE TargetStatus SET TargetStatus.EntityUID = SourceStatus.statusID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetStatus
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetStatus
         INNER JOIN 
-            TipWebHostedChicagoPS.dbo.tblStatus SourceStatus
+            ' + @TargetDatabase + '.dbo.tblStatus SourceStatus
             ON UPPER(LTRIM(RTRIM(TargetStatus.Status))) = UPPER(LTRIM(RTRIM(SourceStatus.statusDesc)))
             AND SourceStatus.StatusTypeUID = 6 -- Room
         WHERE
             TargetStatus.Status IS NOT NULL
-        AND LTRIM(RTRIM(TargetStatus.Status)) <> ''
+        AND LTRIM(RTRIM(TargetStatus.Status)) <> ''''
         AND TargetStatus.StatusID = 0
-        AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetStatus.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetStatus.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -109,16 +113,19 @@ AS
 
         --Set all remaining entries to default values
         --SELECT TargetStatus.StatusID, TargetStatus.Status, SourceStatus.statusID, SourceStatus.statusDesc, SourceStatus.StatusTypeUID
+        SET @Statement = '
         UPDATE TargetStatus SET TargetStatus.StatusID = SourceStatus.statusID, TargetStatus.Status = SourceStatus.statusDesc
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetStatus
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetStatus
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblStatus SourceStatus
-            ON @DefaulStatusID = UPPER(LTRIM(RTRIM(SourceStatus.statusID)))
+            ' + @TargetDatabase + '.dbo.tblStatus SourceStatus
+            ON ' + CAST(@DefaulStatusID AS VARCHAR(10)) + ' = UPPER(LTRIM(RTRIM(SourceStatus.statusID)))
         WHERE
             TargetStatus.StatusID = 0
-        AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetStatus.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetStatus.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -130,13 +137,16 @@ AS
 
         --Reject all remaining entries
         --SELECT TargetStatus.StatusID, TargetStatus.Status
-        UPDATE TargetStatus SET Rejected = 1, StatusID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Status; Status could not be matched'
+        SET @Statement = '
+        UPDATE TargetStatus SET Rejected = 1, StatusID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Status; Status could not be matched''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetStatus
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetStatus
         WHERE
             TargetStatus.StatusID = 0
-        AND TargetStatus.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetStatus.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetStatus.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetStatus.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN

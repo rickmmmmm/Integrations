@@ -1190,7 +1190,7 @@ namespace MiddleWay_Controller.Repositories
                 SqlParameter processUidParam = new SqlParameter("@ProcessUid", processUid);
                 SqlParameter processTaskUidParam = new SqlParameter("@ProcessTaskUid", processTaskUid);
                 SqlParameter sourceProcessParam = new SqlParameter("@SourceProcess", sourceProcess);
-                _context.Database.SetCommandTimeout(600);
+                _context.Database.SetCommandTimeout(1200);
                 _context.Database.ExecuteSqlCommand("EXEC @returnCode = sp_ValidateTags @ProcessUid, @ProcessTaskUid, @SourceProcess", new object[] { returnValue, processUidParam, processTaskUidParam, sourceProcessParam });
                 return ((int)returnValue.Value) == 0;
             }

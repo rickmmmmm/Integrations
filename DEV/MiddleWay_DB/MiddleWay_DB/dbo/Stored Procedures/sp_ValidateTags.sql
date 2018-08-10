@@ -6,14 +6,15 @@
  *  Reject sets InventoryUID to -1 and Rejected to true, add Reject Notes
  */
 CREATE PROCEDURE [dbo].[sp_ValidateTags]
-    (@ProcessUid AS INT, @ProcessTaskUid AS INT, @SourceProcess AS INT)
+    (@ProcessUid AS INT, @ProcessTaskUid AS INT, @SourceProcess AS INT, @Debug AS BIT = 0)
 AS
     BEGIN
         DECLARE @UseTagInNotesValidation    AS BIT,
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
                 @AllowStackingErrors        AS BIT,
-                @ErrorCode                  AS INT;
+                @ErrorCode                  AS INT,
+                @Statement                  AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -91,17 +92,26 @@ AS
                 THROW @ErrorCode, 'Failed to read the Configuration for AllowStackingErrors', 1;
             END
 
-        PRINT N'Reject where Tag is NULL or Empty';
+        IF @Debug = 1
+            PRINT N'PRINT N''Reject where Tag is NULL or Empty''';
+
         --SELECT RowID, Tag
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetInventory 
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Tag; Tag is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         WHERE 
             TargetInventory.InventoryUID = 0
         AND (TargetInventory.Tag IS NULL OR
-             LTRIM(RTRIM(TargetInventory.Tag)) = '')
-        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(TargetInventory.Tag)) = '''')
+        AND TargetInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -111,24 +121,27 @@ AS
                 THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
             END
 
-        PRINT N'Reject Duplicate Tags in the Data';
+        IF @Debug = 1
+            PRINT N'PRINT N''Reject Duplicate Tags in the Data''';
+
         --SELECT TargetInventory.Tag, TargetInventory.AssetID, DuplicateTags.Repeats
+        SET @Statement = '
         UPDATE TargetInventory
-        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN '' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag; Tag is repeated ' + CAST(DuplicateTags.Repeats AS VARCHAR) + N' times in the source data'
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN '''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Tag; Tag is repeated '' + CAST(DuplicateTags.Repeats AS VARCHAR) + N'' times in the source data''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN (
             SELECT
                 UPPER(LTRIM(RTRIM(TargetInventory.Tag))) Tag,
                 COUNT(RowID) AS Repeats
             FROM
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
             WHERE
                 TargetInventory.Tag IS NOT NULL
-            AND UPPER(LTRIM(RTRIM(TargetInventory.Tag))) <> ''
+            AND UPPER(LTRIM(RTRIM(TargetInventory.Tag))) <> ''''
             AND TargetInventory.InventoryUID = 0
-            AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 UPPER(LTRIM(RTRIM(TargetInventory.Tag)))
             HAVING
@@ -137,8 +150,13 @@ AS
             ON UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = DuplicateTags.Tag
         WHERE
             TargetInventory.InventoryUID = 0
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -148,11 +166,14 @@ AS
                 THROW @ErrorCode, 'Failed to reject records where the Tag is duplicated', 1;
             END
 
-        PRINT N'Get Matches by AssetUID (Single match only)';
+        IF @Debug = 1
+            PRINT N'PRINT N''Get Matches by AssetUID (Single match only)''';
+
         --SELECT TargetInventory.Tag, TargetInventory.AssetID, SourceInventory.Tag, SourceInventory.AssetID, SourceInventory.InventoryUID
+        SET @Statement = '
         UPDATE TargetInventory SET TargetInventory.InventoryUID = SourceInventory.InventoryUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN (
             SELECT
                 SourceInventory.Tag, SourceInventory.AssetID, SourceInventory.InventoryUID
@@ -160,25 +181,25 @@ AS
                 SELECT
                     SourceInventory.AssetID
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                    ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                     ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
                 WHERE
                     TargetInventory.InventoryUID = 0
                 AND TargetInventory.AssetID IS NOT NULL
-                AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+                AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''''
                 AND SourceInventory.AssetID IS NOT NULL
-                AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''
-                AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+                AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''''
+                AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
                 GROUP BY
                     SourceInventory.AssetID
                 HAVING
                     COUNT(SourceInventory.InventoryUID) = 1
                 ) UniqueAssets
             INNER JOIN
-                TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 ON UniqueAssets.AssetID = SourceInventory.AssetID
             WHERE
                 SourceInventory.AssetID IS NOT NULL
@@ -186,12 +207,17 @@ AS
             ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
         WHERE
             TargetInventory.AssetID IS NOT NULL
-        AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+        AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''''
         AND TargetInventory.InventoryUID = 0
         AND SourceInventory.AssetID IS NOT NULL
-        AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''''
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -201,22 +227,30 @@ AS
                 THROW @ErrorCode, 'Failed to match Inventory by AssetUID', 1;
             END
 
-        PRINT N'Get Matches by Tag';
+        IF @Debug = 1
+            PRINT N'PRINT N''Get Matches by Tag''';
+
         --SELECT TargetInventory.Tag, SourceInventory.Tag, SourceInventory.InventoryUID
+        SET @Statement = '
         UPDATE TargetInventory SET TargetInventory.InventoryUID = SourceInventory.InventoryUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+            ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
             ON UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag)))
         WHERE
             TargetInventory.InventoryUID = 0
         AND TargetInventory.Tag IS NOT NULL
-        AND LTRIM(RTRIM(TargetInventory.Tag)) <> ''
+        AND LTRIM(RTRIM(TargetInventory.Tag)) <> ''''
         AND (SourceInventory.AssetID IS NULL OR
-             LTRIM(RTRIM(SourceInventory.AssetID)) = '')
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(SourceInventory.AssetID)) = '''')
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -226,22 +260,25 @@ AS
                 THROW @ErrorCode, 'Failed to match Inventory by Tag', 1;
             END
 
-        PRINT N'Get Matches by Serial (Single match only)';
+        IF @Debug = 1
+            PRINT N'PRINT N''Get Matches by Serial (Single match only)''';
+
         --SELECT TargetInventory.Tag, TargetInventory.AssetID, SourceInventory.Tag, SourceInventory.Serial, SourceInventory.InventoryUID
+        SET @Statement = '
         UPDATE TargetInventory SET TargetInventory.InventoryUID = SourceInventory.InventoryUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN (
             SELECT
                 UPPER(LTRIM(RTRIM(TargetInventory.Serial))) Serial
             FROM
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
             WHERE
                 TargetInventory.InventoryUID = 0
             AND TargetInventory.Serial IS NOT NULL
-            AND LTRIM(RTRIM(TargetInventory.Serial)) <> ''
-            AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND LTRIM(RTRIM(TargetInventory.Serial)) <> ''''
+            AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 UPPER(LTRIM(RTRIM(TargetInventory.Serial)))
             HAVING
@@ -255,33 +292,38 @@ AS
                 SELECT
                     UPPER(LTRIM(RTRIM(SourceInventory.Serial))) Serial
                 FROM
-                    TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                    ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 WHERE 
                     SourceInventory.Serial IS NOT NULL
-                AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''
+                AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''''
                 AND (SourceInventory.AssetID IS NULL OR
-                     LTRIM(RTRIM(SourceInventory.AssetID)) = '')
+                     LTRIM(RTRIM(SourceInventory.AssetID)) = '''')
                 GROUP BY
                     SourceInventory.Serial
                 HAVING
                     COUNT(SourceInventory.InventoryUID) = 1
                 ) UniqueSerials
             INNER JOIN
-                TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 ON UniqueSerials.Serial = UPPER(LTRIM(RTRIM(SourceInventory.Serial)))
             WHERE
                 SourceInventory.Serial IS NOT NULL
-            AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''
+            AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''''
             AND (SourceInventory.AssetID IS NULL OR
-                 LTRIM(RTRIM(SourceInventory.AssetID)) = '')
+                 LTRIM(RTRIM(SourceInventory.AssetID)) = '''')
             ) AS SourceInventory
             ON UPPER(LTRIM(RTRIM(TargetInventory.Serial))) = SourceInventory.Serial
         WHERE
             SourceInventory.Serial IS NOT NULL
-        AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''
+        AND LTRIM(RTRIM(SourceInventory.Serial)) <> ''''
         AND TargetInventory.InventoryUID = 0
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -291,13 +333,18 @@ AS
                 THROW @ErrorCode, 'Failed to match Inventory by Serial', 1;
             END
 
-        PRINT N'Check Use Tag In Notes';
+        IF @Debug = 1
+            PRINT N'PRINT N''Check Use Tag In Notes''';
+
         --Get Matches by Tag In Notes (Single match only)
         IF @UseTagInNotesValidation = 1
             BEGIN
-                PRINT N'Checking for the Tag in the Tag notes';
+                IF @Debug = 1
+                    BEGIN
+                        PRINT N'PRINT N''Checking for the Tag in the Tag notes''';
 
-                IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE '#Tags%')
+                        PRINT N'
+                IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE ''#Tags%'')
                     BEGIN
                         TRUNCATE TABLE #Tags;
                     END
@@ -306,15 +353,7 @@ AS
                         CREATE TABLE #Tags (RowNum INT, Tag VARCHAR(50), CONSTRAINT [PK_Tag] PRIMARY KEY CLUSTERED ( RowNum ASC ));
                     END
 
-                IF @@ERROR <> 0
-                    BEGIN
-                        SET @ErrorCode = @@ERROR + 100000;
-                        --SET @ErrorMessage = ;
-                        --RETURN @ErrorCode;
-                        THROW @ErrorCode, 'Failed to create the temporary table #Tags', 1;
-                    END
-
-                IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE '#ContainsTag%')
+                IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE ''#ContainsTag%'')
                     BEGIN
                         TRUNCATE TABLE #ContainsTag;
                     END
@@ -324,32 +363,72 @@ AS
                         CREATE TABLE #ContainsTag (InventoryUID INT , Tag VARCHAR(50), LookupTag VARCHAR(50), CONSTRAINT [PK_ContainsTag] PRIMARY KEY CLUSTERED ( LookupTag ASC ));--, InventoryNotes VARCHAR(3000));
                     END
 
-                IF @@ERROR <> 0
+                DECLARE @RowCount AS INT,
+                        @RowTotal AS INT,
+                        @TagSearch AS VARCHAR(50);';
+                    END
+                ELSE
                     BEGIN
-                        SET @ErrorCode = @@ERROR + 100000;
-                        --SET @ErrorMessage = ;
-                        --RETURN @ErrorCode;
-                        THROW @ErrorCode, 'Failed to create the temporary table #ContainsTag', 1;
+                        IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE '#Tags%')
+                            BEGIN
+                                TRUNCATE TABLE #Tags;
+                            END
+                        ELSE
+                            BEGIN
+                                CREATE TABLE #Tags (RowNum INT, Tag VARCHAR(50), CONSTRAINT [PK_Tag] PRIMARY KEY CLUSTERED ( RowNum ASC ));
+                            END
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR + 100000;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed to create the temporary table #Tags', 1;
+                            END
+
+                        IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE '#ContainsTag%')
+                            BEGIN
+                                TRUNCATE TABLE #ContainsTag;
+                            END
+                        ELSE
+                            BEGIN
+                                --CREATE TABLE #ContainsTag (InventoryUID INT , Tag VARCHAR(50), CONSTRAINT [PK_ContainsTag] PRIMARY KEY CLUSTERED ( InventoryUID ASC ));--, InventoryNotes VARCHAR(3000));
+                                CREATE TABLE #ContainsTag (InventoryUID INT , Tag VARCHAR(50), LookupTag VARCHAR(50), CONSTRAINT [PK_ContainsTag] PRIMARY KEY CLUSTERED ( LookupTag ASC ));--, InventoryNotes VARCHAR(3000));
+                            END
+
+                        IF @@ERROR <> 0
+                            BEGIN
+                                SET @ErrorCode = @@ERROR + 100000;
+                                --SET @ErrorMessage = ;
+                                --RETURN @ErrorCode;
+                                THROW @ErrorCode, 'Failed to create the temporary table #ContainsTag', 1;
+                            END
                     END
 
                 DECLARE @RowCount AS INT,
                         @RowTotal AS INT,
                         @TagSearch AS VARCHAR(50);
 
+                SET @Statement = '
                 INSERT INTO #Tags
                 SELECT --TOP 100
                     ROW_NUMBER() OVER(ORDER BY Tag),
                     UPPER(LTRIM(RTRIM(TargetInventory.Tag))) Tag
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
                 WHERE
                     TargetInventory.InventoryUID = 0
                 AND TargetInventory.Tag IS NOT NULL
-                AND LTRIM(RTRIM(TargetInventory.Tag)) <> ''
-                AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-                AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+                AND LTRIM(RTRIM(TargetInventory.Tag)) <> ''''
+                AND TargetInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
                 GROUP BY
-                    TargetInventory.Tag;
+                    TargetInventory.Tag';
+
+                IF @Debug = 0
+                    EXECUTE (@Statement);
+                ELSE
+                    PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -359,7 +438,10 @@ AS
                         THROW @ErrorCode, 'Failed to add Tags to match in TagNotes to the #Tags table', 1;
                     END
 
-                SET @RowTotal = (SELECT COUNT(Tag) FROM #Tags);
+                IF @Debug = 1
+                    PRINT N'SET @RowTotal = (SELECT COUNT(Tag) FROM #Tags)';
+                ELSE
+                    SET @RowTotal = (SELECT COUNT(Tag) FROM #Tags);
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -384,17 +466,23 @@ AS
                                 THROW @ErrorCode, 'Failed to get the next Tag to search', 1;
                             END
 
+                        SET @Statement = '
                         INSERT INTO #ContainsTag
                         SELECT
-                            SourceInventory.InventoryUID, UPPER(LTRIM(RTRIM(SourceInventory.Tag))), @TagSearch
+                            SourceInventory.InventoryUID, UPPER(LTRIM(RTRIM(SourceInventory.Tag))), ' + @TagSearch + '
                         FROM
-                            TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                            ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                         WHERE
                             SourceInventory.InventoryNotes IS NOT NULL
-                        AND UPPER(LTRIM(RTRIM(SourceInventory.InventoryNotes))) LIKE '%TAG: ' + @TagSearch + '%'
+                        AND UPPER(LTRIM(RTRIM(SourceInventory.InventoryNotes))) LIKE ''%TAG: ' + @TagSearch + '%''
                         AND (SourceInventory.AssetID IS NULL OR
-                             LTRIM(RTRIM(SourceInventory.AssetID)) = '');
+                             LTRIM(RTRIM(SourceInventory.AssetID)) = '''')';
                         --AND CONTAINS(SourceInventory.InventoryNotes, @TagSearch);
+
+                        IF @Debug = 0
+                            EXECUTE (@Statement);
+                        ELSE
+                            PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -408,11 +496,14 @@ AS
 
                     END
 
-                PRINT N'Get the InventoryUID of tags that have only 1 match';
+                IF @Debug = 1
+                    PRINT N'PRINT N''Get the InventoryUID of tags that have only 1 match''';
+
                 --SELECT TargetInventory.Tag, TargetInventory.AssetID, SourceInventory.Tag, SourceInventory.InventoryUID
+                SET @Statement = '
                 UPDATE TargetInventory SET TargetInventory.InventoryUID = SourceInventory.InventoryUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
                 LEFT JOIN (
                     SELECT
                         UniqueTagInNotes.InventoryUID, UniqueTagInNotes.Tag, UniqueTagInNotes.LookupTag
@@ -446,9 +537,14 @@ AS
                     TargetInventory.InventoryUID = 0
                 AND SourceInventory.InventoryUID IS NOT NULL
                 AND SourceInventory.Tag IS NOT NULL
-                AND LTRIM(RTRIM(SourceInventory.Tag)) <> ''
-                AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-                AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(SourceInventory.Tag)) <> ''''
+                AND TargetInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+                IF @Debug = 0
+                    EXECUTE (@Statement);
+                ELSE
+                    PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -458,7 +554,10 @@ AS
                         THROW @ErrorCode, 'Failed to match Inventory that has a single match in TagNotes', 1;
                     END
 
-                DROP TABLE #Tags;
+                IF @Debug = 1
+                    PRINT N'DROP TABLE #Tags;';
+                ELSE
+                    DROP TABLE #Tags;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -468,7 +567,10 @@ AS
                         THROW @ErrorCode, 'Failed to Drop the #Tags table', 1;
                     END
 
-                DROP TABLE #ContainsTag;
+                IF @Debug = 1
+                    PRINT N'DROP TABLE #ContainsTag;;';
+                ELSE
+                    DROP TABLE #ContainsTag;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -480,20 +582,24 @@ AS
 
             END
 
-        PRINT N'Reject Tags that have a duplicate InventoryUID match';
+        IF @Debug = 1
+            PRINT N'PRINT N''Reject Tags that have a duplicate InventoryUID match''';
+
         --SELECT RowID, Tag
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset/Tag; The Asset/Tag search found multiple records match the same Inventory'
+        SET @Statement = '
+        UPDATE TargetInventory 
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Asset/Tag; The Asset/Tag search found multiple records match the same Inventory''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN (
             SELECT
                 DuplicateInventory.InventoryUID
             FROM
-                IntegrationMiddleWay.dbo._ETL_Inventory DuplicateInventory
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' DuplicateInventory
             WHERE
                 DuplicateInventory.InventoryUID > 0
-                AND DuplicateInventory.ProcessTaskUid = @ProcessTaskUid
-                AND (DuplicateInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+                AND DuplicateInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (DuplicateInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 DuplicateInventory.InventoryUID
             HAVING
@@ -502,8 +608,13 @@ AS
             ON TargetInventory.InventoryUID = DuplicateInventory.InventoryUID
         WHERE
             TargetInventory.InventoryUID > 0
-        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -513,19 +624,28 @@ AS
                 THROW @ErrorCode, 'Failed to reject records that have multiple matches to the same Inventory', 1;
             END
 
-        PRINT N'Reject where Tag matches but AssetUID does not';
+        IF @Debug = 1
+            PRINT N'PRINT N''Reject where Tag matches but AssetUID does not''';
+
         --SELECT RowID, Tag
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Tag/AssetUID; Tag matches but AssetUID does not.'
+        SET @Statement = '
+        UPDATE TargetInventory 
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Tag/AssetUID; Tag matches but AssetUID does not.''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+            ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
             ON UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag)))
         WHERE
             TargetInventory.InventoryUID = 0
         AND UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) <> UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
-        AND TargetInventory.ProcessTaskUid = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetInventory.ProcessTaskUid = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -535,27 +655,31 @@ AS
                 THROW @ErrorCode, 'Failed to reject records where the Tag is Null or Empty', 1;
             END
 
-        PRINT N'Reject where AssetUID matches more than one Inventory';
+        IF @Debug = 1
+            PRINT N'PRINT N''Reject where AssetUID matches more than one Inventory''';
+
         --SELECT TargetInventory.Tag, TargetInventory.AssetID--, SourceInventory.Tag, SourceInventory.AssetID, SourceInventory.InventoryUID
-        UPDATE TargetInventory SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: Asset; The Asset search found multiple records match different Inventory'
+        SET @Statement = '
+        UPDATE TargetInventory 
+        SET Rejected = 1, InventoryUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: Asset; The Asset search found multiple records match different Inventory''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN (
             SELECT
                 SourceInventory.AssetID
             FROM 
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
             INNER JOIN
-                TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(SourceInventory.AssetID)))
             WHERE
                 TargetInventory.InventoryUID = 0
             AND TargetInventory.AssetID IS NOT NULL
-            AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+            AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''''
             AND SourceInventory.AssetID IS NOT NULL
-            AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''
-            AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND LTRIM(RTRIM(SourceInventory.AssetID)) <> ''''
+            AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceInventory.AssetID
             HAVING
@@ -564,11 +688,15 @@ AS
             ON UPPER(LTRIM(RTRIM(TargetInventory.AssetID))) = UPPER(LTRIM(RTRIM(RepeatedAssets.AssetID)))
         WHERE
             TargetInventory.AssetID IS NOT NULL
-        AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''
+        AND LTRIM(RTRIM(TargetInventory.AssetID)) <> ''''
         AND TargetInventory.InventoryUID = 0
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
 
+        IF @Debug = 0
+            EXECUTE (@Statement);
+        ELSE
+            PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -577,7 +705,6 @@ AS
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to reject records where the AssetUID is duplicated in the Source Data', 1;
             END
-
 
         SET NOCOUNT OFF;
 

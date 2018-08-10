@@ -10,7 +10,8 @@ AS
         DECLARE @CreateNewPurchaseDetails   AS BIT,
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
-                @ErrorCode                  AS INT;
+                @ErrorCode                  AS INT,
+                @Statement                  AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -75,7 +76,8 @@ AS
                 PRINT N'Creating New Purchase Details'
 
                 --Insert new Products
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails
                     (PurchaseUID, ItemUID, FundingSourceUID, StatusUID, SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, TechDepartmentUID, LineNumber,
                      CFDA, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, IsAssociated)
                 SELECT
@@ -83,12 +85,12 @@ AS
                     0, 0, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.AccountCode, TargetPurchaseDetails.TechDepartmentUID, TargetPurchaseDetails.LineNumber,
                     NULL, 0, GETDATE(), 0, GETDATE(), 0
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 WHERE
                     TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
                 AND TargetPurchaseDetails.PurchaseUID > 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
                 AND TargetPurchaseDetails.Rejected = 0
                 GROUP BY
                     TargetPurchaseDetails.PurchaseUID,
@@ -98,7 +100,9 @@ AS
                     TargetPurchaseDetails.PurchasePrice,
                     TargetPurchaseDetails.AccountCode,
                     TargetPurchaseDetails.TechDepartmentUID,
-                    TargetPurchaseDetails.LineNumber;
+                    TargetPurchaseDetails.LineNumber';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Created ' + CAST(@@ROWCOUNT AS VARCHAR) + ' Details'
 
@@ -113,26 +117,29 @@ AS
                 PRINT N'Matching Created Details to original rows'
 
                 --Match the created products to their origin records
+                SET @Statement = '
                 UPDATE TargetPurchaseDetails
                 SET TargetPurchaseDetails.PurchaseItemDetailUID = SourcePurchaseDetails.PurchaseItemDetailUID
-                FROM IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                FROM IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 INNER JOIN 
-                    TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
+                    ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
                     ON TargetPurchaseDetails.PurchaseUID  = SourcePurchaseDetails.PurchaseUID AND
                        TargetPurchaseDetails.ItemUID = SourcePurchaseDetails.ItemUID AND
                        TargetPurchaseDetails.FundingSourceUID = SourcePurchaseDetails.FundingSourceUID AND
                        TargetPurchaseDetails.SiteAddedSiteUID  = SourcePurchaseDetails.SiteAddedSiteUID AND
                        TargetPurchaseDetails.PurchasePrice   = SourcePurchaseDetails.PurchasePrice AND
-                       ISNULL(TargetPurchaseDetails.AccountCode, '') = ISNULL(SourcePurchaseDetails.AccountCode, '') AND
+                       ISNULL(TargetPurchaseDetails.AccountCode, '''') = ISNULL(SourcePurchaseDetails.AccountCode, '''') AND
                        TargetPurchaseDetails.TechDepartmentUID   = SourcePurchaseDetails.TechDepartmentUID AND
                        TargetPurchaseDetails.LineNumber = SourcePurchaseDetails.LineNumber
                 WHERE
                     TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
                 AND TargetPurchaseDetails.PurchaseUID > 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND TargetPurchaseDetails.Rejected = 0;
-                
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetPurchaseDetails.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
+
                 PRINT N'Matched ' + CAST(@@ROWCOUNT AS VARCHAR) + ' Details'
 
                 IF @@ERROR <> 0

@@ -14,7 +14,9 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS NVARCHAR(MAX),
+                @ParamDefinition        AS NVARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -114,18 +116,21 @@ AS
 
         --Get Matches by ProductTypeName
         --SELECT TargetItemTypes.ProductTypeName, SourceItemTypes.ItemTypeName, SourceItemTypes.ItemTypeUID
+        SET @Statement = '
         UPDATE TargetItemTypes SET TargetItemTypes.ItemTypeUID = SourceItemTypes.ItemTypeUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItemTypes
         LEFT JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON UPPER(LTRIM(RTRIM(TargetItemTypes.ProductTypeName))) = UPPER(LTRIM(RTRIM(SourceItemTypes.ItemTypeName)))
         WHERE 
             TargetItemTypes.ProductTypeName IS NOT NULL
         AND SourceItemTypes.ItemTypeUID IS NOT NULL
         AND TargetItemTypes.ItemTypeUID = 0
-        AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetItemTypes.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItemTypes.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -137,18 +142,21 @@ AS
 
         --Get Matches by ProductTypeDescription
         --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription, SourceItemTypes.ItemTypeName, SourceItemTypes.ItemTypeDescription, SourceItemTypes.ItemTypeUID
+        SET @Statement = '
         UPDATE TargetItemTypes SET TargetItemTypes.ItemTypeUID = SourceItemTypes.ItemTypeUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItemTypes
         LEFT JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON UPPER(LTRIM(RTRIM(TargetItemTypes.ProductTypeDescription))) = UPPER(LTRIM(RTRIM(SourceItemTypes.ItemTypeDescription)))
         WHERE 
             TargetItemTypes.ProductTypeDescription IS NOT NULL
         AND SourceItemTypes.ItemTypeUID IS NOT NULL
         AND TargetItemTypes.ItemTypeUID = 0
-        AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetItemTypes.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItemTypes.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -164,15 +172,18 @@ AS
             BEGIN
                 --If Product Type Name is null or empty reject
                 --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription
-                UPDATE TargetItemTypes SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductTypeName; ProductTypeName is NULL or Empty'
+                SET @Statement = '
+                UPDATE TargetItemTypes SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ProductTypeName; ProductTypeName is NULL or Empty''
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItemTypes
                 WHERE 
                     (TargetItemTypes.ProductTypeName IS NULL OR
                      LTRIM(RTRIM(TargetItemTypes.ProductTypeName)) = '')
                 AND TargetItemTypes.ItemTypeUID = 0
-                AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetItemTypes.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetItemTypes.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -189,9 +200,13 @@ AS
                 DECLARE @ItemTypeUID AS INT;
                 SET @ItemTypeUID = -1;
 
+                SET @ParamDefinition = N'@ItemTypeUID INT OUTPUT';
+                SET @Statement = '
                 SELECT @ItemTypeUID = ItemTypeUID
-                FROM TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
-                WHERE UPPER(LTRIM(RTRIM(SourceItemTypes.ItemTypeName))) = @DefaultProductType
+                FROM ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
+                WHERE UPPER(LTRIM(RTRIM(SourceItemTypes.ItemTypeName))) = ''' + @DefaultProductType + '''';
+                EXECUTE sp_executesql @statement, @ParamDefinition, @ItemTypeUID = @ItemTypeUID OUTPUT;
+                --PRINT @statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -209,16 +224,18 @@ AS
 
                         --If Product Type Name is null or empty reject
                         --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription
-                        UPDATE TargetItemTypes
-                        SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductTypeName; ProductTypeName is NULL or Empty'
+                        SET @Statement = '
+                        UPDATE TargetItemTypes SET Rejected = 1, ItemTypeUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ProductTypeName; ProductTypeName is NULL or Empty''
                         FROM 
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItemTypes
                         WHERE 
                             (TargetItemTypes.ProductTypeName IS NULL OR
-                             LTRIM(RTRIM(TargetItemTypes.ProductTypeName)) = '')
+                             LTRIM(RTRIM(TargetItemTypes.ProductTypeName)) = '''')
                         AND TargetItemTypes.ItemTypeUID = 0
-                        AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+                        AND TargetItemTypes.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetItemTypes.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -235,13 +252,16 @@ AS
 
                         --Set the Default ItemTypeUID and ProductTypeName to the default value
                         --SELECT TargetItemTypes.ProductTypeName, TargetItemTypes.ProductTypeDescription
-                        UPDATE TargetItemTypes SET TargetItemTypes.ItemTypeUID = @ItemTypeUID, ProductTypeName = @DefaultProductType
+                        SET @Statement = '
+                        UPDATE TargetItemTypes SET TargetItemTypes.ItemTypeUID = ' + CAST(@ItemTypeUID AS VARCHAR(10)) + ', ProductTypeName = ''' + @DefaultProductType + '''
                         FROM
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetItemTypes
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItemTypes
                         WHERE
                             TargetItemTypes.ItemTypeUID = 0
-                        AND TargetItemTypes.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetItemTypes.Rejected = 0 OR @AllowStackingErrors = 1);
+                        AND TargetItemTypes.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetItemTypes.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN

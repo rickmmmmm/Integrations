@@ -12,7 +12,9 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @Notes                  AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS NVARCHAR(MAX),
+                @ParamDefinition        AS NVARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -121,7 +123,12 @@ AS
                         @COUNT AS INT;
 
                 SET @COUNT = 0;
-                SELECT @PRODNUM = Value FROM TipWebHostedChicagoPS.dbo.tblUnvCounter WHERE CounterUID = 4;
+
+                SET @ParamDefinition = N'@PRODNUM INT OUTPUT';
+                SET @Statement = N'
+                SELECT @PRODNUM = Value FROM ' + @TargetDatabase + '.dbo.tblUnvCounter WHERE CounterUID = 4';
+                EXECUTE sp_executesql @statement, @ParamDefinition, @PRODNUM = @PRODNUM OUTPUT;
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -131,31 +138,66 @@ AS
                         THROW @ErrorCode, 'Failed to get the Next Value for ProductNumber', 1;
                     END
 
+                IF EXISTS(SELECT 1 FROM tempdb.sys.tables WHERE name LIKE '#NewItems%')
+                    BEGIN
+                        TRUNCATE TABLE #Tags;
+                    END
+                ELSE
+                    BEGIN
+                        CREATE TABLE #NewItems (
+                            ProductName VARCHAR(100),
+                            ProductDescription VARCHAR(1000),
+                            ItemTypeUID INT,
+                            ModelNumber VARCHAR(100),
+                            ManufacturerUID INT,
+                            PurchasePrice DECIMAL,
+                            AreaUID INT, 
+                            CONSTRAINT [PK_ProductName] PRIMARY KEY CLUSTERED ( ProductName ASC ));
+
+                    END
+
                 --Get all 
-                DECLARE NewItems CURSOR READ_ONLY
-                FOR
-                    SELECT DISTINCT
-                        TargetItem.ProductName,
-                        TargetItem.ProductDescription,
-                        TargetItem.ItemTypeUID,
-                        TargetItem.ModelNumber,
-                        TargetItem.ManufacturerUID,
-                        TargetItem.PurchasePrice,
-                        TargetItem.AreaUID
-                    FROM
-                        IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
-                    WHERE
-                        TargetItem.ItemUID = 0
-                    AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-                    AND TargetItem.Rejected = 0;
+                SET @Statement = '
+                INSERT INTO #NewItems
+                    (ProductName, ProductDescription, ItemTypeUID, ModelNumber, ManufacturerUID, PurchasePrice, AreaUID)
+                SELECT DISTINCT
+                    TargetItem.ProductName,
+                    ISNULL(TargetItem.ProductDescription, TargetItem.ProductName),
+                    TargetItem.ItemTypeUID,
+                    TargetItem.ModelNumber,
+                    TargetItem.ManufacturerUID,
+                    MAX(ISNULL(TargetItem.PurchasePrice, 0)),
+                    TargetItem.AreaUID
+                FROM
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
+                WHERE
+                    TargetItem.ItemUID = 0
+                AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetItem.Rejected = 0
+                GROUP BY 
+                    TargetItem.ProductName,
+                    ISNULL(TargetItem.ProductDescription, TargetItem.ProductName),
+                    TargetItem.ItemTypeUID,
+                    TargetItem.ModelNumber,
+                    TargetItem.ManufacturerUID,
+                    TargetItem.AreaUID';
+                EXECUTE (@statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
                         SET @ErrorCode = @@ERROR + 100000;
                         --SET @ErrorMessage = ;
                         --RETURN @ErrorCode;
-                        THROW @ErrorCode, 'Failed to create the Cursor of Products to Create', 1;
+                        THROW @ErrorCode, 'Failed to Insert data into the NewItems temp table', 1;
                     END
+
+                DECLARE NewItems CURSOR READ_ONLY
+                FOR
+                    SELECT
+                        ProductName, ProductDescription, ItemTypeUID, ModelNumber, ManufacturerUID, PurchasePrice, AreaUID
+                    FROM
+                        #NewItems
 
                 OPEN NewItems;
 
@@ -166,11 +208,15 @@ AS
                     BEGIN
                         SET @ItemNumber = @PRODNUM + @COUNT;
 
-                        WHILE EXISTS(SELECT 1 FROM [TipWebHostedChicagoPS].[dbo].[tblTechItems] WHERE [tblTechItems].[ItemNumber] = CAST(@ItemNumber AS VARCHAR))
+                        SET @ParamDefinition = N'@PRODNUM INT, @COUNT INT OUTPUT, @ItemNumber INT OUTPUT';
+                        SET @Statement = '
+                        WHILE EXISTS(SELECT 1 FROM [' + @TargetDatabase + '].[dbo].[tblTechItems] WHERE [tblTechItems].[ItemNumber] = CAST(@ItemNumber AS VARCHAR))
                             BEGIN
                                 SET @COUNT = @COUNT + 1;
                                 SET @ItemNumber = @PRODNUM + @COUNT;
-                            END
+                            END';
+                        EXECUTE sp_executesql @statement, @ParamDefinition, @PRODNUM = @PRODNUM, @COUNT = @COUNT OUTPUT, @ItemNumber = @ItemNumber OUTPUT;
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -180,20 +226,21 @@ AS
                                 THROW @ErrorCode, 'Failed to determine the next available ItemNumber', 1;
                             END
 
-                        INSERT INTO TipWebHostedChicagoPS.dbo.tblTechItems
+                        SET @Statement = '
+                        INSERT INTO ' + @TargetDatabase + '.dbo.tblTechItems
                             ([ItemNumber], [ItemName], [ItemDescription], [ItemTypeUID], [ModelNumber], [ManufacturerUID], [ItemSuggestedPrice],
                              [AreaUID], [ItemNotes], [SKU], [SerialRequired], [ProjectedLife], [CustomField1], [CustomField2], [CustomField3],
                              [Active], [CreatedByUserID], [CreatedDate], [LastModifiedByUserID], [LastModifiedDate], [AllowUntagged])
                         SELECT
-                            CAST(@ItemNumber AS VARCHAR),
-                            @ProductName,
-                            @ProductDescription,
-                            @ProductTypeUID,
-                            @Model,
-                            @ManufacturerUID,
-                            @SuggestedPrice,
-                            @AreaUID,
-                            @Notes,
+                            ''' + CAST(@ItemNumber AS VARCHAR) + ''',
+                            ''' + @ProductName + ''',
+                            ''' + @ProductDescription + ''',
+                            ' + CAST(@ProductTypeUID AS VARCHAR) + ',
+                            ''' + @Model + ''',
+                            ' + CAST(@ManufacturerUID AS VARCHAR) + ',
+                            ' + CAST(@SuggestedPrice AS VARCHAR) + ',
+                            ' + CAST(@AreaUID AS VARCHAR) + ',
+                            ''' + @Notes + ''',
                             NULL,
                             0,
                             0,
@@ -205,7 +252,9 @@ AS
                             GETDATE(),
                             0,
                             GETDATE(),
-                            0;
+                            0';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -226,23 +275,26 @@ AS
 
                 DEALLOCATE NewItems;
 
+                SET @Statement = '
                 UPDATE TargetItem
                 SET TargetItem.ItemUID = SourceItem.ItemUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                    ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                     ON UPPER(LTRIM(RTRIM(TargetItem.ProductName))) = UPPER(LTRIM(RTRIM(SourceItem.ItemName))) AND
-                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ProductDescription, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ItemDescription, '')))) AND
+                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ProductDescription, TargetItem.ProductName)))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ItemDescription, TargetItem.ProductName)))) AND
                        TargetItem.ItemTypeUID = SourceItem.ItemTypeUID AND
-                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ModelNumber, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ModelNumber, '')))) AND
+                       UPPER(LTRIM(RTRIM(ISNULL(TargetItem.ModelNumber, '''')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceItem.ModelNumber, '''')))) AND
                        TargetItem.ManufacturerUID = SourceItem.ManufacturerUID AND
-                       TargetItem.PurchasePrice = SourceItem.ItemSuggestedPrice AND
+                       --TargetItem.PurchasePrice = SourceItem.ItemSuggestedPrice AND
                        TargetItem.AreaUID = SourceItem.AreaUID
                 WHERE
                     TargetItem.ItemUID = 0
-                AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-                AND TargetItem.Rejected = 0;
+                AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetItem.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -257,18 +309,21 @@ AS
         IF @UpdateProductName = 1
             BEGIN
 
+                SET @Statement = '
                 UPDATE SourceItem
                 SET SourceItem.ItemName = UPPER(LTRIM(RTRIM(TargetItem.ProductName)))
                 FROM
-                    TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                    ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                 INNER JOIN
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
                     ON SourceItem.ItemUID = TargetItem.ItemUID
                 WHERE
                     TargetItem.ItemUID > 0
                 AND UPPER(LTRIM(RTRIM(SourceItem.ItemName))) <> UPPER(LTRIM(RTRIM(TargetItem.ProductName)))
-                AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-                AND TargetItem.Rejected = 0;
+                AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetItem.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

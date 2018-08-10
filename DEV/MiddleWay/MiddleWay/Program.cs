@@ -51,22 +51,20 @@ namespace MiddleWay
                     serviceProvider = services.BuildServiceProvider();
 
                     RunProcess(commands);
-                    //#if DEBUG
-                    //                    Console.Write("Press Enter to quit");
-                    //                    Console.Read();
-                    //#endif
+#if DEBUG
+                    Console.Write("Press Enter to quit");
+                    Console.Read();
+#endif
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - Error Caught");
                 PrintToConsole(Utilities.ParseException(ex));
-                //#if DEBUG
-                //                Console.Write("Press Enter to quit");
-                //                Console.Read();
-                //                //#else
-                //                //                Environment.Exit(0);
-                //#endif
+#if DEBUG
+                Console.Write("Press Enter to quit");
+                Console.Read();
+#endif
             }
             finally
             {
@@ -991,8 +989,10 @@ namespace MiddleWay
             var configText = Utilities.ToStringObject(config);
 
             Console.WriteLine(configText);
+#if DEBUG
             Console.Write("Press Enter to quit");
             Console.Read();
+#endif
         }
 
         public static void PrintToConsole(string message)

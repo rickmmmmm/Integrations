@@ -11,7 +11,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @Notes                  AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -89,17 +90,20 @@ AS
         IF @CreateVendors = 1
             BEGIN
                 --Create new Vendors
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblVendor
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblVendor
                     (VendorName, Contact, Address, Address2, City, State, Zip, Phone, Fax, Email, AccountNumber, CampusID, Notes, Active, UserID, ModifiedDate, ApplicationUID)
                 SELECT DISTINCT
                     TargetVendor.VendorName, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TargetVendor.VendorAccountNumber, NULL, @Notes, 1, 0, GETDATE(), 2
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
                 WHERE
                     TargetVendor.VendorUID = 0
-                AND TargetVendor.VendorName <> 'NONE'
-                AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-                AND TargetVendor.Rejected = 0;
+                AND TargetVendor.VendorName <> ''NONE''
+                AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetVendor.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -110,18 +114,21 @@ AS
                     END
 
                 --Match created vendors with their origin records
+                SET @Statement = '
                 UPDATE TargetVendor
                 SET TargetVendor.VendorUID = SourceVendor.VendorID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
-                INNER JOIN TipWebHostedChicagoPS.dbo.tblVendor SourceVendor
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
+                INNER JOIN ' + @TargetDatabase + '.dbo.tblVendor SourceVendor
                     ON TargetVendor.VendorName = SourceVendor.VendorName AND
                        TargetVendor.VendorAccountNumber = SourceVendor.AccountNumber
                 WHERE
                     TargetVendor.VendorUID = 0
-                AND TargetVendor.VendorName <> 'NONE'
-                AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-                AND TargetVendor.Rejected = 0;
+                AND TargetVendor.VendorName <> ''NONE''
+                AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetVendor.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

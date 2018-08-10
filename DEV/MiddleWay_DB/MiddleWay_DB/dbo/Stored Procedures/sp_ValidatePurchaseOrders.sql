@@ -18,7 +18,8 @@ AS
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
                 @AllowStackingErrors        AS BIT,
-                @ErrorCode                  AS INT;
+                @ErrorCode                  AS INT,
+                @Statement                  AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -214,27 +215,30 @@ AS
         PRINT N'Match the Inventory to existing Purchase Inventory';
         --SELECT TargetPurchaseInventory.PurchaseItemShipmentUID, TargetPurchaseInventory.InventoryUID, TargetPurchaseInventory.Tag, TargetPurchaseInventory.AssetID, TargetPurchaseInventory.ShippedToSiteUID,
         --       SourcePurchaseInventory.PurchaseItemShipmentUID, SourcePurchaseInventory.InventoryUID, SourcePurchaseItemDetails.PurchaseItemDetailUID, SourcePurchases.PurchaseUID
+        SET @Statement = '
         UPDATE TargetPurchaseInventory
         SET TargetPurchaseInventory.PurchaseInventoryUID = SourcePurchaseInventory.PurchaseInventoryUID, TargetPurchaseInventory.PurchaseItemShipmentUID = SourcePurchaseItemShipments.PurchaseItemShipmentUID,
             TargetPurchaseInventory.PurchaseItemDetailUID = SourcePurchaseItemDetails.PurchaseItemDetailUID, TargetPurchaseInventory.PurchaseUID = SourcePurchases.PurchaseUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseInventory
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseInventory SourcePurchaseInventory
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseInventory SourcePurchaseInventory
             ON TargetPurchaseInventory.InventoryUID = SourcePurchaseInventory.InventoryUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseItemShipments
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseItemShipments SourcePurchaseItemShipments
             ON SourcePurchaseInventory.PurchaseItemShipmentUID = SourcePurchaseItemShipments.PurchaseItemShipmentUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseItemDetails
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails SourcePurchaseItemDetails
             ON SourcePurchaseItemShipments.PurchaseItemDetailUID = SourcePurchaseItemDetails.PurchaseItemDetailUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchases SourcePurchases
+            ' + @TargetDatabase + '.dbo.tblTechPurchases SourcePurchases
             ON SourcePurchaseItemDetails.PurchaseUID = SourcePurchases.PurchaseUID
         WHERE
             TargetPurchaseInventory.InventoryUID > 0
-        AND TargetPurchaseInventory.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetPurchaseInventory.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetPurchaseInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetPurchaseInventory.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -251,15 +255,19 @@ AS
                 PRINT N'Reject rows where the OrderNumber is empty';
                 --Reject any rows where the OrderNumber is empty
                 --SELECT TargetPurchase.OrderNumber, TargetPurchase.PurchaseDate, TargetPurchase.VendorUID, TargetPurchase.VendorName
-                UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: OrderNumber; OrderNumber cannot be Null or Empty'
+                SET @Statement = '
+                UPDATE TargetPurchase 
+                SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: OrderNumber; OrderNumber cannot be Null or Empty''
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchase
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchase
                 WHERE
                     TargetPurchase.PurchaseUID = 0
                 AND (TargetPurchase.OrderNumber IS NULL OR
-                     LTRIM(RTRIM(TargetPurchase.OrderNumber)) = '')
-                AND TargetPurchase.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchase.Rejected = 0 OR @AllowStackingErrors = 1);
+                     LTRIM(RTRIM(TargetPurchase.OrderNumber)) = '''')
+                AND TargetPurchase.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchase.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -275,18 +283,21 @@ AS
                 PRINT N'Validate Purchase Orders by Order Number Only';
                 --Match by OrderNumber
                 --SELECT TargetPurchase.OrderNumber, TargetPurchase.PurchaseDate, TargetPurchase.VendorUID, VendorName, SourcePurchase.PurchaseUID, SourcePurchase.OrderNumber, SourcePurchase.PurchaseDate, SourcePurchase.VendorUID
+                SET @Statement = '
                 UPDATE TargetPurchase SET TargetPurchase.PurchaseUID = SourcePurchase.PurchaseUID
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchase
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchase
                 INNER JOIN 
-                    TipWebHostedChicagoPS.dbo.tblTechPurchases SourcePurchase
+                    ' + @TargetDatabase + '.dbo.tblTechPurchases SourcePurchase
                     ON UPPER(LTRIM(RTRIM(TargetPurchase.OrderNumber))) = UPPER(LTRIM(RTRIM(SourcePurchase.OrderNumber)))
                 WHERE
                     TargetPurchase.PurchaseUID = 0
                 AND TargetPurchase.OrderNumber IS NOT NULL
-                AND LTRIM(RTRIM(TargetPurchase.OrderNumber)) <> ''
-                AND TargetPurchase.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchase.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetPurchase.OrderNumber)) <> ''''
+                AND TargetPurchase.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchase.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -300,7 +311,10 @@ AS
             BEGIN
                 --TODO: Match by OrderNumber, PurchaseDate, 
                 PRINT N'Match Purchase Orders by OrderNumber, PurchaseDate and Vendor';
-                SELECT 0;
+                SET @Statement = '
+                SELECT 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -318,13 +332,17 @@ AS
 
                 PRINT N'Reject rows where the OrderNumber could not be matched';
                 --SELECT TargetPurchase.PurchaseUID, TargetPurchase.OrderNumber
-                UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: OrderNumber; OrderNumber could not be matched'
+                SET @Statement = '
+                UPDATE TargetPurchase 
+                SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: OrderNumber; OrderNumber could not be matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchase
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchase
                 WHERE
                     TargetPurchase.PurchaseUID = 0
-                AND TargetPurchase.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchase.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchase.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchase.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -340,14 +358,18 @@ AS
 
                 PRINT N'Reject rows where PurchaseDate is NULL';
                 --SELECT TargetPurchase.PurchaseUID, TargetPurchase.OrderNumber, TargetPurchase.PurchaseDate
-                UPDATE TargetPurchase SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseDate; PurchaseDate is Null'
+                SET @Statement = '
+                UPDATE TargetPurchase 
+                SET Rejected = 1, PurchaseUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: PurchaseDate; PurchaseDate is Null''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchase
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchase
                 WHERE
                     TargetPurchase.PurchaseUID = 0
                 AND TargetPurchase.PurchaseDate IS NULL
-                AND TargetPurchase.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchase.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchase.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchase.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -365,14 +387,17 @@ AS
             BEGIN
                 --Set all LineNumbers to the default where the Line Number is less than zero
                 --SELECT TargetPurchaseDetails.PurchaseItemDetailUID, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.LineNumber
-                UPDATE TargetPurchaseDetails SET TargetPurchaseDetails.LineNumber = @DefaultLineNumber
+                SET @Statement = '
+                UPDATE TargetPurchaseDetails SET TargetPurchaseDetails.LineNumber = ' + CAST(@DefaultLineNumber AS VARCHAR(10)) + '
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 WHERE
                     TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.LineNumber < 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseDetails.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -391,11 +416,12 @@ AS
                 PRINT N'Lookup Detail by ItemUID and LineNumber';
                 --SELECT TargetPurchaseDetails.PurchaseItemDetailUID, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.LineNumber, 
                 --       SourcePurchaseDetails.PurchaseItemDetailUID, SourcePurchaseDetails.ItemUID, SourcePurchaseDetails.LineNumber
+                SET @Statement = '
                 UPDATE TargetPurchaseDetails SET TargetPurchaseDetails.PurchaseItemDetailUID = SourcePurchaseDetails.PurchaseItemDetailUID
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 INNER JOIN 
-                    TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
+                    ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
                     ON TargetPurchaseDetails.PurchaseUID = SourcePurchaseDetails.PurchaseUID
                     AND TargetPurchaseDetails.ItemUID = SourcePurchaseDetails.ItemUID
                     AND TargetPurchaseDetails.LineNumber = SourcePurchaseDetails.LineNumber
@@ -403,8 +429,10 @@ AS
                     TargetPurchaseDetails.PurchaseUID > 0
                 AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseDetails.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -425,25 +453,28 @@ AS
                 --       TargetPurchaseDetails.SiteAddedSiteUID, TargetPurchaseDetails.TechDepartmentUID, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.AccountCode, TargetPurchaseDetails.LineNumber, 
                 --       SourcePurchaseDetails.PurchaseItemDetailUID, SourcePurchaseDetails.ItemUID, SourcePurchaseDetails.FundingSourceUID, SourcePurchaseDetails.SiteAddedSiteUID, 
                 --       SourcePurchaseDetails.TechDepartmentUID, SourcePurchaseDetails.PurchasePrice, SourcePurchaseDetails.AccountCode, SourcePurchaseDetails.LineNumber
+                SET @Statement = '
                 UPDATE TargetPurchaseDetails SET TargetPurchaseDetails.PurchaseItemDetailUID = SourcePurchaseDetails.PurchaseItemDetailUID
                 FROM 
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 INNER JOIN 
-                    TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
+                    ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
                     ON TargetPurchaseDetails.PurchaseUID = SourcePurchaseDetails.PurchaseUID
                     AND TargetPurchaseDetails.ItemUID = SourcePurchaseDetails.ItemUID
                     AND TargetPurchaseDetails.FundingSourceUID = SourcePurchaseDetails.FundingSourceUID
                     AND TargetPurchaseDetails.SiteAddedSiteUID = SourcePurchaseDetails.SiteAddedSiteUID
                     AND TargetPurchaseDetails.TechDepartmentUID = SourcePurchaseDetails.TechDepartmentUID
                     AND TargetPurchaseDetails.PurchasePrice = SourcePurchaseDetails.PurchasePrice
-                    AND UPPER(LTRIM(RTRIM(ISNULL(TargetPurchaseDetails.AccountCode, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourcePurchaseDetails.AccountCode, ''))))
+                    AND UPPER(LTRIM(RTRIM(ISNULL(TargetPurchaseDetails.AccountCode, '''')))) = UPPER(LTRIM(RTRIM(ISNULL(SourcePurchaseDetails.AccountCode, ''''))))
                     AND TargetPurchaseDetails.LineNumber = SourcePurchaseDetails.LineNumber
                 WHERE
                     TargetPurchaseDetails.PurchaseUID > 0
                 AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.ItemUID > 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseDetails.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -462,14 +493,18 @@ AS
 
                 PRINT N'Reject rows where PurchasePrice is NULL';
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
-                UPDATE TargetPurchaseDetails SET Rejected = 1, PurchaseItemDetailUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchasePrice; PurchasePrice is Null'
+                SET @Statement = '
+                UPDATE TargetPurchaseDetails 
+                SET Rejected = 1, PurchaseItemDetailUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: PurchasePrice; PurchasePrice is Null''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 WHERE
                     TargetPurchaseDetails.PurchaseItemDetailUID = 0
                 AND TargetPurchaseDetails.PurchasePrice IS NULL
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseDetails.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -486,14 +521,18 @@ AS
                 PRINT N'Reject where PurchaseDetail could not be matched';
                 --If ItemDetailUID = 0 reject
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
-                UPDATE TargetPurchaseDetails SET Rejected = 1, PurchaseItemDetailUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseDetail; PurchaseDetail could not be matched'
+                SET @Statement = '
+                UPDATE TargetPurchaseDetails 
+                SET Rejected = 1, PurchaseItemDetailUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: PurchaseDetail; PurchaseDetail could not be matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
                 WHERE
                     TargetPurchaseDetails.PurchaseUID > 0
                 AND TargetPurchaseDetails.PurchaseItemDetailUID = 0
-                AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseDetails.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseDetails.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -510,19 +549,22 @@ AS
         --SELECT TargetPurchaseShipments.PurchaseItemShipmentUID, TargetPurchaseShipments.ItemUID, TargetPurchaseShipments.ProductName, TargetPurchaseShipments.LineNumber, TargetPurchaseShipments.ShippedToSiteUID,
         --       SourcePurchaseShipments.PurchaseItemDetailUID, SourcePurchaseShipments.ShippedToSiteUID, SourcePurchaseShipments.InvoiceDate, 
         --       SourcePurchaseShipments.InvoiceNumber, SourcePurchaseShipments.QuantityShipped
+        SET @Statement = '
         UPDATE TargetPurchaseShipments SET TargetPurchaseShipments.PurchaseItemShipmentUID = SourcePurchaseShipments.PurchaseItemShipmentUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseShipments
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
             ON TargetPurchaseShipments.PurchaseItemDetailUID = SourcePurchaseShipments.PurchaseItemDetailUID AND
                TargetPurchaseShipments.ShippedToSiteUID = SourcePurchaseShipments.ShippedToSiteUID
         WHERE
             TargetPurchaseShipments.PurchaseItemShipmentUID = 0
         AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
         AND TargetPurchaseShipments.PurchaseUID > 0
-        AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetPurchaseShipments.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetPurchaseShipments.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetPurchaseShipments.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -539,15 +581,19 @@ AS
                 --Reject any unmatched Shipments
                 PRINT N'Reject PurchaseShipments that could not be matched';
                 --SELECT TargetPurchaseDetails.OrderNumber, TargetPurchaseDetails.PurchaseDate, TargetPurchaseDetails.ItemUID, TargetPurchaseDetails.ProductName, TargetPurchaseDetails.PurchasePrice, TargetPurchaseDetails.LineNumber
-                UPDATE TargetPurchaseShipments SET Rejected = 1, PurchaseItemShipmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: PurchaseItemShipmentUID; PurchaseItemShipmentUID could not be matched'
+                SET @Statement = '
+                UPDATE TargetPurchaseShipments 
+                SET Rejected = 1, PurchaseItemShipmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: PurchaseItemShipmentUID; PurchaseItemShipmentUID could not be matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseShipments
                 WHERE
                     TargetPurchaseShipments.PurchaseUID > 0
                 AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
                 AND TargetPurchaseShipments.PurchaseItemShipmentUID = 0
-                AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetPurchaseShipments.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetPurchaseShipments.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetPurchaseShipments.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

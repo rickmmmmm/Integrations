@@ -10,7 +10,8 @@ AS
         DECLARE @CreateNewPurchaseShipments AS BIT,
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
-                @ErrorCode                  AS INT;
+                @ErrorCode                  AS INT,
+                @Statement                  AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -74,23 +75,26 @@ AS
             BEGIN
 
                 PRINT N'Create new Shipment records';
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments --SourcePurchaseShipments
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblTechPurchaseItemShipments --SourcePurchaseShipments
                     (PurchaseItemDetailUID, ShippedToSiteUID, TicketNumber, QuantityShipped, TicketedByUserID, TicketedDate, 
                      StatusUID, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, InvoiceNumber, InvoiceDate)
                 SELECT
                     TargetPurchaseShipments.PurchaseItemDetailUID, TargetPurchaseShipments.ShippedToSiteUID, NULL,
                     0, NULL, NULL, 32, 0, GETDATE(), 0, GETDATE(), NULL, NULL --COUNT(TargetPurchaseShipments.InventoryUID)
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseShipments
                 WHERE
                     TargetPurchaseShipments.PurchaseItemShipmentUID = 0
                 AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
                 AND TargetPurchaseShipments.PurchaseUID > 0
-                AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
+                AND TargetPurchaseShipments.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
                 AND TargetPurchaseShipments.Rejected = 0
                 GROUP BY
                     TargetPurchaseShipments.PurchaseItemDetailUID,
-                    TargetPurchaseShipments.ShippedToSiteUID;
+                    TargetPurchaseShipments.ShippedToSiteUID';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -101,20 +105,23 @@ AS
                     END
 
                 PRINT N'Matching New Purchase Shipments to their Origin Records';
+                SET @Statement = '
                 UPDATE TargetPurchaseShipments
                 SET TargetPurchaseShipments.PurchaseItemShipmentUID = SourcePurchaseShipments.PurchaseItemShipmentUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseShipments
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
+                    ' + @TargetDatabase + '.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
                     ON TargetPurchaseShipments.PurchaseItemDetailUID = SourcePurchaseShipments.PurchaseItemDetailUID AND
                        TargetPurchaseShipments.ShippedToSiteUID = SourcePurchaseShipments.ShippedToSiteUID
                 WHERE
                     TargetPurchaseShipments.PurchaseItemShipmentUID = 0
                 AND TargetPurchaseShipments.PurchaseItemDetailUID > 0
                 AND TargetPurchaseShipments.PurchaseUID > 0
-                AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
-                AND TargetPurchaseShipments.Rejected = 0;
+                AND TargetPurchaseShipments.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetPurchaseShipments.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

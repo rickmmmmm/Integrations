@@ -12,7 +12,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -105,15 +106,18 @@ AS
             END
 
         --If ManufacturerName IS Null or Empty set to DefaultManufacturer
-        UPDATE TargetManufacturer SET TargetManufacturer.ManufacturerName = @DefaultManufacturer
+        SET @Statement = '
+        UPDATE TargetManufacturer SET TargetManufacturer.ManufacturerName = ''' + @DefaultManufacturer + '''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
         WHERE
             (TargetManufacturer.ManufacturerName IS NULL OR
-             LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '')
+             LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '''')
         AND TargetManufacturer.ManufacturerUID = 0
-        AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetManufacturer.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetManufacturer.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -125,36 +129,39 @@ AS
 
         --Match Manufacturers By Name
         --SELECT TargetManufacturer.ManufacturerUID, TargetManufacturer.ManufacturerName, SourceManufacturer.ManufacturerName, SourceManufacturer.ManufacturerUID
+        SET @Statement = '
         UPDATE TargetManufacturer SET TargetManufacturer.ManufacturerUID = SourceManufacturer.ManufacturerUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
         INNER JOIN (
             SELECT
                 SourceManufacturer.ManufacturerName, MAX(SourceManufacturer.ManufacturerUID) ManufacturerUID
             FROM 
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
             LEFT JOIN
-                TipWebHostedChicagoPS.dbo.tblUnvManufacturers SourceManufacturer
+                ' + @TargetDatabase + '.dbo.tblUnvManufacturers SourceManufacturer
                 ON UPPER(LTRIM(RTRIM(TargetManufacturer.ManufacturerName))) = UPPER(LTRIM(RTRIM(SourceManufacturer.ManufacturerName)))
             WHERE
                 (SourceManufacturer.ManufacturerName IS NOT NULL AND
-                 LTRIM(RTRIM(SourceManufacturer.ManufacturerName)) <> '')
+                 LTRIM(RTRIM(SourceManufacturer.ManufacturerName)) <> '''')
             AND (TargetManufacturer.ManufacturerName IS NOT NULL AND
-                 LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) <> '')
-            AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetManufacturer.Rejected = 0 OR @AllowStackingErrors = 1)
+                 LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) <> '''')
+            AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetManufacturer.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceManufacturer.ManufacturerName
             ) SourceManufacturer
             ON UPPER(LTRIM(RTRIM(TargetManufacturer.ManufacturerName))) = UPPER(LTRIM(RTRIM(SourceManufacturer.ManufacturerName)))
         WHERE
             (SourceManufacturer.ManufacturerName IS NOT NULL AND
-             LTRIM(RTRIM(SourceManufacturer.ManufacturerName)) <> '')
+             LTRIM(RTRIM(SourceManufacturer.ManufacturerName)) <> '''')
         AND (TargetManufacturer.ManufacturerName IS NOT NULL AND
-             LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) <> '')
+             LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) <> '''')
         AND TargetManufacturer.ManufacturerUID = 0
-        AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetManufacturer.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetManufacturer.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -168,14 +175,18 @@ AS
             BEGIN
                 --    If ManufacturerName IS Null or Empty then Reject
                 --SELECT TargetManufacturer.ManufacturerUID, TargetManufacturer.ManufacturerUID
-                UPDATE TargetManufacturer SET Rejected = 1, ManufacturerUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ManufacturerName; ManufacturerName is NULL or Empty'
+                SET @Statement = '
+                UPDATE TargetManufacturer 
+                SET Rejected = 1, ManufacturerUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ManufacturerName; ManufacturerName is NULL or Empty''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
                 WHERE
                     (TargetManufacturer.ManufacturerName IS NULL OR
-                     LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '')
-                AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetManufacturer.Rejected = 0 OR @AllowStackingErrors = 1);
+                     LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '''')
+                AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetManufacturer.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -190,15 +201,19 @@ AS
             BEGIN
         --    If ManufacturerUID = 0 then Reject
                 --SELECT TargetManufacturer.ManufacturerUID, TargetManufacturer.ManufacturerUID
-                UPDATE TargetManufacturer SET Rejected = 1, ManufacturerUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ManufacturerName; ManufacturerName could not be Matched'
+                SET @Statement = '
+                UPDATE TargetManufacturer 
+                SET Rejected = 1, ManufacturerUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ManufacturerName; ManufacturerName could not be Matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
                 WHERE
                     TargetManufacturer.ManufacturerUID = 0
                 AND (TargetManufacturer.ManufacturerName IS NULL OR
-                     LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '')
-                AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetManufacturer.Rejected = 0 OR @AllowStackingErrors = 1);
+                     LTRIM(RTRIM(TargetManufacturer.ManufacturerName)) = '''')
+                AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetManufacturer.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

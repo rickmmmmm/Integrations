@@ -13,7 +13,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -106,18 +107,21 @@ AS
 
         --Match the Vendor by Name
         --SELECT TargetVendor.VendorUID, TargetVendor.VendorUID, TargetVendor.VendorName, SourceVendor.VendorID, SourceVendor.VendorID
+        SET @Statement = '
         UPDATE TargetVendor SET TargetVendor.VendorUID = SourceVendor.VendorID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
         INNER JOIN 
-            TipWebHostedChicagoPS.dbo.tblVendor SourceVendor
+            ' + @TargetDatabase + '.dbo.tblVendor SourceVendor
             ON UPPER(LTRIM(RTRIM(TargetVendor.VendorName))) = UPPER(LTRIM(RTRIM(SourceVendor.VendorName)))
         WHERE
             TargetVendor.VendorName IS NOT NULL
-        AND LTRIM(RTRIM(TargetVendor.VendorName)) <> ''
+        AND LTRIM(RTRIM(TargetVendor.VendorName)) <> ''''
         AND TargetVendor.VendorUID = 0
-        AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetVendor.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetVendor.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -129,9 +133,10 @@ AS
 
         --Match the Vendor by Account Number
         --SELECT TargetVendor.VendorUID, TargetVendor.VendorName, TargetVendor.VendorAccountNumber, SourceVendor.VendorName, SourceVendor.AccountNumber, SourceVendor.VendorID
+        SET @Statement = '
         UPDATE TargetVendor SET TargetVendor.VendorUID = SourceVendor.VendorID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
         INNER JOIN (
             SELECT
                 SourceVendors.VendorID,
@@ -141,22 +146,24 @@ AS
                 SELECT
                     UPPER(LTRIM(RTRIM(AccountNumber))) AccountNumber
                 FROM
-                    TipWebHostedChicagoPS.dbo.tblVendor SourceVendors
+                    ' + @TargetDatabase + '.dbo.tblVendor SourceVendors
                 GROUP BY
                     AccountNumber
                 HAVING COUNT(VendorID) = 1
                 ) UniqueVendorAccountNumbers
             INNER JOIN
-                TipWebHostedChicagoPS.dbo.tblVendor SourceVendors
+                ' + @TargetDatabase + '.dbo.tblVendor SourceVendors
                 ON UniqueVendorAccountNumbers.AccountNumber = UPPER(LTRIM(RTRIM(SourceVendors.AccountNumber)))
             ) SourceVendor
             ON UPPER(LTRIM(RTRIM(TargetVendor.VendorAccountNumber))) = SourceVendor.AccountNumber
         WHERE
             TargetVendor.VendorAccountNumber IS NOT NULL
-        AND LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) <> ''
+        AND LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) <> ''''
         AND TargetVendor.VendorUID = 0
-        AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetVendor.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetVendor.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -172,16 +179,19 @@ AS
                     BEGIN
                         --Set remaining Vendors to match the default
                         --SELECT TargetVendor.VendorUID, TargetVendor.VendorName, TargetVendor.VendorAccountNumber
-                        UPDATE TargetVendor SET TargetVendor.VendorUID = @DefaultVendorUID, TargetVendor.VendorName = SourceVendors.VendorName
+                        SET @Statement = '
+                        UPDATE TargetVendor SET TargetVendor.VendorUID = ' + CAST(@DefaultVendorUID AS VARCHAR(10)) + ', TargetVendor.VendorName = SourceVendors.VendorName
                         FROM
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
                         INNER JOIN
-                            TipWebHostedChicagoPS.dbo.tblVendor SourceVendors
-                            ON @DefaultVendorUID = SourceVendors.VendorID
+                            ' + @TargetDatabase + '.dbo.tblVendor SourceVendors
+                            ON ' + CAST(@DefaultVendorUID AS VARCHAR(10)) + ' = SourceVendors.VendorID
                         WHERE
                             TargetVendor.VendorUID = 0
-                            AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-                            AND (TargetVendor.Rejected = 0 OR @AllowStackingErrors = 1);
+                            AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                            AND (TargetVendor.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -196,16 +206,20 @@ AS
                     BEGIN
                         --No Default Vendor Set, reject remainders
                         --SELECT TargetVendor.VendorUID, TargetVendor.VendorUID
-                        UPDATE TargetVendor SET Rejected = 1, VendorUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Properties: VendorName, VendorAccountNumber; VendorName and VendorAccountNumber are NULL or Empty'
+                        SET @Statement = '
+                        UPDATE TargetVendor 
+                        SET Rejected = 1, VendorUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Properties: VendorName, VendorAccountNumber; VendorName and VendorAccountNumber are NULL or Empty''
                         FROM
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
                         WHERE
                             (TargetVendor.VendorName IS NULL 
-                             OR LTRIM(RTRIM(TargetVendor.VendorName)) = '')
+                             OR LTRIM(RTRIM(TargetVendor.VendorName)) = '''')
                         AND (TargetVendor.VendorAccountNumber IS NULL 
-                             OR LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) = '')
-                        AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetVendor.Rejected = 0 OR @AllowStackingErrors = 1);
+                             OR LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) = '''')
+                        AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetVendor.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -220,16 +234,20 @@ AS
         ELSE
             BEGIN
                 --SELECT TargetVendor.VendorUID, TargetVendor.VendorUID
-                UPDATE TargetVendor SET Rejected = 1, VendorUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Properties: VendorName, VendorAccountNumber; VendorName and VendorAccountNumber are NULL or Empty'
+                SET @Statement = '
+                UPDATE TargetVendor 
+                SET Rejected = 1, VendorUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Properties: VendorName, VendorAccountNumber; VendorName and VendorAccountNumber are NULL or Empty''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetVendor
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetVendor
                 WHERE
                     (TargetVendor.VendorName IS NULL 
-                     OR LTRIM(RTRIM(TargetVendor.VendorName)) = '')
+                     OR LTRIM(RTRIM(TargetVendor.VendorName)) = '''')
                 AND (TargetVendor.VendorAccountNumber IS NULL 
-                     OR LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) = '')
-                AND TargetVendor.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetVendor.Rejected = 0 OR @AllowStackingErrors = 1);
+                     OR LTRIM(RTRIM(TargetVendor.VendorAccountNumber)) = '''')
+                AND TargetVendor.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetVendor.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

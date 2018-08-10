@@ -13,7 +13,8 @@ AS
                 @TargetDatabase             AS VARCHAR(100),
                 @SourceTable                AS VARCHAR(100),
                 @AllowStackingErrors        AS BIT,
-                @ErrorCode                  AS INT;
+                @ErrorCode                  AS INT,
+                @Statement                  AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -106,18 +107,21 @@ AS
 
         -- Match the Funding Source by Name
         --SELECT TargetFundingSource.FundingSourceUID, TargetFundingSource.FundingSource, TargetFundingSource.FundingSourceDescription, SourceFundingSource.FundingSource, SourceFundingSource.FundingSourceUID
+        SET @Statement = '
         UPDATE TargetFundingSource SET TargetFundingSource.FundingSourceUID = SourceFundingSource.FundingSourceUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblFundingSources SourceFundingSource
+            ' + @TargetDatabase + '.dbo.tblFundingSources SourceFundingSource
             ON UPPER(LTRIM(RTRIM(TargetFundingSource.FundingSource))) = UPPER(LTRIM(RTRIM(SourceFundingSource.FundingSource)))
         WHERE 
             SourceFundingSource.FundingSource IS NOT NULL
         AND TargetFundingSource.FundingSource IS NOT NULL
         AND TargetFundingSource.FundingSourceUID = 0
-        AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetFundingSource.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -129,18 +133,21 @@ AS
 
         -- Match the Funding Source by Description
         --SELECT TargetFundingSource.FundingSourceUID, TargetFundingSource.FundingSource, TargetFundingSource.FundingSourceDescription, SourceFundingSource.FundingSource, SourceFundingSource.FundingSourceUID
+        SET @Statement = '
         UPDATE TargetFundingSource SET TargetFundingSource.FundingSourceUID = SourceFundingSource.FundingSourceUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblFundingSources SourceFundingSource
+            ' + @TargetDatabase + '.dbo.tblFundingSources SourceFundingSource
             ON UPPER(LTRIM(RTRIM(TargetFundingSource.FundingSourceDescription))) = UPPER(LTRIM(RTRIM(SourceFundingSource.FundingDesc)))
         WHERE 
             SourceFundingSource.FundingDesc IS NOT NULL
         AND TargetFundingSource.FundingSourceDescription IS NOT NULL
         AND TargetFundingSource.FundingSourceUID = 0
-        AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetFundingSource.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -155,13 +162,16 @@ AS
                 IF @DefaultFundingSourceUID IS NOT NULL
                     BEGIN
                         --Set All to the DefaultFundingSource
-                        UPDATE TargetFundingSource SET TargetFundingSource.FundingSourceUID = @DefaultFundingSourceUID
+                        SET @Statement = '
+                        UPDATE TargetFundingSource SET TargetFundingSource.FundingSourceUID = ' + CAST(@DefaultFundingSourceUID AS VARCHAR(10)) + '
                         FROM 
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
                         WHERE
                             TargetFundingSource.FundingSourceUID = 0
-                        AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+                        AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetFundingSource.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN
@@ -169,18 +179,22 @@ AS
                                 --SET @ErrorMessage = ;
                                 --RETURN @ErrorCode;
                                 THROW @ErrorCode, 'Failed set the Default Funding Source', 1;
-            END
+                            END
                     END
                 ELSE
                     BEGIN
                         --Reject the remaining rows
-                        UPDATE TargetFundingSource SET Rejected = 1, FundingSourceUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: FundingSource; FundingSource was not found'
+                        SET @Statement = '
+                        UPDATE TargetFundingSource 
+                        SET Rejected = 1, FundingSourceUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: FundingSource; FundingSource was not found''
                         FROM 
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
                         WHERE
                             TargetFundingSource.FundingSourceUID = 0
-                        AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetFundingSource.Rejected = 0 OR @AllowStackingErrors = 1);
+                        AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetFundingSource.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN

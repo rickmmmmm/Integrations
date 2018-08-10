@@ -10,7 +10,8 @@ AS
         DECLARE @CreateFundingSources   AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -71,16 +72,19 @@ AS
         IF @CreateFundingSources = 1
             BEGIN
                 --Create new Funding Sources
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblFundingSources
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblFundingSources
                     (FundingSource, FundingDesc, Active, ApplicationUID, TransferNotificationEmail, StatusNotificationEmail, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)
                 SELECT DISTINCT
                     TargetFundingSource.FundingSource, TargetFundingSource.FundingSourceDescription, 1, 2, NULL, NULL, 0, GETDATE(), 0, GETDATE()
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
                 WHERE
                     TargetFundingSource.FundingSourceUID = 0
-                AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-                AND TargetFundingSource.Rejected = 0;
+                AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetFundingSource.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -91,18 +95,21 @@ AS
                     END
 
                 --Match the Created Funding Source to the Origin record
+                SET @Statement = '
                 UPDATE TargetFundingSource
                 SET TargetFundingSource.FundingSourceUID = SourceFundingSource.FundingSourceUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetFundingSource
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetFundingSource
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblFundingSources SourceFundingSource
+                    ' + @TargetDatabase + '.dbo.tblFundingSources SourceFundingSource
                     ON UPPER(LTRIM(RTRIM(TargetFundingSource.FundingSource))) = UPPER(LTRIM(RTRIM(SourceFundingSource.FundingSource))) AND
                        UPPER(LTRIM(RTRIM(TargetFundingSource.FundingSourceDescription))) = UPPER(LTRIM(RTRIM(SourceFundingSource.FundingDesc)))
                 WHERE
                     TargetFundingSource.FundingSourceUID = 0
-                AND TargetFundingSource.ProcessTaskUID = @ProcessTaskUid
-                AND TargetFundingSource.Rejected = 0;
+                AND TargetFundingSource.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetFundingSource.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

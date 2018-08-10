@@ -14,7 +14,8 @@ AS
                 @TargetDatabase                         AS VARCHAR(100),
                 @SourceTable                            AS VARCHAR(100),
                 @AllowStackingErrors                    AS BIT,
-                @ErrorCode                              AS INT;
+                @ErrorCode                              AS INT,
+                @Statement                              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -113,22 +114,23 @@ AS
 
         -- Match the Item by Name
         --SELECT TargetItem.ItemUID, TargetItem.ProductName, SourceItem.ItemName, SourceItem.ItemUID
+        SET @Statement = '
         UPDATE TargetItem SET TargetItem.ItemUID = SourceItem.ItemUID, TargetItem.ProductNumber = SourceItem.ItemNumber
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
         INNER JOIN (
             SELECT
                 MAX(SourceItem.ItemUID) ItemUID, SourceItem.ItemName, SourceItem.ItemNumber
             FROM 
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
             LEFT JOIN
-                TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                 ON UPPER(LTRIM(RTRIM(TargetItem.ProductName))) = UPPER(LTRIM(RTRIM(SourceItem.ItemName)))
             WHERE
                 SourceItem.ItemName IS NOT NULL
             AND TargetItem.ProductName IS NOT NULL
-            AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceItem.ItemName,
                 SourceItem.ItemNumber
@@ -138,8 +140,10 @@ AS
             SourceItem.ItemName IS NOT NULL
         AND TargetItem.ProductName IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -151,22 +155,23 @@ AS
 
         -- Match the Item by Description
         --SELECT TargetItem.ProductName, TargetItem.ProductDescription, SourceItem.ItemDescription, SourceItem.ItemUID
+        SET @Statement = '
         UPDATE TargetItem SET TargetItem.ItemUID = SourceItem.ItemUID, TargetItem.ProductNumber = SourceItem.ItemNumber
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
         INNER JOIN (
             SELECT
                 MAX(SourceItem.ItemUID) ItemUID, SourceItem.ItemNumber, SourceItem.ItemDescription
             FROM 
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
             LEFT JOIN
-                TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                 ON UPPER(LTRIM(RTRIM(TargetItem.ProductDescription))) = UPPER(LTRIM(RTRIM(SourceItem.ItemDescription)))
             WHERE
                 SourceItem.ItemDescription IS NOT NULL
             AND TargetItem.ProductDescription IS NOT NULL
-            AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceItem.ItemNumber,
                 SourceItem.ItemDescription
@@ -176,8 +181,10 @@ AS
             SourceItem.ItemDescription IS NOT NULL
         AND TargetItem.ProductDescription IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -189,22 +196,23 @@ AS
 
         -- Match the Item by ItemNumber
         --SELECT TargetItem.ProductName, TargetItem.ProductByNumber, SourceItem.ItemNumber, SourceItem.ItemUID
+        SET @Statement = '
         UPDATE TargetItem SET TargetItem.ItemUID = SourceItem.ItemUID, TargetItem.ProductNumber = SourceItem.ItemNumber
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
         INNER JOIN (
             SELECT
                 SourceItem.ItemNumber, MAX(SourceItem.ItemUID) ItemUID
             FROM 
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
             LEFT JOIN
-                TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                 ON UPPER(LTRIM(RTRIM(TargetItem.ProductByNumber))) = UPPER(LTRIM(RTRIM(SourceItem.ItemNumber)))
             WHERE
                 SourceItem.ItemNumber IS NOT NULL
             AND TargetItem.ProductByNumber IS NOT NULL
-            AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-            AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1)
+            AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+            AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)
             GROUP BY
                 SourceItem.ItemNumber
             ) SourceItem
@@ -213,8 +221,10 @@ AS
             SourceItem.ItemNumber IS NOT NULL
         AND TargetItem.ProductByNumber IS NOT NULL
         AND TargetItem.ItemUID = 0
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -225,15 +235,19 @@ AS
             END
 
         --Reject All Products Not matched where Product Name is NULL
-        UPDATE TargetItem SET Rejected = 1, ItemUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductName; ProductName is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetItem 
+        SET Rejected = 1, ItemUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ProductName; ProductName is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
         WHERE
             TargetItem.ItemUID = 0
         AND (TargetItem.ProductName IS NULL OR
-                LTRIM(RTRIM(TargetItem.ProductName)) = '')
-        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+                LTRIM(RTRIM(TargetItem.ProductName)) = '''')
+        AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -246,13 +260,17 @@ AS
         IF @CreateProducts = 0
             BEGIN
                 --Reject All Products Not matched
-                UPDATE TargetItem SET Rejected = 1, ItemUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: ProductName; ProductName could not be matched'
+                SET @Statement = '
+                UPDATE TargetItem 
+                SET Rejected = 1, ItemUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: ProductName; ProductName could not be matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
                 WHERE
                     TargetItem.ItemUID = 0
-                AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -269,20 +287,23 @@ AS
                     BEGIN
                         --Get the Manufacturer of the product and overwrite in staging
                         --SELECT TargetItem.ItemUID, TargetItem.ProductName, TargetItem.ManufacturerName, TargetItem.ManufacturerUID, SourceItem.ItemName, SourceItem.ItemUID, SourceManufacturer.ManufacturerUID, SourceManufacturer.ManufacturerName
+                        SET @Statement = '
                         UPDATE TargetItem SET TargetItem.ManufacturerUID = SourceItem.ManufacturerUID, TargetItem.ManufacturerName = SourceManufacturer.ManufacturerName
                         FROM
-                            IntegrationMiddleWay.dbo._ETL_Inventory TargetItem
+                            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetItem
                         INNER JOIN
-                            TipWebHostedChicagoPS.dbo.tblTechItems SourceItem
+                            ' + @TargetDatabase + '.dbo.tblTechItems SourceItem
                             ON TargetItem.ItemUID = SourceItem.ItemUID
                         INNER JOIN
-                            TipWebHostedChicagoPS.dbo.tblUnvManufacturers SourceManufacturer
+                            ' + @TargetDatabase + '.dbo.tblUnvManufacturers SourceManufacturer
                             ON SourceItem.ManufacturerUID = SourceManufacturer.ManufacturerUID
                         WHERE
                             TargetItem.ItemUID <> 0
                         AND UPPER(LTRIM(RTRIM(TargetItem.ManufacturerName))) <> UPPER(LTRIM(RTRIM(SourceManufacturer.ManufacturerName)))
-                        AND TargetItem.ProcessTaskUID = @ProcessTaskUid
-                        AND (TargetItem.Rejected = 0 OR @AllowStackingErrors = 1);
+                        AND TargetItem.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                        AND (TargetItem.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                        EXECUTE (@Statement);
+                        --PRINT @Statement;
 
                         IF @@ERROR <> 0
                             BEGIN

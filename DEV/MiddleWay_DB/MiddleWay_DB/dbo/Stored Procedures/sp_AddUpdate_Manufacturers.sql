@@ -10,7 +10,8 @@ AS
         DECLARE @CreateManufacturers    AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -71,17 +72,20 @@ AS
         IF @CreateManufacturers = 1
             BEGIN
 
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblUnvManufacturers
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblUnvManufacturers
                     (ManufacturerName, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)
                 SELECT DISTINCT
                     TargetManufacturer.ManufacturerName, 0, GETDATE(), 0, GETDATE()
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
                 WHERE
                     TargetManufacturer.ManufacturerUID = 0
-                AND TargetManufacturer.ManufacturerName <> 'None'
-                AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-                AND TargetManufacturer.Rejected = 0;
+                AND TargetManufacturer.ManufacturerName <> ''None''
+                AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetManufacturer.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -92,18 +96,21 @@ AS
                     END
 
                 --Match the manufacturer records to the new Manufacturers
+                SET @Statement = '
                 UPDATE TargetManufacturer
                 SET TargetManufacturer.ManufacturerUID = SourceManufacturer.ManufacturerUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetManufacturer
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetManufacturer
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblUnvManufacturers SourceManufacturer
+                    ' + @TargetDatabase + '.dbo.tblUnvManufacturers SourceManufacturer
                     ON UPPER(LTRIM(RTRIM(TargetManufacturer.ManufacturerName))) = UPPER(LTRIM(RTRIM(SourceManufacturer.ManufacturerName)))
                 WHERE
                     TargetManufacturer.ManufacturerUID = 0
-                AND TargetManufacturer.ManufacturerName <> 'None'
-                AND TargetManufacturer.ProcessTaskUID = @ProcessTaskUid
-                AND TargetManufacturer.Rejected = 0;
+                AND TargetManufacturer.ManufacturerName <> ''None''
+                AND TargetManufacturer.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetManufacturer.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

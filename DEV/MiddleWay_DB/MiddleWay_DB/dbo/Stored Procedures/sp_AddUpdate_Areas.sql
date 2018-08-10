@@ -10,7 +10,8 @@ AS
         DECLARE @CreateAreas            AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -71,17 +72,20 @@ AS
         IF @CreateAreas = 1
             BEGIN
 
-                INSERT INTO TipWebHostedChicagoPS.dbo.tblUnvAreas
+                SET @Statement = '
+                INSERT INTO ' + @TargetDatabase + '.dbo.tblUnvAreas
                     (AreaName, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)
                 SELECT DISTINCT
                     TargetArea.AreaName, 0, GETDATE(), 0, GETDATE()
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetArea
                 WHERE
                     TargetArea.AreaUID = 0
-                AND TargetArea.AreaName <> 'None'
-                AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-                AND TargetArea.Rejected = 0;
+                AND TargetArea.AreaName <> ''None''
+                AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetArea.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -91,18 +95,21 @@ AS
                         THROW @ErrorCode, 'Failed to create New Areas', 1;
                     END
 
+                SET @Statement = '
                 UPDATE TargetArea
                 SET TargetArea.AreaUID = SourceArea.AreaUID
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetArea
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetArea
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblUnvAreas SourceArea
+                    ' + @TargetDatabase + '.dbo.tblUnvAreas SourceArea
                     ON UPPER(LTRIM(RTRIM(TargetArea.AreaName))) = UPPER(LTRIM(RTRIM(SourceArea.AreaName)))
                 WHERE
                     TargetArea.AreaUID = 0
-                AND TargetArea.AreaName <> 'None'
-                AND TargetArea.ProcessTaskUID = @ProcessTaskUid
-                AND TargetArea.Rejected = 0;
+                AND TargetArea.AreaName <> ''None''
+                AND TargetArea.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetArea.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

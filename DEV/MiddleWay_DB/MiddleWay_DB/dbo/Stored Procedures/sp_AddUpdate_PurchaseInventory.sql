@@ -9,7 +9,8 @@ AS
     BEGIN
         DECLARE @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -48,18 +49,21 @@ AS
             END
 
         --Insert the Purchase Inventory Record
-        INSERT INTO TipWebHostedChicagoPS.dbo.tblTechPurchaseInventory --SourcePurchaseInventory
+        SET @Statement = '
+        INSERT INTO ' + @TargetDatabase + '.dbo.tblTechPurchaseInventory --SourcePurchaseInventory
             (InventoryUID, PurchaseItemShipmentUID, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)
         SELECT
             InventoryUID, PurchaseItemShipmentUID, 0, GETDATE(), 0, GETDATE()
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseInventory
         WHERE
             TargetPurchaseInventory.InventoryUID > 0
         AND TargetPurchaseInventory.PurchaseItemShipmentUID > 0
         AND TargetPurchaseInventory.PurchaseInventoryUID = 0
-        AND TargetPurchaseInventory.ProcessTaskUID = @ProcessTaskUid
-        AND TargetPurchaseInventory.Rejected = 0;
+        AND TargetPurchaseInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND TargetPurchaseInventory.Rejected = 0';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -70,19 +74,22 @@ AS
             END
 
         --Match the created records to the Purchase Inventory
+        SET @Statement = '
         UPDATE TargetPurchaseInventory
         SET TargetPurchaseInventory.PurchaseInventoryUID = SourcePurchaseInventory.PurchaseInventoryUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseInventory
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseInventory SourcePurchaseInventory
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseInventory SourcePurchaseInventory
             ON TargetPurchaseInventory.InventoryUID = SourcePurchaseInventory.InventoryUID AND
                TargetPurchaseInventory.PurchaseItemShipmentUID = SourcePurchaseInventory.PurchaseItemShipmentUID
         WHERE
             TargetPurchaseInventory.InventoryUID > 0
         AND TargetPurchaseInventory.PurchaseItemShipmentUID > 0
-        AND TargetPurchaseInventory.ProcessTaskUID = @ProcessTaskUid
-        AND TargetPurchaseInventory.Rejected = 0;
+        AND TargetPurchaseInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND TargetPurchaseInventory.Rejected = 0';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -93,24 +100,27 @@ AS
             END
 
         --Update the Shipment quantities for the Inventory Inserted
+        SET @Statement = '
         UPDATE SourcePurchaseShipments
         SET SourcePurchaseShipments.QuantityShipped = SourcePurchaseShipments.QuantityShipped + TargetPurchaseShipments.InventoryCount
         FROM
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseItemShipments SourcePurchaseShipments
         INNER JOIN (
             SELECT
                 TargetPurchaseShipments.PurchaseItemShipmentUID, COUNT(TargetPurchaseShipments.InventoryUID) AS InventoryCount
             FROM
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseShipments
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseShipments
             WHERE
                 TargetPurchaseShipments.PurchaseInventoryUID > 0
             AND TargetPurchaseShipments.PurchaseItemShipmentUID > 0
-            AND TargetPurchaseShipments.ProcessTaskUID = @ProcessTaskUid
+            AND TargetPurchaseShipments.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
             AND TargetPurchaseShipments.Rejected = 0
             GROUP BY
                 TargetPurchaseShipments.PurchaseItemShipmentUID
             ) TargetPurchaseShipments
-            ON SourcePurchaseShipments.PurchaseItemShipmentUID = TargetPurchaseShipments.PurchaseItemShipmentUID;
+            ON SourcePurchaseShipments.PurchaseItemShipmentUID = TargetPurchaseShipments.PurchaseItemShipmentUID';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -121,25 +131,28 @@ AS
             END
 
         --Update the Detail quantities for the Inventory Inserted
+        SET @Statement = '
         UPDATE SourcePurchaseDetails
         SET SourcePurchaseDetails.QuantityOrdered = SourcePurchaseDetails.QuantityOrdered + TargetPurchaseDetails.InventoryCount, 
             SourcePurchaseDetails.QuantityReceived = SourcePurchaseDetails.QuantityReceived + TargetPurchaseDetails.InventoryCount
         FROM
-            TipWebHostedChicagoPS.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
+            ' + @TargetDatabase + '.dbo.tblTechPurchaseItemDetails SourcePurchaseDetails
         INNER JOIN (
             SELECT
                 TargetPurchaseDetails.PurchaseItemDetailUID, COUNT(TargetPurchaseDetails.InventoryUID) AS InventoryCount
             FROM
-                IntegrationMiddleWay.dbo._ETL_Inventory TargetPurchaseDetails
+                IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetPurchaseDetails
             WHERE
                 TargetPurchaseDetails.PurchaseInventoryUID > 0
             AND TargetPurchaseDetails.PurchaseItemDetailUID > 0
-            AND TargetPurchaseDetails.ProcessTaskUID = @ProcessTaskUid
+            AND TargetPurchaseDetails.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
             AND TargetPurchaseDetails.Rejected = 0
             GROUP BY
                 TargetPurchaseDetails.PurchaseItemDetailUID
             ) TargetPurchaseDetails
-            ON SourcePurchaseDetails.PurchaseItemDetailUID = TargetPurchaseDetails.PurchaseItemDetailUID;
+            ON SourcePurchaseDetails.PurchaseItemDetailUID = TargetPurchaseDetails.PurchaseItemDetailUID';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN

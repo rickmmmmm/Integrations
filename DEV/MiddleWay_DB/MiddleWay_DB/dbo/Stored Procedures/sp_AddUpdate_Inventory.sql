@@ -8,15 +8,18 @@ CREATE PROCEDURE [dbo].[sp_AddUpdate_Inventory]
 AS
     BEGIN
         DECLARE @UpdateSerial           AS BIT,
+                @OverwriteSerial        AS BIT,
                 @UpdateAssetUID         AS BIT,
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @Notes                  AS VARCHAR(100),
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
         SET @UpdateSerial = 0;
+        SET @OverwriteSerial = 0;
         SET @UpdateAssetUID = 0;
         SET @Notes = '';
 
@@ -72,7 +75,26 @@ AS
                 --RETURN @ErrorCode;
                 THROW @ErrorCode, 'Failed to read the Configuration for UpdateSerial', 1;
             END
-            
+
+        SELECT 
+            @OverwriteSerial = (
+                CASE 
+                    WHEN UPPER(LTRIM(RTRIM(ConfigurationValue))) = 'TRUE' OR LTRIM(RTRIM(ConfigurationValue)) = '1' THEN 1
+                    ELSE 0
+                END)
+        FROM [Configurations]
+        WHERE ConfigurationName = 'OverwriteSerial'
+          AND ProcessUid = @ProcessUid
+          AND Enabled = 1;
+
+        IF @@ERROR <> 0
+            BEGIN
+                SET @ErrorCode = @@ERROR + 100000;
+                --SET @ErrorMessage = ;
+                --RETURN @ErrorCode;
+                THROW @ErrorCode, 'Failed to read the Configuration for OverwriteSerial', 1;
+            END
+
         SELECT 
             @UpdateAssetUID = (
                 CASE 
@@ -113,23 +135,27 @@ AS
                 --SELECT
                 --    TargetInventory.InventoryUID, TargetInventory.Tag, TargetInventory.Serial, TargetInventory.AssetID, 
                 --    SourceInventory.InventoryUID, SourceInventory.Tag, SourceInventory.Serial, SourceInventory.AssetID
+                SET @Statement = '
                 UPDATE SourceInventory
                 SET SourceInventory.Serial = LTRIM(RTRIM(TargetInventory.Serial))
                 FROM
-                    TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                    ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 INNER JOIN
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
                     ON SourceInventory.InventoryUID = TargetInventory.InventoryUID
                 WHERE
                     TargetInventory.InventoryUID > 0
                 AND TargetInventory.Rejected = 0
 
                 AND (TargetInventory.Serial IS NOT NULL AND
-                     LTRIM(RTRIM(TargetInventory.Serial)) <> '')
+                     LTRIM(RTRIM(TargetInventory.Serial)) <> '''' OR
+                     ' + CAST(@OverwriteSerial AS VARCHAR(3)) + ' = 1)
                 AND (SourceInventory.Serial IS NULL OR
-                     LTRIM(RTRIM(SourceInventory.Serial)) = '')
-                AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-                AND TargetInventory.Rejected = 0;
+                     LTRIM(RTRIM(SourceInventory.Serial)) = '''')
+                AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetInventory.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -147,23 +173,26 @@ AS
                 --SELECT
                 --    TargetInventory.InventoryUID, TargetInventory.Tag, TargetInventory.Serial, TargetInventory.AssetID, 
                 --    SourceInventory.InventoryUID, SourceInventory.Tag, SourceInventory.Serial, SourceInventory.AssetID
+                SET @Statement = '
                 UPDATE SourceInventory
                 SET SourceInventory.AssetID = LTRIM(RTRIM(TargetInventory.AssetID))
                 FROM
-                    TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+                    ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
                 INNER JOIN
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
                     ON SourceInventory.InventoryUID = TargetInventory.InventoryUID
                 WHERE
                     TargetInventory.InventoryUID > 0
                 AND TargetInventory.Rejected = 0
 
                 AND (TargetInventory.AssetID IS NOT NULL AND
-                     LTRIM(RTRIM(TargetInventory.AssetID)) <> '')
+                     LTRIM(RTRIM(TargetInventory.AssetID)) <> '''')
                 AND (SourceInventory.AssetID IS NULL OR
-                     LTRIM(RTRIM(SourceInventory.AssetID)) = '')
-                AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-                AND TargetInventory.Rejected = 0;
+                     LTRIM(RTRIM(SourceInventory.AssetID)) = '''')
+                AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND TargetInventory.Rejected = 0';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -176,22 +205,25 @@ AS
             END
 
         --Insert new Inventory
-        INSERT INTO TipWebHostedChicagoPS.dbo.tblTechInventory --SourceInventory
+        SET @Statement = '
+        INSERT INTO ' + @TargetDatabase + '.dbo.tblTechInventory --SourceInventory
             (InventoryTypeUID, ItemUID, SiteUID, EntityUID, EntityTypeUID, StatusUID, TechDepartmentUID, 
              Tag, Serial, FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, InventoryNotes, 
              CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, ArchiveUID, ParentInventoryUID, 
              AssetID, BulkUpdated, InventorySourceUID, ContainerUID)
         SELECT
             InventoryTypeUID, ItemUID, SiteUID, EntityUID, EntityTypeUID, StatusID, TechDepartmentUID, 
-            Tag, Serial, FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, ISNULL(InventoryNotes, '') + ' ' + @Notes, 
+            Tag, Serial, FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, ISNULL(InventoryNotes, '''') + '' '' + ''' + ISNULL(@Notes, '') + ''', 
             0, GETDATE(), 0, GETDATE(), 0, ParentInventoryUID, 
             AssetID, 0, InventorySourceUID, ContainerUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         WHERE
             TargetInventory.InventoryUID = 0
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND TargetInventory.Rejected = 0;
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND TargetInventory.Rejected = 0';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -202,12 +234,13 @@ AS
             END
 
         --Match the Created Inventory to origin records
+        SET @Statement = '
         UPDATE TargetInventory
         SET TargetInventory.InventoryUID = SourceInventory.InventoryUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetInventory
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetInventory
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventory SourceInventory
+            ' + @TargetDatabase + '.dbo.tblTechInventory SourceInventory
             ON TargetInventory.InventoryTypeUID = SourceInventory.InventoryTypeUID AND
                TargetInventory.ItemUID = SourceInventory.ItemUID AND
                TargetInventory.SiteUID = SourceInventory.SiteUID AND
@@ -216,7 +249,7 @@ AS
                TargetInventory.StatusID = SourceInventory.StatusUID AND
                TargetInventory.TechDepartmentUID = SourceInventory.TechDepartmentUID AND
                UPPER(LTRIM(RTRIM(TargetInventory.Tag))) = UPPER(LTRIM(RTRIM(SourceInventory.Tag))) AND
-               UPPER(LTRIM(RTRIM(ISNULL(TargetInventory.Serial, '')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceInventory.Serial, '')))) AND
+               UPPER(LTRIM(RTRIM(ISNULL(TargetInventory.Serial, '''')))) = UPPER(LTRIM(RTRIM(ISNULL(SourceInventory.Serial, '''')))) AND
                TargetInventory.FundingSourceUID = SourceInventory.FundingSourceUID AND
                --ISNULL(TargetInventory.PurchasePrice, 0) = ISNULL(SourceInventory.PurchasePrice, 0) AND
                --TargetInventory.PurchaseDate = SourceInventory.PurchaseDate AND
@@ -227,8 +260,10 @@ AS
                TargetInventory.ContainerUID = SourceInventory.ContainerUID
         WHERE
             TargetInventory.InventoryUID = 0
-        AND TargetInventory.ProcessTaskUID = @ProcessTaskUid
-        AND TargetInventory.Rejected = 0;
+        AND TargetInventory.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND TargetInventory.Rejected = 0';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN

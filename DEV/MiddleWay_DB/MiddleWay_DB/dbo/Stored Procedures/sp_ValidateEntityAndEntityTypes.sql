@@ -14,7 +14,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -119,19 +120,22 @@ AS
 
         -- Match the EntityID to RoomNumber
         --SELECT TargetEntity.EntityName, TargetEntity.EntityID, TargetEntity.EntityName, SourceRoom.RoomNumber, SourceRoom.RoomUID, SourceRoom.RoomTypeUID, SourceRoom.SiteUID
+        SET @Statement = '
         UPDATE TargetEntity SET TargetEntity.EntityUID = SourceRoom.RoomUID, TargetEntity.EntityTypeUID = 2
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetEntity
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetEntity
         INNER JOIN 
-            TipWebHostedChicagoPS.dbo.tblUnvRooms SourceRoom
+            ' + @TargetDatabase + '.dbo.tblUnvRooms SourceRoom
             ON UPPER(LTRIM(RTRIM(TargetEntity.EntityID))) = UPPER(LTRIM(RTRIM(SourceRoom.RoomNumber)))
             AND TargetEntity.SiteUID = SourceRoom.SiteUID
         WHERE
             TargetEntity.EntityID IS NOT NULL
-        AND LTRIM(RTRIM(TargetEntity.EntityID)) <> ''
+        AND LTRIM(RTRIM(TargetEntity.EntityID)) <> ''''
         AND TargetEntity.EntityUID = 0
-        AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetEntity.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetEntity.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -143,19 +147,22 @@ AS
 
         -- Match the EntityName to RoomNumber
         --SELECT TargetEntity.EntityName, TargetEntity.EntityID, TargetEntity.EntityName, SourceRoom.RoomNumber, SourceRoom.RoomUID, SourceRoom.RoomTypeUID, SourceRoom.SiteUID
+        SET @Statement = '
         UPDATE TargetEntity SET TargetEntity.EntityUID = SourceRoom.RoomUID, TargetEntity.EntityTypeUID = 2
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetEntity
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetEntity
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblUnvRooms SourceRoom
+            ' + @TargetDatabase + '.dbo.tblUnvRooms SourceRoom
             ON UPPER(LTRIM(RTRIM(TargetEntity.EntityName))) = UPPER(LTRIM(RTRIM(SourceRoom.RoomNumber)))
             AND TargetEntity.SiteUID = SourceRoom.SiteUID
         WHERE
             TargetEntity.EntityName IS NOT NULL
-        AND LTRIM(RTRIM(TargetEntity.EntityName)) <> ''
+        AND LTRIM(RTRIM(TargetEntity.EntityName)) <> ''''
         AND TargetEntity.EntityUID = 0
-        AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetEntity.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetEntity.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -170,17 +177,20 @@ AS
             BEGIN
                 --Set all remaining entities to default values
                 --SELECT TargetEntity.EntityUID, TargetEntity.EntityID, TargetEntity.EntityName
-                UPDATE TargetEntity SET TargetEntity.EntityUID = SourceRoom.RoomUID, TargetEntity.EntityID = @DefaultRoom, TargetEntity.EntityTypeUID = 2
+                SET @Statement = '
+                UPDATE TargetEntity SET TargetEntity.EntityUID = SourceRoom.RoomUID, TargetEntity.EntityID = ''' + @DefaultRoom + ''', TargetEntity.EntityTypeUID = 2
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetEntity
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetEntity
                 INNER JOIN
-                    TipWebHostedChicagoPS.dbo.tblUnvRooms SourceRoom
+                    ' + @TargetDatabase + '.dbo.tblUnvRooms SourceRoom
                     ON @DefaultRoom = UPPER(LTRIM(RTRIM(SourceRoom.RoomNumber)))
                     AND TargetEntity.SiteUID = SourceRoom.SiteUID
                 WHERE
                     TargetEntity.EntityUID = 0
-                AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetEntity.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetEntity.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -192,13 +202,17 @@ AS
 
                 --Reject all remaining entites
                 --SELECT TargetEntity.EntityUID, TargetEntity.EntityID, TargetEntity.EntityName
-                UPDATE TargetEntity SET Rejected = 1, EntityUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: EntityID/EntityName; EntityID/EntityName could not be matched'
+                SET @Statement = '
+                UPDATE TargetEntity 
+                SET Rejected = 1, EntityUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: EntityID/EntityName; EntityID/EntityName could not be matched''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetEntity
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetEntity
                 WHERE
                     TargetEntity.EntityUID = 0
-                AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND TargetEntity.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetEntity.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -212,17 +226,21 @@ AS
             BEGIN
                 --Reject all Entities where the EntityID and EntityName are null or empty
                 --SELECT TargetEntity.EntityUID, TargetEntity.EntityID, TargetEntity.EntityName
-                UPDATE TargetEntity SET Rejected = 1, EntityUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Property: EntityID/EntityName; EntityID/EntityName are Null or Empty'
+                SET @Statement = '
+                UPDATE TargetEntity 
+                SET Rejected = 1, EntityUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Property: EntityID/EntityName; EntityID/EntityName are Null or Empty''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetEntity
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetEntity
                 WHERE
                     TargetEntity.EntityUID = 0
                 AND (TargetEntity.EntityID IS NULL OR
-                     LTRIM(RTRIM(TargetEntity.EntityID)) = '')
+                     LTRIM(RTRIM(TargetEntity.EntityID)) = '''')
                 AND (TargetEntity.EntityName IS NULL OR
-                     LTRIM(RTRIM(TargetEntity.EntityName)) = '')
-                AND TargetEntity.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetEntity.Rejected = 0 OR @AllowStackingErrors = 1);
+                     LTRIM(RTRIM(TargetEntity.EntityName)) = '''')
+                AND TargetEntity.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetEntity.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN

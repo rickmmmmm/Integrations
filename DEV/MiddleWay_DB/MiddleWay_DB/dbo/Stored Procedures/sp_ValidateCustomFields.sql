@@ -14,7 +14,8 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS VARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -105,22 +106,25 @@ AS
 
         PRINT N'Set the MetaUID of the Custom Labels';
          --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField1Label, TargetCustomFields.InventoryMeta1UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta1UID = SourceInventoryMeta.InventoryMetaUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON TargetCustomFields.ItemTypeUID = SourceItemTypes.ItemTypeUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON SourceItemTypes.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
         WHERE
             TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta1UID IS NULL
         AND TargetCustomFields.CustomField1Label IS NOT NULL
         AND UPPER(LTRIM(RTRIM(TargetCustomFields.CustomField1Label))) = UPPER(LTRIM(RTRIM(SourceInventoryMeta.InventoryMetaLabel)))
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryMeta1UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -133,22 +137,25 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField2Label, TargetCustomFields.InventoryMeta2UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta2UID = SourceInventoryMeta.InventoryMetaUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON TargetCustomFields.ItemTypeUID = SourceItemTypes.ItemTypeUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON SourceItemTypes.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
         WHERE
             TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta2UID IS NULL
         AND TargetCustomFields.CustomField2Label IS NOT NULL
         AND UPPER(LTRIM(RTRIM(TargetCustomFields.CustomField2Label))) = UPPER(LTRIM(RTRIM(SourceInventoryMeta.InventoryMetaLabel)))
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryMeta2UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -161,22 +168,25 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField3Label, TargetCustomFields.InventoryMeta3UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta3UID = SourceInventoryMeta.InventoryMetaUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON TargetCustomFields.ItemTypeUID = SourceItemTypes.ItemTypeUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON SourceItemTypes.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
         WHERE
             TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta3UID IS NULL
         AND TargetCustomFields.CustomField3Label IS NOT NULL
         AND UPPER(LTRIM(RTRIM(TargetCustomFields.CustomField3Label))) = UPPER(LTRIM(RTRIM(SourceInventoryMeta.InventoryMetaLabel)))
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryMeta3UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -189,22 +199,25 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.CustomField4Label, TargetCustomFields.InventoryMeta4UID, SourceItemTypes.ItemTypeUID, SourceItemTypes.ItemTypeName, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaLabel, SourceInventoryMeta.InventoryMetaOrder, SourceInventoryMeta.InventoryMetaRequired
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta4UID = SourceInventoryMeta.InventoryMetaUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechItemTypes SourceItemTypes
+            ' + @TargetDatabase + '.dbo.tblTechItemTypes SourceItemTypes
             ON TargetCustomFields.ItemTypeUID = SourceItemTypes.ItemTypeUID
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON SourceItemTypes.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
         WHERE
             TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta4UID IS NULL
         AND TargetCustomFields.CustomField4Label IS NOT NULL
         AND UPPER(LTRIM(RTRIM(TargetCustomFields.CustomField4Label))) = UPPER(LTRIM(RTRIM(SourceInventoryMeta.InventoryMetaLabel)))
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryMeta4UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -218,11 +231,12 @@ AS
 
         PRINT N'Set the InventoryExtUID (if any) of existing Assets';
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.InventoryExt1UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = SourceInventoryExt.InventoryExtUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
+            ' + @TargetDatabase + '.dbo.tblTechInventoryExt SourceInventoryExt
             ON TargetCustomFields.InventoryUID = SourceInventoryExt.InventoryUID
             AND TargetCustomFields.InventoryMeta1UID = SourceInventoryExt.InventoryMetaUID
         WHERE
@@ -230,8 +244,10 @@ AS
         AND TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta1UID > 0
         AND TargetCustomFields.InventoryExt1UID IS NULL
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryExt1UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -244,11 +260,12 @@ AS
             END
 
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.InventoryExt2UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt2UID = SourceInventoryExt.InventoryExtUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
+            ' + @TargetDatabase + '.dbo.tblTechInventoryExt SourceInventoryExt
             ON TargetCustomFields.InventoryUID = SourceInventoryExt.InventoryUID
             AND TargetCustomFields.InventoryMeta2UID = SourceInventoryExt.InventoryMetaUID
         WHERE
@@ -256,8 +273,10 @@ AS
         AND TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta2UID > 0
         AND TargetCustomFields.InventoryExt2UID IS NULL
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryExt2UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -270,11 +289,12 @@ AS
             END
 
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.InventoryExt3UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt3UID = SourceInventoryExt.InventoryExtUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
+            ' + @TargetDatabase + '.dbo.tblTechInventoryExt SourceInventoryExt
             ON TargetCustomFields.InventoryUID = SourceInventoryExt.InventoryUID
             AND TargetCustomFields.InventoryMeta3UID = SourceInventoryExt.InventoryMetaUID
         WHERE
@@ -282,8 +302,10 @@ AS
         AND TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta3UID > 0
         AND TargetCustomFields.InventoryExt3UID IS NULL
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryExt3UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -296,11 +318,12 @@ AS
             END
 
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.InventoryExt4UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt4UID = SourceInventoryExt.InventoryExtUID
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryExt SourceInventoryExt
+            ' + @TargetDatabase + '.dbo.tblTechInventoryExt SourceInventoryExt
             ON TargetCustomFields.InventoryUID = SourceInventoryExt.InventoryUID
             AND TargetCustomFields.InventoryMeta4UID = SourceInventoryExt.InventoryMetaUID
         WHERE
@@ -308,8 +331,10 @@ AS
         AND TargetCustomFields.ItemTypeUID > 0
         AND TargetCustomFields.InventoryMeta4UID > 0
         AND TargetCustomFields.InventoryExt4UID IS NULL
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Updated InventoryExt4UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -323,11 +348,13 @@ AS
 
         PRINT N'Reject rows where the InventoryMetaUID > 0, the InventoryMetaRequired is True and CustomFieldValue is Null or Empty';
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label, TargetCustomFields.CustomField1Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
-        UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; The Value for ' + CustomField1Label + ' is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetCustomFields 
+        SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField1Label + ''''''; The Value for '''''' + CustomField1Label + '''''' is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON TargetCustomFields.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
             AND TargetCustomFields.InventoryMeta1UID = SourceInventoryMeta.InventoryMetaUID
         WHERE
@@ -335,9 +362,11 @@ AS
         AND TargetCustomFields.InventoryMeta1UID > 0
         AND SourceInventoryMeta.InventoryMetaRequired = 1
         AND (TargetCustomFields.CustomField1Value IS NULL OR
-             LTRIM(RTRIM(TargetCustomFields.CustomField1Value)) = '')
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(TargetCustomFields.CustomField1Value)) = '''')
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Reject Required InventoryMeta1UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -350,11 +379,13 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label, TargetCustomFields.CustomField2Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
-        UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; The Value for ' + CustomField2Label + ' is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetCustomFields 
+        SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField2Label + ''''''; The Value for '''''' + CustomField2Label + '''''' is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON TargetCustomFields.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
             AND TargetCustomFields.InventoryMeta2UID = SourceInventoryMeta.InventoryMetaUID
         WHERE
@@ -362,9 +393,11 @@ AS
         AND TargetCustomFields.InventoryMeta2UID > 0
         AND SourceInventoryMeta.InventoryMetaRequired = 1
         AND (TargetCustomFields.CustomField2Value IS NULL OR
-             LTRIM(RTRIM(TargetCustomFields.CustomField2Value)) = '')
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(TargetCustomFields.CustomField2Value)) = '''')
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Reject Required InventoryMeta2UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -377,11 +410,13 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label, TargetCustomFields.CustomField3Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
-        UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; The Value for ' + CustomField3Label + ' is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetCustomFields 
+        SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField3Label + ''''''; The Value for '''''' + CustomField3Label + '''''' is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON TargetCustomFields.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
             AND TargetCustomFields.InventoryMeta3UID = SourceInventoryMeta.InventoryMetaUID
         WHERE
@@ -389,9 +424,11 @@ AS
         AND TargetCustomFields.InventoryMeta3UID > 0
         AND SourceInventoryMeta.InventoryMetaRequired = 1
         AND (TargetCustomFields.CustomField3Value IS NULL OR
-             LTRIM(RTRIM(TargetCustomFields.CustomField3Value)) = '')
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(TargetCustomFields.CustomField3Value)) = '''')
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Reject Required InventoryMeta3UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -404,11 +441,13 @@ AS
             END
 
         --SELECT TargetCustomFields.ItemTypeUID, TargetCustomFields.ProductTypeName, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label, TargetCustomFields.CustomField4Value, SourceInventoryMeta.InventoryMetaUID, SourceInventoryMeta.InventoryMetaRequired
-        UPDATE TargetCustomFields SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; The Value for ' + CustomField4Label + ' is NULL or Empty'
+        SET @Statement = '
+        UPDATE TargetCustomFields 
+        SET Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField4Label + ''''''; The Value for '''''' + CustomField4Label + '''''' is NULL or Empty''
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechInventoryMeta SourceInventoryMeta
+            ' + @TargetDatabase + '.dbo.tblTechInventoryMeta SourceInventoryMeta
             ON TargetCustomFields.ItemTypeUID = SourceInventoryMeta.ItemTypeUID
             AND TargetCustomFields.InventoryMeta4UID = SourceInventoryMeta.InventoryMetaUID
         WHERE
@@ -416,9 +455,11 @@ AS
         AND TargetCustomFields.InventoryMeta4UID > 0
         AND SourceInventoryMeta.InventoryMetaRequired = 1
         AND (TargetCustomFields.CustomField4Value IS NULL OR
-             LTRIM(RTRIM(TargetCustomFields.CustomField4Value)) = '')
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+             LTRIM(RTRIM(TargetCustomFields.CustomField4Value)) = '''')
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Reject Required InventoryMeta4UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -439,15 +480,19 @@ AS
 
                 PRINT N'Reject the InventoryMeta where the ItemUID is zero';
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label
-                UPDATE TargetCustomFields SET InventoryMeta1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField1Label + ''''''; Custom Field '''''' + CustomField1Label + '''''' Cannot be created for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID = 0
                 AND TargetCustomFields.CustomField1Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject new InventoryMeta1UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -460,15 +505,19 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label
-                UPDATE TargetCustomFields SET InventoryMeta2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField2Label + ''''''; Custom Field '''''' + CustomField2Label + '''''' Cannot be created for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID = 0
                 AND TargetCustomFields.CustomField2Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject new InventoryMeta2UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -481,15 +530,19 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label
-                UPDATE TargetCustomFields SET InventoryMeta3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField3Label + ''''''; Custom Field '''''' + CustomField3Label + '''''' Cannot be created for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID = 0
                 AND TargetCustomFields.CustomField3Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject new InventoryMeta3UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -502,15 +555,19 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label
-                UPDATE TargetCustomFields SET InventoryMeta4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' Cannot be created for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField4Label + ''''''; Custom Field '''''' + CustomField4Label + '''''' Cannot be created for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID = 0
                 AND TargetCustomFields.CustomField4Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject new InventoryMeta4UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -526,16 +583,20 @@ AS
                 PRINT N'Reject the InventoryMeta if the MetaUID could not be determined';
                 --*  IF ItemTypeUID > 0 AND MetaUID = 0 AND CustomLabel IS NOT NULL (or empty) reject rows
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.CustomField1Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET InventoryMeta1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField1Label + '''; Custom Field ''' + CustomField1Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta1UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField1Label + ''''''; Custom Field '''''' + CustomField1Label + '''''' was not found for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID > 0
                 AND TargetCustomFields.InventoryMeta1UID IS NULL
                 AND TargetCustomFields.CustomField1Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject unknown InventoryMeta1UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -548,16 +609,20 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta2UID, TargetCustomFields.CustomField2Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET InventoryMeta2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField2Label + '''; Custom Field ''' + CustomField2Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta2UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField2Label + ''''''; Custom Field '''''' + CustomField2Label + '''''' was not found for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID > 0
                 AND TargetCustomFields.InventoryMeta2UID IS NULL
                 AND TargetCustomFields.CustomField2Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject unknown InventoryMeta2UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -570,16 +635,20 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta3UID, TargetCustomFields.CustomField3Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET InventoryMeta3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField3Label + '''; Custom Field ''' + CustomField3Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta3UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField3Label + ''''''; Custom Field '''''' + CustomField3Label + '''''' was not found for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID > 0
                 AND TargetCustomFields.InventoryMeta3UID IS NULL
                 AND TargetCustomFields.CustomField3Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject unknown InventoryMeta3UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -592,16 +661,20 @@ AS
                     END
 
                 --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta4UID, TargetCustomFields.CustomField4Label, TargetCustomFields.ProductTypeName
-                UPDATE TargetCustomFields SET InventoryMeta4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Custom Field ''' + CustomField4Label + '''; Custom Field ''' + CustomField4Label + ''' was not found for Product Type ''' + ProductTypeName + ''''
+                SET @Statement = '
+                UPDATE TargetCustomFields 
+                SET InventoryMeta4UID = -1, Rejected = 1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Custom Field '''''' + CustomField4Label + ''''''; Custom Field '''''' + CustomField4Label + '''''' was not found for Product Type '''''' + ProductTypeName + ''''''''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.ItemTypeUID > 0
                 AND TargetCustomFields.InventoryMeta4UID IS NULL
                 AND TargetCustomFields.CustomField4Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Reject unknown InventoryMeta4UID: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -619,16 +692,19 @@ AS
 
                 PRINT N'Set the InventoryMetaUID to zero where the label is not Null or Empty';
                 --Set the MetaUID of all Assets to zero where the Label is not null and the MetaUID is NULL
+                SET @Statement = '
                 UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta1UID = 0
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.InventoryMeta1UID IS NULL
                 AND TargetCustomFields.ItemTypeUID >= 0
                 AND TargetCustomFields.CustomField1Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Set InventoryMeta1UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -640,16 +716,19 @@ AS
                         THROW @ErrorCode, 'Failed to set Meta1UID to zero', 1;
                     END
 
+                SET @Statement = '
                 UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta2UID = 0
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.InventoryMeta2UID IS NULL
                 AND TargetCustomFields.ItemTypeUID >= 0
                 AND TargetCustomFields.CustomField2Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Set InventoryMeta2UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -661,16 +740,19 @@ AS
                         THROW @ErrorCode, 'Failed to set Meta2UID to zero', 1;
                     END
 
+                SET @Statement = '
                 UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta3UID = 0
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.InventoryMeta3UID IS NULL
                 AND TargetCustomFields.ItemTypeUID >= 0
                 AND TargetCustomFields.CustomField3Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Set InventoryMeta3UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -682,16 +764,19 @@ AS
                         THROW @ErrorCode, 'Failed to set Meta3UID to zero', 1;
                     END
 
+                SET @Statement = '
                 UPDATE TargetCustomFields SET TargetCustomFields.InventoryMeta4UID = 0
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
                 WHERE
                     TargetCustomFields.InventoryMeta4UID IS NULL
                 AND TargetCustomFields.ItemTypeUID >= 0
                 AND TargetCustomFields.CustomField4Label IS NOT NULL
-                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
-                AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+                AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''''
+                AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 PRINT N'Set InventoryMeta4UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -708,18 +793,21 @@ AS
         PRINT N'Set InventoryExtUID to zero where the InventoryMetaUID > 0';
         -- Set the ExtUID of unrejected existing Assets to 0 where the label is not null
         --SELECT TargetCustomFields.InventoryUID, TargetCustomFields.InventoryMeta1UID, TargetCustomFields.InventoryExt1UID, SourceInventoryExt.InventoryExtUID, SourceInventoryExt.InventoryExtValue
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt1UID = 0
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         WHERE
             TargetCustomFields.InventoryExt1UID IS NULL
         AND TargetCustomFields.InventoryUID >= 0
         AND TargetCustomFields.ItemTypeUID >= 0
         --AND TargetCustomFields.CustomField1Label IS NOT NULL
-        --AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''
+        --AND LTRIM(RTRIM(TargetCustomFields.CustomField1Label)) <> ''''
         AND TargetCustomFields.InventoryMeta1UID >= 0
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Set InventoryExt1UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -731,18 +819,21 @@ AS
                 THROW @ErrorCode, 'Failed to set the Ext1UID to zero', 1;
             END
 
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt2UID = 0
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         WHERE
             TargetCustomFields.InventoryExt2UID IS NULL
         AND TargetCustomFields.InventoryUID >= 0
         AND TargetCustomFields.ItemTypeUID >= 0
         --AND TargetCustomFields.CustomField2Label IS NOT NULL
-        --AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''
+        --AND LTRIM(RTRIM(TargetCustomFields.CustomField2Label)) <> ''''
         AND TargetCustomFields.InventoryMeta2UID >= 0
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Set InventoryExt2UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -754,18 +845,21 @@ AS
                 THROW @ErrorCode, 'Failed to set the Ext2UID to zero', 1;
             END
 
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt3UID = 0
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         WHERE
             TargetCustomFields.InventoryExt3UID IS NULL
         AND TargetCustomFields.InventoryUID >= 0
         AND TargetCustomFields.ItemTypeUID >= 0
         --AND TargetCustomFields.CustomField3Label IS NOT NULL
-        --AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''
+        --AND LTRIM(RTRIM(TargetCustomFields.CustomField3Label)) <> ''''
         AND TargetCustomFields.InventoryMeta3UID >= 0
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Set InventoryExt3UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 
@@ -777,18 +871,21 @@ AS
                 THROW @ErrorCode, 'Failed to set the Ext3UID to zero', 1;
             END
 
+        SET @Statement = '
         UPDATE TargetCustomFields SET TargetCustomFields.InventoryExt4UID = 0
         FROM
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetCustomFields
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetCustomFields
         WHERE
             TargetCustomFields.InventoryExt4UID IS NULL
         AND TargetCustomFields.InventoryUID >= 0
         AND TargetCustomFields.ItemTypeUID >= 0
         --AND TargetCustomFields.CustomField4Label IS NOT NULL
-        --AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''
+        --AND LTRIM(RTRIM(TargetCustomFields.CustomField4Label)) <> ''''
         AND TargetCustomFields.InventoryMeta4UID >= 0
-        AND TargetCustomFields.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetCustomFields.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetCustomFields.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetCustomFields.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         PRINT N'Set InventoryExt4UID to zero: ' + CAST(@@ROWCOUNT AS VARCHAR(10));
 

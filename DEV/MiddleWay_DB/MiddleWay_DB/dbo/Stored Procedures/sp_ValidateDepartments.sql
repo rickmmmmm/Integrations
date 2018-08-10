@@ -12,7 +12,9 @@ AS
                 @TargetDatabase         AS VARCHAR(100),
                 @SourceTable            AS VARCHAR(100),
                 @AllowStackingErrors    AS BIT,
-                @ErrorCode              AS INT;
+                @ErrorCode              AS INT,
+                @Statement              AS NVARCHAR(MAX),
+                @ParamDefinition        AS NVARCHAR(MAX);
 
         SET NOCOUNT ON;
 
@@ -85,18 +87,21 @@ AS
 
         -- Match the Department by Name
         --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.DepartmentID, TargetDepartment.DepartmentName, SourceDepartment.DepartmentName, SourceDepartment.TechDepartmentUID
+        SET @Statement = '
         UPDATE TargetDepartment SET TargetDepartment.TechDepartmentUID = SourceDepartment.TechDepartmentUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetDepartment
         INNER JOIN
-            TipWebHostedChicagoPS.dbo.tblTechDepartments SourceDepartment
+            ' + @TargetDatabase + '.dbo.tblTechDepartments SourceDepartment
             ON UPPER(LTRIM(RTRIM(TargetDepartment.DepartmentName))) = UPPER(LTRIM(RTRIM(SourceDepartment.DepartmentName)))
         WHERE
             TargetDepartment.DepartmentName IS NOT NULL
-        AND LTRIM(RTRIM(TargetDepartment.DepartmentName)) <> ''
+        AND LTRIM(RTRIM(TargetDepartment.DepartmentName)) <> ''''
         AND TargetDepartment.TechDepartmentUID = 0
-        AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetDepartment.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetDepartment.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -108,18 +113,21 @@ AS
 
         --Match the Department by ID
         --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.DepartmentID, TargetDepartment.DepartmentName, SourceDepartment.DepartmentID, SourceDepartment.TechDepartmentUID
+        SET @Statement = '
         UPDATE TargetDepartment SET TargetDepartment.TechDepartmentUID = SourceDepartment.TechDepartmentUID
         FROM 
-            IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
+            IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetDepartment
         INNER JOIN 
-            TipWebHostedChicagoPS.dbo.tblTechDepartments SourceDepartment
+            ' + @TargetDatabase + '.dbo.tblTechDepartments SourceDepartment
             ON UPPER(LTRIM(RTRIM(TargetDepartment.DepartmentID))) = UPPER(LTRIM(RTRIM(SourceDepartment.DepartmentID)))
         WHERE
             TargetDepartment.DepartmentID IS NOT NULL
-        AND LTRIM(RTRIM(TargetDepartment.DepartmentID)) <> ''
+        AND LTRIM(RTRIM(TargetDepartment.DepartmentID)) <> ''''
         AND TargetDepartment.TechDepartmentUID = 0
-        AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
-        AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
+        AND TargetDepartment.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+        AND (TargetDepartment.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+        EXECUTE (@Statement);
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -132,11 +140,15 @@ AS
         --if the TIPWeb Database is departments and the Default Department is 0 reject all 
         DECLARE @DepartmentCount AS INT
 
+        SET @ParamDefinition = N'@DepartmentCount INT OUTPUT';
+        SET @Statement = '
         SELECT @DepartmentCount = COUNT(TechDepartmentUID)
         FROM
-            TipWebHostedChicagoPS.dbo.tblTechDepartments SourceDepartment
+            ' + @TargetDatabase + '.dbo.tblTechDepartments SourceDepartment
         WHERE 
-            SourceDepartment.TechDepartmentUID > 0
+            SourceDepartment.TechDepartmentUID > 0';
+        EXECUTE sp_executesql @Statement, @ParamDefinition, @DepartmentCount = @DepartmentCount OUTPUT;
+        --PRINT @Statement;
 
         IF @@ERROR <> 0
             BEGIN
@@ -149,13 +161,17 @@ AS
         IF @DepartmentCount > 0 AND @DefaultDepartmentUID = 0
             BEGIN
                 --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.TechDepartmentUID
-                UPDATE TargetDepartment SET Rejected = 1, TechDepartmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N'Source Properties: TechDepartmentUID; TechDepartmentUID is invalid'
+                SET @Statement = '
+                UPDATE TargetDepartment 
+                SET Rejected = 1, TechDepartmentUID = -1, RejectedNotes = CASE WHEN RejectedNotes IS NULL THEN N'''' ELSE CAST(RejectedNotes AS VARCHAR(MAX)) + CAST(CHAR(13) AS VARCHAR(MAX)) END + N''Source Properties: TechDepartmentUID; TechDepartmentUID is invalid''
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
-                AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
+                    AND TargetDepartment.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                    AND (TargetDepartment.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
@@ -169,13 +185,16 @@ AS
             BEGIN
                 --Set all non-matches to Default
                 --SELECT TargetDepartment.TechDepartmentUID, TargetDepartment.DepartmentID
-                UPDATE TargetDepartment SET TechDepartmentUID = @DefaultDepartmentUID
+                SET @Statement = '
+                UPDATE TargetDepartment SET TechDepartmentUID = ' + CAST(@DefaultDepartmentUID AS VARCHAR(10)) + '
                 FROM
-                    IntegrationMiddleWay.dbo._ETL_Inventory TargetDepartment
+                    IntegrationMiddleWay.dbo.' + @SourceTable + ' TargetDepartment
                 WHERE
                     TargetDepartment.TechDepartmentUID = 0
-                AND TargetDepartment.ProcessTaskUID = @ProcessTaskUid
-                AND (TargetDepartment.Rejected = 0 OR @AllowStackingErrors = 1);
+                    AND TargetDepartment.ProcessTaskUID = ' + CAST(@ProcessTaskUid AS VARCHAR(3)) + '
+                    AND (TargetDepartment.Rejected = 0 OR ' + CAST(@AllowStackingErrors AS VARCHAR(1)) + ' = 1)';
+                EXECUTE (@Statement);
+                --PRINT @Statement;
 
                 IF @@ERROR <> 0
                     BEGIN
