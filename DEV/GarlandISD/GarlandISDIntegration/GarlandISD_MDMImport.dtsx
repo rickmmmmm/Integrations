@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="GarlandISD_MDMImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="482"
-  DTS:VersionGUID="{03E386F3-D5A8-4115-8789-A23E24530BD0}">
+  DTS:VersionBuild="484"
+  DTS:VersionGUID="{7E041733-E57F-46C6-809C-197651747C9D}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[User::DatabaseServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TIPWebHostedGarlandISD;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_PaymentImport-{24159A70-7974-4A6C-9203-44246161B4A6}LocalHost.TIPWebHostedKellerISD;" />
+          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=databasename;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_PaymentImport-{24159A70-7974-4A6C-9203-44246161B4A6}LocalHost.TIPWebHostedKellerISD;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -201,21 +201,14 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
-      DTS:DTSID="{CACB19F0-E983-4349-B4D9-AB24D49C563C}"
-      DTS:IncludeInDebugDump="2345"
-      DTS:Namespace="User"
-      DTS:ObjectName="BCCEmail">
-      <DTS:VariableValue
-        DTS:DataType="8">integrations@hayessoft.com</DTS:VariableValue>
-    </DTS:Variable>
-    <DTS:Variable
-      DTS:CreationName=""
       DTS:DTSID="{96DA526B-B6DD-4A3B-8005-2740293D8057}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::EmailBCC]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="CCEmail">
       <DTS:VariableValue
-        DTS:DataType="8">support@hayessoft.com</DTS:VariableValue>
+        DTS:DataType="8">nblakely@hayessoft.com</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -269,20 +262,24 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{4BFED5AE-DBD7-4A80-A904-AF8F87CE658B}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::DatabaseName]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="DatabaseName">
       <DTS:VariableValue
-        DTS:DataType="8">TIPWebHostedGarlandISD</DTS:VariableValue>
+        DTS:DataType="8">databasename</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{691A8F35-E7C1-441D-9891-5AE8EC858C2F}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::Server]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="DatabaseServer">
       <DTS:VariableValue
-        DTS:DataType="8">.</DTS:VariableValue>
+        DTS:DataType="8">CSS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -296,12 +293,25 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{BD2B0FC6-48D8-4D34-BAC9-4B0A639D46BD}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::Email]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="EMail">
       <DTS:VariableValue
         DTS:DataType="8"
         xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{99B13E86-3EF1-45AA-8A9A-BF29C52D41CE}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::EmailProfile]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="EmailProfile">
+      <DTS:VariableValue
+        DTS:DataType="8">TIPWEBIMEmail</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -2101,7 +2111,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{24159A70-7974-4A6C-9203-44246161B4A6}"
-              SQLTask:SqlStatementSource="UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial missing'&#xA;ELSE Note + '; ' +  'Serial missing' END&#xA;WHERE LTRIM(RTRIM(ISNULL(Serial, ''))) = ''&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial longer than 50 characters'&#xA;ELSE Note + '; ' +  'Serial longer than 50 characters' END&#xA;WHERE LEN(Serial) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial not found in TIPWeb-IT'&#xA;ELSE Note + '; ' +  'Serial not found in TIPWeb-IT' END&#xA;FROM _ETL_StagingMDM&#xA;LEFT JOIN tblTechInventory&#xA;ON UPPER(LTRIM(RTRIM(ISNULL(_ETL_StagingMDM.Serial, '')))) = UPPER(tblTechInventory.Serial)&#xA;WHERE LTRIM(RTRIM(ISNULL(_ETL_StagingMDM.Serial, ''))) &lt;&gt; ''&#xA;AND tblTechInventory.InventoryUID IS NULL&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Duplicate Serial in Import'&#xA;ELSE Note + '; ' +  'Duplicate Serial in Import' END&#xA;WHERE Serial IN&#xA;(SELECT Serial FROM _ETL_StagingMDM&#xA;GROUP BY Serial HAVING COUNT(*) &gt; 1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Duplicate Serial in TIPWeb-IT'&#xA;ELSE Note + '; ' +  'Duplicate Serial in TIPWeb-IT' END&#xA;WHERE Serial IN&#xA;(SELECT Serial FROM tblTechInventory&#xA;GROUP BY Serial HAVING COUNT(*) &gt; 1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Device Name longer than 50 characters'&#xA;ELSE Note + '; ' +  'Device Name longer than 50 characters' END&#xA;WHERE LEN(ComputerName) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Device Type longer than 50 characters'&#xA;ELSE Note + '; ' +  'Device Type longer than 50 characters' END&#xA;WHERE LEN(DeviceType) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Invalid Product Type: ' + tblTechItemTypes.ItemTypeName&#xA;ELSE Note + '; ' +  'Invalid Product Type: ' + tblTechItemTypes.ItemTypeName END&#xA;FROM _ETL_StagingMDM&#xA;JOIN tblTechInventory ON _ETL_StagingMDM.Serial = tblTechInventory.Serial&#xA;JOIN tblTechItems ON tblTechInventory.ItemUID = tblTechItems.ItemUID&#xA;JOIN tblTechItemTypes ON tblTechItems.ItemTypeUID = tblTechItemTypes.ItemTypeUID&#xA;WHERE tblTechItemTypes.ItemTypeName NOT IN ('Desktop Computer', 'Laptop', 'Tablet')&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE  dbo._ETL_StagingMDM&#xA;SET Accepted = 1&#xA;WHERE Accepted IS NULL&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial missing'&#xA;ELSE Note + '; ' +  'Serial missing' END&#xA;WHERE LTRIM(RTRIM(ISNULL(Serial, ''))) = ''&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial longer than 50 characters'&#xA;ELSE Note + '; ' +  'Serial longer than 50 characters' END&#xA;WHERE LEN(Serial) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Serial not found in TIPWeb-IT'&#xA;ELSE Note + '; ' +  'Serial not found in TIPWeb-IT' END&#xA;FROM _ETL_StagingMDM&#xA;LEFT JOIN tblTechInventory&#xA;ON UPPER(LTRIM(RTRIM(ISNULL(_ETL_StagingMDM.Serial, '')))) = UPPER(tblTechInventory.Serial)&#xA;WHERE LTRIM(RTRIM(ISNULL(_ETL_StagingMDM.Serial, ''))) &lt;&gt; ''&#xA;AND tblTechInventory.InventoryUID IS NULL&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Duplicate Serial in Import'&#xA;ELSE Note + '; ' +  'Duplicate Serial in Import' END&#xA;WHERE Serial IN&#xA;(SELECT Serial FROM _ETL_StagingMDM&#xA;GROUP BY Serial HAVING COUNT(*) &gt; 1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Duplicate Serial in TIPWeb-IT'&#xA;ELSE Note + '; ' +  'Duplicate Serial in TIPWeb-IT' END&#xA;WHERE Serial IN&#xA;(SELECT Serial FROM tblTechInventory&#xA;GROUP BY Serial HAVING COUNT(*) &gt; 1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Device Name longer than 50 characters'&#xA;ELSE Note + '; ' +  'Device Name longer than 50 characters' END&#xA;WHERE LEN(ComputerName) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Device Type longer than 50 characters'&#xA;ELSE Note + '; ' +  'Device Type longer than 50 characters' END&#xA;WHERE LEN(DeviceType) &gt; 50&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE dbo._ETL_StagingMDM&#xA;SET Accepted = 0,&#xA;Note = CASE WHEN Note IS NULL THEN 'Invalid Product Type: ' + tblTechItemTypes.ItemTypeName&#xA;ELSE Note + '; ' +  'Invalid Product Type: ' + tblTechItemTypes.ItemTypeName END&#xA;FROM _ETL_StagingMDM&#xA;JOIN tblTechInventory ON _ETL_StagingMDM.Serial = tblTechInventory.Serial&#xA;JOIN tblTechItems ON tblTechInventory.ItemUID = tblTechItems.ItemUID&#xA;JOIN tblTechItemTypes ON tblTechItems.ItemTypeUID = tblTechItemTypes.ItemTypeUID&#xA;WHERE tblTechItemTypes.ItemTypeName NOT IN (select Itemtypeuid from tblTechInventoryMeta where InventoryMetaLabel = 'Device Name' and InventoryMetaOrder = 1)&#xA;&#xA;GO&#xA;&#xA;&#xA;UPDATE  dbo._ETL_StagingMDM&#xA;SET Accepted = 1&#xA;WHERE Accepted IS NULL&#xA;&#xA;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -2585,22 +2595,16 @@ FROM _ETL_StagingMDM</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{24159A70-7974-4A6C-9203-44246161B4A6}"
-              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@bodyHTML NVARCHAR(MAX),&#xA;&#x9;@title NVARCHAR(150),&#xA;&#x9;@email NVARCHAR(1000),&#xA;&#x9;@ccemail NVARCHAR(1000),&#xA;&#x9;@bccemail NVARCHAR(1000),&#xA;&#x9;@mailProfile NVARCHAR(MAX),&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@totalcount NVARCHAR(20),&#xA;&#x9;@acceptcount NVARCHAR(20),&#xA;&#x9;@rejectcount NVARCHAR(20),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@attachment NVARCHAR(1000),&#xA;&#x9;@attachments NVARCHAR(MAX)&#xA;&#xA;SET @email = ?&#xA;SET @ccemail = ?&#xA;SET @bccemail = ?&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @attachment = ?&#xA;&#xA;SET @mailProfile = (SELECT name FROM msdb.dbo.sysmail_profile WHERE last_mod_user = 'TIPWeb')&#xA;&#xA;SET @acceptcount =  CAST((SELECT ISNULL(acceptcount, '0') FROM&#xA;(SELECT  COUNT(*) AS acceptcount&#xA;FROM _ETL_StagingMDM&#xA;WHERE Accepted = 1) a) AS VARCHAR(20))&#xA;&#xA;SET @rejectcount =  CAST((SELECT ISNULL(rejectcount, '0') FROM&#xA;(SELECT  COUNT(*) AS rejectcount&#xA;FROM _ETL_StagingMDM&#xA;WHERE Accepted = 0) a) AS VARCHAR(20))&#xA;&#xA;SET @totalcount = CONVERT(VARCHAR(20), CONVERT(INT, @acceptcount) + CONVERT(INT, @rejectcount))&#xA;&#xA;SET @attachments = @attachment&#xA;&#xA;SET @title = @jobname + ' Integration Status - '+  CONVERT(VARCHAR(10), GETDATE(), 101)&#xA;&#xA;SET @bodyHTML = &#xA;N'&lt;html&gt;&lt;body&gt;The Error file has been generated&lt;br&gt;&lt;br&gt;'+&#xA;N'Total Records Processed: '+ @totalcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Accepted: '+ @acceptcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Rejected: '+ @rejectcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'If you have any questions, please contact us at 1-800-495-5993&lt;br&gt;&lt;br&gt;'+&#xA;N'Thank you,&lt;br&gt;&lt;br&gt;'+&#xA;N'Hayes Software Systems&lt;br&gt;'+&#xA;N'www.hayessoft.com'+&#xA;N'&lt;/body&gt;&lt;/html&gt;'&#xA;&#xA;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;@profile_name = @mailProfile,&#xA;&#x9;@recipients = @email,&#xA;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;@blind_copy_recipients = @bccemail,&#xA;&#x9;@body_format = 'HTML',&#xA;&#x9;@body = @bodyHTML, &#xA;&#x9;@subject = @title,&#xA;&#x9;@file_attachments = @attachments;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="DECLARE&#xA;&#x9;@bodyHTML NVARCHAR(MAX),&#xA;&#x9;@title NVARCHAR(150),&#xA;&#x9;@email NVARCHAR(1000),&#xA;&#x9;@ccemail NVARCHAR(1000),&#xA;&#x9;@bccemail NVARCHAR(1000),&#xA;&#x9;@mailProfile NVARCHAR(100),&#xA;&#x9;@clientname NVARCHAR(100),&#xA;&#x9;@totalcount NVARCHAR(20),&#xA;&#x9;@acceptcount NVARCHAR(20),&#xA;&#x9;@rejectcount NVARCHAR(20),&#xA;&#x9;@jobname NVARCHAR(100),&#xA;&#x9;@attachment NVARCHAR(1000),&#xA;&#x9;@attachments NVARCHAR(MAX)&#xA;&#xA;SET @email = ?&#xA;SET @ccemail = ?&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @attachment = ?&#xA;SET @mailProfile = ?&#xA;&#xA;&#xA;SET @acceptcount =  CAST((SELECT ISNULL(acceptcount, '0') FROM&#xA;(SELECT  COUNT(*) AS acceptcount&#xA;FROM _ETL_StagingMDM&#xA;WHERE Accepted = 1) a) AS VARCHAR(20))&#xA;&#xA;SET @rejectcount =  CAST((SELECT ISNULL(rejectcount, '0') FROM&#xA;(SELECT  COUNT(*) AS rejectcount&#xA;FROM _ETL_StagingMDM&#xA;WHERE Accepted = 0) a) AS VARCHAR(20))&#xA;&#xA;SET @totalcount = CONVERT(VARCHAR(20), CONVERT(INT, @acceptcount) + CONVERT(INT, @rejectcount))&#xA;&#xA;SET @attachments = @attachment&#xA;&#xA;SET @title = @jobname + ' Integration Status - '+  CONVERT(VARCHAR(10), GETDATE(), 101)&#xA;&#xA;SET @bodyHTML = &#xA;N'&lt;html&gt;&lt;body&gt;The Error file has been generated&lt;br&gt;&lt;br&gt;'+&#xA;N'Total Records Processed: '+ @totalcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Accepted: '+ @acceptcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'Number of Records Rejected: '+ @rejectcount + '&lt;br&gt;&lt;br&gt;'+&#xA;N'If you have any questions, please contact us at 1-800-495-5993&lt;br&gt;&lt;br&gt;'+&#xA;N'Thank you,&lt;br&gt;&lt;br&gt;'+&#xA;N'Hayes Software Systems&lt;br&gt;'+&#xA;N'www.hayessoft.com'+&#xA;N'&lt;/body&gt;&lt;/html&gt;'&#xA;&#xA;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;@profile_name = @mailProfile,&#xA;&#x9;@recipients = @email,&#xA;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;@body_format = 'HTML',&#xA;&#x9;@body = @bodyHTML, &#xA;&#x9;@subject = @title,&#xA;&#x9;@file_attachments = @attachments;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@email"
-                SQLTask:DtsVariableName="User::EMail"
+                SQLTask:DtsVariableName="$Project::Email"
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@ccemail"
-                SQLTask:DtsVariableName="User::CCEmail"
-                SQLTask:ParameterDirection="Input"
-                SQLTask:DataType="130"
-                SQLTask:ParameterSize="1000" />
-              <SQLTask:ParameterBinding
-                SQLTask:ParameterName="@bccemail"
-                SQLTask:DtsVariableName="User::BCCEmail"
+                SQLTask:DtsVariableName="$Project::EmailCC"
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
@@ -2622,6 +2626,12 @@ FROM _ETL_StagingMDM</property>
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@mailProfile "
+                SQLTask:DtsVariableName="$Project::EmailProfile"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="129"
+                SQLTask:ParameterSize="100" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
