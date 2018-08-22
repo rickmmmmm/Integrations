@@ -5,14 +5,14 @@
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="HAYESINTEGRATIO"
   DTS:CreatorName="HAYESSOFT\jjohnston"
-  DTS:DTSID="{35B5E0B3-0156-4F63-BF5A-59710BDB3D8C}"
+  DTS:DTSID="{7B2FCD39-ECF5-4D32-9A63-265DFE4A4B5B}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="14.0.0800.90"
   DTS:LocaleID="1033"
   DTS:ObjectName="KISD_PaymentImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="172"
-  DTS:VersionGUID="{33A04076-A76A-420A-AB11-C677979610D3}">
+  DTS:VersionBuild="174"
+  DTS:VersionGUID="{C55E50CF-2425-420A-A4CE-56D4A393A985}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -474,7 +474,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{24159A70-7974-4A6C-9203-44246161B4A6}"
-              SQLTask:SqlStatementSource="&#xA;&#xA;declare @ID int, @ISBN varchar(50), @Accession varchar(50), @price money, @copies smallint, @totalOwed money, @totalPaid money, @modDate datetime, @type varchar(50), @PaymentID int&#xA;&#xA;DECLARE @sMsg varchar(150) &#xA;declare @paymentsum money, @code varchar(50), @distributionID int&#xA;&#xA;declare curPayments cursor for&#xA;&#x9;SELECT P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, sum(Pc.TotalPaid) as totalPaid, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;FROM dbo._ETL_Payments P&#xA;&#x9;JOIN tblPaymentsCollected_tx PC ON P.ID = PC.ID&#xA;&#x9;AND P.Accession = PC.Accession&#xA;&#x9;group by  P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;UNION&#xA;&#x9;SELECT P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, P.TotalPaid, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;FROM dbo._ETL_Payments P&#xA;&#x9;left JOIN tblPaymentsCollected PC ON P.ID = PC.ID AND P.Accession = PC.Accession&#xA;&#x9;where pc.PaymentID is null&#xA;&#xA;&#xA;&#xA;&#xA;Open curPayments&#xA;FETCH NEXT FROM curPayments INTO &#xA;&#x9;@ID, @ISBN, @Accession, @price, @copies, @totalowed, @totalpaid, @moddate, @type, @PaymentID&#xA;WHILE @@Fetch_Status = 0&#xA;BEGIN&#xA;&#x9;&#xA;&#x9;if @PaymentID is null&#xA;&#x9;begin&#xA;&#x9;&#x9;print 'no previous payments'&#xA;&#x9;&#x9;if @type = 'Payment' &#xA;&#x9;&#x9;begin&#xA;&#x9;&#x9;&#x9;print 'process payment'&#xA;&#x9;&#x9;&#x9;set @paymentsum = @totalpaid&#xA;&#x9;&#x9;&#x9;set @sMsg = 'Payment collected from InTouch'&#xA;&#x9;&#x9;end&#xA;&#x9;&#x9;else if @Type = 'Adjustment' &#xA;&#x9;&#x9;begin&#xA;&#x9;&#x9;&#x9;print 'process adjustment'&#xA;&#x9;&#x9;&#x9;set @paymentsum = @totalowed&#xA;&#x9;&#x9;&#x9;set @sMsg = 'Payment adjustment from InTouch'&#xA;&#x9;&#x9;end&#xA;&#x9;end&#xA;&#x9;else&#xA;&#x9;begin&#xA;&#x9;&#x9;print 'payments exist'&#xA;&#x9;&#x9;set @paymentsum = @totalpaid + (select sum(totalpaid) from tblPaymentsCollected_tx where paymentID=@PaymentID) &#xA;&#x9;&#x9;set @sMsg = 'Payment collected from InTouch'&#xA;&#x9;end&#xA;&#x9;&#x9;&#xA;&#x9;print 'paymentsum: ' + cast(@paymentsum as varchar(50))&#x9;&#x9;&#xA;&#xA;&#x9;select @distributionID = DistributionID &#xA;&#x9;from tblStudentsDistribution&#xA;&#x9;where Accession = @Accession&#xA;&#x9;and StudentsUID = @id&#xA;&#xA;&#x9;select  @code = (select top 1 code from tblStudentsDistribution_tx &#xA;&#x9;where distributionID = @distributionID&#xA;&#x9;order by TransactionID desc)&#xA;&#xA;&#x9;if @code = 'PAID'&#xA;&#x9;&#x9;--Do Nothing&#xA;&#x9;&#x9;set @sMsg = @sMsg&#xA;&#x9;else&#xA;&#x9;begin&#xA;&#xA;&#x9;&#x9;print 'Dist ID: ' + cast(@distributionID as varchar(50))&#xA;&#x9;&#x9;if @paymentsum &lt; @totalOwed&#xA;&#x9;&#x9;&#x9;set @code = 'PRTL'&#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;set @code = 'PAY1'&#xA;&#xA;&#x9;&#x9;update tblStudentsDistribution set code = @code, userid = 0, ModifiedDate = getdate() where DistributionID = @distributionID &#xA;&#xA;&#x9;&#x9;--Note: The insert fires a trigger that creates a _tx (transaction) record but ONLY because the cursor is processing one record at a time&#xA;&#x9;&#x9;if @PaymentID is null&#xA;&#x9;&#x9;&#x9;INSERT INTO dbo.tblPaymentsCollected&#xA;&#x9;&#x9;&#x9;(ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived) &#xA;&#x9;&#x9;&#x9;values&#xA;&#x9;&#x9;&#x9;(@ID, @ISBN, @Accession, @code, @price, @copies, @totalowed, @totalpaid, 0, @moddate, @sMsg, 0)&#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;update tblPaymentsCollected&#xA;&#x9;&#x9;&#x9;set Code = @code, TotalPaid = @totalpaid, userid = 0, ModifiedDate = @moddate, Notes = @sMsg&#xA;&#x9;&#x9;&#x9;where PaymentID = @PaymentID&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;&#x9;&#x9;--INSERT INTO dbo.tblPaymentsCollected_tx&#xA;&#x9;&#x9;--(PaymentID, ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived)&#xA;&#x9;&#x9;--select PaymentID, ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived&#xA;&#x9;&#x9;--from tblPaymentsCollected&#xA;&#x9;&#x9;--where id = @id and Accession = @Accession and ModifiedDate = @moddate&#xA;&#x9;end&#xA;&#x9;&#xA;&#x9;FETCH NEXT FROM curPayments INTO &#xA;&#x9;&#x9;@ID, @ISBN, @Accession, @price, @copies, @totalowed, @totalpaid, @moddate, @type, @PaymentID&#xA;&#xA;END&#xA;&#xA;CLOSE curPayments&#xA;DEALLOCATE curPayments&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="&#xA;&#xA;declare @ID int, @ISBN varchar(50), @Accession varchar(50), @price money, @copies smallint, @totalOwed money, @totalPaid money, @modDate datetime, @type varchar(50), @PaymentID int&#xA;&#xA;DECLARE @sMsg varchar(150) &#xA;declare @paymentsum money, @code varchar(50), @distributionID int&#xA;&#xA;declare curPayments cursor for&#xA;&#x9;SELECT P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, sum(Pc.TotalPaid) as totalPaid, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;FROM dbo._ETL_Payments P&#xA;&#x9;left outer JOIN tblPaymentsCollected_tx PC ON P.ID = PC.ID&#xA;&#x9;AND P.Accession = PC.Accession&#xA;&#x9;group by  P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;UNION&#xA;&#x9;SELECT P.ID, P.ISBN, P.Accession, P.Price, P.Copies, P.TotalOwed, P.TotalPaid, P.ModifiedDate, [Type], pc.PaymentID&#xA;&#x9;FROM dbo._ETL_Payments P&#xA;&#x9;left JOIN tblPaymentsCollected PC ON P.ID = PC.ID AND P.Accession = PC.Accession&#xA;&#x9;where pc.PaymentID is null&#xA;&#xA;&#xA;&#xA;&#xA;Open curPayments&#xA;FETCH NEXT FROM curPayments INTO &#xA;&#x9;@ID, @ISBN, @Accession, @price, @copies, @totalowed, @totalpaid, @moddate, @type, @PaymentID&#xA;WHILE @@Fetch_Status = 0&#xA;BEGIN&#xA;&#x9;&#xA;&#x9;if @PaymentID is null&#xA;&#x9;begin&#xA;&#x9;&#x9;print 'no previous payments'&#xA;&#x9;&#x9;if @type = 'Payment' &#xA;&#x9;&#x9;begin&#xA;&#x9;&#x9;&#x9;print 'process payment'&#xA;&#x9;&#x9;&#x9;set @paymentsum = @totalpaid&#xA;&#x9;&#x9;&#x9;set @sMsg = 'Payment collected from InTouch'&#xA;&#x9;&#x9;end&#xA;&#x9;&#x9;else if @Type = 'Adjustment' &#xA;&#x9;&#x9;begin&#xA;&#x9;&#x9;&#x9;print 'process adjustment'&#xA;&#x9;&#x9;&#x9;set @paymentsum = @totalowed&#xA;&#x9;&#x9;&#x9;set @sMsg = 'Payment adjustment from InTouch'&#xA;&#x9;&#x9;end&#xA;&#x9;end&#xA;&#x9;else&#xA;&#x9;begin&#xA;&#x9;&#x9;print 'payments exist'&#xA;&#x9;&#x9;set @paymentsum = @totalpaid + (select sum(totalpaid) from tblPaymentsCollected_tx where paymentID=@PaymentID) &#xA;&#x9;&#x9;set @sMsg = 'Payment collected from InTouch'&#xA;&#x9;end&#xA;&#x9;&#x9;&#xA;&#x9;print 'paymentsum: ' + cast(@paymentsum as varchar(50))&#x9;&#x9;&#xA;&#xA;&#x9;select @distributionID = DistributionID &#xA;&#x9;from tblStudentsDistribution&#xA;&#x9;where Accession = @Accession&#xA;&#x9;and StudentsUID = @id&#xA;&#xA;&#x9;select  @code = (select top 1 code from tblStudentsDistribution_tx &#xA;&#x9;where distributionID = @distributionID&#xA;&#x9;order by TransactionID desc)&#xA;&#xA;&#x9;if @code = 'PAID'&#xA;&#x9;&#x9;--Do Nothing&#xA;&#x9;&#x9;set @sMsg = @sMsg&#xA;&#x9;else&#xA;&#x9;begin&#xA;&#xA;&#x9;&#x9;print 'Dist ID: ' + cast(@distributionID as varchar(50))&#xA;&#x9;&#x9;if @paymentsum &lt; @totalOwed&#xA;&#x9;&#x9;&#x9;set @code = 'PRTL'&#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;set @code = 'PAY1'&#xA;&#xA;&#x9;&#x9;update tblStudentsDistribution set code = @code, userid = 0, ModifiedDate = getdate() where DistributionID = @distributionID &#xA;&#xA;&#x9;&#x9;--Note: The insert fires a trigger that creates a _tx (transaction) record but ONLY because the cursor is processing one record at a time&#xA;&#x9;&#x9;if @PaymentID is null&#xA;&#x9;&#x9;&#x9;INSERT INTO dbo.tblPaymentsCollected&#xA;&#x9;&#x9;&#x9;(ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived) &#xA;&#x9;&#x9;&#x9;values&#xA;&#x9;&#x9;&#x9;(@ID, @ISBN, @Accession, @code, @price, @copies, @totalowed, @totalpaid, 0, @moddate, @sMsg, 0)&#xA;&#x9;&#x9;else&#xA;&#x9;&#x9;&#x9;update tblPaymentsCollected&#xA;&#x9;&#x9;&#x9;set Code = @code, TotalPaid = @totalpaid, userid = 0, ModifiedDate = @moddate, Notes = @sMsg&#xA;&#x9;&#x9;&#x9;where PaymentID = @PaymentID&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;--TRIGGER TAKES CARE OF THIS&#xA;&#x9;&#x9;--INSERT INTO dbo.tblPaymentsCollected_tx&#xA;&#x9;&#x9;--(PaymentID, ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived)&#xA;&#x9;&#x9;--select PaymentID, ID, ISBN, Accession, Code, Price, Copies, TotalOwed, TotalPaid, UserID, ModifiedDate, Notes, Archived&#xA;&#x9;&#x9;--from tblPaymentsCollected&#xA;&#x9;&#x9;--where id = @id and Accession = @Accession and ModifiedDate = @moddate&#xA;&#x9;end&#xA;&#x9;&#xA;&#x9;FETCH NEXT FROM curPayments INTO &#xA;&#x9;&#x9;@ID, @ISBN, @Accession, @price, @copies, @totalowed, @totalpaid, @moddate, @type, @PaymentID&#xA;&#xA;END&#xA;&#xA;CLOSE curPayments&#xA;DEALLOCATE curPayments&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -1690,6 +1690,10 @@ WHERE Accepted = 0</property>
           Id="Package\Import Data into TIPWeb-IM\Data Preparation"
           TopLeft="13.9622641509434,15.9056603773585" />
         <NodeLayout
+          Size="165,42"
+          Id="Package\Import Data into TIPWeb-IM\Insert Payments"
+          TopLeft="20,105" />
+        <NodeLayout
           Size="136,44"
           Id="Package\Import Data into TIPWeb-IM\OLD INSERT Payments"
           TopLeft="33.2264150943396,263.641509433962" />
@@ -1697,44 +1701,6 @@ WHERE Accepted = 0</property>
           Size="136,44"
           Id="Package\Import Data into TIPWeb-IM\OLD UPDATE Payments"
           TopLeft="33.0754716981132,175.792452830189" />
-        <EdgeLayout
-          Id="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
-          TopLeft="80.2075471698113,219.716981132075">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="20.9056603773586,43.9245283018868"
-              Start="0,0"
-              End="20.9056603773586,36.4245283018868">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,28.9433962264151" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,28.9433962264151"
-                    Point2="0,32.9433962264151"
-                    Point3="4,32.9433962264151" />
-                  <mssgle:LineSegment
-                    End="16.9056603773586,32.9433962264151" />
-                  <mssgle:CubicBezierSegment
-                    Point1="16.9056603773586,32.9433962264151"
-                    Point2="20.9056603773586,32.9433962264151"
-                    Point3="20.9056603773586,36.9433962264151" />
-                  <mssgle:LineSegment
-                    End="20.9056603773586,36.4245283018868" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="165,42"
-          Id="Package\Import Data into TIPWeb-IM\Insert Payments"
-          TopLeft="20,105" />
         <EdgeLayout
           Id="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint]"
           TopLeft="81.9622641509434,59.9056603773585">
@@ -1761,6 +1727,40 @@ WHERE Accepted = 0</property>
                     Point3="20.5377358490566,26.5471698113207" />
                   <mssgle:LineSegment
                     End="20.5377358490566,37.5943396226415" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Import Data into TIPWeb-IM.PrecedenceConstraints[Constraint 1]"
+          TopLeft="80.2075471698113,219.716981132075">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="20.9056603773586,43.9245283018868"
+              Start="0,0"
+              End="20.9056603773586,36.4245283018868">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28.9433962264151" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,28.9433962264151"
+                    Point2="0,32.9433962264151"
+                    Point3="4,32.9433962264151" />
+                  <mssgle:LineSegment
+                    End="16.9056603773586,32.9433962264151" />
+                  <mssgle:CubicBezierSegment
+                    Point1="16.9056603773586,32.9433962264151"
+                    Point2="20.9056603773586,32.9433962264151"
+                    Point3="20.9056603773586,36.9433962264151" />
+                  <mssgle:LineSegment
+                    End="20.9056603773586,36.4245283018868" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
