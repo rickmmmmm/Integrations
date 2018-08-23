@@ -10,7 +10,7 @@ INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
 if [ $ENVIRONMENT = "Production" ]; then
     ### Production
-    DEBUG=false
+    DEBUG=$false
     LAUNCH_NEXT=true
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
@@ -148,12 +148,12 @@ echo " #### File Data Processing stage complete";
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
+if [ $LAUNCH_NEXT ] || [ $DEBUG -ne true ]; then
     echo " #### Launching the EC2 for the next step using template $TEMPLATE"
     aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
 fi
 
-if [ ! $DEBUG ]; then
+if [ $DEBUG -ne true ]; then
     echo " #### Terminate instance $INSTANCEID"
     aws ec2 terminate-instances --instance-ids $INSTANCEID;
 else

@@ -1,6 +1,7 @@
 const request = require('request');
 const configuration = require('./configuration.js');
 const Promise = require('bluebird');
+const mappings = require('./mappings.js');
 
 /**
  * Requests specific information for DataMapper project.
@@ -153,6 +154,10 @@ module.exports = {
     },
 
     upsertHeaders(token, body) {
+
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertHeaders Post starting');
+
         return new Promise((resolve, reject) => {
             return request.post(configuration.config.apiUrl + configuration.apiConfig.addHeader, {
                 body: JSON.stringify(body),
@@ -161,9 +166,13 @@ module.exports = {
                     'Authorization': 'Bearer ' + token
                 }
             }, (err, response, data) => {
+                console.log();
+                console.log(mappings.getCurrentDate() + ' upsertHeaders Post complete');
                 if (err) {
+                    console.log('post result return error');
                     reject(err);
                 } else if (response.statusCode !== 200) {
+                    console.log('response: ' + response.statusCode + ', message: ' + response.statusMessage);
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -171,6 +180,7 @@ module.exports = {
                 } else if (data) {
                     resolve(data);
                 } else {
+                    console.log('No error or data');
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -181,6 +191,10 @@ module.exports = {
     },
 
     upsertDetails(token, body) {
+
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertDetails Post starting');
+
         return new Promise((resolve, reject) => {
             request.post(configuration.config.apiUrl + configuration.apiConfig.addDetail, {
                 body: JSON.stringify(body),
@@ -189,9 +203,13 @@ module.exports = {
                     'Authorization': 'Bearer ' + token
                 }
             }, (err, response, data) => {
+                console.log();
+                console.log(mappings.getCurrentDate() + ' upsertDetails Post Complete');
                 if (err) {
+                    console.log('post result return error');
                     reject(err);
                 } else if (response.statusCode !== 200) {
+                    console.log('response: ' + response.statusCode + ', message: ' + response.statusMessage);
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -199,6 +217,7 @@ module.exports = {
                 } else if (data) {
                     resolve(data);
                 } else {
+                    console.log('No error or data');
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -209,6 +228,10 @@ module.exports = {
     },
 
     upsertShipments(token, body) {
+
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertHeaders Post starting');
+
         return new Promise((resolve, reject) => {
             request.post(configuration.config.apiUrl + configuration.apiConfig.addShipment, {
                 body: JSON.stringify(body),
@@ -217,9 +240,13 @@ module.exports = {
                     'Authorization': 'Bearer ' + token
                 }
             }, (err, response, data) => {
+                console.log();
+                console.log(mappings.getCurrentDate() + ' upsertShipments Post Complete');
                 if (err) {
+                    console.log('post result return error');
                     reject(err);
                 } else if (response.statusCode !== 200) {
+                    console.log('response: ' + response.statusCode + ', message: ' + response.statusMessage);
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -227,6 +254,7 @@ module.exports = {
                 } else if (data) {
                     resolve(data);
                 } else {
+                    console.log('No error or data');
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -238,6 +266,9 @@ module.exports = {
 
     upsertProducts(token, body) {
 
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertProducts Post starting');
+
         return new Promise((resolve, reject) => {
             request.post(configuration.config.apiUrl + configuration.apiConfig.addProduct, {
                 body: JSON.stringify(body),
@@ -246,9 +277,13 @@ module.exports = {
                     'Authorization': 'Bearer ' + token
                 }
             }, (error, response, data) => {
+                console.log();
+                console.log(mappings.getCurrentDate() + ' upsertProducts Post Complete');
                 if (error) {
+                    console.log('post result return error');
                     reject(error);
                 } else if (response.statusCode !== 200) {
+                    console.log('response: ' + response.statusCode + ', message: ' + response.statusMessage);
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -256,6 +291,7 @@ module.exports = {
                 } else if (data) {
                     resolve(data);
                 } else {
+                    console.log('No error or data');
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -266,6 +302,10 @@ module.exports = {
     },
 
     upsertVendors(token, body) {
+
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertVendors Post starting');
+
         return new Promise((resolve, reject) => {
             request.post(configuration.config.apiUrl + configuration.apiConfig.addVendor, {
                 body: JSON.stringify(body),
@@ -274,9 +314,13 @@ module.exports = {
                     'Authorization': 'Bearer ' + token
                 }
             }, (error, response, data) => {
+                console.log();
+                console.log(mappings.getCurrentDate() + ' upsertVendors Post Complete');
                 if (error) {
+                    console.log('post result return error');
                     reject(error);
                 } else if (response.statusCode !== 200) {
+                    console.log('response: ' + response.statusCode + ', message: ' + response.statusMessage);
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage
@@ -284,6 +328,7 @@ module.exports = {
                 } else if (data) {
                     resolve(data);
                 } else {
+                    console.log('No error or data');
                     reject({
                         err: response.statusCode,
                         response: response.statusMessage

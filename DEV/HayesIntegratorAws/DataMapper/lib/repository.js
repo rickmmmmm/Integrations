@@ -518,7 +518,6 @@ module.exports = {
      * @returns {Promise<string>} Integration identifier.
      * @memberOf Repository
      */
-
     getDataSendingToApiIntegrationID(client, mapType) {
         return this.DataIntegrations.findOne({
             attributes: ['IntegrationsID'],
@@ -1089,6 +1088,9 @@ module.exports = {
             }
         });
 
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
+
         return this.PurchaseOrderHeader.count({
             // attributes: ['OrderNumber'],
             // group: ['OrderNumber'],
@@ -1103,7 +1105,10 @@ module.exports = {
             }],
             where: {
                 DataIntegrationsID: options.id,
-                ShouldSubmit: true
+                ShouldSubmit: true,
+                PurchaseDate: {
+                    [Op.gte]: targetPurchaseDate
+                }
             },
         });
     },
@@ -1116,11 +1121,32 @@ module.exports = {
             }
         });
 
+        this.PurchaseOrderHeader.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
         this.PurchaseOrderDetail.belongsTo(this.DataIntegrations, {
             foreignKey: {
                 name: 'DataIntegrationsID'
             }
         });
+
+        this.PurchaseOrderDetail.hasOne(this.PurchaseOrderHeader, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        this.PurchaseOrderHeader.hasMany(this.PurchaseOrderDetail, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
 
         return this.PurchaseOrderDetail.count({
             // attributes: ['OrderNumber', 'LineNumber'],
@@ -1132,6 +1158,16 @@ module.exports = {
                     Client: options.client,
                     DataSentToTipweb: true,
                     IntegrationsID: options.id
+                }
+            },
+            {
+                attributes: [],
+                model: this.PurchaseOrderHeader,
+                where: {
+                    DataIntegrationsID: options.id,
+                    PurchaseDate: {
+                        [Op.gte]: targetPurchaseDate
+                    }
                 }
             }],
             where: { ShouldSubmit: true, DataIntegrationsID: options.id },
@@ -1177,6 +1213,9 @@ module.exports = {
             }
         });
 
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
+
         const fields = [
             'OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID',
             'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'
@@ -1193,7 +1232,13 @@ module.exports = {
                     IntegrationsID: options.intgid
                 }
             }],
-            where: { ShouldSubmit: true, DataIntegrationsID: options.intgid },
+            where: {
+                ShouldSubmit: true,
+                DataIntegrationsID: options.intgid,
+                PurchaseDate: {
+                    [Op.gte]: targetPurchaseDate
+                }
+            },
             offset: options.offsetVal,
             limit: options.limitVal,
             order: ['OrderNumber']
@@ -1214,8 +1259,35 @@ module.exports = {
             }
         });
 
+        this.PurchaseOrderHeader.belongsTo(this.DataIntegrations, {
+            foreignKey: {
+                name: 'DataIntegrationsID'
+            }
+        });
+
+        this.PurchaseOrderDetail.hasOne(this.PurchaseOrderHeader, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        this.PurchaseOrderHeader.hasMany(this.PurchaseOrderDetail, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
+
         const fields = [
             'OrderNumber', 'LineNumber', 'Status', 'SiteID', 'FundingSource',
+            'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice',
+            'AccountCode', 'DepartmentID', 'CFDA'
+        ];
+
+        const groupByFields = [
+            'PurchaseOrderDetail.OrderNumber', 'LineNumber', 'PurchaseOrderDetail.Status', 'PurchaseOrderDetail.SiteID', 'FundingSource',
             'ProductName', 'QuantityOrdered', 'QuantityReceived', 'PurchasePrice',
             'AccountCode', 'DepartmentID', 'CFDA'
         ];
@@ -1223,13 +1295,23 @@ module.exports = {
         return this.PurchaseOrderDetail.findAll({
             // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
             attributes: fields,
-            group: fields,
+            group: groupByFields,
             include: [{
                 attributes: [],
                 model: this.DataIntegrations,
                 where: {
                     Client: options.client,
                     IntegrationsID: options.intgid
+                }
+            },
+            {
+                attributes: [],
+                model: this.PurchaseOrderHeader,
+                where: {
+                    DataIntegrationsID: options.intgid,
+                    PurchaseDate: {
+                        [Op.gte]: targetPurchaseDate
+                    }
                 }
             }],
             where: { ShouldSubmit: true, DataIntegrationsID: options.intgid },
@@ -1239,6 +1321,7 @@ module.exports = {
     },
 
     escapePurchaseOrderDetails(data) {
+        // console.log(data);
         let escapedData = [];
         for (let detail of data) {
             detail.FundingSource = this.escapeString(detail.FundingSource);
@@ -1294,6 +1377,27 @@ module.exports = {
             }
         });
 
+        // this.PurchaseOrderHeader.belongsTo(this.DataIntegrations, {
+        //     foreignKey: {
+        //         name: 'DataIntegrationsID'
+        //     }
+        // });
+
+        this.Shipments.hasOne(this.PurchaseOrderHeader, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        this.PurchaseOrderHeader.hasMany(this.Shipments, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
+
         return this.Shipments.count({
             // attributes: ['OrderNumber', 'LineNumber'],
             // group: ['OrderNumber', 'LineNumber'],
@@ -1304,6 +1408,16 @@ module.exports = {
                     Client: options.client,
                     DataSentToTipweb: true,
                     IntegrationsID: options.id
+                }
+            },
+            {
+                attributes: [],
+                model: this.PurchaseOrderHeader,
+                where: {
+                    // DataIntegrationsID: options.id,
+                    PurchaseDate: {
+                        [Op.gte]: targetPurchaseDate
+                    }
                 }
             }],
             where: { ShouldSubmit: true, IntegrationsID: options.id },
@@ -1322,21 +1436,60 @@ module.exports = {
                 name: 'IntegrationsID'
             }
         });
+
+        // this.PurchaseOrderHeader.belongsTo(this.DataIntegrations, {
+        //     foreignKey: {
+        //         name: 'DataIntegrationsID'
+        //     }
+        // });
+
+        this.Shipments.hasOne(this.PurchaseOrderHeader, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
+        this.PurchaseOrderHeader.hasMany(this.Shipments, {
+            foreignKey: {
+                name: 'OrderNumber'
+            }
+        });
+
         const fields = [
             'OrderNumber', 'LineNumber', 'SiteID', 'TicketNumber',
             'QuantityShipped', 'TicketedBy', 'TicketedDate',
             'Status', 'InvoiceNumber', 'InvoiceDate'
         ];
+
+        const groupByFields = [
+            'Shipments.OrderNumber', 'LineNumber', 'Shipments.SiteID', 'TicketNumber',
+            'QuantityShipped', 'TicketedBy', 'TicketedDate',
+            'Shipments.Status', 'InvoiceNumber', 'InvoiceDate'
+        ];
+
+        var targetPurchaseDate = new Date();
+        targetPurchaseDate.setDate(targetPurchaseDate.getDate() - 365); //Set date to one year prior
+
         return this.Shipments.findAll({
             // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
             attributes: fields,
-            group: fields,
+            group: groupByFields,
             include: [{
                 attributes: [],
                 model: this.DataIntegrations,
                 where: {
                     Client: options.client,
                     IntegrationsID: options.id
+                }
+            },
+            {
+                attributes: [],
+                model: this.PurchaseOrderHeader,
+                where: {
+                    // DataIntegrationsID: options.id,
+                    PurchaseDate: {
+                        [Op.gte]: targetPurchaseDate
+                    }
                 }
             }],
             where: { ShouldSubmit: true, IntegrationsID: options.id },

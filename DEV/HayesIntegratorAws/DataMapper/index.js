@@ -1393,6 +1393,10 @@ function upsertHeaderRecords(options) {
 }
 
 function upsertDetailRecords(options) {
+
+    console.log();
+    console.log(mappings.getCurrentDate() + ' upsertDetailRecords starting at ' + options.offset + ' run ' + options.limitVal);
+
     return repository.getDetailsToUpsert({
         intgid: options.intgid,
         client: options.client,
@@ -1400,8 +1404,9 @@ function upsertDetailRecords(options) {
         offsetVal: options.offset
     }).then(result => {
         let dataToUpload = result.map(m => m.dataValues);
+
         console.log();
-        console.log(mappings.getCurrentDate() + ' upsertDetailRecords starting at ' + options.offset + ' run ' + options.limitVal);
+        console.log(mappings.getCurrentDate() + ' upsertDetailRecords got batch to upsert');
 
         return rq.upsertDetails(options.token, dataToUpload).then(data => ({ rejectedRecords: JSON.parse(data), dataToUpload }));
     }).then(({ rejectedRecords, dataToUpload }) => {
@@ -1451,9 +1456,9 @@ function upsertDetailRecords(options) {
             return 'Done';
         }
     }).catch((err) => {
-        // console.log();
-        // console.log(mappings.getCurrentDate() + ' upsertDetailRecords failed');
-        // console.log(err);
+        console.log();
+        console.log(mappings.getCurrentDate() + ' upsertDetailRecords failed');
+        console.log(err);
 
         const errorObject = {
             ErrorNumber: 500,

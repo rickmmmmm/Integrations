@@ -62,7 +62,7 @@ MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Chars
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
 echo " #### Terminate instance $INSTANCEID"
-if [ ! $DEBUG ]; then
+if [ $DEBUG -ne true ]; then
     aws ec2 terminate-instances --instance-ids $INSTANCEID
 else
     aws ec2 stop-instances --instance-ids $INSTANCEID

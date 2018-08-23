@@ -18,7 +18,7 @@ TYPE="PurchaseOrder";
 INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id);
 CURRENTDATE=$(date '+%Y-%m-%d %H:%M:%S');
 SHIPPING_TEMPLATE="intgCpsDataProcessShipping"
-if [ $ENVIRONMENT = "Production" ]; then
+if [ $ENVIRONMENT -eq "Production" ]; then
     ### Production
     DEBUG=false
     LAUNCH_NEXT=true
@@ -83,12 +83,12 @@ aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENT
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
+if [ $LAUNCH_NEXT -eq true ] || [ $DEBUG -ne true ]; then
     echo " #### Launching the EC2 for the shiphing process for template $SHIPPING_TEMPLATE"
     aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$SHIPPING_TEMPLATE;
 fi
 
-if [ ! $DEBUG ]; then
+if [ $DEBUG -ne true ]; then
     echo " #### Terminate instance $INSTANCEID"
     aws ec2 terminate-instances --instance-ids $INSTANCEID
 else
