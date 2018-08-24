@@ -5,15 +5,15 @@
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="MSANTOS_DEV"
   DTS:CreatorName="HAYESSOFT\mkallen"
-  DTS:DTSID="{17B2F09D-A5BF-4B64-8B2F-A4DB39272D2D}"
+  DTS:DTSID="{E7444B27-CFDB-4DB5-B6A4-893BCFE69425}"
   DTS:EnableConfig="True"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="14.0.0800.90"
   DTS:LocaleID="1033"
   DTS:ObjectName="Northside_TipWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="208"
-  DTS:VersionGUID="{998F8DE2-7E3C-44FE-BF19-ADD57697E44C}">
+  DTS:VersionBuild="234"
+  DTS:VersionGUID="{83293010-C170-4400-ADE2-0128D4463E0E}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[User::dataDepotServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Northside_0815;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Northside_0822;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -42,7 +42,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="dataDepotDatabase">
       <DTS:VariableValue
-        DTS:DataType="8">TipWeb_Northside_0815</DTS:VariableValue>
+        DTS:DataType="8">TipWeb_Northside_0822</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -88,7 +88,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--01&#xA;&#xA;SET NOCOUNT ON;&#xA;&#x9;IF (SELECT COUNT(*) FROM tblUnvManufacturers WHERE ManufacturerUID = 0) = 0  --evals 0&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblUnvManufacturers ON &#xA;&#x9;&#x9;&#x9;INSERT INTO tblUnvManufacturers (ManufacturerUID, ManufacturerName,&#xA;&#x9;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;&#x9;VALUES (0, 'NONE', 0, GETDATE(), 0, GETDATE())&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblUnvManufacturers OFF&#xA;&#x9;&#x9;END&#xA;&#xA;&#xA;&#xA;&#x9;INSERT INTO tblUnvManufacturers (ManufacturerName,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT Items.Manufacturer, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;LEFT JOIN tblUnvManufacturers ON UPPER(Items.Manufacturer) = UPPER(tblUnvManufacturers.ManufacturerName)&#xA;&#x9;WHERE Items.Manufacturer IS NOT NULL AND Items.Manufacturer &lt;&gt; ''&#xA;&#x9;AND Items.Manufacturer &lt;&gt; 'N/A' AND Items.Manufacturer &lt;&gt; 'NONE' AND Items.Manufacturer &lt;&gt; 'UNKNOWN'&#xA;&#x9;AND tblUnvManufacturers.ManufacturerUID IS NULL&#xA;&#x9;GROUP BY Items.Manufacturer&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ManufacturerUID = tblUnvManufacturers.ManufacturerUID&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;JOIN tblUnvManufacturers ON UPPER(Items.Manufacturer) = UPPER(tblUnvManufacturers.ManufacturerName)&#xA;&#x9;WHERE Items.Manufacturer IS NOT NULL AND Items.Manufacturer &lt;&gt; ''&#xA;&#x9;AND Items.Manufacturer &lt;&gt; 'N/A' AND Items.Manufacturer &lt;&gt; 'NONE' AND Items.Manufacturer &lt;&gt; 'UNKNOWN'&#xA;&#x9;AND (Items.ManufacturerUID IS NULL&#xA;&#x9;OR Items.ManufacturerUID &lt;&gt; tblUnvManufacturers.ManufacturerUID)&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ManufacturerUID = 0&#xA;&#x9;WHERE ManufacturerUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--01&#xA;&#xA;SET NOCOUNT ON;&#xA;&#x9;IF (SELECT COUNT(*) FROM tblUnvManufacturers WHERE ManufacturerUID = 0) = 0  --evals 0&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;set Identity_Insert tblUnvManufacturers on &#xA;&#x9;&#x9;&#x9;INSERT INTO tblUnvManufacturers (ManufacturerUID, ManufacturerName, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;&#x9;VALUES (0, 'None', 0, GETDATE(), 0, GETDATE())&#xA;&#x9;&#x9;&#x9;set Identity_Insert tblUnvManufacturers oFF&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;update _ETL_Items set Manufacturer = 'None'&#x9;where isNull(Manufacturer, '') in ('UNKNOWN','NONE', 'N/A', '')&#xA;&#xA;&#x9;update _ETL_Inventory set Manufacturer = 'None'&#x9;where isNull(Manufacturer, '') in ('UNKNOWN','NONE', 'N/A', '')&#xA;&#xA;&#xA;&#x9;INSERT INTO tblUnvManufacturers (ManufacturerName,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT Items.Manufacturer, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;LEFT JOIN tblUnvManufacturers ON UPPER(Items.Manufacturer) = UPPER(tblUnvManufacturers.ManufacturerName)&#xA;&#x9;where tblUnvManufacturers.ManufacturerUID is null&#xA;&#x9;GROUP BY Items.Manufacturer&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ManufacturerUID = tblUnvManufacturers.ManufacturerUID&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;JOIN tblUnvManufacturers ON UPPER(Items.Manufacturer) = UPPER(tblUnvManufacturers.ManufacturerName)&#xA;&#x9;WHERE (Items.ManufacturerUID IS NULL &#x9;OR Items.ManufacturerUID &lt;&gt; tblUnvManufacturers.ManufacturerUID)&#xA;&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ManufacturerUID = 0&#xA;&#x9;WHERE ManufacturerUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -122,7 +122,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--03&#xA;SET NOCOUNT ON;&#xA;&#x9;IF (SELECT COUNT(*) FROM tblTechItemTypes WHERE ItemTypeUID = 0) = 0 --evals false&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblTechItemTypes ON &#xA;&#x9;&#x9;&#x9;INSERT INTO tblTechItemTypes (ItemTypeUID, ItemTypeName, ItemTypeDescription,&#xA;&#x9;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;&#x9;VALUES (0, 'NONE', NULL, 0, GETDATE(), 0, GETDATE())&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblTechItemTypes OFF&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ProductTypeDescription = ''&#xA;&#x9;WHERE ProductTypeDescription IS NULL&#xA;&#x9;OR ProductTypeDescription = 'NONE'&#xA;&#x9;OR ProductTypeDescription = 'N/A'&#xA;&#x9;OR ProductTypeDescription = 'UNKNOWN'&#xA;&#xA;&#x9;INSERT INTO tblTechItemTypes (ItemTypeName, ItemTypeDescription,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT Items.ProductType,&#xA;&#x9;CASE WHEN MAX(Items.ProductTypeDescription) &lt;&gt; ''&#xA;&#x9;THEN MAX(Items.ProductTypeDescription)&#xA;&#x9;ELSE Items.ProductType END,&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;LEFT JOIN tblTechItemTypes ON UPPER(Items.ProductType) = UPPER(tblTechItemTypes.ItemTypeName)&#xA;&#x9;WHERE Items.ProductType IS NOT NULL AND Items.ProductType &lt;&gt; ''&#xA;&#x9;AND Items.ProductType &lt;&gt; 'N/A' AND Items.ProductType &lt;&gt; 'NONE' AND Items.ProductType &lt;&gt; 'UNKNOWN'&#xA;&#x9;AND tblTechItemTypes.ItemTypeUID IS NULL&#xA;&#x9;GROUP BY Items.ProductType&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ItemTypeUID = tblTechItemTypes.ItemTypeUID&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;JOIN tblTechItemTypes ON UPPER(Items.ProductType) = UPPER(tblTechItemTypes.ItemTypeName)&#xA;&#x9;WHERE Items.ProductType IS NOT NULL AND Items.ProductType &lt;&gt; ''&#xA;&#x9;AND Items.ProductType &lt;&gt; 'N/A' AND Items.ProductType &lt;&gt; 'NONE' AND Items.ProductType &lt;&gt; 'UNKNOWN'&#xA;&#x9;AND (Items.ItemTypeUID IS NULL&#xA;&#x9;OR Items.ItemTypeUID &lt;&gt; tblTechItemTypes.ItemTypeUID)&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ItemTypeUID = 0&#xA;&#x9;WHERE ItemTypeUID IS NULL&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemTypeUID = eItem.ItemTypeUID&#xA;&#x9;FROM _ETL_Inventory AS Tags&#xA;&#x9;JOIN _ETL_Items eItem ON  UPPER(Tags.ProductType) = UPPER(eItem.ProductType)&#xA;&#x9;WHERE Tags.ItemTypeUID IS NULL&#xA;&#x9;OR (Tags.ItemTypeUID &lt;&gt; eItem.ItemTypeUID)&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemTypeUID = 0&#xA;&#x9;WHERE ItemTypeUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--03&#xA;SET NOCOUNT ON;&#xA;&#x9;IF (SELECT COUNT(*) FROM tblTechItemTypes WHERE ItemTypeUID = 0) = 0 --evals false&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblTechItemTypes ON &#xA;&#x9;&#x9;&#x9;INSERT INTO tblTechItemTypes (ItemTypeUID, ItemTypeName, ItemTypeDescription,&#xA;&#x9;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;&#x9;VALUES (0, 'NONE', NULL, 0, GETDATE(), 0, GETDATE())&#xA;&#x9;&#x9;&#x9;SET IDENTITY_INSERT tblTechItemTypes OFF&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ProductTypeDescription = ''&#xA;&#x9;WHERE ProductTypeDescription IS NULL&#xA;&#x9;OR ProductTypeDescription = 'NONE'&#xA;&#x9;OR ProductTypeDescription = 'N/A'&#xA;&#x9;OR ProductTypeDescription = 'UNKNOWN'&#xA;&#x9;GO&#xA;&#xA;&#x9;INSERT INTO tblTechItemTypes (ItemTypeName, ItemTypeDescription,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT etl.ProductType, etl.ProductType,&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Inventory AS etl&#xA;&#x9;LEFT JOIN tblTechItemTypes tty ON UPPER(etl.ProductType) = UPPER(tty.ItemTypeName)&#xA;&#x9;where tty.ItemTypeUID is null&#xA;&#x9;GROUP BY etl.ProductType&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ItemTypeUID = tblTechItemTypes.ItemTypeUID&#xA;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;JOIN tblTechItemTypes ON UPPER(Items.ProductType) = UPPER(tblTechItemTypes.ItemTypeName)&#xA;&#x9;WHERE Items.ProductType IS NOT NULL AND Items.ProductType &lt;&gt; ''&#xA;&#x9;AND Items.ProductType &lt;&gt; 'N/A' AND Items.ProductType &lt;&gt; 'NONE' AND Items.ProductType &lt;&gt; 'UNKNOWN'&#xA;&#x9;AND (Items.ItemTypeUID IS NULL&#xA;&#x9;OR Items.ItemTypeUID &lt;&gt; tblTechItemTypes.ItemTypeUID)&#xA;&#x9;GO&#xA;&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemTypeUID = eItem.ItemTypeUID&#xA;&#x9;FROM _ETL_Inventory AS Tags&#xA;&#x9;JOIN _ETL_Items eItem ON  UPPER(Tags.ProductType) = UPPER(eItem.ProductType)&#xA;&#x9;WHERE Tags.ItemTypeUID IS NULL&#xA;&#x9;OR (Tags.ItemTypeUID &lt;&gt; eItem.ItemTypeUID)&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemTypeUID = 0&#xA;&#x9;WHERE ItemTypeUID IS NULL&#xA;&#x9;GO&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -139,7 +139,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--04&#xA;&#xA;&#x9;SET NOCOUNT ON;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET Model = ''&#xA;&#x9;WHERE Model IS NULL&#xA;&#x9;OR Model = 'N/A'&#xA;&#x9;OR Model = 'NONE'&#xA;&#x9;OR Model = 'UNKNOWN'&#xA;&#xA;&#xA;&#x9;&#x9;DECLARE @PRODNUM AS INT&#xA;&#x9;&#x9;DECLARE @COUNT AS INT&#xA;&#x9;&#x9;SELECT @PRODNUM = Value - 1 FROM tblUnvCounter WHERE CounterUID = 4&#xA;&#x9;&#x9;INSERT INTO tblTechItems (ItemNumber, ItemName, ItemDescription, ItemTypeUID, ModelNumber, ManufacturerUID,&#xA;&#x9;&#x9;ItemSuggestedPrice, AreaUID, ItemNotes, SKU, SerialRequired, ProjectedLife, CustomField1, CustomField2,&#xA;&#x9;&#x9;CustomField3, Active, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;SELECT CONVERT(NVARCHAR, ROW_NUMBER() OVER(ORDER BY Items.ProductName, Items.Model) + @PRODNUM),&#xA;&#x9;&#x9;Items.ProductName, MAX(ISNULL(Items.ProductDescription, '')), MAX(ISNULL(Items.ItemTypeUID, 0)),&#xA;&#x9;&#x9;Items.Model, Items.ManufacturerUID, MAX(ISNULL(Items.SuggestedPrice, 0.0)), Items.AreaUID,&#xA;&#x9;&#x9;'INTG CATALOG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120),&#xA;&#x9;&#x9;MAX(ISNULL(Items.SKU, '')), 0, MAX(ISNULL(Items.ProjectedLife, 0)), MAX(ISNULL(Items.OtherField1, '')),&#xA;&#x9;&#x9;MAX(ISNULL(Items.OtherField2, '')), MAX(ISNULL(Items.OtherField3, '')), 1, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;&#x9;LEFT JOIN tblTechItems ON UPPER(Items.ProductName) = UPPER(tblTechItems.ItemName)&#xA;&#x9;&#x9;&#x9;AND UPPER(ISNULL(Items.Model, '')) = UPPER(ISNULL(tblTechItems.ModelNumber, ''))&#xA;&#x9;&#x9;&#x9;AND Items.ManufacturerUID = tblTechItems.ManufacturerUID&#xA;&#x9;&#x9;&#x9;AND Items.AreaUID = tblTechItems.AreaUID&#xA;&#x9;&#x9;&#x9;and Items.ItemTypeUID = tblTechItems.ItemTypeUID&#xA;&#x9;&#x9;WHERE tblTechItems.ItemUID IS NULL&#xA;&#x9;&#x9;GROUP BY Items.ProductName, Items.Model, Items.ManufacturerUID, Items.AreaUID&#xA;&#x9;&#x9;SELECT @COUNT = @@ROWCOUNT&#xA;&#x9;&#x9;SELECT @PRODNUM = @PRODNUM + @COUNT&#xA;&#x9;&#x9;IF @COUNT &gt; 0&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;UPDATE tblUnvCounter SET Value = @PRODNUM + 1 WHERE CounterUID = 4&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;&#x9;SET ItemUID = tblTechItems.ItemUID, ProductNumber = tblTechItems.ItemNumber&#xA;&#x9;&#x9;FROM _ETL_Items AS Items&#xA;&#x9;&#x9;JOIN tblTechItems ON UPPER(Items.ProductName) = UPPER(tblTechItems.ItemName)&#xA;&#x9;&#x9;&#x9;AND UPPER(ISNULL(Items.Model, '')) = UPPER(ISNULL(tblTechItems.ModelNumber, ''))&#xA;&#x9;&#x9;&#x9;AND Items.ManufacturerUID = tblTechItems.ManufacturerUID&#xA;&#x9;&#x9;&#x9;AND Items.AreaUID = tblTechItems.AreaUID&#xA;&#x9;&#x9;&#x9;and Items.ItemTypeUID = tblTechItems.ItemTypeUID&#xA;&#x9;&#x9;WHERE (Items.ItemUID IS NULL&#xA;&#x9;&#x9;&#x9;OR Items.ItemUID &lt;&gt; tblTechItems.ItemUID&#xA;&#x9;&#x9;&#x9;)&#xA;&#xA;&#x9;&#x9;&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET ItemUID = 0&#xA;&#x9;WHERE ItemUID IS NULL&#xA;&#xA;&#x9;IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 1 AND ETLSettingValue = 'ProductNumber') = 0  --evals true&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;&#x9;&#x9;SET Product = ProductName&#xA;&#x9;&#x9;END&#xA;&#x9;ELSE&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;&#x9;&#x9;SET Product = ProductNumber&#xA;&#x9;&#x9;END&#xA;&#xA;&#xA;---Stragglers&#xA;SELECT @PRODNUM = Value - 1 FROM tblUnvCounter WHERE CounterUID = 4&#xA;select CONVERT(NVARCHAR, ROW_NUMBER() OVER(ORDER BY etl.ProductName, etl.Model) + @PRODNUM),&#xA;product, isNull(productdescription, '') as productdescription, etl.ItemTypeUID, Model, etl.manufacturerUID, &#xA;0 as SuggestedPrice, '' as SKU, 0 as SerialRequired, 0 as ProjectedLife, 1,&#xA;0, GETDATE(), 0, GETDATE(),&#xA;'INTG CATALOG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120)&#xA;from _ETL_Items etl&#xA;left outer join tblTechItems ttm on etl.Product = ttm.ItemName&#xA;&#x9;and etl.ItemTypeUID = ttm.ItemTypeUID&#xA;&#x9;and etl.Model = ttm.ModelNumber&#xA;&#x9;and etl.ManufacturerUID = ttm.ManufacturerUID&#xA;&#x9;and etl.AreaUID = ttm.AreaUID&#xA;where isNull(etl.itemuid, 0) = 0&#xA;and ttm.ItemUID is null&#xA;&#xA;SELECT @COUNT = @@ROWCOUNT&#xA;SELECT @PRODNUM = @PRODNUM + @COUNT&#xA;IF @COUNT &gt; 0&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE tblUnvCounter SET Value = @PRODNUM + 1 WHERE CounterUID = 4&#xA;&#x9;END&#xA;&#xA;&#xA;&#xA;--select *&#xA;update etl set ItemUID = ttm.ItemUID&#xA;from _ETL_Items etl&#xA;left outer join tblTechItems ttm on etl.Product = ttm.ItemName&#xA;&#x9;and etl.ItemTypeUID = ttm.ItemTypeUID&#xA;&#x9;and etl.Model = ttm.ModelNumber&#xA;&#x9;and etl.ManufacturerUID = ttm.ManufacturerUID&#xA;&#x9;and etl.AreaUID = ttm.AreaUID&#xA;where isNull(etl.itemuid, 0) = 0&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--04&#xA;&#xA;&#x9;SET NOCOUNT OFF&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET Model = ''&#xA;&#x9;WHERE Model IS NULL&#xA;&#x9;OR Model = 'N/A'&#xA;&#x9;OR Model = 'NONE'&#xA;&#x9;OR Model = 'UNKNOWN'&#xA;&#xA;&#xA;&#x9;&#x9;DECLARE @PRODNUM AS INT&#xA;&#x9;&#x9;DECLARE @COUNT AS INT&#xA;&#x9;&#x9;SELECT @PRODNUM = Value - 1 FROM tblUnvCounter WHERE CounterUID = 4&#xA;&#xA;&#x9;&#x9;INSERT INTO tblTechItems (ItemNumber, &#xA;&#x9;&#x9;ItemName, ItemDescription, ItemTypeUID, &#xA;&#x9;&#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice, AreaUID, &#xA;&#x9;&#x9;ItemNotes, &#xA;&#x9;&#x9;SKU, SerialRequired, ProjectedLife, Active, &#xA;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;&#xA;&#x9;select CONVERT(NVARCHAR, ROW_NUMBER() OVER(ORDER BY etl.Product, etl.Model) + @PRODNUM),&#xA;&#x9;Product, ProductDescription, ItemTypeUID, &#xA;&#x9;Model, max(ManufacturerUID), 0, 0,&#xA;&#x9;'INTG CATALOG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120),&#xA;&#x9;'', 0, 0, 1, &#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;from _ETL_Inventory etl&#xA;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;left outer join (&#xA;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;) cat&#xA;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;&#x9;and etl.Model = cat.ModelNumber and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;where cat.ItemUID is null&#xA;&#x9;group by Product, ProductDescription, ItemTypeUID, Model&#xA;&#xA;&#x9;SELECT @COUNT = @@ROWCOUNT&#xA;&#x9;SELECT @PRODNUM = @PRODNUM + @COUNT&#xA;&#x9;IF @COUNT &gt; 0&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;UPDATE tblUnvCounter SET Value = @PRODNUM + 1 WHERE CounterUID = 4&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;UPDATE etl&#xA;&#x9;&#x9;SET ItemUID = cat.ItemUID&#xA;&#x9;&#x9;from _ETL_Inventory etl&#xA;&#x9;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;&#x9;left outer join (&#xA;&#x9;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;&#x9;) cat&#xA;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;and etl.Model = cat.ModelNumber and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemUID = 0 &#xA;&#x9;WHERE ItemUID IS NULL&#xA;&#x9;GO&#xA;&#xA;&#x9;--IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 1 AND ETLSettingValue = 'ProductNumber') = 0  --evals true&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductName&#xA;&#x9;--&#x9;END&#xA;&#x9;--ELSE&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductNumber&#xA;&#x9;--&#x9;END&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -173,7 +173,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource=" --06&#xA; &#xA;&#x9;SET NOCOUNT ON;&#xA;&#xA;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;SET VendorUID = tblVendor.VendorID&#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND (Purchases.VendorUID IS NULL)&#xA;&#xA;&#xA;&#x9;INSERT INTO tblVendor (VendorName, Active, UserID, ModifiedDate, ApplicationUID,  Notes )&#xA;&#x9;SELECT Purchases.Vendor, 1, 0, GETDATE(), 2,&#xA;&#x9;'INTEGRATION IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120) &#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;LEFT JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND tblVendor.VendorID IS NULL&#xA;&#x9;GROUP BY Purchases.Vendor&#xA;&#xA;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;SET VendorUID = tblVendor.VendorID&#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND (Purchases.VendorUID IS NULL)&#xA;&#xA;&#xA;    UPDATE _ETL_Purchases&#xA;    SET VendorUID = 0&#xA;    WHERE VendorUID IS NULL&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource=" --06&#xA; &#xA;&#x9;SET NOCOUNT ON;&#xA;&#xA;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;SET VendorUID = tblVendor.VendorID&#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND (Purchases.VendorUID IS NULL)&#xA;&#xA;&#xA;&#x9;INSERT INTO tblVendor (VendorName, Active, UserID, ModifiedDate, ApplicationUID,  Notes )&#xA;&#x9;SELECT Purchases.Vendor, 1, 0, GETDATE(), 2,&#xA;&#x9;'INTG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120) &#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;LEFT JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND tblVendor.VendorID IS NULL&#xA;&#x9;GROUP BY Purchases.Vendor&#xA;&#xA;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;SET VendorUID = tblVendor.VendorID&#xA;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;JOIN tblVendor ON UPPER(Purchases.Vendor) = UPPER(tblVendor.VendorName)&#xA;&#x9;AND tblVendor.ApplicationUID = 2&#xA;&#x9;WHERE Purchases.Vendor IS NOT NULL AND Purchases.Vendor &lt;&gt; ''&#xA;&#x9;AND Purchases.Vendor not in ('N/A', 'NONE', 'UNKNOWN')&#xA;&#x9;AND (Purchases.VendorUID IS NULL)&#xA;&#xA;&#xA;    UPDATE _ETL_Purchases&#xA;    SET VendorUID = 0&#xA;    WHERE VendorUID IS NULL&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -247,6 +247,7 @@
       DTS:refId="Package\11 - Inventory ItemUID"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
       DTS:DTSID="{862464F4-8271-46C7-B788-81FE9EF2F86A}"
       DTS:ExecutableType="Microsoft.ExecuteSQLTask"
       DTS:LocaleID="-1"
@@ -274,7 +275,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--12&#xA;&#xA;&#x9;--select * --PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice, AccountCode&#xA;&#x9;update inv set PurchaseItemDetailUID = tpid.PurchaseItemDetailUID&#xA;&#x9;from _ETL_Inventory inv&#xA;&#x9;join tblTechPurchaseItemDetails tpid on inv.PurchaseUID = tpid.PurchaseUID&#xA;&#x9;and inv.ItemUID = tpid.ItemUID and inv.FundingSourceUID = tpid.FundingSourceUID &#xA;&#x9;and inv.AccountCode = tpid.AccountCode and inv.FundingSourceUID = tpid.FundingSourceUID&#xA;&#xA;&#xA;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;&#x9;SELECT inv.PurchaseUID, inv.ItemUID, inv.FundingSourceUID, 32,&#xA;&#x9;1, count(assetID),&#xA;&#x9;count(assetid), inv.PurchasePrice, inv.AccountCode,&#xA;&#x9;0, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Inventory  inv&#xA;&#x9;WHERE inv.PurchaseUID &gt; 0&#xA;&#x9;AND inv.ItemUID &gt; 0&#xA;&#x9;AND inv.PurchaseItemDetailUID IS NULL&#xA;&#x9;GROUP BY inv.PurchaseUID, inv.ItemUID, inv.FundingSourceUID, inv.PurchasePrice, inv.AccountCode&#xA;&#xA;&#x9;update inv set PurchaseItemDetailUID = tpid.PurchaseItemDetailUID&#xA;&#x9;--select *&#xA;&#x9;from _ETL_Inventory inv&#xA;&#x9;join tblTechPurchaseItemDetails tpid on inv.PurchaseUID = tpid.PurchaseUID&#xA;&#x9;and inv.ItemUID = tpid.ItemUID and inv.FundingSourceUID = tpid.FundingSourceUID &#xA;&#x9;and inv.AccountCode = tpid.AccountCode and inv.PurchasePrice = tpid.PurchasePrice&#xA;&#xA;&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;&#x9;--FROM _ETL_Purchases AS Purchases&#xA;&#x9;--JOIN tblTechDepartments ON UPPER(Purchases.Department) = UPPER(tblTechDepartments.DepartmentName)&#xA;&#x9;--WHERE Purchases.Department IS NOT NULL AND Purchases.Department &lt;&gt; ''&#xA;&#x9;--AND Purchases.Department &lt;&gt; 'N/A' AND Purchases.Department &lt;&gt; 'NONE' AND Purchases.Department &lt;&gt; 'UNKNOWN'&#xA;&#x9;--AND (Purchases.TechDepartmentUID IS NULL&#xA;&#x9;--OR Purchases.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET TechDepartmentUID = 0&#xA;&#x9;--WHERE TechDepartmentUID IS NULL&#xA;&#xA;&#x9;--IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 17 AND ETLSettingValue = 'True') = 1&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET ItemUID = Purchases.ItemUID, FundingSourceUID = Purchases.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID = Purchases.SiteAddedSiteUID, QuantityOrdered = ISNULL(Purchases.QuantityOrdered, 0),&#xA;&#x9;--&#x9;&#x9;QuantityReceived = ISNULL(Purchases.QuantityReceived, 0), PurchasePrice = ISNULL(Purchases.PurchasePrice, 0),&#xA;&#x9;--&#x9;&#x9;AccountCode = Purchases.AccountCode, LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND (TPID.ItemUID &lt;&gt; Purchases.ItemUID&#xA;&#x9;--&#x9;&#x9;OR TPID.FundingSourceUID &lt;&gt; Purchases.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;OR TPID.SiteAddedSiteUID &lt;&gt; Purchases.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;OR TPID.QuantityOrdered &lt;&gt; ISNULL(Purchases.QuantityOrdered, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.QuantityReceived &lt;&gt; ISNULL(Purchases.QuantityReceived, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.PurchasePrice &lt;&gt; ISNULL(Purchases.PurchasePrice, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.AccountCode &lt;&gt; Purchases.AccountCode)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;--&#x9;&#x9;SET PurchasePrice = TPID.PurchasePrice, FundingSourceUID = TPID.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseInventory AS TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemShipments AS TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails AS TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TI.PurchasePrice &lt;&gt; TPID.PurchasePrice&#xA;&#x9;--&#x9;&#x9;OR TI.FundingSourceUID &lt;&gt; TPID.FundingSourceUID&#xA;&#xA;&#x9;--&#x9;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;--&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;--&#x9;&#x9;SELECT Purchases.PurchaseUID, MAX(Purchases.ItemUID), MAX(Purchases.FundingSourceUID), 32,&#xA;&#x9;--&#x9;&#x9;MAX(Purchases.SiteAddedSiteUID), MAX(ISNULL(Purchases.QuantityOrdered, 0)),&#xA;&#x9;--&#x9;&#x9;MAX(ISNULL(Purchases.QuantityReceived, 0)), MAX(Purchases.PurchasePrice), MAX(Purchases.AccountCode),&#xA;&#x9;--&#x9;&#x9;Purchases.LineNumber, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;LEFT JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE Purchases.PurchaseUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND tblTechPurchaseItemDetails.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;GROUP BY Purchases.PurchaseUID, Purchases.LineNumber&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;--&#x9;&#x9;SET ItemUID = TPID.ItemUID&#xA;&#x9;--&#x9;&#x9;FROM tblTechInventory AS Inventory&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseInventory AS TPI ON Inventory.InventoryUID = TPI.InventoryUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemShipments AS TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails AS TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Inventory.ItemUID &lt;&gt; TPID.ItemUID&#xA;&#x9;--&#x9;END&#xA;&#x9;--ELSE&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET QuantityOrdered = ISNULL(Purchases.QuantityOrdered, 0),&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.QuantityOrdered &lt;&gt; ISNULL(Purchases.QuantityOrdered, 0)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET QuantityReceived = ISNULL(Purchases.QuantityReceived, 0),&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.QuantityReceived &lt;&gt; ISNULL(Purchases.QuantityReceived, 0)&#xA;&#xA;&#x9;--&#x9;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;--&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;--&#x9;&#x9;SELECT Purchases.PurchaseUID, Purchases.ItemUID, Purchases.FundingSourceUID, 32,&#xA;&#x9;--&#x9;&#x9;Purchases.SiteAddedSiteUID, MAX(ISNULL(Purchases.QuantityOrdered, 0)),&#xA;&#x9;--&#x9;&#x9;MAX(ISNULL(Purchases.QuantityReceived, 0)), Purchases.PurchasePrice, Purchases.AccountCode,&#xA;&#x9;--&#x9;&#x9;Purchases.LineNumber, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;LEFT JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE Purchases.PurchaseUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND tblTechPurchaseItemDetails.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;GROUP BY Purchases.PurchaseUID, Purchases.ItemUID, Purchases.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;Purchases.SiteAddedSiteUID, Purchases.PurchasePrice, Purchases.AccountCode, Purchases.LineNumber&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#x9;--&#x9;END&#xA;&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET PurchaseItemDetailUID = 0&#xA;&#x9;--WHERE PurchaseItemDetailUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--12&#xA;&#xA;&#x9;--select * --PurchaseUID, ItemUID, FundingSourceUID, PurchasePrice, AccountCode&#xA;&#x9;update inv set PurchaseItemDetailUID = tpid.PurchaseItemDetailUID&#xA;&#x9;from _ETL_Inventory inv&#xA;&#x9;join tblTechPurchaseItemDetails tpid on inv.PurchaseUID = tpid.PurchaseUID&#xA;&#x9;and inv.ItemUID = tpid.ItemUID and inv.FundingSourceUID = tpid.FundingSourceUID &#xA;&#x9;and isNull(inv.AccountCode, '') = isNull(tpid.AccountCode, '') and isNull(inv.PurchasePrice, 0) = isNull(tpid.PurchasePrice, 0)&#xA;&#xA;&#xA;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;&#x9;SELECT inv.PurchaseUID, inv.ItemUID, inv.FundingSourceUID, 32,&#xA;&#x9;1, count(assetID),&#xA;&#x9;count(assetid), inv.PurchasePrice, inv.AccountCode,&#xA;&#x9;0, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM _ETL_Inventory  inv&#xA;&#x9;WHERE inv.PurchaseUID &gt; 0&#xA;&#x9;AND inv.ItemUID &gt; 0&#xA;&#x9;AND inv.PurchaseItemDetailUID IS NULL&#xA;&#x9;GROUP BY inv.PurchaseUID, inv.ItemUID, inv.FundingSourceUID, inv.PurchasePrice, inv.AccountCode&#xA;&#xA;&#x9;update inv set PurchaseItemDetailUID = tpid.PurchaseItemDetailUID&#xA;&#x9;--select *&#xA;&#x9;from _ETL_Inventory inv&#xA;&#x9;join tblTechPurchaseItemDetails tpid on inv.PurchaseUID = tpid.PurchaseUID&#xA;&#x9;and inv.ItemUID = tpid.ItemUID and inv.FundingSourceUID = tpid.FundingSourceUID &#xA;&#x9;and isNull(inv.AccountCode, '') = isNull(tpid.AccountCode, '') and isNull(inv.PurchasePrice, 0) = isNull(tpid.PurchasePrice, 0)&#xA;&#xA;&#xA;------Jamey's old code&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;&#x9;--FROM _ETL_Purchases AS Purchases&#xA;&#x9;--JOIN tblTechDepartments ON UPPER(Purchases.Department) = UPPER(tblTechDepartments.DepartmentName)&#xA;&#x9;--WHERE Purchases.Department IS NOT NULL AND Purchases.Department &lt;&gt; ''&#xA;&#x9;--AND Purchases.Department &lt;&gt; 'N/A' AND Purchases.Department &lt;&gt; 'NONE' AND Purchases.Department &lt;&gt; 'UNKNOWN'&#xA;&#x9;--AND (Purchases.TechDepartmentUID IS NULL&#xA;&#x9;--OR Purchases.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET TechDepartmentUID = 0&#xA;&#x9;--WHERE TechDepartmentUID IS NULL&#xA;&#xA;&#x9;--IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 17 AND ETLSettingValue = 'True') = 1&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET ItemUID = Purchases.ItemUID, FundingSourceUID = Purchases.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID = Purchases.SiteAddedSiteUID, QuantityOrdered = ISNULL(Purchases.QuantityOrdered, 0),&#xA;&#x9;--&#x9;&#x9;QuantityReceived = ISNULL(Purchases.QuantityReceived, 0), PurchasePrice = ISNULL(Purchases.PurchasePrice, 0),&#xA;&#x9;--&#x9;&#x9;AccountCode = Purchases.AccountCode, LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND (TPID.ItemUID &lt;&gt; Purchases.ItemUID&#xA;&#x9;--&#x9;&#x9;OR TPID.FundingSourceUID &lt;&gt; Purchases.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;OR TPID.SiteAddedSiteUID &lt;&gt; Purchases.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;OR TPID.QuantityOrdered &lt;&gt; ISNULL(Purchases.QuantityOrdered, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.QuantityReceived &lt;&gt; ISNULL(Purchases.QuantityReceived, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.PurchasePrice &lt;&gt; ISNULL(Purchases.PurchasePrice, 0)&#xA;&#x9;--&#x9;&#x9;OR TPID.AccountCode &lt;&gt; Purchases.AccountCode)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;--&#x9;&#x9;SET PurchasePrice = TPID.PurchasePrice, FundingSourceUID = TPID.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseInventory AS TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemShipments AS TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails AS TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TI.PurchasePrice &lt;&gt; TPID.PurchasePrice&#xA;&#x9;--&#x9;&#x9;OR TI.FundingSourceUID &lt;&gt; TPID.FundingSourceUID&#xA;&#xA;&#x9;--&#x9;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;--&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;--&#x9;&#x9;SELECT Purchases.PurchaseUID, MAX(Purchases.ItemUID), MAX(Purchases.FundingSourceUID), 32,&#xA;&#x9;--&#x9;&#x9;MAX(Purchases.SiteAddedSiteUID), MAX(ISNULL(Purchases.QuantityOrdered, 0)),&#xA;&#x9;--&#x9;&#x9;MAX(ISNULL(Purchases.QuantityReceived, 0)), MAX(Purchases.PurchasePrice), MAX(Purchases.AccountCode),&#xA;&#x9;--&#x9;&#x9;Purchases.LineNumber, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;LEFT JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE Purchases.PurchaseUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND tblTechPurchaseItemDetails.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;GROUP BY Purchases.PurchaseUID, Purchases.LineNumber&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;--&#x9;&#x9;SET ItemUID = TPID.ItemUID&#xA;&#x9;--&#x9;&#x9;FROM tblTechInventory AS Inventory&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseInventory AS TPI ON Inventory.InventoryUID = TPI.InventoryUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemShipments AS TPIS ON TPI.PurchaseItemShipmentUID = TPIS.PurchaseItemShipmentUID&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails AS TPID ON TPIS.PurchaseItemDetailUID = TPID.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Inventory.ItemUID &lt;&gt; TPID.ItemUID&#xA;&#x9;--&#x9;END&#xA;&#x9;--ELSE&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET QuantityOrdered = ISNULL(Purchases.QuantityOrdered, 0),&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.QuantityOrdered &lt;&gt; ISNULL(Purchases.QuantityOrdered, 0)&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE tblTechPurchaseItemDetails&#xA;&#x9;--&#x9;&#x9;SET QuantityReceived = ISNULL(Purchases.QuantityReceived, 0),&#xA;&#x9;--&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM tblTechPurchaseItemDetails AS TPID&#xA;&#x9;--&#x9;&#x9;JOIN _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;ON TPID.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;WHERE TPID.QuantityReceived &lt;&gt; ISNULL(Purchases.QuantityReceived, 0)&#xA;&#xA;&#x9;--&#x9;&#x9;INSERT INTO tblTechPurchaseItemDetails (PurchaseUID, ItemUID, FundingSourceUID, StatusUID,&#xA;&#x9;--&#x9;&#x9;SiteAddedSiteUID, QuantityOrdered, QuantityReceived, PurchasePrice, AccountCode, LineNumber,&#xA;&#x9;--&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;--&#x9;&#x9;SELECT Purchases.PurchaseUID, Purchases.ItemUID, Purchases.FundingSourceUID, 32,&#xA;&#x9;--&#x9;&#x9;Purchases.SiteAddedSiteUID, MAX(ISNULL(Purchases.QuantityOrdered, 0)),&#xA;&#x9;--&#x9;&#x9;MAX(ISNULL(Purchases.QuantityReceived, 0)), Purchases.PurchasePrice, Purchases.AccountCode,&#xA;&#x9;--&#x9;&#x9;Purchases.LineNumber, 0, GETDATE(), 0, GETDATE()&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;LEFT JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE Purchases.PurchaseUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID &gt; 0&#xA;&#x9;--&#x9;&#x9;AND tblTechPurchaseItemDetails.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;GROUP BY Purchases.PurchaseUID, Purchases.ItemUID, Purchases.FundingSourceUID,&#xA;&#x9;--&#x9;&#x9;Purchases.SiteAddedSiteUID, Purchases.PurchasePrice, Purchases.AccountCode, Purchases.LineNumber&#xA;&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Purchases&#xA;&#x9;--&#x9;&#x9;SET PurchaseItemDetailUID = tblTechPurchaseItemDetails.PurchaseItemDetailUID&#xA;&#x9;--&#x9;&#x9;FROM _ETL_Purchases AS Purchases&#xA;&#x9;--&#x9;&#x9;JOIN tblTechPurchaseItemDetails ON Purchases.PurchaseUID = tblTechPurchaseItemDetails.PurchaseUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.ItemUID = tblTechPurchaseItemDetails.ItemUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.FundingSourceUID = tblTechPurchaseItemDetails.FundingSourceUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.SiteAddedSiteUID = tblTechPurchaseItemDetails.SiteAddedSiteUID&#xA;&#x9;--&#x9;&#x9;AND Purchases.PurchasePrice = tblTechPurchaseItemDetails.PurchasePrice&#xA;&#x9;--&#x9;&#x9;AND Purchases.AccountCode = tblTechPurchaseItemDetails.AccountCode&#xA;&#x9;--&#x9;&#x9;AND Purchases.LineNumber = tblTechPurchaseItemDetails.LineNumber&#xA;&#x9;--&#x9;&#x9;WHERE (Purchases.PurchaseItemDetailUID IS NULL&#xA;&#x9;--&#x9;&#x9;OR Purchases.PurchaseItemDetailUID &lt;&gt; tblTechPurchaseItemDetails.PurchaseItemDetailUID)&#xA;&#x9;--&#x9;END&#xA;&#xA;&#x9;--UPDATE _ETL_Purchases&#xA;&#x9;--SET PurchaseItemDetailUID = 0&#xA;&#x9;--WHERE PurchaseItemDetailUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -719,11 +720,11 @@
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="244,42"
           Id="Package\00 -Default Room &amp; ETL Items - Opt 4, 19, &amp; 20"
-          TopLeft="156.820754716981,77.9528301886793" />
+          TopLeft="156.820754716981,76.9528301886793" />
         <NodeLayout
           Size="164,44"
           Id="Package\01 -Manufacturers"
@@ -829,7 +830,7 @@
           TopLeft="312.5,183.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="60.4528301886789,0"
               Start="0,0"
               End="52.9528301886789,0">
@@ -851,7 +852,7 @@
           TopLeft="536.952830188679,187.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="59.4528301886801,0"
               Start="0,0"
               End="51.9528301886801,0">
@@ -873,7 +874,7 @@
           TopLeft="1231.45283018868,299.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1020.95283018868,52"
               Start="0,0"
               End="-1020.95283018868,44.5">
@@ -907,7 +908,7 @@
           TopLeft="974.405660377359,385.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="30,0"
               Start="0,0"
               End="22.5,0">
@@ -929,7 +930,7 @@
           TopLeft="1189.40566037736,385.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="45.452830188681,0"
               Start="0,0"
               End="37.952830188681,0">
@@ -951,7 +952,7 @@
           TopLeft="1363.85849056604,407.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1139.54716981132,59"
               Start="0,0"
               End="-1139.54716981132,51.5">
@@ -985,7 +986,7 @@
           TopLeft="306.311320754717,487.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="78.0000000000031,0"
               Start="0,0"
               End="70.5000000000031,0">
@@ -1007,7 +1008,7 @@
           TopLeft="637.31132075472,488.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="48.6415094339588,0"
               Start="0,0"
               End="41.1415094339588,0">
@@ -1029,7 +1030,7 @@
           TopLeft="332.5,378.787735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="54.35849056604,0"
               Start="0,0"
               End="46.85849056604,0">
@@ -1051,7 +1052,7 @@
           TopLeft="966.952830188679,489.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="97.5471698113211,9"
               Start="0,0"
               End="90.0471698113211,9">
@@ -1085,7 +1086,7 @@
           TopLeft="1216,519.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-955.5,63.11320754717"
               Start="0,0"
               End="-955.5,55.61320754717">
@@ -1119,7 +1120,7 @@
           TopLeft="760.405660377359,186.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="56.4528301886789,0"
               Start="0,0"
               End="48.9528301886789,0">
@@ -1141,7 +1142,7 @@
           TopLeft="735.952830188679,608.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="51.4528301886801,0"
               Start="0,0"
               End="43.9528301886801,0">
@@ -1163,7 +1164,7 @@
           TopLeft="389.5,607.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="57.4528301886789,0"
               Start="0,0"
               End="49.9528301886789,0">
@@ -1185,7 +1186,7 @@
           TopLeft="928.905660377359,638.858490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-584.047169811319,65"
               Start="0,0"
               End="-584.047169811319,57.5">
@@ -1219,7 +1220,7 @@
           TopLeft="458.85849056604,727.358490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="164.45283018868,0"
               Start="0,0"
               End="156.95283018868,0">
@@ -1238,30 +1239,30 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 24]"
-          TopLeft="278.820754716981,119.952830188679">
+          TopLeft="278.820754716981,118.952830188679">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-48.3207547169811,39.9245283018867"
+              StartConnector="{x:Null}"
+              EndConnector="-48.320754716981,40.9245283018867"
               Start="0,0"
-              End="-48.3207547169811,32.4245283018867">
+              End="-48.320754716981,33.4245283018867">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,15.9622641509433" />
+                    End="0,16.4622641509433" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,15.9622641509433"
-                    Point2="0,19.9622641509433"
-                    Point3="-4,19.9622641509433" />
+                    Point1="0,16.4622641509433"
+                    Point2="0,20.4622641509433"
+                    Point3="-4,20.4622641509433" />
                   <mssgle:LineSegment
-                    End="-44.3207547169811,19.9622641509433" />
+                    End="-44.320754716981,20.4622641509433" />
                   <mssgle:CubicBezierSegment
-                    Point1="-44.3207547169811,19.9622641509433"
-                    Point2="-48.3207547169811,19.9622641509433"
-                    Point3="-48.3207547169811,23.9622641509433" />
+                    Point1="-44.320754716981,20.4622641509433"
+                    Point2="-48.320754716981,20.4622641509433"
+                    Point3="-48.320754716981,24.4622641509433" />
                   <mssgle:LineSegment
-                    End="-48.3207547169811,32.4245283018867" />
+                    End="-48.320754716981,33.4245283018867" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1275,7 +1276,7 @@
           TopLeft="622,277.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="49.405660377359,0"
               Start="0,0"
               End="41.905660377359,0">
@@ -1297,7 +1298,7 @@
           TopLeft="1002.85849056604,182.759433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="44.4528301886821,0"
               Start="0,0"
               End="36.9528301886821,0">
@@ -1319,7 +1320,7 @@
           TopLeft="1244.31132075472,184.259433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="53,0"
               Start="0,0"
               End="45.5,0">
@@ -1341,7 +1342,7 @@
           TopLeft="1379.31132075472,208.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1131.95283018868,41.264150943396"
               Start="0,0"
               End="-1131.95283018868,33.764150943396">
@@ -1375,7 +1376,7 @@
           TopLeft="350.85849056604,274.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="38.14150943396,0"
               Start="0,0"
               End="30.64150943396,0">
@@ -1397,7 +1398,7 @@
           TopLeft="855.405660377359,277.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="43.5471698113199,0"
               Start="0,0"
               End="36.0471698113199,0">
@@ -1419,7 +1420,7 @@
           TopLeft="1103.95283018868,276.735849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="32,0"
               Start="0,0"
               End="24.5,0">
@@ -1441,7 +1442,7 @@
           TopLeft="646.85849056604,384.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="50.547169811319,0"
               Start="0,0"
               End="43.047169811319,0">
@@ -1478,7 +1479,7 @@
         <AnnotationLayout
           Text="b"
           ParentId="Package"
-          FontInfo="{assembly:Null}"
+          FontInfo="{x:Null}"
           Size="38,42"
           Id="c4934f7f-d080-4b61-b3e1-fc203fad37ef"
           TopLeft="3199,275" />
