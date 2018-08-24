@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Northside_TipWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="234"
-  DTS:VersionGUID="{83293010-C170-4400-ADE2-0128D4463E0E}">
+  DTS:VersionBuild="235"
+  DTS:VersionGUID="{064BC072-6EE4-4744-80BE-2F2951DF8DF0}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -139,7 +139,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--04&#xA;&#xA;&#x9;SET NOCOUNT OFF&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET Model = ''&#xA;&#x9;WHERE Model IS NULL&#xA;&#x9;OR Model = 'N/A'&#xA;&#x9;OR Model = 'NONE'&#xA;&#x9;OR Model = 'UNKNOWN'&#xA;&#xA;&#xA;&#x9;&#x9;DECLARE @PRODNUM AS INT&#xA;&#x9;&#x9;DECLARE @COUNT AS INT&#xA;&#x9;&#x9;SELECT @PRODNUM = Value - 1 FROM tblUnvCounter WHERE CounterUID = 4&#xA;&#xA;&#x9;&#x9;INSERT INTO tblTechItems (ItemNumber, &#xA;&#x9;&#x9;ItemName, ItemDescription, ItemTypeUID, &#xA;&#x9;&#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice, AreaUID, &#xA;&#x9;&#x9;ItemNotes, &#xA;&#x9;&#x9;SKU, SerialRequired, ProjectedLife, Active, &#xA;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;&#xA;&#x9;select CONVERT(NVARCHAR, ROW_NUMBER() OVER(ORDER BY etl.Product, etl.Model) + @PRODNUM),&#xA;&#x9;Product, ProductDescription, ItemTypeUID, &#xA;&#x9;Model, max(ManufacturerUID), 0, 0,&#xA;&#x9;'INTG CATALOG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120),&#xA;&#x9;'', 0, 0, 1, &#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;from _ETL_Inventory etl&#xA;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;left outer join (&#xA;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;) cat&#xA;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;&#x9;and etl.Model = cat.ModelNumber and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;where cat.ItemUID is null&#xA;&#x9;group by Product, ProductDescription, ItemTypeUID, Model&#xA;&#xA;&#x9;SELECT @COUNT = @@ROWCOUNT&#xA;&#x9;SELECT @PRODNUM = @PRODNUM + @COUNT&#xA;&#x9;IF @COUNT &gt; 0&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;UPDATE tblUnvCounter SET Value = @PRODNUM + 1 WHERE CounterUID = 4&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;UPDATE etl&#xA;&#x9;&#x9;SET ItemUID = cat.ItemUID&#xA;&#x9;&#x9;from _ETL_Inventory etl&#xA;&#x9;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;&#x9;left outer join (&#xA;&#x9;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;&#x9;) cat&#xA;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;and etl.Model = cat.ModelNumber and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemUID = 0 &#xA;&#x9;WHERE ItemUID IS NULL&#xA;&#x9;GO&#xA;&#xA;&#x9;--IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 1 AND ETLSettingValue = 'ProductNumber') = 0  --evals true&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductName&#xA;&#x9;--&#x9;END&#xA;&#x9;--ELSE&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductNumber&#xA;&#x9;--&#x9;END&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--04&#xA;&#xA;&#x9;SET NOCOUNT OFF&#xA;&#x9;UPDATE _ETL_Items&#xA;&#x9;SET Model = ''&#xA;&#x9;WHERE Model IS NULL&#xA;&#x9;OR Model = 'N/A'&#xA;&#x9;OR Model = 'NONE'&#xA;&#x9;OR Model = 'UNKNOWN'&#xA;&#xA;&#xA;&#x9;&#x9;DECLARE @PRODNUM AS INT&#xA;&#x9;&#x9;DECLARE @COUNT AS INT&#xA;&#x9;&#x9;SELECT @PRODNUM = Value - 1 FROM tblUnvCounter WHERE CounterUID = 4&#xA;&#xA;&#x9;&#x9;INSERT INTO tblTechItems (ItemNumber, &#xA;&#x9;&#x9;ItemName, ItemDescription, ItemTypeUID, &#xA;&#x9;&#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice, AreaUID, &#xA;&#x9;&#x9;ItemNotes, &#xA;&#x9;&#x9;SKU, SerialRequired, ProjectedLife, Active, &#xA;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;&#xA;&#x9;&#x9;select CONVERT(NVARCHAR, ROW_NUMBER() OVER(ORDER BY etl.Product, etl.Model) + @PRODNUM),&#xA;&#x9;&#x9;Product, ProductDescription, ItemTypeUID, &#xA;&#x9;&#x9;Model, max(ManufacturerUID), 0, 0,&#xA;&#x9;&#x9;'INTG CATALOG DATA IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120),&#xA;&#x9;&#x9;'', 0, 0, 1, &#xA;&#x9;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;&#x9;from _ETL_Inventory etl&#xA;&#x9;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;&#x9;left outer join (&#xA;&#x9;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;&#x9;) cat&#xA;&#x9;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;&#x9;&#x9;and isNull(etl.Model, '') = isNull(cat.ModelNumber, '') and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;&#x9;where cat.ItemUID is null&#xA;&#x9;&#x9;group by Product, ProductDescription, ItemTypeUID, Model&#xA;&#xA;&#x9;&#x9;SELECT @COUNT = @@ROWCOUNT&#xA;&#x9;&#x9;SELECT @PRODNUM = @PRODNUM + @COUNT&#xA;&#x9;&#x9;IF @COUNT &gt; 0&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;UPDATE tblUnvCounter SET Value = @PRODNUM + 1 WHERE CounterUID = 4&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;UPDATE etl&#xA;&#x9;&#x9;SET ItemUID = cat.ItemUID&#xA;&#x9;&#x9;from _ETL_Inventory etl&#xA;&#x9;&#x9;join tblUnvManufacturers tman on tman.ManufacturerName = etl.Manufacturer &#xA;&#x9;&#x9;left outer join (&#xA;&#x9;&#x9;&#x9;select distinct itemuid, itemname, modelnumber, ItemTypeName, ManufacturerName&#xA;&#x9;&#x9;&#x9;from tblTechItems ttm&#xA;&#x9;&#x9;&#x9;join tblTechItemTypes tty on ttm.ItemTypeUID = tty.ItemTypeUID&#xA;&#x9;&#x9;&#x9;join tblUnvManufacturers tman on ttm.ManufacturerUID = tman.ManufacturerUID&#xA;&#x9;&#x9;&#x9;) cat&#xA;&#x9;&#x9;on etl.Product = cat.ItemName and etl.ProductType = cat.ItemTypeName&#xA;&#x9;&#x9;and isNull(etl.Model, '') = isNull(cat.ModelNumber, '') and etl.Manufacturer = cat.ManufacturerName&#xA;&#x9;&#x9;GO&#xA;&#x9;&#x9;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET ItemUID = 0 &#xA;&#x9;WHERE ItemUID IS NULL&#xA;&#x9;GO&#xA;&#xA;&#x9;--IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 1 AND ETLSettingValue = 'ProductNumber') = 0  --evals true&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductName&#xA;&#x9;--&#x9;END&#xA;&#x9;--ELSE&#xA;&#x9;--&#x9;BEGIN&#xA;&#x9;--&#x9;&#x9;UPDATE _ETL_Items&#xA;&#x9;--&#x9;&#x9;SET Product = ProductNumber&#xA;&#x9;--&#x9;END&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -720,7 +720,7 @@
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="244,42"
           Id="Package\00 -Default Room &amp; ETL Items - Opt 4, 19, &amp; 20"
@@ -830,7 +830,7 @@
           TopLeft="312.5,183.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="60.4528301886789,0"
               Start="0,0"
               End="52.9528301886789,0">
@@ -852,7 +852,7 @@
           TopLeft="536.952830188679,187.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="59.4528301886801,0"
               Start="0,0"
               End="51.9528301886801,0">
@@ -874,7 +874,7 @@
           TopLeft="1231.45283018868,299.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-1020.95283018868,52"
               Start="0,0"
               End="-1020.95283018868,44.5">
@@ -908,7 +908,7 @@
           TopLeft="974.405660377359,385.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="30,0"
               Start="0,0"
               End="22.5,0">
@@ -930,7 +930,7 @@
           TopLeft="1189.40566037736,385.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="45.452830188681,0"
               Start="0,0"
               End="37.952830188681,0">
@@ -952,7 +952,7 @@
           TopLeft="1363.85849056604,407.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-1139.54716981132,59"
               Start="0,0"
               End="-1139.54716981132,51.5">
@@ -986,7 +986,7 @@
           TopLeft="306.311320754717,487.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="78.0000000000031,0"
               Start="0,0"
               End="70.5000000000031,0">
@@ -1008,7 +1008,7 @@
           TopLeft="637.31132075472,488.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="48.6415094339588,0"
               Start="0,0"
               End="41.1415094339588,0">
@@ -1030,7 +1030,7 @@
           TopLeft="332.5,378.787735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="54.35849056604,0"
               Start="0,0"
               End="46.85849056604,0">
@@ -1052,7 +1052,7 @@
           TopLeft="966.952830188679,489.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="97.5471698113211,9"
               Start="0,0"
               End="90.0471698113211,9">
@@ -1086,7 +1086,7 @@
           TopLeft="1216,519.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-955.5,63.11320754717"
               Start="0,0"
               End="-955.5,55.61320754717">
@@ -1120,7 +1120,7 @@
           TopLeft="760.405660377359,186.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="56.4528301886789,0"
               Start="0,0"
               End="48.9528301886789,0">
@@ -1142,7 +1142,7 @@
           TopLeft="735.952830188679,608.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="51.4528301886801,0"
               Start="0,0"
               End="43.9528301886801,0">
@@ -1164,7 +1164,7 @@
           TopLeft="389.5,607.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="57.4528301886789,0"
               Start="0,0"
               End="49.9528301886789,0">
@@ -1186,7 +1186,7 @@
           TopLeft="928.905660377359,638.858490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-584.047169811319,65"
               Start="0,0"
               End="-584.047169811319,57.5">
@@ -1220,7 +1220,7 @@
           TopLeft="458.85849056604,727.358490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="164.45283018868,0"
               Start="0,0"
               End="156.95283018868,0">
@@ -1242,7 +1242,7 @@
           TopLeft="278.820754716981,118.952830188679">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-48.320754716981,40.9245283018867"
               Start="0,0"
               End="-48.320754716981,33.4245283018867">
@@ -1276,7 +1276,7 @@
           TopLeft="622,277.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="49.405660377359,0"
               Start="0,0"
               End="41.905660377359,0">
@@ -1298,7 +1298,7 @@
           TopLeft="1002.85849056604,182.759433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="44.4528301886821,0"
               Start="0,0"
               End="36.9528301886821,0">
@@ -1320,7 +1320,7 @@
           TopLeft="1244.31132075472,184.259433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="53,0"
               Start="0,0"
               End="45.5,0">
@@ -1342,7 +1342,7 @@
           TopLeft="1379.31132075472,208.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-1131.95283018868,41.264150943396"
               Start="0,0"
               End="-1131.95283018868,33.764150943396">
@@ -1376,7 +1376,7 @@
           TopLeft="350.85849056604,274.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="38.14150943396,0"
               Start="0,0"
               End="30.64150943396,0">
@@ -1398,7 +1398,7 @@
           TopLeft="855.405660377359,277.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="43.5471698113199,0"
               Start="0,0"
               End="36.0471698113199,0">
@@ -1420,7 +1420,7 @@
           TopLeft="1103.95283018868,276.735849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="32,0"
               Start="0,0"
               End="24.5,0">
@@ -1442,7 +1442,7 @@
           TopLeft="646.85849056604,384.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="50.547169811319,0"
               Start="0,0"
               End="43.047169811319,0">
@@ -1479,7 +1479,7 @@
         <AnnotationLayout
           Text="b"
           ParentId="Package"
-          FontInfo="{x:Null}"
+          FontInfo="{assembly:Null}"
           Size="38,42"
           Id="c4934f7f-d080-4b61-b3e1-fc203fad37ef"
           TopLeft="3199,275" />
