@@ -418,6 +418,8 @@ function stagePurchaseOrderHeaders(options) {
             mappedData.push(m);
         }
 
+        console.log('Printing Purchase Order Header Mapping!');
+
         return repository.insertHeaderRecords(mappedData).then(() => mappedData);
     }).then(mappedData => {
         return `${mappings.getCurrentDate()} Successfully inserted ${mappedData.length} into PurchaseOrderHeader table.`;
@@ -1307,6 +1309,7 @@ function upsertShipmentsRecursive(options, callback) {
 /**
  * Upsert Header records via TIPWEBAPI
  * @memberOf Commands
+ * RJ Gailey 8/28/2018 - Added State and FederalFunding
  */
 function upsertHeaderRecords(options) {
     return repository.getHeadersToUpsert({
@@ -1316,6 +1319,7 @@ function upsertHeaderRecords(options) {
         offsetVal: options.offset
     }).then(result => {
         let noteAppend = 'Hayes Integration ' + mappings.getCurrentShortDate();
+        //console.log(result);
         let dataToUpload = result.map(m => ({
             OrderNumber: m.OrderNumber,
             Status: m.Status,
@@ -1325,9 +1329,13 @@ function upsertHeaderRecords(options) {
             PurchaseDate: m.PurchaseDate,
             EstimatedDeliveryDate: m.EstimatedDeliveryDate,
             Notes: `${noteAppend} ${m.Notes || ''}`,
-            Other1: m.Other1
+            Other1: m.Other1,
+            StateFunding: m.STATEFUNDING,
+            FederalFunding: m.FEDERALFUNDING
         }));
         console.log();
+        //console.log('Debugging');
+        //console.log(dataToUpload);
         console.log(mappings.getCurrentDate() + ' upsertHeaderRecords starting at ' + options.offset + ' run ' + options.limitVal);
 
         return rq.upsertHeaders(options.token, dataToUpload).then(data => ({ rejectedRecords: JSON.parse(data), dataToUpload }));
@@ -2607,12 +2615,16 @@ function mapFromFile(options) {
                 m.IntegrationsID = dataId;
                 mappedData.push(m);
             }
-            console.log();
+            //RJ Gailey commented out console is used for debuging
+            //console.log(mappedData);
             console.log(`${mappings.getCurrentDate()} Successfully mapped ${mappedData.length} records...`);
             return repository[tableInfo].describe().then(schema => ({ schema, mappedData }));
-        }).then(({ schema, mappedData }) => {
-            for (let item of mappedData) {
-                _.each(item, (value, name) => {
+            }).then(({ schema, mappedData }) => {
+                //console.log(schema);
+                for (let item of mappedData) {
+                    _.each(item, (value, name) => {
+                        //console.log(name)
+                        //console.log(value)
                     if (~schema[name].type.indexOf('DATE')) {
                         item[name] = mappings.stringToISODate(item[name]);
                     }

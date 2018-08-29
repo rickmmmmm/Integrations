@@ -65,6 +65,8 @@ PurchaseOrderIntegrationFlatDataModel = {
     SHIPPEDTOSITE: sequelize.STRING(100),
     QUANTITYSHIPPED: sequelize.INTEGER,
     CFDA: sequelize.STRING(50),
+    STATEFUNDING: sequelize.STRING(5),
+    FEDERALFUNDING: sequelize.STRING(5),
     IntegrationsID: sequelize.STRING(100),
     Chunk: sequelize.BOOLEAN
 };
@@ -104,7 +106,9 @@ PurchaseOrderHeaderModel = {
     Notes: sequelize.STRING(500),
     Other1: sequelize.STRING(100),
     ShouldSubmit: sequelize.BOOLEAN,
-    Submitted: sequelize.BOOLEAN
+    Submitted: sequelize.BOOLEAN,
+    STATEFUNDING: sequelize.STRING(5),
+    FEDERALFUNDING: sequelize.STRING(5)
 };
 
 PurchaseOrderDetailModel = {
@@ -1004,8 +1008,8 @@ module.exports = {
      */
     getHeaderRecordsFlatData(IntegrationsID) {
         return this.PurchaseOrderIntegrationFlatData.all({
-            attributes: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE'],
-            group: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE'],
+            attributes: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE', 'STATEFUNDING', 'FEDERALFUNDING'],
+            group: ['PO_NUMBER', 'PO_DATE', 'VENDOR_ID', 'VENDOR_NAME', 'SHIPPEDTOSITE', 'STATEFUNDING', 'FEDERALFUNDING'],
             where: {
                 IntegrationsID,
                 Chunk: true
@@ -1218,7 +1222,7 @@ module.exports = {
 
         const fields = [
             'OrderNumber', 'Status', 'VendorID', 'VendorName', 'SiteID',
-            'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1'
+            'PurchaseDate', 'EstimatedDeliveryDate', 'Notes', 'Other1', 'STATEFUNDING', 'FEDERALFUNDING'
         ];
         return this.PurchaseOrderHeader.findAll({
             // attributes: { exclude: ['ShouldSubmit', 'DataIntegrationsID', 'id'] },
