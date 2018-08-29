@@ -50,20 +50,28 @@ echo " #### $TYPE Data Push process complete!"
 
 echo " #### Sending completion email ";
 if [ $ENVIRONMENT = "Production" ]; then
-    RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com,lsager@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""support@hayessoft.com""";
 else
-    # RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
-    RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""rgailey@hayessoft.com""";
 fi
-TEXTCONTENT="\nThe $TYPE Integration has completed.\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
-HTMLCONTENT="<br />The $TYPE Integration has completed.<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
-MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+TEXTCONTENT="\nThe Chicago Hayes Oracle $TYPE Integration has completed.\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The Chicago Hayes Oracle $TYPE Integration has completed.<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""Chicago Hayes Oracle $TYPE Integration Status: Completed"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
 
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
-echo " #### Terminate instance $INSTANCEID"
-if [ $DEBUG -ne true ]; then
-    aws ec2 terminate-instances --instance-ids $INSTANCEID
+echo ""
+
+if [ $DEBUG == true ]; then
+    # echo -e " #### \033[1;32m Stop instance \e[0m $INSTANCEID"
+	echo -e " #### \033[1;32m Stop instance \e[0m "
+    aws ec2 stop-instances --instance-ids $INSTANCEID;
 else
-    aws ec2 stop-instances --instance-ids $INSTANCEID
+    # echo -e " #### \033[1;32m Terminate instance \e[0m $INSTANCEID"
+	echo -e " #### \033[1;32m Terminate instance \e[0m "
+    aws ec2 terminate-instances --instance-ids $INSTANCEID;
 fi
+
+###########################################################################################################################################
+#DONE!
+###############################################################################################################################################

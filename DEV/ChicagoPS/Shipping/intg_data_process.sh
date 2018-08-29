@@ -65,14 +65,13 @@ done
 
 echo " #### Sending the file processed email"
 if [ $ENVIRONMENT = "Production" ]; then
-    RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com,lsager@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""support@hayessoft.com""";
 else
-    # RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
-    RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""rgailey@hayessoft.com""";
 fi
-TEXTCONTENT="\nThe $TYPE Integration has begun processing files: $processedFiles\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
-HTMLCONTENT="<br />The $TYPE Integration has begun processing files: $processedFilesHtml<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
-MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+TEXTCONTENT="\nThe Chicago Hayes Oracle $TYPE Integration has begun processing files: $processedFiles\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The Chicago Hayes Oracle $TYPE Integration has begun processing files: $processedFilesHtml<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""Chicago Hayes Oracle $TYPE Integration Status: Started"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
 
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
@@ -148,18 +147,28 @@ echo " #### File Data Processing stage complete";
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-if [ $LAUNCH_NEXT ] || [ $DEBUG -ne true ]; then
-    echo " #### Launching the EC2 for the next step using template $TEMPLATE"
+echo ""
+echo " #### Debug: $DEBUG and LaunchNext: $LAUNCH_NEXT "
+echo ""
+
+if [ $LAUNCH_NEXT == true ] && [ $DEBUG == false ]; then
+    #echo " #### Launching the EC2 for the next step using template $TEMPLATE"
+	echo -e " #### Launching the \033[1;32m EC2 for the next step  \e[0m using template"
     aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
 fi
 
-if [ $DEBUG -ne true ]; then
-    echo " #### Terminate instance $INSTANCEID"
-    aws ec2 terminate-instances --instance-ids $INSTANCEID;
-else
-    echo " #### Stop instance $INSTANCEID"
+echo ""
+
+if [ $DEBUG == true ]; then
+    # echo -e " #### \033[1;32m Stop instance \e[0m $INSTANCEID"
+	echo -e " #### \033[1;32m Stop instance \e[0m "
     aws ec2 stop-instances --instance-ids $INSTANCEID;
+else
+    # echo -e " #### \033[1;32m Terminate instance \e[0m $INSTANCEID"
+	echo -e " #### \033[1;32m Terminate instance \e[0m "
+    aws ec2 terminate-instances --instance-ids $INSTANCEID;
 fi
+
 ###############################################################################################################################################
 #DONE!
 ###############################################################################################################################################
