@@ -25,7 +25,7 @@ if [ $ENVIRONMENT -eq "Production" ]; then
     REGION="us-east-1"
 else
     ### QA
-    DEBUG=true
+    DEBUG=false
     LAUNCH_NEXT=false
     REGION="us-east-1"
 fi
@@ -68,14 +68,13 @@ echo " #### $TYPE Data Push process complete!"
 
 echo " #### Sending completion email ";
 if [ $ENVIRONMENT = "Production" ]; then
-    RECIPIENTS="ToAddresses=""support@hayessoft.com"",CcAddresses=""jayala@hayessoft.com,gcollazo@hayessoft.com,lsager@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""support@hayessoft.com""";
 else
-    # RECIPIENTS="ToAddresses=""lsager@hayessoft.com, gcollazo@hayessoft.com"",CcAddresses=""jayala@hayessoft.com""";
-    RECIPIENTS="ToAddresses=""gcollazo@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""rgailey@hayessoft.com""";
 fi
-TEXTCONTENT="\nThe $TYPE Integration has completed.\n\nTo access the results go to the Integration Portal and select Instance $INSTANCEID\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
-HTMLCONTENT="<br />The $TYPE Integration has completed.<br /><br />To access the results go to the Integration Portal and select Instance $INSTANCEID<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
-MESSAGE="Subject={Data=""$CLIENT $TYPE Integration Status - $CURRENTDATE"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
+TEXTCONTENT="\nThe Chicago Hayes Oracle $TYPE Integration has completed.\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
+HTMLCONTENT="<br />The Chicago Hayes Oracle $TYPE Integration has completed.<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
+MESSAGE="Subject={Data=""Chicago Hayes Oracle $TYPE Integration Status: Completed"",Charset=""ascii""},Body={Text={Data=$TEXTCONTENT,Charset=""utf8""},Html={Data=$HTMLCONTENT,Charset=""utf8""}}";
 
 aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENTS" --message "$MESSAGE";
 
@@ -83,15 +82,19 @@ aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENT
 ###############################################################################################################################################
 #Stop currently running instance and start api push instance.
 ###############################################################################################################################################
-if [ $LAUNCH_NEXT -eq true ] || [ $DEBUG -ne true ]; then
+if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
     echo " #### Launching the EC2 for the shiphing process for template $SHIPPING_TEMPLATE"
     aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$SHIPPING_TEMPLATE;
 fi
 
-if [ $DEBUG -ne true ]; then
-    echo " #### Terminate instance $INSTANCEID"
-    aws ec2 terminate-instances --instance-ids $INSTANCEID
-else
+if [ $DEBUG ]; then
     echo " #### Stop instance $INSTANCEID"
     aws ec2 stop-instances --instance-ids $INSTANCEID
+else
+	echo " #### Terminate instance $INSTANCEID"
+    aws ec2 terminate-instances --instance-ids $INSTANCEID
 fi
+
+###############################################################################################################################################
+#DONE!
+###############################################################################################################################################
