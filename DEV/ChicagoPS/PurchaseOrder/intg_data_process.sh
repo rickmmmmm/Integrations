@@ -18,7 +18,7 @@ if [ $ENVIRONMENT = "Production" ]; then
 else
     ### QA
     DEBUG=false
-    LAUNCH_NEXT=false
+    LAUNCH_NEXT=true
     AWSBUCKET="hssintg"
     FOLDER="intg_test"
     REGION="us-east-1"
@@ -167,23 +167,34 @@ aws ses send-email --from "do_not_reply@hayessoft.com" --destination "$RECIPIENT
     ###############################################################################################################################################
     #Stop currently running instance and start api push instance.
     ###############################################################################################################################################
-    if [ $LAUNCH_NEXT ] || [ ! $DEBUG ]; then
-        echo " #### Launching the EC2 for the next step using template $TEMPLATE"
+	
+	echo ""
+	echo " #### Debug: $DEBUG and LaunchNext: $LAUNCH_NEXT "
+	echo ""
+
+    if [ $LAUNCH_NEXT == true ] && [ $DEBUG == false ]; then
+        # echo " #### Launching the EC2 for the next step using template $TEMPLATE"
+		echo -e " #### Launching the \033[1;32m EC2 for the next step  \e[0m using template"
         aws ec2 run-instances --count 1 --launch-template LaunchTemplateName=$TEMPLATE;
     fi
 
-    if [ $DEBUG ]; then
-        echo " #### Stop instance $INSTANCEID"
-        aws ec2 stop-instances --instance-ids $INSTANCEID
+	echo ""
+
+    if [ $DEBUG == true ]; then
+       # echo -e " #### \033[1;32m Stop instance \e[0m $INSTANCEID"
+		echo -e " #### \033[1;32m Stop instance \e[0m "
+        aws ec2 stop-instances --instance-ids $INSTANCEID;
     else
-        echo " #### Terminate instance $INSTANCEID"
-        aws ec2 terminate-instances --instance-ids $INSTANCEID
+        # echo -e " #### \033[1;32m Terminate instance \e[0m $INSTANCEID"
+		echo -e " #### \033[1;32m Terminate instance \e[0m "
+        aws ec2 terminate-instances --instance-ids $INSTANCEID;
     fi
 
 else
-    echo " #### No Files found. Stop instance $INSTANCEID"
-    aws ec2 stop-instances --instance-ids $INSTANCEID
+    echo -e " #### \033[1;37m No Files found. \e[0m Stop instance $INSTANCEID"
+    aws ec2 stop-instances --instance-ids $INSTANCEID;
 fi
+
     ###############################################################################################################################################
     #DONE!
     ###############################################################################################################################################
