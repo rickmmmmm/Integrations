@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="DataExport"
   DTS:PackageType="5"
-  DTS:VersionBuild="5"
-  DTS:VersionGUID="{46E71567-132B-45F1-B9BD-1E9A487CAE2B}">
+  DTS:VersionBuild="6"
+  DTS:VersionGUID="{90CA3508-981F-4DA9-80DB-3AF1AF81976F}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -680,7 +680,8 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select SiteID, SiteName, StudentID, FirstName, LastName, Grade, tag, ItemName, StatusDesc --, rownum
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select SiteID, SiteName, StudentID, FirstName, LastName, Grade, tag, 
+replace(ItemName, '"', '') as ItemName, StatusDesc --, rownum
 from (
 	select 
 	row_number() over(partition by s.StudentID order by s.StudentID, StatusDesc  ) as rownum,
@@ -1916,8 +1917,11 @@ order by studentid</property>
                   description="The SQL command to be executed."
                   name="SqlCommand"
                   UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select
-[t0].[SiteID], [t0].[SiteName], [t0].[ItemTypeName] as ProductType, [t0].[ProductNumber], [t0].[ProductName], [t0].[ProductDescription],
-[t0].[Model], [t0].[SKU], [t0].[ManufacturerName], [t0].[Area], 
+[t0].[SiteID], [t0].[SiteName], [t0].[ItemTypeName] as ProductType, [t0].[ProductNumber], 
+replace([t0].[ProductName], '"', '') as ProductName,
+replace([t0].[ProductDescription], '"', '') as ProductDescription,
+replace([t0].[Model], '"', '') as Model,
+[t0].[SKU], [t0].[ManufacturerName], [t0].[Area], 
 [t0].[SuggestedPrice],  [t0].[ProjectedLife],  [t0].[ExpirationDate],  [t0].[SerialRequired],[t0].[Active], [t0].[Tag], [t0].[Serial], [t0].[AssetID],
  [t0].[CustomTagField1], [t0].[CustomTagField2], [t0].[CustomTagField3], [t0].[CustomTagField4],
  [t0].[RegionName], 
@@ -3219,13 +3223,13 @@ ORDER BY [t0].[SiteName], [t0].[ProductNumber], [t0].[Tag]</property>
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="132,42"
-          Id="Package\Tag Export"
-          TopLeft="477,97" />
-        <NodeLayout
           Size="140,42"
           Id="Package\StudentTags"
           TopLeft="485,207" />
+        <NodeLayout
+          Size="132,42"
+          Id="Package\Tag Export"
+          TopLeft="477,97" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
           TopLeft="543,139">
@@ -3264,64 +3268,18 @@ ORDER BY [t0].[SiteName], [t0].[ProductNumber], [t0].[Tag]</property>
     </LayoutInfo>
   </Package>
   <TaskHost
-    design-time-name="Package\Tag Export">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="152,42"
-          Id="Package\Tag Export\OLE DB Source"
-          TopLeft="475,122" />
-        <NodeLayout
-          Size="174,42"
-          Id="Package\Tag Export\Flat File Destination"
-          TopLeft="466,213" />
-        <EdgeLayout
-          Id="Package\Tag Export.Paths[OLE DB Source Output]"
-          TopLeft="552,164">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,49"
-              Start="0,0"
-              End="0,41.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,41.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Tag Export\OLE DB Source">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
     design-time-name="Package\StudentTags">
     <LayoutInfo>
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="152,42"
-          Id="Package\StudentTags\OLE DB Source"
-          TopLeft="538,148" />
-        <NodeLayout
           Size="172,42"
           Id="Package\StudentTags\Student Tag Export"
           TopLeft="544,241" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\StudentTags\OLE DB Source"
+          TopLeft="538,148" />
         <EdgeLayout
           Id="Package\StudentTags.Paths[OLE DB Source Output]"
           TopLeft="614,190">
@@ -3361,6 +3319,52 @@ ORDER BY [t0].[SiteName], [t0].[ProductNumber], [t0].[Tag]</property>
   </TaskHost>
   <PipelineComponentMetadata
     design-time-name="Package\StudentTags\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Tag Export">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="174,42"
+          Id="Package\Tag Export\Flat File Destination"
+          TopLeft="466,213" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Tag Export\OLE DB Source"
+          TopLeft="475,122" />
+        <EdgeLayout
+          Id="Package\Tag Export.Paths[OLE DB Source Output]"
+          TopLeft="552,164">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,49"
+              Start="0,0"
+              End="0,41.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,41.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Tag Export\OLE DB Source">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
