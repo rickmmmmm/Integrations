@@ -10,7 +10,7 @@ INSTANCEID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 CURRENTDATE=$(date '+%Y%m%d_%H%M%S');
 if [ $ENVIRONMENT = "Production" ]; then
     ### Production
-    DEBUG=$false
+    DEBUG=false
     LAUNCH_NEXT=true
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
