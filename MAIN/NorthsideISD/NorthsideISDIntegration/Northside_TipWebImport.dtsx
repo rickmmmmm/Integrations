@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Northside_TipWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="235"
-  DTS:VersionGUID="{064BC072-6EE4-4744-80BE-2F2951DF8DF0}">
+  DTS:VersionBuild="239"
+  DTS:VersionGUID="{61272026-FB9F-43E5-A99E-3FBEE175EC2D}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[User::dataDepotServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Northside_0822;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Northside_0918;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -42,7 +42,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="dataDepotDatabase">
       <DTS:VariableValue
-        DTS:DataType="8">TipWeb_Northside_0822</DTS:VariableValue>
+        DTS:DataType="8">TipWeb_Northside_0918</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -240,7 +240,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--10&#xA;&#xA;    SET NOCOUNT ON;&#xA;    DECLARE @STATUS AS VARCHAR(50)&#xA;    SELECT @STATUS = ETLSettingValue FROM _ETL_Settings WHERE ETLSettingUID = 5&#xA;    UPDATE _ETL_Inventory&#xA;    SET Status = @STATUS&#xA;    WHERE Status IS NULL&#xA;    OR Status NOT IN ('In Use', 'Available')&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET statusID = 26&#xA;    WHERE Status = 'Available'&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET statusID = 28&#xA;    WHERE Status = 'In Use'&#xA;    AND EntityTypeUID = 2&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET statusID = 31&#xA;    WHERE Status = 'In Use'&#xA;    AND EntityTypeUID = 3&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET statusID = 30&#xA;    WHERE Status = 'In Use'&#xA;    AND EntityTypeUID = 4&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechDepartments ON UPPER(Tags.Department) = UPPER(tblTechDepartments.DepartmentName)&#xA;    WHERE Tags.Department IS NOT NULL AND Tags.Department &lt;&gt; ''&#xA;    AND Tags.Department not in ('N/A', 'NONE', 'UNKNOWN')&#xA;    AND (Tags.TechDepartmentUID IS NULL&#xA;    OR Tags.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = 0&#xA;    WHERE TechDepartmentUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--10&#xA;&#xA;    SET NOCOUNT ON;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET Status = 'Available', statusID = 26&#xA;    WHERE Status = 'A'&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;    SET Status = 'Disposed', StatusID = 61&#xA;    WHERE Status = 'D'&#xA;&#x9;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET Status = 'Available', statusID = 26&#xA;    WHERE isNull(Status, '') = ''&#xA;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechDepartments ON UPPER(Tags.Department) = UPPER(tblTechDepartments.DepartmentName)&#xA;    WHERE Tags.Department IS NOT NULL AND Tags.Department &lt;&gt; ''&#xA;    AND Tags.Department not in ('N/A', 'NONE', 'UNKNOWN')&#xA;    AND (Tags.TechDepartmentUID IS NULL&#xA;    OR Tags.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = 0&#xA;    WHERE TechDepartmentUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -328,7 +328,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="--14&#xA;&#xA;&#x9;SET NOCOUNT ON;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET Serial = ''&#xA;&#x9;WHERE Serial IS NULL&#xA;&#x9;OR Serial = 'N/A'&#xA;&#x9;OR Serial = 'NONE'&#xA;&#x9;OR Serial = 'UNKNOWN'&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET InventoryUID = tblTechInventory.InventoryUID&#xA;&#x9;FROM _ETL_Inventory AS Tags&#xA;&#x9;JOIN tblTechInventory ON UPPER(Tags.AssetID) = UPPER(tblTechInventory.AssetID)&#xA;&#x9;WHERE (Tags.InventoryUID IS NULL&#xA;&#x9;OR Tags.InventoryUID &lt;&gt; tblTechInventory.InventoryUID)&#xA;&#xA;&#xA;&#x9;insert tblTechTagHistory&#xA;&#x9;(InventoryUID, Tag, OriginTag, CreatedByUserID, CreateDate)&#xA;&#x9;select ti.InventoryUID, tags.Tag, ti.Tag, 0, getdate()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Tag &lt;&gt; Tags.Tag&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET Tag = Tags.Tag,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Tag &lt;&gt; Tags.Tag&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET Serial = Tags.Serial,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Serial &lt;&gt; Tags.Serial&#xA;&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET ItemUID = Tags.ItemUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE Tags.ItemUID &gt; 0&#xA;&#x9;AND TI.ItemUID &lt;&gt; Tags.ItemUID&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET FundingSourceUID = Tags.FundingSourceUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.FundingSourceUID is null or (TI.FundingSourceUID is not null and TI.FundingSourceUID  &lt;&gt; Tags.FundingSourceUID)&#xA;&#xA;&#x9;UPDATE tblTechInventoryHistory&#xA;&#x9;SET InventoryTypeUID = tblTechInventory.InventoryTypeUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventoryHistory AS TIH&#xA;&#x9;JOIN tblTechInventory ON TIH.InventoryUID = tblTechInventory.InventoryUID&#xA;&#x9;WHERE TIH.InventoryTypeUID &lt;&gt; tblTechInventory.InventoryTypeUID&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET InventoryTypeUID = Tags.InventoryTypeUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.InventoryTypeUID &lt;&gt; Tags.InventoryTypeUID&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--14&#xA;&#xA;&#x9;SET NOCOUNT ON;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET Serial = ''&#xA;&#x9;WHERE Serial IS NULL&#xA;&#x9;OR Serial = 'N/A'&#xA;&#x9;OR Serial = 'NONE'&#xA;&#x9;OR Serial = 'UNKNOWN'&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;SET InventoryUID = tblTechInventory.InventoryUID&#xA;&#x9;FROM _ETL_Inventory AS Tags&#xA;&#x9;JOIN tblTechInventory ON UPPER(Tags.AssetID) = UPPER(tblTechInventory.AssetID)&#xA;&#x9;WHERE (Tags.InventoryUID IS NULL&#xA;&#x9;OR Tags.InventoryUID &lt;&gt; tblTechInventory.InventoryUID)&#xA;&#x9;GO&#xA;&#x9;&#xA;&#x9;insert tblTechTagHistory&#xA;&#x9;(InventoryUID, Tag, OriginTag, CreatedByUserID, CreateDate)&#xA;&#x9;select ti.InventoryUID, tags.Tag, ti.Tag, 0, getdate()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Tag &lt;&gt; Tags.Tag&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET Tag = Tags.Tag,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Tag &lt;&gt; Tags.Tag&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET Serial = Tags.Serial,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.Serial &lt;&gt; Tags.Serial&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET ItemUID = Tags.ItemUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE Tags.ItemUID &gt; 0&#xA;&#x9;AND TI.ItemUID &lt;&gt; Tags.ItemUID&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET FundingSourceUID = Tags.FundingSourceUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.FundingSourceUID is null or (TI.FundingSourceUID is not null and TI.FundingSourceUID  &lt;&gt; Tags.FundingSourceUID)&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventoryHistory&#xA;&#x9;SET InventoryTypeUID = tblTechInventory.InventoryTypeUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventoryHistory AS TIH&#xA;&#x9;JOIN tblTechInventory ON TIH.InventoryUID = tblTechInventory.InventoryUID&#xA;&#x9;WHERE TIH.InventoryTypeUID &lt;&gt; tblTechInventory.InventoryTypeUID&#xA;&#x9;GO&#xA;&#xA;&#x9;UPDATE tblTechInventory&#xA;&#x9;SET InventoryTypeUID = Tags.InventoryTypeUID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE TI.InventoryTypeUID &lt;&gt; Tags.InventoryTypeUID&#xA;&#x9;GO&#xA;&#xA;&#x9;--- Status Change to disposed&#xA;&#xA;&#xA;&#x9;INSERT INTO tblTechInventoryHistory (InventoryUID, InventoryTypeUID, InventorySourceUID,&#xA;    &#x9;SiteUID, EntityUID, EntityTypeUID, StatusUID,&#xA;    &#x9;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID,&#xA;    &#x9;InventoryHistoryNotes, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#xA;    &#x9;SELECT tti.InventoryUID, tti.InventoryTypeUID, tti.InventorySourceUID,&#xA;   &#x9; tti.SiteUID, tti.EntityUID, tti.EntityTypeUID, Tags.StatusID,&#xA;   &#x9; tti.SiteUID, tti.StatusUID, tti.EntityUID, tti.EntityTypeUID,&#xA;    &#x9;'TAG DISPOSED VIA INTEGRATION IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120), 0, GETDATE(), 0, GETDATE()&#xA;    &#x9;FROM tblTechInventory tti&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON tti.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE tags.Status = 'Disposed' and tti.StatusUID &lt;&gt; 61&#xA;&#x9;GO&#xA;&#xA;&#x9;--select * &#xA;&#x9;UPDATE ti&#xA;&#x9;SET StatusUID = Tags.StatusID,&#xA;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;WHERE tags.Status = 'Disposed'  and ti.StatusUID &lt;&gt; 61&#xA;&#x9;GO &#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -345,7 +345,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F973C22A-67E2-47EC-8692-9F3DDE19BF59}"
-          SQLTask:SqlStatementSource="&#xA;--15&#xA;&#xA;    SET NOCOUNT ON;&#xA;    UPDATE _ETL_Inventory&#xA;    SET Department = ''&#xA;    WHERE Department IS NULL&#xA;    OR Department = 'N/A'&#xA;    OR Department = 'NONE'&#xA;    OR Department = 'UNKNOWN'&#xA;    &#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechDepartments ON Tags.Department = tblTechDepartments.DepartmentName&#xA;    WHERE Tags.TechDepartmentUID IS NULL&#xA;    OR (Tags.TechDepartmentUID &gt; 0&#xA;    AND Tags.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;    &#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = 0&#xA;    WHERE TechDepartmentUID IS NULL&#xA;&#xA;    INSERT INTO tblTechInventory (InventorySourceUID, ItemUID, SiteUID, EntityUID, EntityTypeUID,&#xA;    StatusUID, TechDepartmentUID, Tag, Serial,&#xA;    FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, InventoryNotes,&#xA;    CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, AssetID, InventoryTypeUID)&#xA;    SELECT CASE WHEN Tags.PurchaseUID = 0 THEN 1 ELSE 2 END,&#xA;    Tags.ItemUID, Tags.SiteUID, Tags.EntityUID, Tags.EntityTypeUID,&#xA;    Tags.StatusID, Tags.TechDepartmentUID, Tags.Tag, Tags.Serial,&#xA;    Tags.FundingSourceUID, Tags.PurchasePrice, Tags.PurchaseDate,&#xA;    Tags.ExpirationDate, Tags.InventoryNotes, 0, GETDATE(), 0, GETDATE(), Tags.AssetID, 1&#xA;    FROM _ETL_Inventory AS Tags&#xA;    WHERE Tags.ItemUID &gt; 0&#xA;    AND Tags.SiteUID &gt; 1&#xA;    AND Tags.EntityUID &gt; 0&#xA;    AND Tags.InventoryUID IS NULL&#xA;&#x9;and Tags.AssetID not in (select AssetID from tblTechInventory)&#xA;&#x9;and Tags.Tag not in (select Tag from tblTechInventory)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET InventoryUID = tblTechInventory.InventoryUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechInventory ON Tags.AssetID = tblTechInventory.AssetID&#xA;    WHERE Tags.InventoryUID IS NULL&#xA;    OR (Tags.InventoryUID &gt; 0&#xA;    AND Tags.InventoryUID &lt;&gt; tblTechInventory.InventoryUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET InventoryUID = 0&#xA;    WHERE InventoryUID IS NULL&#xA;&#xA;    INSERT INTO tblTechInventoryHistory (InventoryUID, InventoryTypeUID, InventorySourceUID,&#xA;    SiteUID, EntityUID, EntityTypeUID, StatusUID,&#xA;    OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID,&#xA;    InventoryHistoryNotes, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;    SELECT tblTechInventory.InventoryUID, tblTechInventory.InventoryTypeUID, tblTechInventory.InventorySourceUID,&#xA;    tblTechInventory.SiteUID, tblTechInventory.EntityUID, tblTechInventory.EntityTypeUID, tblTechInventory.StatusUID,&#xA;    tblTechInventory.SiteUID, tblTechInventory.StatusUID, tblTechInventory.EntityUID, tblTechInventory.EntityTypeUID,&#xA;    'INTEGRATION IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120), 0, GETDATE(), 0, GETDATE()&#xA;    FROM tblTechInventory&#xA;    LEFT JOIN tblTechInventoryHistory ON tblTechInventory.InventoryUID = tblTechInventoryHistory.InventoryUID&#xA;    WHERE tblTechInventoryHistory.InventoryHistoryUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="&#xA;--15&#xA;&#xA;    SET NOCOUNT ON;&#xA;    UPDATE _ETL_Inventory&#xA;    SET Department = ''&#xA;    WHERE Department IS NULL&#xA;    OR Department = 'N/A'&#xA;    OR Department = 'NONE'&#xA;    OR Department = 'UNKNOWN'&#xA;    &#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = tblTechDepartments.TechDepartmentUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechDepartments ON Tags.Department = tblTechDepartments.DepartmentName&#xA;    WHERE Tags.TechDepartmentUID IS NULL&#xA;    OR (Tags.TechDepartmentUID &gt; 0&#xA;    AND Tags.TechDepartmentUID &lt;&gt; tblTechDepartments.TechDepartmentUID)&#xA;    &#xA;    UPDATE _ETL_Inventory&#xA;    SET TechDepartmentUID = 0&#xA;    WHERE TechDepartmentUID IS NULL&#xA;&#xA;    INSERT INTO tblTechInventory (InventorySourceUID, ItemUID, SiteUID, EntityUID, EntityTypeUID,&#xA;    StatusUID, TechDepartmentUID, Tag, Serial,&#xA;    FundingSourceUID, PurchasePrice, PurchaseDate, ExpirationDate, InventoryNotes,&#xA;    CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, AssetID, InventoryTypeUID)&#xA;    SELECT CASE WHEN Tags.PurchaseUID = 0 THEN 1 ELSE 2 END,&#xA;    Tags.ItemUID, Tags.SiteUID, Tags.EntityUID, Tags.EntityTypeUID,&#xA;    Tags.StatusID, Tags.TechDepartmentUID, Tags.Tag, Tags.Serial,&#xA;    Tags.FundingSourceUID, Tags.PurchasePrice, Tags.PurchaseDate,&#xA;    Tags.ExpirationDate, Tags.InventoryNotes, 0, GETDATE(), 0, GETDATE(), Tags.AssetID, 1&#xA;    FROM _ETL_Inventory AS Tags&#xA;    WHERE Tags.ItemUID &gt; 0&#xA;    AND Tags.SiteUID &gt; 1&#xA;    AND Tags.EntityUID &gt; 0&#xA;    AND Tags.InventoryUID IS NULL&#xA;&#x9;and Tags.AssetID not in (select AssetID from tblTechInventory)&#xA;&#x9;and Tags.Tag not in (select Tag from tblTechInventory)&#xA;&#x9;and Tags.Status &lt;&gt; 'Disposed'&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET InventoryUID = tblTechInventory.InventoryUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN tblTechInventory ON Tags.AssetID = tblTechInventory.AssetID&#xA;    WHERE Tags.InventoryUID IS NULL&#xA;    OR (Tags.InventoryUID &gt; 0&#xA;    AND Tags.InventoryUID &lt;&gt; tblTechInventory.InventoryUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET InventoryUID = 0&#xA;    WHERE InventoryUID IS NULL&#xA;&#xA;    INSERT INTO tblTechInventoryHistory (InventoryUID, InventoryTypeUID, InventorySourceUID,&#xA;    SiteUID, EntityUID, EntityTypeUID, StatusUID,&#xA;    OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID,&#xA;    InventoryHistoryNotes, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;    SELECT tblTechInventory.InventoryUID, tblTechInventory.InventoryTypeUID, tblTechInventory.InventorySourceUID,&#xA;    tblTechInventory.SiteUID, tblTechInventory.EntityUID, tblTechInventory.EntityTypeUID, tblTechInventory.StatusUID,&#xA;    tblTechInventory.SiteUID, tblTechInventory.StatusUID, tblTechInventory.EntityUID, tblTechInventory.EntityTypeUID,&#xA;    'INTEGRATION IMPORT ' + CONVERT(NVARCHAR(10), GETDATE(), 120), 0, GETDATE(), 0, GETDATE()&#xA;    FROM tblTechInventory&#xA;    LEFT JOIN tblTechInventoryHistory ON tblTechInventory.InventoryUID = tblTechInventoryHistory.InventoryUID&#xA;    WHERE tblTechInventoryHistory.InventoryHistoryUID IS NULL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -720,7 +720,7 @@
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="244,42"
           Id="Package\00 -Default Room &amp; ETL Items - Opt 4, 19, &amp; 20"
@@ -830,7 +830,7 @@
           TopLeft="312.5,183.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="60.4528301886789,0"
               Start="0,0"
               End="52.9528301886789,0">
@@ -852,7 +852,7 @@
           TopLeft="536.952830188679,187.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="59.4528301886801,0"
               Start="0,0"
               End="51.9528301886801,0">
@@ -874,7 +874,7 @@
           TopLeft="1231.45283018868,299.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1020.95283018868,52"
               Start="0,0"
               End="-1020.95283018868,44.5">
@@ -908,7 +908,7 @@
           TopLeft="974.405660377359,385.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="30,0"
               Start="0,0"
               End="22.5,0">
@@ -930,7 +930,7 @@
           TopLeft="1189.40566037736,385.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="45.452830188681,0"
               Start="0,0"
               End="37.952830188681,0">
@@ -952,7 +952,7 @@
           TopLeft="1363.85849056604,407.330188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1139.54716981132,59"
               Start="0,0"
               End="-1139.54716981132,51.5">
@@ -986,7 +986,7 @@
           TopLeft="306.311320754717,487.537735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="78.0000000000031,0"
               Start="0,0"
               End="70.5000000000031,0">
@@ -1008,7 +1008,7 @@
           TopLeft="637.31132075472,488.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="48.6415094339588,0"
               Start="0,0"
               End="41.1415094339588,0">
@@ -1030,7 +1030,7 @@
           TopLeft="332.5,378.787735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="54.35849056604,0"
               Start="0,0"
               End="46.85849056604,0">
@@ -1052,7 +1052,7 @@
           TopLeft="966.952830188679,489.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="97.5471698113211,9"
               Start="0,0"
               End="90.0471698113211,9">
@@ -1086,7 +1086,7 @@
           TopLeft="1216,519.745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-955.5,63.11320754717"
               Start="0,0"
               End="-955.5,55.61320754717">
@@ -1120,7 +1120,7 @@
           TopLeft="760.405660377359,186.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="56.4528301886789,0"
               Start="0,0"
               End="48.9528301886789,0">
@@ -1142,7 +1142,7 @@
           TopLeft="735.952830188679,608.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="51.4528301886801,0"
               Start="0,0"
               End="43.9528301886801,0">
@@ -1164,7 +1164,7 @@
           TopLeft="389.5,607.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="57.4528301886789,0"
               Start="0,0"
               End="49.9528301886789,0">
@@ -1186,7 +1186,7 @@
           TopLeft="928.905660377359,638.858490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-584.047169811319,65"
               Start="0,0"
               End="-584.047169811319,57.5">
@@ -1220,7 +1220,7 @@
           TopLeft="458.85849056604,727.358490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="164.45283018868,0"
               Start="0,0"
               End="156.95283018868,0">
@@ -1242,7 +1242,7 @@
           TopLeft="278.820754716981,118.952830188679">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-48.320754716981,40.9245283018867"
               Start="0,0"
               End="-48.320754716981,33.4245283018867">
@@ -1276,7 +1276,7 @@
           TopLeft="622,277.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="49.405660377359,0"
               Start="0,0"
               End="41.905660377359,0">
@@ -1298,7 +1298,7 @@
           TopLeft="1002.85849056604,182.759433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="44.4528301886821,0"
               Start="0,0"
               End="36.9528301886821,0">
@@ -1320,7 +1320,7 @@
           TopLeft="1244.31132075472,184.259433962264">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="53,0"
               Start="0,0"
               End="45.5,0">
@@ -1342,7 +1342,7 @@
           TopLeft="1379.31132075472,208.877358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1131.95283018868,41.264150943396"
               Start="0,0"
               End="-1131.95283018868,33.764150943396">
@@ -1376,7 +1376,7 @@
           TopLeft="350.85849056604,274.070754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="38.14150943396,0"
               Start="0,0"
               End="30.64150943396,0">
@@ -1398,7 +1398,7 @@
           TopLeft="855.405660377359,277.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="43.5471698113199,0"
               Start="0,0"
               End="36.0471698113199,0">
@@ -1420,7 +1420,7 @@
           TopLeft="1103.95283018868,276.735849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="32,0"
               Start="0,0"
               End="24.5,0">
@@ -1442,7 +1442,7 @@
           TopLeft="646.85849056604,384.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="50.547169811319,0"
               Start="0,0"
               End="43.047169811319,0">
@@ -1479,7 +1479,7 @@
         <AnnotationLayout
           Text="b"
           ParentId="Package"
-          FontInfo="{assembly:Null}"
+          FontInfo="{x:Null}"
           Size="38,42"
           Id="c4934f7f-d080-4b61-b3e1-fc203fad37ef"
           TopLeft="3199,275" />
