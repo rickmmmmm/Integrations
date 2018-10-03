@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="LDAP_UserProcess"
   DTS:PackageType="5"
-  DTS:VersionBuild="88"
-  DTS:VersionGUID="{69C5B375-E969-4311-A296-52ADE145BD52}">
+  DTS:VersionBuild="91"
+  DTS:VersionGUID="{C82047E3-98F5-4C05-AE3F-01356BCCEE20}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -23,12 +23,14 @@
       DTS:DTSID="{3BD8C751-7ACB-4226-A3E1-B57BECDE9178}"
       DTS:ObjectName="DB">
       <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Package::DB_ConnectionString]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[$Project::ClientDatabase]</DTS:PropertyExpression>
       <DTS:PropertyExpression
         DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Northside_0918;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-LDAP_UserProcess-{3BD8C751-7ACB-4226-A3E1-B57BECDE9178}LocalHost.TipWeb_Northside_Test;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=TipWebHostedNorthsideISD;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -266,9 +268,11 @@
       DTS:CreationName="OLEDB"
       DTS:DTSID="{D982CE1E-5039-4E15-956B-FC0E9C93FA80}"
       DTS:ObjectName="msdb">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Package::Msdb_ConnectionString]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=msdb;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-LDAP_UserProcess-{D982CE1E-5039-4E15-956B-FC0E9C93FA80}NBLAKELY-HPLT.msdb;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -278,12 +282,14 @@
       DTS:DTSID="{7741022D-2E39-4385-B31C-45F226A7B124}"
       DTS:ObjectName="ProcessDB">
       <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Package::ProcessDB_ConnectionString]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[$Project::ProcessDB]</DTS:PropertyExpression>
       <DTS:PropertyExpression
         DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=_LDAPFileProcessing;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-LDAP_UserProcess-{7741022D-2E39-4385-B31C-45F226A7B124}LocalHost.EZImportProcess;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=_LDAPFileProcessing;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -303,7 +309,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\Integration\NorthsideISD\UserList\Report\UserProcessReject_20181002.csv">
+          DTS:ConnectionString="E:\Integration\NorthsideISD\UserList\Report\UserProcessReject_20181003.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -390,6 +396,35 @@
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
+  <DTS:PackageParameters>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{B936EAD2-2760-46DD-AC29-E5773E08B24A}"
+      DTS:ObjectName="DB_ConnectionString">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=TipWebHostedNorthsideISD;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{14E69C83-830B-4079-BB7D-F879970867B4}"
+      DTS:ObjectName="Msdb_ConnectionString">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+    </DTS:PackageParameter>
+    <DTS:PackageParameter
+      DTS:CreationName=""
+      DTS:DataType="8"
+      DTS:DTSID="{B5B82354-FEB5-4B10-8B5C-82E61D3BA05B}"
+      DTS:ObjectName="ProcessDB_ConnectionString">
+      <DTS:Property
+        DTS:DataType="8"
+        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=_LDAPFileProcessing;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+    </DTS:PackageParameter>
+  </DTS:PackageParameters>
   <DTS:Variables>
     <DTS:Variable
       DTS:CreationName=""
@@ -400,7 +435,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFile">
       <DTS:VariableValue
-        DTS:DataType="8">E:\Integration\NorthsideISD\UserList\Archive\UserList_20181002.csv</DTS:VariableValue>
+        DTS:DataType="8">E:\Integration\NorthsideISD\UserList\Archive\UserList_20181003.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -429,7 +464,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="DB">
       <DTS:VariableValue
-        DTS:DataType="8">TipWeb_Northside_0918</DTS:VariableValue>
+        DTS:DataType="8">TipWebHostedNorthsideISD</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -449,7 +484,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="Mail">
       <DTS:VariableValue
-        DTS:DataType="8">nblakely@hayessoft.com</DTS:VariableValue>
+        DTS:DataType="8">gerri.rizzo@nisd.net</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -460,7 +495,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="Mailcc">
       <DTS:VariableValue
-        DTS:DataType="8">nblakely@hayessoft.com</DTS:VariableValue>
+        DTS:DataType="8">support@hayessoft.com</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -513,7 +548,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">E:\Integration\NorthsideISD\UserList\Report\UserProcessReject_20181002.csv</DTS:VariableValue>
+        DTS:DataType="8">E:\Integration\NorthsideISD\UserList\Report\UserProcessReject_20181003.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -601,6 +636,36 @@
   <Settings />
 </SettingsFile>]]></ProjectItem>
                   <ProjectItem
+                    Name="Properties\AssemblyInfo.cs"
+                    Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_d55054def1104516a600e067047d7c77.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_d55054def1104516a600e067047d7c77.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
                     Name="Properties\Settings.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
 // <auto-generated>
@@ -654,35 +719,14 @@ namespace ST_d55054def1104516a600e067047d7c77.csproj.Properties
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\AssemblyInfo.cs"
-                    Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_d55054def1104516a600e067047d7c77.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_d55054def1104516a600e067047d7c77.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                    Name="\properties\settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="\properties\resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1257,15 +1301,6 @@ namespace ST_d55054def1104516a600e067047d7c77.csproj.Properties
   </ProjectExtensions>
 </Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="\properties\settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="\properties\resources.designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
 // <auto-generated>
@@ -1724,6 +1759,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   <Settings />
 </SettingsFile>]]></ProjectItem>
                   <ProjectItem
+                    Name="Properties\AssemblyInfo.cs"
+                    Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_ff66cb35a9f6459884981840a84ebb77.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_ff66cb35a9f6459884981840a84ebb77.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
                     Name="Properties\Settings.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
 // <auto-generated>
@@ -1777,35 +1842,14 @@ namespace ST_ff66cb35a9f6459884981840a84ebb77.csproj.Properties
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\AssemblyInfo.cs"
-                    Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_ff66cb35a9f6459884981840a84ebb77.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_ff66cb35a9f6459884981840a84ebb77.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                    Name="\properties\settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="\properties\resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -2379,15 +2423,6 @@ namespace ST_ff66cb35a9f6459884981840a84ebb77.csproj.Properties
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
-                  <ProjectItem
-                    Name="\properties\settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="\properties\resources.designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
