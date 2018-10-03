@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="132"
-  DTS:VersionGUID="{98202F0F-E032-49E2-A642-E644DA8C5F23}">
+  DTS:VersionBuild="137"
+  DTS:VersionGUID="{35C7D15E-C870-42E5-B709-D409C9B6F0E7}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -134,10 +134,10 @@
       <DTS:PropertyExpression
         DTS:Name="ConnectionString">@[$Package::IMS_ConnectionString]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">"."</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagmentSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -159,29 +159,29 @@
     <DTS:PackageParameter
       DTS:CreationName=""
       DTS:DataType="8"
-      DTS:DTSID="{90F6706B-14DB-4968-8119-90240820B49F}"
+      DTS:DTSID="{746959C4-8A13-42AA-BB67-F6184F561B9E}"
       DTS:ObjectName="ClientDB_ConnectionString">
       <DTS:Property
         DTS:DataType="8"
-        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=TipWebHostedChicagoPS;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+        DTS:Name="ParameterValue">Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_0921;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
     </DTS:PackageParameter>
     <DTS:PackageParameter
       DTS:CreationName=""
       DTS:DataType="8"
-      DTS:DTSID="{B2A7D986-63BC-43E7-9CCA-775AC8F255B8}"
+      DTS:DTSID="{C5C4258D-C24D-4367-A26A-B716843B07D4}"
       DTS:ObjectName="IMS_ConnectionString">
       <DTS:Property
         DTS:DataType="8"
-        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=ImportManagmentSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+        DTS:Name="ParameterValue">Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
     </DTS:PackageParameter>
     <DTS:PackageParameter
       DTS:CreationName=""
       DTS:DataType="8"
-      DTS:DTSID="{F7A4AD29-8113-4B32-9E53-605BD719E383}"
+      DTS:DTSID="{37152EEB-DEB4-4890-8FD6-8CA14443072F}"
       DTS:ObjectName="Msdb_ConnectionString">
       <DTS:Property
         DTS:DataType="8"
-        DTS:Name="ParameterValue">Data Source=DB;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
+        DTS:Name="ParameterValue">Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;</DTS:Property>
     </DTS:PackageParameter>
   </DTS:PackageParameters>
   <DTS:Variables>
@@ -382,6 +382,17 @@
           </SOAP-ENV:Body>
         </SOAP-ENV:Envelope>
       </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{F8DEC6AF-369C-4481-A0BA-72C467C7F69F}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select distinct TransferNumber, Tag, Serial, sitename as [Site Name], RoomNumber as [Room Number], ItemName as [Product Name], &quot; +&#xA;&quot; ItemTypeName as [Product Type], convert(varchar(10), ttih.CreatedDate, 101) as TransferDate  &quot; +&#xA;&quot; from tblTechInventory tti   &quot; +&#xA;&quot; join tblTechInventoryHistory ttih on tti.InventoryUID = ttih.InventoryUID and OriginEntityTypeUID = 6 and OriginEntityUID =   &quot; + (DT_STR, 10, 1252) @[User::TransferUID] +&#xA;&quot; join tblTechTransfers ttr on ttr.TransferUID = ttih.OriginEntityUID  &quot; +&#xA;&quot; join tblTechSites ts on ts.SiteUID = tti.SiteUID  &quot; +&#xA;&quot; join tblUnvRooms rm on tti.EntityUID = rm.RoomUID  &quot; +&#xA;&quot; join tblTechItems ttm on tti.ItemUID = ttm.ItemUID  &quot; +&#xA;&quot; join tblTechItemTypes tty on tty.ItemTypeUID = ttm.ItemTypeUID  &quot; +&#xA;&quot; where tti.siteuid = &quot; + (DT_STR, 10, 1252)@[User::SiteUID] +&#xA;&quot; Order by TransferNumber, Tag &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TransferReportSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select distinct TransferNumber, Tag, Serial, sitename as [Site Name], RoomNumber as [Room Number], ItemName as [Product Name],  ItemTypeName as [Product Type], convert(varchar(10), ttih.CreatedDate, 101) as TransferDate   from tblTechInventory tti    join tblTechInventoryHistory ttih on tti.InventoryUID = ttih.InventoryUID and OriginEntityTypeUID = 6 and OriginEntityUID =   750 join tblTechTransfers ttr on ttr.TransferUID = ttih.OriginEntityUID   join tblTechSites ts on ts.SiteUID = tti.SiteUID   join tblUnvRooms rm on tti.EntityUID = rm.RoomUID   join tblTechItems ttm on tti.ItemUID = ttm.ItemUID   join tblTechItemTypes tty on tty.ItemTypeUID = ttm.ItemTypeUID   where tti.siteuid = 535 Order by TransferNumber, Tag </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -619,6 +630,7 @@
             <DTS:Executable
               DTS:refId="Package\Site List\Process In Transit Transfers\Get Tag List"
               DTS:CreationName="Microsoft.Pipeline"
+              DTS:DelayValidation="True"
               DTS:Description="Data Flow Task"
               DTS:DTSID="{C4F6C83F-C441-4795-96B2-D57E2AB2D0F1}"
               DTS:ExecutableType="Microsoft.Pipeline"
@@ -817,7 +829,7 @@ Order by TransferNumber, Tag</property>
                         <property
                           dataType="System.String"
                           description="The variable that contains the SQL command to be executed."
-                          name="SqlCommandVariable"></property>
+                          name="SqlCommandVariable">User::TransferReportSQL</property>
                         <property
                           dataType="System.Int32"
                           description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -830,7 +842,7 @@ Order by TransferNumber, Tag</property>
                           dataType="System.Int32"
                           description="Specifies the mode used to access the database."
                           name="AccessMode"
-                          typeConverter="AccessMode">2</property>
+                          typeConverter="AccessMode">3</property>
                         <property
                           dataType="System.String"
                           description="The mappings between the parameters in the SQL command and variables."
