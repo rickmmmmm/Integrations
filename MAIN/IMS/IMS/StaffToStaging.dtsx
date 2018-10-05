@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="StaffToStaging"
   DTS:PackageType="5"
-  DTS:VersionBuild="159"
-  DTS:VersionGUID="{06C2D71F-292E-4E96-8742-AA06E8C7D012}">
+  DTS:VersionBuild="161"
+  DTS:VersionGUID="{D8629C21-A0AC-43BF-8D73-FBF8B4D4B3D8}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=AeriesSSISImport;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-StaffToStaging-{2E479B4D-C8AD-4AF0-BA68-1DBE4C4A32F8}AeriesSSISImport;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=AeriesSSISImport;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-StaffToStaging-{2E479B4D-C8AD-4AF0-BA68-1DBE4C4A32F8}AeriesSSISImport;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -103,7 +103,7 @@
         DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=DB;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-StaffToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-StaffToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -420,7 +420,7 @@
         DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-StaffToStaging-{38041D3F-3E38-4040-964C-CEA24AEEE9C0}ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-StaffToStaging-{38041D3F-3E38-4040-964C-CEA24AEEE9C0}ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -724,6 +724,17 @@
       DTS:ObjectName="StaffFileName">
       <DTS:VariableValue
         DTS:DataType="8">StaffFile.csv</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{5199CA97-735A-401D-9296-4649DF335A70}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; SELECT distinct (case when ltrim(rtrim(isNull(SchoolCode, '0'))) = '0' then '999' else SchoolCode end) as SchoolCode, &quot; +&#xA;&quot; ID, FirstName, LastName, EmailAddress&quot; +&#xA;&quot; FROM AeriesStaff&quot; +&#xA;&quot; WHERE CustomerID =&quot; + (DT_STR, 10, 1252) @[$Package::CustomerUID] +&#xA;&quot; AND ID NOT IN ('0','') &quot; +&#xA;&quot; and ltrim(rtrim(InactiveStatusCode)) = '' &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="StaffSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> SELECT distinct (case when ltrim(rtrim(isNull(SchoolCode, '0'))) = '0' then '999' else SchoolCode end) as SchoolCode,  ID, FirstName, LastName, EmailAddress FROM AeriesStaff WHERE CustomerID =0 AND ID NOT IN ('0','')  and ltrim(rtrim(InactiveStatusCode)) = '' </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1180,7 +1191,7 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
+                  name="SqlCommandVariable">User::StaffSQL</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1193,7 +1204,7 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
                   dataType="System.Int32"
                   description="Specifies the mode used to access the database."
                   name="AccessMode"
-                  typeConverter="AccessMode">2</property>
+                  typeConverter="AccessMode">3</property>
                 <property
                   dataType="System.String"
                   description="The mappings between the parameters in the SQL command and variables."
@@ -1389,6 +1400,15 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
           ReadOnlyVariables="User::FullFileName"
           ReadWriteVariables="User::StaffFileExists">
           <ProjectItem
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+          <ProjectItem
             Name="Properties\Resources.resx"
             Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -1507,39 +1527,6 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-          <ProjectItem
-            Name="Properties\Settings.Designer.cs"
-            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties.Settings.get_Default():ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties.Sett" +
-    "ings")]
-
-namespace ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties
-{
-
-
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-
-        public static Settings Default
-        {
-            get
-            {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
           <ProjectItem
             Name="st_6ed4220165624558a5466fa153b1dbfe.csproj"
             Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="utf-16"?>
@@ -1757,6 +1744,39 @@ namespace ST_a0d9a92ef3a049948203fcb16f3e9013.csproj
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
           <ProjectItem
+            Name="Properties\Settings.Designer.cs"
+            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties.Settings.get_Default():ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties.Sett" +
+    "ings")]
+
+namespace ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties
+{
+
+
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+
+        public static Settings Default
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+          <ProjectItem
             Name="Properties\AssemblyInfo.cs"
             Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -1786,15 +1806,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-          <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5498,38 +5509,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
           <ProjectItem
-            Name="Properties\Settings.Designer.cs"
-            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties.Settings.get_Default():ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties.Sett" +
-    "ings")]
-
-namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties
-{
-
-
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-
-        public static Settings Default
-        {
-            get
-            {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="ScriptMain.cs"
             Encoding="UTF8"><![CDATA[/*
@@ -5604,6 +5591,39 @@ namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
           <ProjectItem
+            Name="Properties\Settings.Designer.cs"
+            Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties.Settings.get_Default():ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties.Sett" +
+    "ings")]
+
+namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties
+{
+
+
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+
+        public static Settings Default
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+          <ProjectItem
             Name="Properties\AssemblyInfo.cs"
             Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -5633,15 +5653,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-          <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6738,7 +6749,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Aeries Staff File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="152,42"
           Id="Package\Aeries Staff File\OLE DB Source"
@@ -6752,7 +6763,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="495,108">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="11.5,89"
               Start="0,0"
               End="11.5,81.5">

@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="TeacherToStaging"
   DTS:PackageType="5"
-  DTS:VersionBuild="175"
-  DTS:VersionGUID="{D0C9F6C1-0E00-4709-9530-D6DD0236B7ED}">
+  DTS:VersionBuild="177"
+  DTS:VersionGUID="{FBBFEBFA-9DF4-4EB6-AC06-E9BA100850E5}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=AeriesSSISImport;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-TeacherToStaging-{510B3FA7-F47A-472F-9F87-3ACE142A757C}AeriesSSISImport;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=AeriesSSISImport;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-TeacherToStaging-{510B3FA7-F47A-472F-9F87-3ACE142A757C}AeriesSSISImport;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -103,7 +103,7 @@
         DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=DB;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-TeacherToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-TeacherToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -420,7 +420,7 @@
         DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=60;Application Name=SSIS-TeacherToStaging-{38041D3F-3E38-4040-964C-CEA24AEEE9C0}ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-TeacherToStaging-{38041D3F-3E38-4040-964C-CEA24AEEE9C0}ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -750,6 +750,17 @@
       DTS:ObjectName="TeacherPrimarySite">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{C269BA30-C2EF-4822-BE7F-1B8CB7967625}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; SELECT distinct t.SchoolCode, StaffID1, FirstName, LastName, EmailAddress, Room &quot; +&#xA;&quot; FROM AeriesTeacher t &quot; +&#xA;&quot; WHERE t.CustomerID =  &quot; + (DT_STR, 10, 1252) @[$Package::CustomerUID] +&#xA;&quot; AND StaffID1 NOT IN ('0','') &quot; +&#xA;&quot; and ltrim(rtrim(InactiveStatusCode)) = '' &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TeacherSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> SELECT distinct t.SchoolCode, StaffID1, FirstName, LastName, EmailAddress, Room  FROM AeriesTeacher t  WHERE t.CustomerID =  0 AND StaffID1 NOT IN ('0','')  and ltrim(rtrim(InactiveStatusCode)) = '' </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1198,7 +1209,7 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
+                  name="SqlCommandVariable">User::TeacherSQL</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1211,7 +1222,7 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
                   dataType="System.Int32"
                   description="Specifies the mode used to access the database."
                   name="AccessMode"
-                  typeConverter="AccessMode">2</property>
+                  typeConverter="AccessMode">3</property>
                 <property
                   dataType="System.String"
                   description="The mappings between the parameters in the SQL command and variables."
@@ -1431,14 +1442,35 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
           ReadOnlyVariables="User::FullFileName"
           ReadWriteVariables="User::TeacherFileExists">
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.resx"
             Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1808,35 +1840,14 @@ namespace ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5572,14 +5583,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="ScriptMain.cs"
             Encoding="UTF8"><![CDATA[/*
@@ -5687,35 +5719,14 @@ namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6771,7 +6782,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Aeries Teacher File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="152,42"
           Id="Package\Aeries Teacher File\OLE DB Source"
@@ -6799,9 +6810,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
