@@ -6,14 +6,14 @@
   DTS:CreatorComputerName="NBLAKELY-HPLT"
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DelayValidation="True"
-  DTS:DTSID="{B973C2C6-484B-453B-A3E9-68765AD70020}"
+  DTS:DTSID="{FA47C81E-A4C4-4CA2-8C3B-F6580288FB74}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="14.0.0800.90"
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportTeacherSchedule"
   DTS:PackageType="5"
-  DTS:VersionBuild="368"
-  DTS:VersionGUID="{2EDD0961-4701-4ED0-ACCC-6C6563E89B7C}">
+  DTS:VersionBuild="376"
+  DTS:VersionGUID="{BB92A336-9ED7-4FCE-8802-A73105C8B71E}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,21 +28,22 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
+          DTS:ConnectionString="Data Source=10.192.66.46;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ImportTeacherSchedule-{D3C310D7-BB55-46D4-9782-932A98A862B4}ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[ImportManagementSystem]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}"
       DTS:ObjectName="ImportManagementSystem">
       <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[User::_0InitCatalogIMS]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ImportTeacherSchedule-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -61,7 +62,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_02282018.csv">
+          DTS:ConnectionString="\Reject\_10072018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -182,7 +183,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_02282018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_10072018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -263,7 +264,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_02282018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_10072018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -335,12 +336,34 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{2CAD82D9-ACBC-4D1C-9F40-47240FB88E94}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID = &quot; + (DT_STR, 10, 1252)@[$Package::CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PostProcessing = 1 &quot; + &#xA;&quot;  and cep.PreProcess = 0 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; + &#xA;&quot;  and cep.Area = 'TCHSCHED' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TeacherSchedPostProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID = 0  and c.Active = 1   and c.PostProcessing = 1   and cep.PreProcess = 0   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'TCHSCHED'   and cep.Active = 1 </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{983728E3-000B-4751-8D9E-8CEBBC42FB13}"
       DTS:IncludeInDebugDump="6789"
       DTS:Namespace="User"
       DTS:ObjectName="TeacherSchedPreProcessing">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{F423EA74-D6E4-4841-8DC5-104496206498}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID = &quot; + (DT_STR, 10, 1252) @[$Package::CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PreProcessing = 1 &quot; + &#xA;&quot;  and cep.PreProcess = 1 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; + &#xA;&quot;  and cep.Area = 'TCHSCHED' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TeacherSchedPreProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID = 0  and c.Active = 1   and c.PreProcessing = 1   and cep.PreProcess = 1   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'TCHSCHED'   and cep.Active = 1 </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -382,7 +405,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
+        DTS:DataType="8">10.192.66.46</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -876,7 +899,7 @@ and cep.Active = 1</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
+                  name="SqlCommandVariable">User::TeacherSchedPreProcessSQL</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -889,7 +912,7 @@ and cep.Active = 1</property>
                   dataType="System.Int32"
                   description="Specifies the mode used to access the database."
                   name="AccessMode"
-                  typeConverter="AccessMode">2</property>
+                  typeConverter="AccessMode">3</property>
                 <property
                   dataType="System.String"
                   description="The mappings between the parameters in the SQL command and variables."
@@ -1175,7 +1198,7 @@ and cep.Active = 1</property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::TeacherSchedPostProcessSQL</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1188,7 +1211,7 @@ and cep.Active = 1</property>
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -2171,7 +2194,7 @@ and cep.Active = 1</property>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="136,44"
           Id="Package\Count PreProcessing Job"
@@ -2240,7 +2263,7 @@ and cep.Active = 1</property>
           TopLeft="325.528301886793,72.2358490566038">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="48.792452830188,0"
               Start="0,0"
               End="41.292452830188,0">
@@ -2262,7 +2285,7 @@ and cep.Active = 1</property>
           TopLeft="612.827044025157,143.301886792453">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,-51.9622641509436"
               Start="0,0"
               End="0,-44.4622641509436">
@@ -2284,7 +2307,7 @@ and cep.Active = 1</property>
           TopLeft="854.528301886793,71.7641509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="33.056603773584,0"
               Start="0,0"
               End="25.556603773584,0">
@@ -2308,7 +2331,7 @@ and cep.Active = 1</property>
           TopLeft="964.084905660377,44.0566037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="207.367924528303,-17.9622641509434"
               Start="0,0"
               End="207.367924528303,-25.4622641509434">
@@ -2342,7 +2365,7 @@ and cep.Active = 1</property>
           TopLeft="667.245283018868,69.1556603773584">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="37.283018867925,0"
               Start="0,0"
               End="29.783018867925,0">
@@ -2364,7 +2387,7 @@ and cep.Active = 1</property>
           TopLeft="149.924528301887,83.0377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="39.6037735849062,-9.60377358490574"
               Start="0,0"
               End="32.1037735849062,-9.60377358490574">
@@ -2398,7 +2421,7 @@ and cep.Active = 1</property>
           TopLeft="446.320754716981,93.0377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="123.421383647799,50.2641509433964"
               Start="0,0"
               End="123.421383647799,42.7641509433964">
@@ -2498,7 +2521,7 @@ and cep.Active = 1</property>
           TopLeft="183.056603773585,102.990566037736">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="57.6981132075471,0"
               Start="0,0"
               End="50.1981132075471,0">
@@ -2520,7 +2543,7 @@ and cep.Active = 1</property>
           TopLeft="121.603773584906,52.5094339622641">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-21.5471698113207,24.1509433962265"
               Start="0,0"
               End="-21.5471698113207,16.6509433962265">
@@ -2554,7 +2577,7 @@ and cep.Active = 1</property>
           TopLeft="172.11320754717,193.915094339622">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="101.018867924528,0"
               Start="0,0"
               End="93.5188679245281,0">
@@ -2576,7 +2599,7 @@ and cep.Active = 1</property>
           TopLeft="322.754716981132,131.320754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-218.641509433962,33.2641509433959"
               Start="0,0"
               End="-218.641509433962,25.7641509433959">
@@ -2610,7 +2633,7 @@ and cep.Active = 1</property>
           TopLeft="341.132075471698,218.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-223.037735849057,42.792452830189"
               Start="0,0"
               End="-223.037735849057,35.292452830189">
@@ -2646,7 +2669,7 @@ and cep.Active = 1</property>
           TopLeft="118.094339622641,316.037735849057">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="26.8301886792455,24.981132075471"
               Start="0,0"
               End="26.8301886792455,17.481132075471">
@@ -2680,7 +2703,7 @@ and cep.Active = 1</property>
           TopLeft="363.482704402516,218.245283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,73.754716981132"
               Start="0,0"
               End="0,66.254716981132">
@@ -2711,7 +2734,7 @@ and cep.Active = 1</property>
           TopLeft="213.820754716981,53.1981132075472">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="134.169811320755,44.566037735849"
               Start="0,0"
               End="134.169811320755,37.066037735849">
@@ -2747,7 +2770,7 @@ and cep.Active = 1</property>
           TopLeft="281.594339622642,31.1603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="65.3962264150944,-3.69811320754718"
               Start="0,0"
               End="57.8962264150944,-3.69811320754718">
@@ -2775,7 +2798,7 @@ and cep.Active = 1</property>
           TopLeft="734.650943396226,903.344339622642">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="66.245283018868,0"
               Start="0,0"
               End="58.745283018868,0">
@@ -2797,7 +2820,7 @@ and cep.Active = 1</property>
           TopLeft="868.896226415094,870.481132075472">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="21.9496855345916,-173.660377358491"
               Start="0,0"
               End="21.9496855345916,-166.160377358491">
@@ -2833,7 +2856,7 @@ and cep.Active = 1</property>
           TopLeft="933.512578616352,696.820754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="276.207547169811,123.943396226415"
               Start="0,0"
               End="276.207547169811,116.443396226415">
@@ -2867,7 +2890,7 @@ and cep.Active = 1</property>
           TopLeft="1038.2641509434,543.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="128.789308176101,277.622641509434"
               Start="0,0"
               End="128.789308176101,270.122641509434">
@@ -2903,7 +2926,7 @@ and cep.Active = 1</property>
           TopLeft="936.896226415094,906.481132075472">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="183.490566037736,-53.2169811320761"
               Start="0,0"
               End="175.990566037736,-53.2169811320761">
@@ -2939,7 +2962,7 @@ and cep.Active = 1</property>
           TopLeft="709.764150943396,543.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="202.415094339623,88.679245283019"
               Start="0,0"
               End="202.415094339623,81.179245283019">
@@ -2975,7 +2998,7 @@ and cep.Active = 1</property>
           TopLeft="440.990566037736,123.589622641509">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="106.377358490566,0"
               Start="0,0"
               End="98.8773584905659,0">
@@ -2997,7 +3020,7 @@ and cep.Active = 1</property>
           TopLeft="683.367924528302,125.915094339623">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="40,-12.188679245283"
               Start="0,0"
               End="32.5,-12.188679245283">
@@ -3033,7 +3056,7 @@ and cep.Active = 1</property>
           TopLeft="791.367924528302,135.72641509434">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-300.603773584906,106.415094339622"
               Start="0,0"
               End="-300.603773584906,98.9150943396224">
@@ -3069,7 +3092,7 @@ and cep.Active = 1</property>
           TopLeft="859.367924528302,110.566037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="55.245283018868,0"
               Start="0,0"
               End="47.745283018868,0">
@@ -3093,7 +3116,7 @@ and cep.Active = 1</property>
           TopLeft="1244.94339622642,189.066037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-316.179245283024,53.0754716981129"
               Start="0,0"
               End="-316.179245283024,45.5754716981129">
@@ -3129,7 +3152,7 @@ and cep.Active = 1</property>
           TopLeft="1087.61320754717,103.485849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="27.8301886792499,0"
               Start="0,0"
               End="20.3301886792499,0">
@@ -3151,7 +3174,7 @@ and cep.Active = 1</property>
           TopLeft="490.764150943396,543.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-225.764150943396,176.169811320755"
               Start="0,0"
               End="-225.764150943396,168.669811320755">
@@ -3187,7 +3210,7 @@ and cep.Active = 1</property>
           TopLeft="508.5,965.811320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="90.150943396226,-65.603773584906"
               Start="0,0"
               End="82.650943396226,-65.603773584906">
@@ -3263,7 +3286,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Find Pre Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="184,42"
           Id="Package\Find Pre Processing\Recordset Destination"
@@ -3277,7 +3300,7 @@ and cep.Active = 1</property>
           TopLeft="291,94">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,61"
               Start="0,0"
               End="0,53.5">
@@ -3291,9 +3314,7 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3311,37 +3332,59 @@ and cep.Active = 1</property>
     design-time-name="Package\Prepare Data\Find Post Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="NaN,NaN"
+          Size="184,42"
           Id="Package\Prepare Data\Find Post Processing\Recordset Destination"
-          TopLeft="NaN,NaN" />
+          TopLeft="292,154" />
         <NodeLayout
-          Size="NaN,NaN"
+          Size="152,42"
           Id="Package\Prepare Data\Find Post Processing\OLE DB Source"
-          TopLeft="NaN,NaN" />
+          TopLeft="242,77" />
         <EdgeLayout
           Id="Package\Prepare Data\Find Post Processing.Paths[OLE DB Source Output]"
-          TopLeft="NaN,NaN">
+          TopLeft="318,119">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
+              EndConnector="66,35"
               Start="0,0"
-              End="0,0">
+              End="66,27.5">
               <mssgle:Curve.Segments>
-                <x:Null />
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,13.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,13.5"
+                    Point2="0,17.5"
+                    Point3="4,17.5" />
+                  <mssgle:LineSegment
+                    End="62,17.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="62,17.5"
+                    Point2="66,17.5"
+                    Point3="66,21.5" />
+                  <mssgle:LineSegment
+                    End="66,27.5" />
+                </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Prepare Data\Find Post Processing\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>

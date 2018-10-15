@@ -12,14 +12,15 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="ImportStudents"
   DTS:PackageType="5"
-  DTS:VersionBuild="302"
-  DTS:VersionGUID="{9A16ABE2-53A5-4044-8A0A-AB4974BCB0D0}">
+  DTS:VersionBuild="311"
+  DTS:VersionGUID="{DB311087-A740-4D1B-8765-58D630416A1C}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[ClientTipWeb]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
       DTS:ObjectName="ClientTipWeb">
       <DTS:PropertyExpression
@@ -28,21 +29,22 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{D3C310D7-BB55-46D4-9782-932A98A862B4}LocalHost.NB_Test;" />
+          DTS:ConnectionString="Data Source=10.192.66.46;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ImportStudents-{D3C310D7-BB55-46D4-9782-932A98A862B4}ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[ImportManagementSystem]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}"
       DTS:ObjectName="ImportManagementSystem">
       <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[User::_0InitCatalogIMS]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-ImportStaff-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}LocalHost.ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ImportStudents-{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -61,7 +63,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x0022_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="\Reject\_02262018.csv">
+          DTS:ConnectionString="\Reject\_10072018.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -272,7 +274,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Archive\_02262018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Archive\_10072018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -305,6 +307,16 @@
       DTS:ObjectName="cnt">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{188A96FA-149A-4B98-945D-7FA034939BD6}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="defaultState">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -353,7 +365,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_02262018.csv</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_10072018.csv</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -416,12 +428,34 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{BED85934-66B6-4CF7-BE4C-2114CC53A1B7}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID =  &quot; + (DT_STR, 10, 1252) @[$Package::CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PostProcessing = 1 &quot; + &#xA;&quot;  and cep.PreProcess = 0 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; + &#xA;&quot;  and cep.Area = 'STU' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="StudentPostProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID =  0  and c.Active = 1   and c.PostProcessing = 1   and cep.PreProcess = 0   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'STU'   and cep.Active = 1 </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{983728E3-000B-4751-8D9E-8CEBBC42FB13}"
       DTS:IncludeInDebugDump="6789"
       DTS:Namespace="User"
       DTS:ObjectName="StudentPreProcessing">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{1CB03D22-87AF-4F76-97F5-C0F0AF6EACE4}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID = &quot; + (DT_STR, 10, 1252) @[$Package::CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PreProcessing = 1 &quot; + &#xA;&quot;  and cep.PreProcess = 1 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; + &#xA;&quot;  and cep.Area = 'STU' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="StudentPreProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID = 0  and c.Active = 1   and c.PreProcessing = 1   and cep.PreProcess = 1   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'STU'   and cep.Active = 1 </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -454,7 +488,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
+        DTS:DataType="8">10.192.66.46</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1328,7 +1362,7 @@ and cep.Active = 1</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
+                  name="SqlCommandVariable">User::StudentPreProcessSQL</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1341,7 +1375,7 @@ and cep.Active = 1</property>
                   dataType="System.Int32"
                   description="Specifies the mode used to access the database."
                   name="AccessMode"
-                  typeConverter="AccessMode">2</property>
+                  typeConverter="AccessMode">3</property>
                 <property
                   dataType="System.String"
                   description="The mappings between the parameters in the SQL command and variables."
@@ -1627,7 +1661,7 @@ and cep.Active = 1</property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
+                      name="SqlCommandVariable">User::StudentPostProcessSQL</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1640,7 +1674,7 @@ and cep.Active = 1</property>
                       dataType="System.Int32"
                       description="Specifies the mode used to access the database."
                       name="AccessMode"
-                      typeConverter="AccessMode">2</property>
+                      typeConverter="AccessMode">3</property>
                     <property
                       dataType="System.String"
                       description="The mappings between the parameters in the SQL command and variables."
@@ -2148,14 +2182,41 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int, @defState char(2), @CustUID int ;&#xA;&#xA;set @CustUID = ?&#xA;&#xA;select @defState = DefaultState from ImportManagementSystem.dbo.CustomerList where CustomersUID = @CustUID&#xA;&#xA; &#xA; INSERT INTO dbo.tblStudents&#xA;&#x9;(StudentID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;Grade, HomeRoom,&#xA;&#x9;FullName, &#xA;&#x9;Phone, &#xA;&#x9;StudentEmail, ParentEmail, &#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct StudentID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;Grade, HomeRoom, &#xA;&#x9;(case when len(ltrim(rtrim(isNull(MiddleName,'')))) = 0 then   &#xA;&#x9;&#x9;(FirstName  + ' ' +  LastName)  &#xA;&#x9;&#x9;else (FirstName  +' ' +  MiddleName  + ' '+ LastName) end),&#xA;    (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;    Email,ParentEmail,&#xA;    [Address], Address2, City,&#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;&#x9;Zip, &#xA;    0, getdate(), 1, 1&#xA;  FROM dbo._IMS_Students st &#xA;  where Import = 1 &#xA;  and st.New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblStudents tt&#xA;&#x9;where st.StudentID = tt.StudentID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID)  ;&#xA;&#x9;&#x9;&#x9;&#xA; set @cnt = @@RowCount ;&#xA; &#xA;&#xA;update ims set StudentsUID = stu.StudentsUID&#xA;from _IMS_Students ims&#xA;join tblStudents stu on ims.StudentID = stu.StudentID &#xA;&#x9;and ims.CampusID = stu.CampusID&#xA;where ims.Import = 1&#xA;and ims.StudentsUID is null ;&#xA;&#xA;select @cnt as cnt&#xA;&#x9;&#x9;&#x9;&#xA;&#xA;&#xA;"
+              SQLTask:SqlStatementSource="&#xA;&#xA;&#xA;declare @cnt int, @defState char(2)&#xA;&#xA;set @defState = ?&#xA;&#xA;&#xA; INSERT INTO dbo.tblStudents&#xA;&#x9;(StudentID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;Grade, HomeRoom,&#xA;&#x9;FullName, &#xA;&#x9;Phone, &#xA;&#x9;StudentEmail, ParentEmail, &#xA;&#x9;[Address], Address2, City, [State], Zip, &#xA;&#x9;UserID, ModifiedDate, [Status], ActiveIT)   &#xA;&#x9;&#x9;&#x9;&#x9;  &#xA;SELECT Distinct StudentID, CampusID, FirstName, MiddleName, LastName, &#xA;&#x9;Grade, HomeRoom, &#xA;&#x9;(case when len(ltrim(rtrim(isNull(MiddleName,'')))) = 0 then   &#xA;&#x9;&#x9;(FirstName  + ' ' +  LastName)  &#xA;&#x9;&#x9;else (FirstName  +' ' +  MiddleName  + ' '+ LastName) end),&#xA;    (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else '' end),&#xA;    Email,ParentEmail,&#xA;    [Address], Address2, City,&#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;&#x9;Zip, &#xA;    0, getdate(), 1, 1&#xA;  FROM dbo._IMS_Students st &#xA;  where Import = 1 &#xA;  and st.New = 1 &#xA;and Deactivate = 0&#xA;  and not exists &#xA;&#x9;(select * from dbo.tblStudents tt&#xA;&#x9;where st.StudentID = tt.StudentID &#xA;&#x9;&#x9;&#x9;and st.CampusID = tt.CampusID)  ;&#xA;&#x9;&#x9;&#x9;&#xA; set @cnt = @@RowCount ;&#xA; &#xA;&#xA;update ims set StudentsUID = stu.StudentsUID&#xA;from _IMS_Students ims&#xA;join tblStudents stu on ims.StudentID = stu.StudentID &#xA;&#x9;and ims.CampusID = stu.CampusID&#xA;where ims.Import = 1&#xA;and ims.StudentsUID is null ;&#xA;&#xA;select @cnt as cnt"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
                 SQLTask:DtsVariableName="User::cnt" />
               <SQLTask:ParameterBinding
+                SQLTask:ParameterName="@defState"
+                SQLTask:DtsVariableName="User::defaultState"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="2" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Update TipWeb\Get Default State"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{51988CA9-F790-447A-BECB-81608099BE29}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Get Default State"
+          DTS:ThreadHint="1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{234ED3EA-85CA-44C6-B4BD-403CE7AEA748}"
+              SQLTask:SqlStatementSource="declare @CustUID int&#xA;&#xA;set @CustUID = ?&#xA;&#xA;select DefaultState from ImportManagementSystem.dbo.CustomerList where CustomersUID = @CustUID"
+              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="DefaultState"
+                SQLTask:DtsVariableName="User::defaultState" />
+              <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@CustUID"
-                SQLTask:DtsVariableName="$Package::CustomerUID"
+                SQLTask:DtsVariableName="User::_CustomerUID"
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="3"
                 SQLTask:ParameterSize="-1" />
@@ -2278,17 +2339,17 @@ and cep.Active = 1</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{D3C310D7-BB55-46D4-9782-932A98A862B4}"
-              SQLTask:SqlStatementSource="declare @cnt int, @defState char(2), @CustUID int ;&#xA;&#xA;set @CustUID = ?&#xA;&#xA;select @defState = DefaultState from ImportManagementSystem.dbo.CustomerList where CustomersUID = @CustUID&#xA;&#xA;UPDATE dbo.tblStudents&#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(isNull(st.MiddleName,'')))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + ' ' +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + ' ' +  st.MiddleName  + ' ' + st.LastName) end), &#xA;&#x9;Grade = st.Grade,&#xA;&#x9;HomeRoom = st.HomeRoom, &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;StudentEmail = (case when len(isNull(tt.StudentEmail,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.StudentEmail else st.Email end),&#xA;&#x9;ParentEmail = (case when len(isNull(tt.ParentEmail,''))&gt;0 and len(isNull(st.ParentEmail,''))=0 then tt.ParentEmail else st.ParentEmail end),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 1,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Students st&#xA; join dbo.tblStudents tt &#xA;&#x9;on st.StudentsUID = tt.StudentsUID&#xA; where import = 1 &#xA; and st.new = 0&#xA;and Deactivate = 0&#xA; and st.StudentsUID is not null;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;"
+              SQLTask:SqlStatementSource="declare @cnt int, @defState char(2)&#xA;&#xA;set @defState = ?&#xA;&#xA;&#xA;UPDATE dbo.tblStudents&#xA;SET FirstName = st.FirstName,&#xA;&#x9;MiddleName = st.MiddleName,  &#xA;&#x9;LastName = st.LastName,  &#xA;&#x9;FullName = (case when len(ltrim(rtrim(isNull(st.MiddleName,'')))) = 0 then &#xA;&#x9;&#x9;(st.FirstName  + ' ' +  st.LastName) &#xA;&#x9;&#x9;else (st.FirstName  + ' ' +  st.MiddleName  + ' ' + st.LastName) end), &#xA;&#x9;Grade = st.Grade,&#xA;&#x9;HomeRoom = st.HomeRoom, &#xA;&#x9;[Address] = st.[Address],  &#xA;&#x9;Address2 = st.Address2,  &#xA;&#x9;City = st.City, &#xA;&#x9;[State] = (case when ltrim(rtrim(isNull(st.[State],''))) = '' then @defState else st.State end),&#xA;&#x9;Zip = st.Zip,  &#xA;&#x9;Phone = (case when len(isNull(st.Phone,''))= 10 then (substring(st.Phone, 1, 3)+'-'+substring(st.Phone, 4, 3)+'-'+substring(st.Phone, 7, 4)) else tt.phone end),&#xA;&#x9;StudentEmail = (case when len(isNull(tt.StudentEmail,''))&gt;0 and len(isNull(st.Email,''))=0 then tt.StudentEmail else st.Email end),&#xA;&#x9;ParentEmail = (case when len(isNull(tt.ParentEmail,''))&gt;0 and len(isNull(st.ParentEmail,''))=0 then tt.ParentEmail else st.ParentEmail end),&#xA;&#x9;UserID = 0,  &#xA;&#x9;ModifiedDate = GETDATE(), &#xA;&#x9;[Status] = 1,  &#xA;&#x9;ActiveIT = 1 &#xA;--select *&#xA; from dbo._IMS_Students st&#xA; join dbo.tblStudents tt &#xA;&#x9;on st.StudentsUID = tt.StudentsUID&#xA; where import = 1 &#xA; and st.new = 0&#xA;and Deactivate = 0&#xA; and st.StudentsUID is not null;&#xA;&#xA; set @cnt = @@RowCount ;&#xA;&#xA;select @cnt as cnt&#xA;&#xA;"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="cnt"
                 SQLTask:DtsVariableName="User::cnt" />
               <SQLTask:ParameterBinding
-                SQLTask:ParameterName="@CustUID"
-                SQLTask:DtsVariableName="$Package::CustomerUID"
+                SQLTask:ParameterName="@defState"
+                SQLTask:DtsVariableName="User::defaultState"
                 SQLTask:ParameterDirection="Input"
-                SQLTask:DataType="3"
-                SQLTask:ParameterSize="-1" />
+                SQLTask:DataType="130"
+                SQLTask:ParameterSize="2" />
             </SQLTask:SqlTaskData>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -2351,6 +2412,14 @@ and cep.Active = 1</property>
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 4"
           DTS:To="Package\Update TipWeb\UpdateGradesAndStates" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Update TipWeb.PrecedenceConstraints[Constraint 5]"
+          DTS:CreationName=""
+          DTS:DTSID="{D00B0AAF-375C-4897-939F-EC6076192FF1}"
+          DTS:From="Package\Update TipWeb\Get Default State"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 5"
+          DTS:To="Package\Update TipWeb\Log TipWeb Update" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
   </DTS:Executables>
@@ -2509,7 +2578,7 @@ and cep.Active = 1</property>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="136,44"
           Id="Package\Count PreProcessing Job"
@@ -2517,7 +2586,7 @@ and cep.Active = 1</property>
         <NodeLayout
           Size="136,55"
           Id="Package\Create Reject Report"
-          TopLeft="659.858490566038,654.481132075472" />
+          TopLeft="659.858490566038,655.481132075472" />
         <NodeLayout
           Size="173,42"
           Id="Package\Find Pre Processing"
@@ -2525,7 +2594,7 @@ and cep.Active = 1</property>
         <NodeLayout
           Size="136,44"
           Id="Package\Get File Name"
-          TopLeft="574.61320754717,586.707547169811" />
+          TopLeft="638.61320754717,578.707547169811" />
         <NodeLayout
           Size="136,64"
           Id="Package\Log End Student Process"
@@ -2574,7 +2643,7 @@ and cep.Active = 1</property>
           TopLeft="331.77358490566,50.2452830188679">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="29.9622641509434,4.98113207547171"
               Start="0,0"
               End="22.4622641509434,4.98113207547171">
@@ -2600,7 +2669,7 @@ and cep.Active = 1</property>
           TopLeft="497.509433962264,55.2264150943396">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="26.2641509433963,0.981132075471692"
               Start="0,0"
               End="18.7641509433963,0.981132075471692">
@@ -2626,7 +2695,7 @@ and cep.Active = 1</property>
           TopLeft="831.018867924528,59.3396226415094">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="61.018867924529,14.0660377358491"
               Start="0,0"
               End="53.518867924529,14.0660377358491">
@@ -2662,7 +2731,7 @@ and cep.Active = 1</property>
           TopLeft="1023.03773584906,73.4056603773585">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="35.867924528303,15.5188679245283"
               Start="0,0"
               End="28.367924528303,15.5188679245283">
@@ -2696,7 +2765,7 @@ and cep.Active = 1</property>
           TopLeft="659.547169811321,56.2075471698113">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="35.4716981132075,3.09433962264151"
               Start="0,0"
               End="27.9716981132075,3.09433962264151">
@@ -2722,7 +2791,7 @@ and cep.Active = 1</property>
           TopLeft="157.169811320755,46.8867924528302">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="38.8301886792453,3.35849056603773"
               Start="0,0"
               End="31.3301886792453,3.35849056603773">
@@ -2780,33 +2849,37 @@ and cep.Active = 1</property>
         <NodeLayout
           Size="136,44"
           Id="Package\Update TipWeb\Add New Students"
-          TopLeft="27.9056603773585,167.075471698113" />
+          TopLeft="86.9056603773585,207.075471698113" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Update TipWeb\Get Default State"
+          TopLeft="73,32" />
         <NodeLayout
           Size="160,44"
           Id="Package\Update TipWeb\Log Inserted Students"
-          TopLeft="254.245283018868,166.622641509434" />
+          TopLeft="313.245283018868,206.622641509434" />
         <NodeLayout
           Size="168,44"
           Id="Package\Update TipWeb\Log TipWeb Update"
-          TopLeft="109.245283018868,13.9811320754717" />
+          TopLeft="314.245283018868,33.9811320754717" />
         <NodeLayout
           Size="165,44"
           Id="Package\Update TipWeb\Log Updated Students"
-          TopLeft="244.77358490566,75.8301886792453" />
+          TopLeft="303.77358490566,115.830188679245" />
         <NodeLayout
           Size="157,44"
           Id="Package\Update TipWeb\Update Existing Students"
-          TopLeft="14.8301886792452,76.1698113207547" />
+          TopLeft="73.8301886792452,116.169811320755" />
         <NodeLayout
           Size="165,42"
           Id="Package\Update TipWeb\UpdateGradesAndStates"
-          TopLeft="109.555555555556,242.444444444444" />
+          TopLeft="168.555555555556,282.444444444444" />
         <EdgeLayout
           Id="Package\Update TipWeb.PrecedenceConstraints[Constraint]"
-          TopLeft="171.830188679245,98">
+          TopLeft="230.830188679245,138">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="72.9433962264152,0"
               Start="0,0"
               End="65.4433962264152,0">
@@ -2825,24 +2898,30 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Update TipWeb.PrecedenceConstraints[Constraint 1]"
-          TopLeft="109.245283018868,35.9811320754717">
+          TopLeft="398.245283018868,77.9811320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-15.9150943396227,40.188679245283"
+              StartConnector="{assembly:Null}"
+              EndConnector="-245.915094339623,38.188679245283"
               Start="0,0"
-              End="-15.9150943396227,32.688679245283">
+              End="-245.915094339623,30.688679245283">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="-11.9150943396227,0" />
+                    End="0,15.0943396226415" />
                   <mssgle:CubicBezierSegment
-                    Point1="-11.9150943396227,0"
-                    Point2="-15.9150943396227,0"
-                    Point3="-15.9150943396227,4" />
+                    Point1="0,15.0943396226415"
+                    Point2="0,19.0943396226415"
+                    Point3="-4,19.0943396226415" />
                   <mssgle:LineSegment
-                    End="-15.9150943396227,32.688679245283" />
+                    End="-241.915094339623,19.0943396226415" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-241.915094339623,19.0943396226415"
+                    Point2="-245.915094339623,19.0943396226415"
+                    Point3="-245.915094339623,23.0943396226415" />
+                  <mssgle:LineSegment
+                    End="-245.915094339623,30.688679245283" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2853,10 +2932,10 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Update TipWeb.PrecedenceConstraints[Constraint 2]"
-          TopLeft="327.27358490566,119.830188679245">
+          TopLeft="386.27358490566,159.830188679245">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-231.367924528302,47.2452830188679"
               Start="0,0"
               End="-231.367924528302,39.7452830188679">
@@ -2887,10 +2966,10 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Update TipWeb.PrecedenceConstraints[Constraint 3]"
-          TopLeft="163.905660377358,188.849056603774">
+          TopLeft="222.905660377358,228.849056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="90.3396226415094,0"
               Start="0,0"
               End="82.8396226415094,0">
@@ -2909,10 +2988,10 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Update TipWeb.PrecedenceConstraints[Constraint 4]"
-          TopLeft="334.245283018868,210.622641509434">
+          TopLeft="393.245283018868,250.622641509434">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-142.189727463312,31.8218029350105"
               Start="0,0"
               End="-142.189727463312,24.3218029350105">
@@ -2920,19 +2999,41 @@ and cep.Active = 1</property>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,11.9109014675052" />
+                    End="0,11.9109014675051" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,11.9109014675052"
-                    Point2="0,15.9109014675052"
-                    Point3="-4,15.9109014675052" />
+                    Point1="0,11.9109014675051"
+                    Point2="0,15.9109014675051"
+                    Point3="-4,15.9109014675051" />
                   <mssgle:LineSegment
-                    End="-138.189727463312,15.9109014675052" />
+                    End="-138.189727463312,15.9109014675051" />
                   <mssgle:CubicBezierSegment
-                    Point1="-138.189727463312,15.9109014675052"
-                    Point2="-142.189727463312,15.9109014675052"
-                    Point3="-142.189727463312,19.9109014675052" />
+                    Point1="-138.189727463312,15.9109014675051"
+                    Point2="-142.189727463312,15.9109014675051"
+                    Point3="-142.189727463312,19.9109014675051" />
                   <mssgle:LineSegment
                     End="-142.189727463312,24.3218029350105" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Update TipWeb.PrecedenceConstraints[Constraint 5]"
+          TopLeft="238,54.4905660377358">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="76.245283018868,0"
+              Start="0,0"
+              End="68.745283018868,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="68.745283018868,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2944,8 +3045,8 @@ and cep.Active = 1</property>
         <ContainerLayout
           HeaderHeight="43.924528301886795"
           IsExpanded="True"
-          PanelSize="522,354"
-          Size="522,398"
+          PanelSize="609,379"
+          Size="609,423"
           Id="Package\Update TipWeb"
           TopLeft="5.5,587.764150943396" />
         <EdgeLayout
@@ -2953,7 +3054,7 @@ and cep.Active = 1</property>
           TopLeft="204.783018867925,53.1981132075472">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="95.169811320754,34.566037735849"
               Start="0,0"
               End="95.169811320754,27.066037735849">
@@ -2989,7 +3090,7 @@ and cep.Active = 1</property>
           TopLeft="272.556603773585,31.1603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="65.3962264150944,-3.69811320754718"
               Start="0,0"
               End="57.8962264150944,-3.69811320754718">
@@ -3014,30 +3115,30 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 10]"
-          TopLeft="642.61320754717,630.707547169811">
+          TopLeft="706.61320754717,622.707547169811">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="85.2452830188679,23.773584905661"
+              StartConnector="{assembly:Null}"
+              EndConnector="21.245283018868,32.773584905661"
               Start="0,0"
-              End="85.2452830188679,16.273584905661">
+              End="21.245283018868,25.273584905661">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,7.88679245283049" />
+                    End="0,12.3867924528305" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,7.88679245283049"
-                    Point2="0,11.8867924528305"
-                    Point3="4,11.8867924528305" />
+                    Point1="0,12.3867924528305"
+                    Point2="0,16.3867924528305"
+                    Point3="4,16.3867924528305" />
                   <mssgle:LineSegment
-                    End="81.2452830188679,11.8867924528305" />
+                    End="17.245283018868,16.3867924528305" />
                   <mssgle:CubicBezierSegment
-                    Point1="81.2452830188679,11.8867924528305"
-                    Point2="85.2452830188679,11.8867924528305"
-                    Point3="85.2452830188679,15.8867924528305" />
+                    Point1="17.245283018868,16.3867924528305"
+                    Point2="21.245283018868,16.3867924528305"
+                    Point3="21.245283018868,20.3867924528305" />
                   <mssgle:LineSegment
-                    End="85.2452830188679,16.273584905661" />
+                    End="21.245283018868,25.273584905661" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3048,37 +3149,37 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 11]"
-          TopLeft="727.858490566038,709.481132075472">
+          TopLeft="727.858490566038,710.481132075472">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="174.949685534591,48.339622641509"
+              StartConnector="{assembly:Null}"
+              EndConnector="196.283018867924,47.339622641509"
               Start="0,0"
-              End="174.949685534591,40.839622641509">
+              End="196.283018867924,39.839622641509">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,24.6665204036856" />
+                    End="0,19.6698113207545" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,24.6665204036856"
-                    Point2="0,28.6665204036856"
-                    Point3="4,28.6665204036856" />
+                    Point1="0,19.6698113207545"
+                    Point2="0,23.6698113207545"
+                    Point3="4,23.6698113207545" />
                   <mssgle:LineSegment
-                    End="170.949685534591,28.6665204036856" />
+                    End="192.283018867924,23.6698113207545" />
                   <mssgle:CubicBezierSegment
-                    Point1="170.949685534591,28.6665204036856"
-                    Point2="174.949685534591,28.6665204036856"
-                    Point3="174.949685534591,32.6665204036856" />
+                    Point1="192.283018867924,23.6698113207545"
+                    Point2="196.283018867924,23.6698113207545"
+                    Point3="196.283018867924,27.6698113207545" />
                   <mssgle:LineSegment
-                    End="174.949685534591,40.839622641509" />
+                    End="196.283018867924,39.839622641509" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="79.4748427672953,33.6665204036856,16,16"
+              BoundingBox="90.141509433962,28.6698113207545,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -3087,7 +3188,7 @@ and cep.Active = 1</property>
           TopLeft="945.474842767295,757.820754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="204.836477987425,-50.094339622641"
               Start="0,0"
               End="204.836477987425,-42.594339622641">
@@ -3123,7 +3224,7 @@ and cep.Active = 1</property>
           TopLeft="920.556603773585,495.311320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="229.754716981135,148.415094339623"
               Start="0,0"
               End="229.754716981135,140.915094339623">
@@ -3155,11 +3256,71 @@ and cep.Active = 1</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 14]"
+          TopLeft="701.556603773585,495.311320754717">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="190.584905660377,262.509433962264"
+              Start="0,0"
+              End="190.584905660377,255.009433962264">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,58.6407837445572" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,58.6407837445572"
+                    Point2="0,62.6407837445572"
+                    Point3="4,62.6407837445572" />
+                  <mssgle:LineSegment
+                    End="186.584905660377,62.6407837445572" />
+                  <mssgle:CubicBezierSegment
+                    Point1="186.584905660377,62.6407837445572"
+                    Point2="190.584905660377,62.6407837445572"
+                    Point3="190.584905660377,66.6407837445572" />
+                  <mssgle:LineSegment
+                    End="190.584905660377,255.009433962264" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="87.2924528301886,67.6407837445572,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 15]"
+          TopLeft="795.858490566038,679.353773584906">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="286.452830188682,0"
+              Start="0,0"
+              End="278.952830188682,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="278.952830188682,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="131.476415094341,5,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
           TopLeft="367.952830188679,118.089622641509">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="126.377358490566,0"
               Start="0,0"
               End="118.877358490566,0">
@@ -3181,7 +3342,7 @@ and cep.Active = 1</property>
           TopLeft="630.330188679245,114.820754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="84,0"
               Start="0,0"
               End="76.5,0">
@@ -3205,7 +3366,7 @@ and cep.Active = 1</property>
           TopLeft="782.330188679245,135.72641509434">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-299.77358490566,107.584905660377"
               Start="0,0"
               End="-299.77358490566,100.084905660377">
@@ -3241,7 +3402,7 @@ and cep.Active = 1</property>
           TopLeft="850.330188679245,110.566037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="55.245283018868,0"
               Start="0,0"
               End="47.745283018868,0">
@@ -3265,7 +3426,7 @@ and cep.Active = 1</property>
           TopLeft="1219.40566037736,189.066037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-298.849056603775,54.2452830188679"
               Start="0,0"
               End="-298.849056603775,46.7452830188679">
@@ -3301,7 +3462,7 @@ and cep.Active = 1</property>
           TopLeft="1078.57547169811,108.985849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="27.8301886792469,0"
               Start="0,0"
               End="20.3301886792469,0">
@@ -3320,132 +3481,72 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 8]"
-          TopLeft="482.556603773585,495.311320754717">
+          TopLeft="373.056603773585,495.311320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="-216.056603773585,92.4528301886789"
+              StartConnector="{assembly:Null}"
+              EndConnector="-63.0566037735849,92.4528301886789"
               Start="0,0"
-              End="-216.056603773585,84.9528301886789">
+              End="-63.0566037735849,84.9528301886789">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,33.0481876186728" />
+                    End="0,26.9416870032569" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,33.0481876186728"
-                    Point2="0,37.0481876186728"
-                    Point3="-4,37.0481876186728" />
+                    Point1="0,26.9416870032569"
+                    Point2="0,30.9416870032569"
+                    Point3="-4,30.9416870032569" />
                   <mssgle:LineSegment
-                    End="-212.056603773585,37.0481876186728" />
+                    End="-59.0566037735849,30.9416870032569" />
                   <mssgle:CubicBezierSegment
-                    Point1="-212.056603773585,37.0481876186728"
-                    Point2="-216.056603773585,37.0481876186728"
-                    Point3="-216.056603773585,41.0481876186728" />
+                    Point1="-59.0566037735849,30.9416870032569"
+                    Point2="-63.0566037735849,30.9416870032569"
+                    Point3="-63.0566037735849,34.9416870032569" />
                   <mssgle:LineSegment
-                    End="-216.056603773585,84.9528301886789" />
+                    End="-63.0566037735849,84.9528301886789" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-116.028301886792,42.0481876186728,16,16"
+              BoundingBox="-39.5283018867925,35.9416870032569,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 9]"
-          TopLeft="527.5,786.764150943396">
+          TopLeft="614.5,799.264150943396">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="47.1132075471701,-178.056603773585"
+              StartConnector="{assembly:Null}"
+              EndConnector="24.11320754717,-198.556603773585"
               Start="0,0"
-              End="39.6132075471701,-178.056603773585">
+              End="16.61320754717,-198.556603773585">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="19.556603773585,0" />
+                    End="8.05660377358498,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="19.556603773585,0"
-                    Point2="23.556603773585,0"
-                    Point3="23.556603773585,-4" />
+                    Point1="8.05660377358498,0"
+                    Point2="12.056603773585,0"
+                    Point3="12.056603773585,-4" />
                   <mssgle:LineSegment
-                    End="23.556603773585,-174.056603773585" />
+                    End="12.056603773585,-194.556603773585" />
                   <mssgle:CubicBezierSegment
-                    Point1="23.556603773585,-174.056603773585"
-                    Point2="23.556603773585,-178.056603773585"
-                    Point3="27.556603773585,-178.056603773585" />
+                    Point1="12.056603773585,-194.556603773585"
+                    Point2="12.056603773585,-198.556603773585"
+                    Point3="16.056603773585,-198.556603773585" />
                   <mssgle:LineSegment
-                    End="39.6132075471701,-178.056603773585" />
+                    End="16.61320754717,-198.556603773585" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 14]"
-          TopLeft="701.556603773585,495.311320754717">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="190.584905660377,262.509433962264"
-              Start="0,0"
-              End="190.584905660377,255.009433962264">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,58.6407837445572" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,58.6407837445572"
-                    Point2="0,62.6407837445572"
-                    Point3="4,62.6407837445572" />
-                  <mssgle:LineSegment
-                    End="186.584905660377,62.6407837445572" />
-                  <mssgle:CubicBezierSegment
-                    Point1="186.584905660377,62.6407837445572"
-                    Point2="190.584905660377,62.6407837445572"
-                    Point3="190.584905660377,66.6407837445572" />
-                  <mssgle:LineSegment
-                    End="190.584905660377,255.009433962264" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="87.2924528301886,67.6407837445572,16,16"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 15]"
-          TopLeft="795.858490566038,678.853773584906">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="286.452830188682,0"
-              Start="0,0"
-              End="278.952830188682,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="278.952830188682,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="131.476415094341,5,16,16"
-              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3495,7 +3596,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Find Pre Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="184,42"
           Id="Package\Find Pre Processing\Recordset Destination"
@@ -3509,7 +3610,7 @@ and cep.Active = 1</property>
           TopLeft="113.5,56">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,35"
               Start="0,0"
               End="0,27.5">
@@ -3523,9 +3624,7 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3543,37 +3642,59 @@ and cep.Active = 1</property>
     design-time-name="Package\Prepare Data\Find Post Processing">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="NaN,NaN"
+          Size="184,42"
           Id="Package\Prepare Data\Find Post Processing\Recordset Destination"
-          TopLeft="NaN,NaN" />
+          TopLeft="194,237" />
         <NodeLayout
-          Size="NaN,NaN"
+          Size="152,42"
           Id="Package\Prepare Data\Find Post Processing\OLE DB Source"
-          TopLeft="NaN,NaN" />
+          TopLeft="180,120" />
         <EdgeLayout
           Id="Package\Prepare Data\Find Post Processing.Paths[OLE DB Source Output]"
-          TopLeft="NaN,NaN">
+          TopLeft="256,162">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
+              EndConnector="30,75"
               Start="0,0"
-              End="0,0">
+              End="30,67.5">
               <mssgle:Curve.Segments>
-                <x:Null />
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,33.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,33.5"
+                    Point2="0,37.5"
+                    Point3="4,37.5" />
+                  <mssgle:LineSegment
+                    End="26,37.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="26,37.5"
+                    Point2="30,37.5"
+                    Point3="30,41.5" />
+                  <mssgle:LineSegment
+                    End="30,67.5" />
+                </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Prepare Data\Find Post Processing\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>

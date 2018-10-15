@@ -14,14 +14,15 @@
   DTS:MaxErrorCount="0"
   DTS:ObjectName="IMS"
   DTS:PackageType="5"
-  DTS:VersionBuild="422"
-  DTS:VersionGUID="{59F7FDB9-5EF7-4C30-AFA5-358A3BCCA5BF}">
+  DTS:VersionBuild="428"
+  DTS:VersionGUID="{F30A45C7-144B-46D2-8B86-54D93355F10D}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[ClientTipWeb]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{844d5277-7b7e-448f-84ea-fce9adabcded}"
       DTS:ObjectName="ClientTipWeb">
       <DTS:PropertyExpression
@@ -30,33 +31,35 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-StaffToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}LocalHost.NB_Test;" />
+          DTS:ConnectionString="Data Source=10.192.66.46;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=IMS_ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[ImportManagementSystem]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{8EFE962D-7AAE-48E8-BAE7-06B978EDFDE1}"
       DTS:ObjectName="ImportManagementSystem">
       <DTS:PropertyExpression
         DTS:Name="InitialCatalog">@[User::_0InitCatalogIMS]</DTS:PropertyExpression>
       <DTS:PropertyExpression
-        DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
+        DTS:Name="ServerName">@[$Project::IMSServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-IMS-{8EFE962D-7AAE-48E8-BAE7-06B978EDFDE1}LocalHost.ImportManagementSystem;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-IMS-{8EFE962D-7AAE-48E8-BAE7-06B978EDFDE1}ImportManagementSystem;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[msdb]"
       DTS:CreationName="OLEDB"
+      DTS:DelayValidation="True"
       DTS:DTSID="{392AD231-BF1F-4AF0-8055-B59EFA3B3BF4}"
       DTS:ObjectName="msdb">
       <DTS:PropertyExpression
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=msdb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-EZUpdate-{392AD231-BF1F-4AF0-8055-B59EFA3B3BF4}NBLAKELY-HPLT.msdb;" />
+          DTS:ConnectionString="Data Source=10.192.66.46;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-IMS-{392AD231-BF1F-4AF0-8055-B59EFA3B3BF4}msdb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -108,6 +111,28 @@
       DTS:ObjectName="IMSPreProcessing">
       <DTS:VariableValue
         DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{8D43F621-CA36-4E18-A550-A644FD26034E}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID = &quot; + (DT_STR, 10, 1252) @[User::_CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PostProcessing= 1 &quot; + &#xA;&quot;  and cep.PreProcess = 0 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; + &#xA;&quot;  and cep.Area = 'IMS' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="IMS_PostProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID = 0  and c.Active = 1   and c.PostProcessing= 1   and cep.PreProcess = 0   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'IMS'   and cep.Active = 1 </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{E9C6C97B-7A48-4639-87DC-75042C4C1CF5}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select spName &quot; + &#xA;&quot;  from CustomerList c &quot; + &#xA;&quot;  join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID &quot; + &#xA;&quot;  where c.CustomersUID = &quot; + (DT_STR, 10, 1252) @[User::_CustomerUID] +&#xA;&quot;  and c.Active = 1 &quot; + &#xA;&quot;  and c.PreProcessing = 1 &quot; + &#xA;&quot;  and cep.SourceOrigin = c.SourceOrigin &quot; +&#xA;&quot;  and cep.Area = 'IMS' &quot; + &#xA;&quot;  and cep.Active = 1 &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="IMS_PreProcessSQL">
+      <DTS:VariableValue
+        DTS:DataType="8"> select spName   from CustomerList c   join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID   where c.CustomersUID = 0  and c.Active = 1   and c.PreProcessing = 1   and cep.SourceOrigin = c.SourceOrigin   and cep.Area = 'IMS'   and cep.Active = 1 </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -199,7 +224,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="RejectZipFileName">
       <DTS:VariableValue
-        DTS:DataType="8">\Reject\_RejectLog_04232018.zip</DTS:VariableValue>
+        DTS:DataType="8">\Reject\_RejectLog_10072018.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -297,7 +322,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">CS-NBLAKELY\MSSQLSERVER2014</DTS:VariableValue>
+        DTS:DataType="8">10.192.66.46</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1095,15 +1120,6 @@ Order by ProcessOrder</property>
                       Language="CSharp"
                       ReadOnlyVariables="User::LogFile">
                       <ProjectItem
-                        Name="Properties\Settings.settings"
-                        Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                      <ProjectItem
                         Name="Properties\Resources.resx"
                         Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -1315,6 +1331,35 @@ Order by ProcessOrder</property>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
                       <ProjectItem
+                        Name="Properties\Settings.Designer.cs"
+                        Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_42a0947bbe75411c8fc7143a7f449a6c.Properties.Settings.get_Default():ST_42a0947bbe75411c8fc7143a7f449a6c.Properties.Sett" +
+    "ings")]
+
+namespace ST_42a0947bbe75411c8fc7143a7f449a6c.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+                      <ProjectItem
                         Name="ScriptMain.cs"
                         Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
 /* The Script Task allows you to perform virtually any operation that can be accomplished in
@@ -1459,35 +1504,6 @@ namespace ST_42a0947bbe75411c8fc7143a7f449a6c
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                       <ProjectItem
-                        Name="Properties\Settings.Designer.cs"
-                        Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_42a0947bbe75411c8fc7143a7f449a6c.Properties.Settings.get_Default():ST_42a0947bbe75411c8fc7143a7f449a6c.Properties.Sett" +
-    "ings")]
-
-namespace ST_42a0947bbe75411c8fc7143a7f449a6c.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                      <ProjectItem
                         Name="Properties\AssemblyInfo.cs"
                         Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -1517,6 +1533,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                      <ProjectItem
+                        Name="Properties\Settings.settings"
+                        Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                       <ProjectItem
                         Name="Properties\Resources.Designer.cs"
                         Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -1767,15 +1792,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                       Language="CSharp"
                       ReadOnlyVariables="User::LogFile">
                       <ProjectItem
-                        Name="Properties\Settings.settings"
-                        Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                      <ProjectItem
                         Name="Properties\Resources.resx"
                         Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -1894,6 +1910,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                      <ProjectItem
+                        Name="Properties\Settings.Designer.cs"
+                        Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties.Settings.get_Default():ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties.Sett" +
+    "ings")]
+
+namespace ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                       <ProjectItem
                         Name="ScriptMain.cs"
                         Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -2019,26 +2064,6 @@ namespace ST_5131a3dd70c647cab0e04b9a7ffb8bcf
 	}
 }]]></ProjectItem>
                       <ProjectItem
-                        Name="Project"
-                        Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:Language>msBuild</msb:Language>
-		<msb:CodeName>ST_5131a3dd70c647cab0e04b9a7ffb8bcf</msb:CodeName>
-		<msb:DisplayName>ST_5131a3dd70c647cab0e04b9a7ffb8bcf</msb:DisplayName>
-		<msb:ProjectId>{332631DD-6246-425F-A309-6766041E393C}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="ST_5131a3dd70c647cab0e04b9a7ffb8bcf.csproj"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-                      <ProjectItem
                         Name="ST_5131a3dd70c647cab0e04b9a7ffb8bcf.csproj"
                         Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -2131,34 +2156,25 @@ namespace ST_5131a3dd70c647cab0e04b9a7ffb8bcf
   </ProjectExtensions>
 </Project>]]></ProjectItem>
                       <ProjectItem
-                        Name="Properties\Settings.Designer.cs"
-                        Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties.Settings.get_Default():ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties.Sett" +
-    "ings")]
-
-namespace ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+                        Name="Project"
+                        Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:Language>msBuild</msb:Language>
+		<msb:CodeName>ST_5131a3dd70c647cab0e04b9a7ffb8bcf</msb:CodeName>
+		<msb:DisplayName>ST_5131a3dd70c647cab0e04b9a7ffb8bcf</msb:DisplayName>
+		<msb:ProjectId>{332631DD-6246-425F-A309-6766041E393C}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="ST_5131a3dd70c647cab0e04b9a7ffb8bcf.csproj"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
                       <ProjectItem
                         Name="Properties\AssemblyInfo.cs"
                         Encoding="UTF8"><![CDATA[using System.Reflection;
@@ -2189,6 +2205,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                      <ProjectItem
+                        Name="Properties\Settings.settings"
+                        Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                       <ProjectItem
                         Name="Properties\Resources.Designer.cs"
                         Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -2630,185 +2655,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Loop Through Customer List\Data Flow Task"
-          DTS:CreationName="Microsoft.Pipeline"
-          DTS:Description="Data Flow Task"
-          DTS:DTSID="{0691E584-BC4D-4948-B1DB-8BD98D5596C1}"
-          DTS:ExecutableType="Microsoft.Pipeline"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Data Flow Task"
-          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v10; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-          <DTS:Variables />
-          <DTS:LoggingOptions
-            DTS:FilterKind="0" />
-          <DTS:ObjectData>
-            <pipeline
-              BLOBTempStoragePath=""
-              bufferTempStoragePath=""
-              version="1">
-              <components>
-                <component
-                  refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source"
-                  componentClassID="Microsoft.OLEDBSource"
-                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-                  description="OLE DB Source"
-                  name="OLE DB Source"
-                  usesDispositions="true"
-                  version="7">
-                  <properties>
-                    <property
-                      dataType="System.Int32"
-                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                      name="CommandTimeout">0</property>
-                    <property
-                      dataType="System.String"
-                      description="Specifies the name of the database object used to open a rowset."
-                      name="OpenRowset"></property>
-                    <property
-                      dataType="System.String"
-                      description="Specifies the variable that contains the name of the database object used to open a rowset."
-                      name="OpenRowsetVariable"></property>
-                    <property
-                      dataType="System.String"
-                      description="The SQL command to be executed."
-                      name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
-from CustomerList c
-join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID
-where c.CustomersUID = ?
-and c.Active = 1
-and c.PreProcessing = 1
-and cep.SourceOrigin = c.SourceOrigin
-and cep.Area = 'IMS'
-and cep.Active = 1</property>
-                    <property
-                      dataType="System.String"
-                      description="The variable that contains the SQL command to be executed."
-                      name="SqlCommandVariable"></property>
-                    <property
-                      dataType="System.Int32"
-                      description="Specifies the column code page to use when code page information is unavailable from the data source."
-                      name="DefaultCodePage">1252</property>
-                    <property
-                      dataType="System.Boolean"
-                      description="Forces the use of the DefaultCodePage property value when describing character data."
-                      name="AlwaysUseDefaultCodePage">false</property>
-                    <property
-                      dataType="System.Int32"
-                      description="Specifies the mode used to access the database."
-                      name="AccessMode"
-                      typeConverter="AccessMode">2</property>
-                    <property
-                      dataType="System.String"
-                      description="The mappings between the parameters in the SQL command and variables."
-                      name="ParameterMapping">"Parameter0",{1DE2B33B-8BD3-4735-B28A-A4DDFD16E82F};</property>
-                  </properties>
-                  <connections>
-                    <connection
-                      refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Connections[OleDbConnection]"
-                      connectionManagerID="Package.ConnectionManagers[ImportManagementSystem]"
-                      connectionManagerRefId="Package.ConnectionManagers[ImportManagementSystem]"
-                      description="The OLE DB runtime connection used to access the database."
-                      name="OleDbConnection" />
-                  </connections>
-                  <outputs>
-                    <output
-                      refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output]"
-                      name="OLE DB Source Output">
-                      <outputColumns>
-                        <outputColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
-                          codePage="1252"
-                          dataType="str"
-                          errorOrTruncationOperation="Conversion"
-                          errorRowDisposition="FailComponent"
-                          externalMetadataColumnId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
-                          length="50"
-                          lineageId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
-                          name="spName"
-                          truncationRowDisposition="FailComponent" />
-                      </outputColumns>
-                      <externalMetadataColumns
-                        isUsed="True">
-                        <externalMetadataColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
-                          codePage="1252"
-                          dataType="str"
-                          length="50"
-                          name="spName" />
-                      </externalMetadataColumns>
-                    </output>
-                    <output
-                      refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output]"
-                      isErrorOut="true"
-                      name="OLE DB Source Error Output">
-                      <outputColumns>
-                        <outputColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
-                          codePage="1252"
-                          dataType="str"
-                          length="50"
-                          lineageId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
-                          name="spName" />
-                        <outputColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                          dataType="i4"
-                          lineageId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                          name="ErrorCode"
-                          specialFlags="1" />
-                        <outputColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                          dataType="i4"
-                          lineageId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                          name="ErrorColumn"
-                          specialFlags="2" />
-                      </outputColumns>
-                      <externalMetadataColumns />
-                    </output>
-                  </outputs>
-                </component>
-                <component
-                  refId="Package\Loop Through Customer List\Data Flow Task\Recordset Destination"
-                  componentClassID="Microsoft.RecordsetDestination"
-                  contactInfo="Recordset Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
-                  description="Creates and populates an in-memory ADO recordset."
-                  name="Recordset Destination">
-                  <properties>
-                    <property
-                      dataType="System.String"
-                      description="Specifies the variable that contains the recordset."
-                      name="VariableName">User::rsSPList</property>
-                  </properties>
-                  <inputs>
-                    <input
-                      refId="Package\Loop Through Customer List\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input]"
-                      hasSideEffects="true"
-                      name="Recordset Destination Input">
-                      <inputColumns>
-                        <inputColumn
-                          refId="Package\Loop Through Customer List\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input].Columns[spName]"
-                          cachedCodepage="1252"
-                          cachedDataType="str"
-                          cachedLength="50"
-                          cachedName="spName"
-                          lineageId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]" />
-                      </inputColumns>
-                      <externalMetadataColumns />
-                    </input>
-                  </inputs>
-                </component>
-              </components>
-              <paths>
-                <path
-                  refId="Package\Loop Through Customer List\Data Flow Task.Paths[OLE DB Source Output]"
-                  endId="Package\Loop Through Customer List\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input]"
-                  name="OLE DB Source Output"
-                  startId="Package\Loop Through Customer List\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output]" />
-              </paths>
-            </pipeline>
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
           DTS:refId="Package\Loop Through Customer List\Delete Old Zip Files"
           DTS:CreationName="STOCK:FOREACHLOOP"
           DTS:Description="Foreach Loop Container"
@@ -2882,6 +2728,36 @@ and cep.Active = 1</property>
               Language="CSharp"
               ReadOnlyVariables="User::RejectZipFileName"
               ReadWriteVariables="User::ZipFileExists,User::ZipFileSize">
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_5e055285c85f4b309cc47f769ce5d2d7")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_5e055285c85f4b309cc47f769ce5d2d7")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3001,35 +2877,6 @@ and cep.Active = 1</property>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5e055285c85f4b309cc47f769ce5d2d7.Properties.Settings.get_Default():ST_5e055285c85f4b309cc47f769ce5d2d7.Properties.Sett" +
-    "ings")]
-
-namespace ST_5e055285c85f4b309cc47f769ce5d2d7.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -3270,35 +3117,34 @@ namespace ST_5e055285c85f4b309cc47f769ce5d2d7
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_5e055285c85f4b309cc47f769ce5d2d7")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_5e055285c85f4b309cc47f769ce5d2d7")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5e055285c85f4b309cc47f769ce5d2d7.Properties.Settings.get_Default():ST_5e055285c85f4b309cc47f769ce5d2d7.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace ST_5e055285c85f4b309cc47f769ce5d2d7.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -3498,6 +3344,185 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
+          DTS:refId="Package\Loop Through Customer List\Find Pre Process"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{0691E584-BC4D-4948-B1DB-8BD98D5596C1}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Find Pre Process"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v10; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <pipeline
+              BLOBTempStoragePath=""
+              bufferTempStoragePath=""
+              version="1">
+              <components>
+                <component
+                  refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select spName
+from CustomerList c
+join CustomerExtraProcesses cep on c.CustomersUID = cep.CustomersUID
+where c.CustomersUID = ?
+and c.Active = 1
+and c.PreProcessing = 1
+and cep.SourceOrigin = c.SourceOrigin
+and cep.Area = 'IMS'
+and cep.Active = 1</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable">User::IMS_PreProcessSQL</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">3</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping">"Parameter0",{1DE2B33B-8BD3-4735-B28A-A4DDFD16E82F};</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[ImportManagementSystem]"
+                      connectionManagerRefId="Package.ConnectionManagers[ImportManagementSystem]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
+                          length="50"
+                          lineageId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
+                          name="spName"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          name="spName" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
+                          lineageId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
+                          name="spName" />
+                        <outputColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Loop Through Customer List\Find Pre Process\Recordset Destination"
+                  componentClassID="Microsoft.RecordsetDestination"
+                  contactInfo="Recordset Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+                  description="Creates and populates an in-memory ADO recordset."
+                  name="Recordset Destination">
+                  <properties>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the recordset."
+                      name="VariableName">User::rsSPList</property>
+                  </properties>
+                  <inputs>
+                    <input
+                      refId="Package\Loop Through Customer List\Find Pre Process\Recordset Destination.Inputs[Recordset Destination Input]"
+                      hasSideEffects="true"
+                      name="Recordset Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Loop Through Customer List\Find Pre Process\Recordset Destination.Inputs[Recordset Destination Input].Columns[spName]"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
+                          cachedName="spName"
+                          lineageId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]" />
+                      </inputColumns>
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Loop Through Customer List\Find Pre Process.Paths[OLE DB Source Output]"
+                  endId="Package\Loop Through Customer List\Find Pre Process\Recordset Destination.Inputs[Recordset Destination Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Loop Through Customer List\Find Pre Process\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
           DTS:refId="Package\Loop Through Customer List\Gather Reject Logs and add to Zip"
           DTS:CreationName="STOCK:FOREACHLOOP"
           DTS:Description="Foreach Loop Container"
@@ -3560,7 +3585,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               <DTS:ObjectData>
                 <ExecuteProcessData
                   Executable="E:\Integration\7z.exe"
-                  Arguments="a -tzip  &quot;\Reject\_RejectLog_04232018.zip&quot; &quot;rejectfile.csv&quot;"
+                  Arguments="a -tzip  &quot;\Reject\_RejectLog_10072018.zip&quot; &quot;rejectfile.csv&quot;"
                   WorkingDirectory="\Reject" />
               </DTS:ObjectData>
             </DTS:Executable>
@@ -3761,14 +3786,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
-              DTS:refId="Package\Loop Through Customer List\Process Packages\Data Flow Task"
+              DTS:refId="Package\Loop Through Customer List\Process Packages\Find Post Process"
               DTS:CreationName="Microsoft.Pipeline"
               DTS:Description="Data Flow Task"
               DTS:DTSID="{5434dbf9-2ec6-4e74-8b0e-01c33b0633f4}"
               DTS:ExecutableType="Microsoft.Pipeline"
               DTS:ForceExecutionResult="0"
               DTS:LocaleID="-1"
-              DTS:ObjectName="Data Flow Task"
+              DTS:ObjectName="Find Post Process"
               DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v10; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
               <DTS:Variables />
               <DTS:LoggingOptions
@@ -3780,7 +3805,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   version="1">
                   <components>
                     <component
-                      refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source"
+                      refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source"
                       componentClassID="Microsoft.OLEDBSource"
                       contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
                       description="OLE DB Source"
@@ -3817,7 +3842,7 @@ and cep.Active = 1</property>
                         <property
                           dataType="System.String"
                           description="The variable that contains the SQL command to be executed."
-                          name="SqlCommandVariable"></property>
+                          name="SqlCommandVariable">User::IMS_PostProcessSQL</property>
                         <property
                           dataType="System.Int32"
                           description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -3830,7 +3855,7 @@ and cep.Active = 1</property>
                           dataType="System.Int32"
                           description="Specifies the mode used to access the database."
                           name="AccessMode"
-                          typeConverter="AccessMode">2</property>
+                          typeConverter="AccessMode">3</property>
                         <property
                           dataType="System.String"
                           description="The mappings between the parameters in the SQL command and variables."
@@ -3838,7 +3863,7 @@ and cep.Active = 1</property>
                       </properties>
                       <connections>
                         <connection
-                          refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Connections[OleDbConnection]"
+                          refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Connections[OleDbConnection]"
                           connectionManagerID="Package.ConnectionManagers[ImportManagementSystem]"
                           connectionManagerRefId="Package.ConnectionManagers[ImportManagementSystem]"
                           description="The OLE DB runtime connection used to access the database."
@@ -3846,25 +3871,25 @@ and cep.Active = 1</property>
                       </connections>
                       <outputs>
                         <output
-                          refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output]"
+                          refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output]"
                           name="OLE DB Source Output">
                           <outputColumns>
                             <outputColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
                               codePage="1252"
                               dataType="str"
                               errorOrTruncationOperation="Conversion"
                               errorRowDisposition="FailComponent"
-                              externalMetadataColumnId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
+                              externalMetadataColumnId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
                               length="50"
-                              lineageId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
+                              lineageId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]"
                               name="spName"
                               truncationRowDisposition="FailComponent" />
                           </outputColumns>
                           <externalMetadataColumns
                             isUsed="True">
                             <externalMetadataColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[spName]"
                               codePage="1252"
                               dataType="str"
                               length="50"
@@ -3872,27 +3897,27 @@ and cep.Active = 1</property>
                           </externalMetadataColumns>
                         </output>
                         <output
-                          refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                          refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output]"
                           isErrorOut="true"
                           name="OLE DB Source Error Output">
                           <outputColumns>
                             <outputColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
                               codePage="1252"
                               dataType="str"
                               length="50"
-                              lineageId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
+                              lineageId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[spName]"
                               name="spName" />
                             <outputColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                               dataType="i4"
-                              lineageId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                              lineageId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                               name="ErrorCode"
                               specialFlags="1" />
                             <outputColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                               dataType="i4"
-                              lineageId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                              lineageId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                               name="ErrorColumn"
                               specialFlags="2" />
                           </outputColumns>
@@ -3901,7 +3926,7 @@ and cep.Active = 1</property>
                       </outputs>
                     </component>
                     <component
-                      refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\Recordset Destination"
+                      refId="Package\Loop Through Customer List\Process Packages\Find Post Process\Recordset Destination"
                       componentClassID="Microsoft.RecordsetDestination"
                       contactInfo="Recordset Destination;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
                       description="Creates and populates an in-memory ADO recordset."
@@ -3914,17 +3939,17 @@ and cep.Active = 1</property>
                       </properties>
                       <inputs>
                         <input
-                          refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input]"
+                          refId="Package\Loop Through Customer List\Process Packages\Find Post Process\Recordset Destination.Inputs[Recordset Destination Input]"
                           hasSideEffects="true"
                           name="Recordset Destination Input">
                           <inputColumns>
                             <inputColumn
-                              refId="Package\Loop Through Customer List\Process Packages\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input].Columns[spName]"
+                              refId="Package\Loop Through Customer List\Process Packages\Find Post Process\Recordset Destination.Inputs[Recordset Destination Input].Columns[spName]"
                               cachedCodepage="1252"
                               cachedDataType="str"
                               cachedLength="50"
                               cachedName="spName"
-                              lineageId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]" />
+                              lineageId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output].Columns[spName]" />
                           </inputColumns>
                           <externalMetadataColumns />
                         </input>
@@ -3933,10 +3958,10 @@ and cep.Active = 1</property>
                   </components>
                   <paths>
                     <path
-                      refId="Package\Loop Through Customer List\Process Packages\Data Flow Task.Paths[OLE DB Source Output]"
-                      endId="Package\Loop Through Customer List\Process Packages\Data Flow Task\Recordset Destination.Inputs[Recordset Destination Input]"
+                      refId="Package\Loop Through Customer List\Process Packages\Find Post Process.Paths[OLE DB Source Output]"
+                      endId="Package\Loop Through Customer List\Process Packages\Find Post Process\Recordset Destination.Inputs[Recordset Destination Input]"
                       name="OLE DB Source Output"
-                      startId="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output]" />
+                      startId="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source.Outputs[OLE DB Source Output]" />
                   </paths>
                 </pipeline>
               </DTS:ObjectData>
@@ -4477,12 +4502,12 @@ and cep.Active = 1</property>
               DTS:Expression="@IMSPostProcessing &gt; 0"
               DTS:From="Package\Loop Through Customer List\Process Packages\Count PostProcessing Job"
               DTS:ObjectName="Constraint 7"
-              DTS:To="Package\Loop Through Customer List\Process Packages\Data Flow Task" />
+              DTS:To="Package\Loop Through Customer List\Process Packages\Find Post Process" />
             <DTS:PrecedenceConstraint
               DTS:refId="Package\Loop Through Customer List\Process Packages.PrecedenceConstraints[Constraint 8]"
               DTS:CreationName=""
               DTS:DTSID="{7A872489-4CFE-4BB9-86F0-B2F701A52B32}"
-              DTS:From="Package\Loop Through Customer List\Process Packages\Data Flow Task"
+              DTS:From="Package\Loop Through Customer List\Process Packages\Find Post Process"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint 8"
               DTS:To="Package\Loop Through Customer List\Process Packages\PreProcess SPs" />
@@ -4650,12 +4675,12 @@ and cep.Active = 1</property>
           DTS:Expression="@IMSPreProcessing &gt; 0"
           DTS:From="Package\Loop Through Customer List\Count PreProcessing Job"
           DTS:ObjectName="Constraint 5"
-          DTS:To="Package\Loop Through Customer List\Data Flow Task" />
+          DTS:To="Package\Loop Through Customer List\Find Pre Process" />
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Loop Through Customer List.PrecedenceConstraints[Constraint 6]"
           DTS:CreationName=""
           DTS:DTSID="{27DDF3BF-7210-455C-8F4F-80BFC16F05C3}"
-          DTS:From="Package\Loop Through Customer List\Data Flow Task"
+          DTS:From="Package\Loop Through Customer List\Find Pre Process"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 6"
           DTS:To="Package\Loop Through Customer List\PreProcess SPs" />
@@ -4688,62 +4713,62 @@ and cep.Active = 1</property>
       <DTS:ForEachVariableMappings>
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{2C521546-9A30-44CC-943C-170CCD2866FD}"
-          DTS:ObjectName="{2C521546-9A30-44CC-943C-170CCD2866FD}"
+          DTS:DTSID="{636D5598-F3BA-4F0F-8CED-7AD5535152B8}"
+          DTS:ObjectName="{636D5598-F3BA-4F0F-8CED-7AD5535152B8}"
           DTS:ValueIndex="0"
           DTS:VariableName="User::_CustomerUID" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{930AD35B-0490-45E4-8549-BC670B444679}"
-          DTS:ObjectName="{930AD35B-0490-45E4-8549-BC670B444679}"
+          DTS:DTSID="{91FD83AF-8FA6-4D08-988D-C154B65AF149}"
+          DTS:ObjectName="{91FD83AF-8FA6-4D08-988D-C154B65AF149}"
           DTS:ValueIndex="1"
           DTS:VariableName="User::_CustomerName" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{C748CB87-CCB6-42DF-B709-45CBEA314D0D}"
-          DTS:ObjectName="{C748CB87-CCB6-42DF-B709-45CBEA314D0D}"
+          DTS:DTSID="{8105430B-788B-47DF-B57F-CEA37496E9B7}"
+          DTS:ObjectName="{8105430B-788B-47DF-B57F-CEA37496E9B7}"
           DTS:ValueIndex="2"
           DTS:VariableName="User::_PreProcessing" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{7E277A4E-FBCD-4D84-B7B0-74CAAA8D70DC}"
-          DTS:ObjectName="{7E277A4E-FBCD-4D84-B7B0-74CAAA8D70DC}"
+          DTS:DTSID="{1D5354CF-3683-482B-9EEE-7423CF7E74C2}"
+          DTS:ObjectName="{1D5354CF-3683-482B-9EEE-7423CF7E74C2}"
           DTS:ValueIndex="3"
           DTS:VariableName="User::_PostProcessing" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{912FF6A8-6B9E-4BF9-9538-F23DE3C88FDE}"
-          DTS:ObjectName="{912FF6A8-6B9E-4BF9-9538-F23DE3C88FDE}"
+          DTS:DTSID="{86FE98B9-541D-4A35-82C6-FD6BCBE484BF}"
+          DTS:ObjectName="{86FE98B9-541D-4A35-82C6-FD6BCBE484BF}"
           DTS:ValueIndex="5"
           DTS:VariableName="User::_SFTPLocation" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{E677CB68-E3B2-49CF-9069-53A9C63A5479}"
-          DTS:ObjectName="{E677CB68-E3B2-49CF-9069-53A9C63A5479}"
+          DTS:DTSID="{6C1037FE-B8A3-433B-AAFF-4E9690EE230C}"
+          DTS:ObjectName="{6C1037FE-B8A3-433B-AAFF-4E9690EE230C}"
           DTS:ValueIndex="6"
           DTS:VariableName="User::_InitCatalogClient" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{E92F3993-9521-485D-B9FC-266C753A258D}"
-          DTS:ObjectName="{E92F3993-9521-485D-B9FC-266C753A258D}"
+          DTS:DTSID="{3E93DBCB-1B95-4B32-BABE-4D8406F94D10}"
+          DTS:ObjectName="{3E93DBCB-1B95-4B32-BABE-4D8406F94D10}"
           DTS:ValueIndex="7"
           DTS:VariableName="User::_RejectEmail" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{555AC8CD-567C-409E-A0C4-E213212C4827}"
-          DTS:ObjectName="{555AC8CD-567C-409E-A0C4-E213212C4827}"
+          DTS:DTSID="{4A7DD61A-FCE3-4AF0-969F-7846A8AAE1A1}"
+          DTS:ObjectName="{4A7DD61A-FCE3-4AF0-969F-7846A8AAE1A1}"
           DTS:ValueIndex="8"
           DTS:VariableName="User::_RejectEmailCC" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{943CBFE7-27F2-431E-B4BF-BDC2F32721BA}"
-          DTS:ObjectName="{943CBFE7-27F2-431E-B4BF-BDC2F32721BA}"
+          DTS:DTSID="{4D1A9326-1D7B-499D-A454-AFC352DE1F53}"
+          DTS:ObjectName="{4D1A9326-1D7B-499D-A454-AFC352DE1F53}"
           DTS:ValueIndex="9"
           DTS:VariableName="User::_1UpdateTables" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{66071379-C770-4D88-8CE2-A121D087A467}"
-          DTS:ObjectName="{66071379-C770-4D88-8CE2-A121D087A467}"
+          DTS:DTSID="{64329CAF-7A0C-4CA5-BABF-B6A6390CBD38}"
+          DTS:ObjectName="{64329CAF-7A0C-4CA5-BABF-B6A6390CBD38}"
           DTS:ValueIndex="10"
           DTS:VariableName="User::EmailAttachment" />
       </DTS:ForEachVariableMappings>
@@ -4793,7 +4818,7 @@ and cep.Active = 1</property>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="128" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="128" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="136,44"
           Id="Package\Get Active Customers"
@@ -4833,6 +4858,10 @@ and cep.Active = 1</property>
           Id="Package\Loop Through Customer List\Clean up Files and Go Home\Delete Old Source Files"
           TopLeft="516.735849056604,20.6226415094341" />
         <NodeLayout
+          Size="225,42"
+          Id="Package\Loop Through Customer List\Clean up Files and Go Home\Log Deactivate Not Configured"
+          TopLeft="555,298" />
+        <NodeLayout
           Size="136,58"
           Id="Package\Loop Through Customer List\Clean up Files and Go Home\Log End Client Process"
           TopLeft="32.584905660377,209.320754716981" />
@@ -4856,7 +4885,7 @@ and cep.Active = 1</property>
           TopLeft="238.88679245283,97.1603773584907">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="32.6603773584908,-16.6698113207549"
               Start="0,0"
               End="25.1603773584908,-16.6698113207549">
@@ -4890,7 +4919,7 @@ and cep.Active = 1</property>
           TopLeft="483.547169811321,83.0566037735849">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="33.1886792452829,0"
               Start="0,0"
               End="25.6886792452829,0">
@@ -4912,7 +4941,7 @@ and cep.Active = 1</property>
           TopLeft="616.235849056604,150.622641509434">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-515.650943396227,58.698113207547"
               Start="0,0"
               End="-515.650943396227,51.198113207547">
@@ -4946,7 +4975,7 @@ and cep.Active = 1</property>
           TopLeft="168.584905660377,239.839622641509">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="23.867924528302,0"
               Start="0,0"
               End="16.367924528302,0">
@@ -4968,7 +4997,7 @@ and cep.Active = 1</property>
           TopLeft="348.452830188679,241.679245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="33.547169811321,0"
               Start="0,0"
               End="26.047169811321,0">
@@ -4990,7 +5019,7 @@ and cep.Active = 1</property>
           TopLeft="471,263">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-42.5,39"
               Start="0,0"
               End="-42.5,31.5">
@@ -5021,16 +5050,12 @@ and cep.Active = 1</property>
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="225,42"
-          Id="Package\Loop Through Customer List\Clean up Files and Go Home\Log Deactivate Not Configured"
-          TopLeft="555,298" />
         <EdgeLayout
           Id="Package\Loop Through Customer List\Clean up Files and Go Home.PrecedenceConstraints[Constraint 6]"
           TopLeft="499.333333333333,263">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="168.166666666667,35"
               Start="0,0"
               End="168.166666666667,27.5">
@@ -5073,8 +5098,8 @@ and cep.Active = 1</property>
           Id="Package\Loop Through Customer List\Count PreProcessing Job"
           TopLeft="542.754716981132,50.4339622641509" />
         <NodeLayout
-          Size="136,44"
-          Id="Package\Loop Through Customer List\Data Flow Task"
+          Size="158,42"
+          Id="Package\Loop Through Customer List\Find Pre Process"
           TopLeft="726.679245283019,68.4339622641509" />
         <NodeLayout
           Size="160,42"
@@ -5130,8 +5155,8 @@ and cep.Active = 1</property>
           Id="Package\Loop Through Customer List\Process Packages\Count PostProcessing Job"
           TopLeft="58.0754716981132,198.811320754717" />
         <NodeLayout
-          Size="136,44"
-          Id="Package\Loop Through Customer List\Process Packages\Data Flow Task"
+          Size="163,42"
+          Id="Package\Loop Through Customer List\Process Packages\Find Post Process"
           TopLeft="469.660377358491,211.792452830189" />
         <NodeLayout
           Size="136,62"
@@ -5189,7 +5214,7 @@ and cep.Active = 1</property>
           TopLeft="805.132075471698,77.8679245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-692.830188679245,21.0188679245283"
               Start="0,0"
               End="-692.830188679245,13.5188679245283">
@@ -5215,7 +5240,7 @@ and cep.Active = 1</property>
           TopLeft="665.509433962264,47.2264150943396">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="71.7358490566038,8.67924528301887"
               Start="0,0"
               End="64.2358490566038,8.67924528301887">
@@ -5241,7 +5266,7 @@ and cep.Active = 1</property>
           TopLeft="743.377358490566,269.849056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-237.150943396226,79.537735849056"
               Start="0,0"
               End="-229.650943396226,79.537735849056">
@@ -5277,7 +5302,7 @@ and cep.Active = 1</property>
           TopLeft="329.358490566038,36.3018867924528">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="31.1698113207547,9.52830188679246"
               Start="0,0"
               End="23.6698113207547,9.52830188679246">
@@ -5311,7 +5336,7 @@ and cep.Active = 1</property>
           TopLeft="496.301886792453,45.7924528301887">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="33.4339622641509,1.43396226415098"
               Start="0,0"
               End="25.9339622641509,1.43396226415098">
@@ -5337,7 +5362,7 @@ and cep.Active = 1</property>
           TopLeft="743.358490566038,131.349056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="30.641509433962,0"
               Start="0,0"
               End="23.141509433962,0">
@@ -5359,7 +5384,7 @@ and cep.Active = 1</property>
           TopLeft="165.566037735849,37.5424528301887">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="27.7924528301889,0"
               Start="0,0"
               End="20.2924528301889,0">
@@ -5381,7 +5406,7 @@ and cep.Active = 1</property>
           TopLeft="539.094339622642,132.433962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="68.2641509433962,0"
               Start="0,0"
               End="60.7641509433962,0">
@@ -5403,7 +5428,7 @@ and cep.Active = 1</property>
           TopLeft="180.415094339623,127.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="48.9433962264151,0"
               Start="0,0"
               End="41.4433962264151,0">
@@ -5425,7 +5450,7 @@ and cep.Active = 1</property>
           TopLeft="365.358490566038,131.141509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="37.7358490566038,0"
               Start="0,0"
               End="30.2358490566038,0">
@@ -5447,7 +5472,7 @@ and cep.Active = 1</property>
           TopLeft="856.5,153">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-730.424528301887,45.811320754717"
               Start="0,0"
               End="-730.424528301887,38.311320754717">
@@ -5478,18 +5503,18 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Loop Through Customer List\Process Packages.PrecedenceConstraints[Constraint 7]"
-          TopLeft="194.075471698113,232.801886792453">
+          TopLeft="194.075471698113,232.301886792453">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="275.584905660377,0"
+              StartConnector="{assembly:Null}"
+              EndConnector="275.584905660378,0"
               Start="0,0"
-              End="268.084905660377,0">
+              End="268.084905660378,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="268.084905660377,0" />
+                    End="268.084905660378,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5502,18 +5527,18 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Loop Through Customer List\Process Packages.PrecedenceConstraints[Constraint 8]"
-          TopLeft="605.660377358491,234.320754716981">
+          TopLeft="632.660377358491,233.820754716981">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="137.716981132075,0"
+              StartConnector="{assembly:Null}"
+              EndConnector="110.716981132075,0"
               Start="0,0"
-              End="130.216981132075,0">
+              End="103.216981132075,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="130.216981132075,0" />
+                    End="103.216981132075,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5527,7 +5552,7 @@ and cep.Active = 1</property>
           TopLeft="126.075471698113,264.811320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="290.817610062893,54.0754716981132"
               Start="0,0"
               End="290.817610062893,46.5754716981132">
@@ -5578,7 +5603,7 @@ and cep.Active = 1</property>
           TopLeft="235.584905660377,33.4905660377358">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="24.6415094339622,38.9056603773586"
               Start="0,0"
               End="24.6415094339622,31.4056603773586">
@@ -5606,7 +5631,7 @@ and cep.Active = 1</property>
           TopLeft="617.754716981132,114.433962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-146.981132075472,121.320754716981"
               Start="0,0"
               End="-146.981132075472,113.820754716981">
@@ -5642,7 +5667,7 @@ and cep.Active = 1</property>
           TopLeft="147.526124818578,1173.17126269956">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,38.8287373004357"
               Start="0,0"
               End="0,31.3287373004357">
@@ -5666,7 +5691,7 @@ and cep.Active = 1</property>
           TopLeft="219,1229.12663280116">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="49.33381712627,0"
               Start="0,0"
               End="41.83381712627,0">
@@ -5690,7 +5715,7 @@ and cep.Active = 1</property>
           TopLeft="639.27358490566,731.754716981132">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-441.77358490566,46.245283018868"
               Start="0,0"
               End="-441.77358490566,38.745283018868">
@@ -5724,7 +5749,7 @@ and cep.Active = 1</property>
           TopLeft="1058.06603773585,155.471698113208">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-250.292452830189,80.2830188679245"
               Start="0,0"
               End="-250.292452830189,72.7830188679245">
@@ -5760,7 +5785,7 @@ and cep.Active = 1</property>
           TopLeft="197.5,907">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-16.5283018867925,30.9150943396221"
               Start="0,0"
               End="-16.5283018867925,23.4150943396221">
@@ -5794,7 +5819,7 @@ and cep.Active = 1</property>
           TopLeft="510.037735849057,91.9528301886792">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="32.7169811320755,-9.51886792452831"
               Start="0,0"
               End="25.2169811320755,-9.51886792452831">
@@ -5825,58 +5850,54 @@ and cep.Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Loop Through Customer List.PrecedenceConstraints[Constraint 5]"
-          TopLeft="692.754716981132,82.4339622641509">
+          TopLeft="692.754716981132,85.9339622641509">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="33.9245283018868,8"
+              StartConnector="{assembly:Null}"
+              EndConnector="33.924528301887,0"
               Start="0,0"
-              End="26.4245283018868,8">
+              End="26.424528301887,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="12.9622641509434,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="12.9622641509434,0"
-                    Point2="16.9622641509434,0"
-                    Point3="16.9622641509434,4" />
-                  <mssgle:LineSegment
-                    End="16.9622641509434,4" />
-                  <mssgle:CubicBezierSegment
-                    Point1="16.9622641509434,4"
-                    Point2="16.9622641509434,8"
-                    Point3="20.9622641509434,8" />
-                  <mssgle:LineSegment
-                    End="26.4245283018868,8" />
+                    End="26.424528301887,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="8.96226415094338,9,16,16"
+              BoundingBox="5.2122641509435,5,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Loop Through Customer List.PrecedenceConstraints[Constraint 6]"
-          TopLeft="862.452830188679,90.3962264150944">
+          TopLeft="884.679245283019,89.4339622641509">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="66.1132075471699,8.52830188679241"
+              StartConnector="{assembly:Null}"
+              EndConnector="43.88679245283,9.5377358490566"
               Start="0,0"
-              End="58.6132075471699,8.52830188679241">
+              End="36.38679245283,9.5377358490566">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="33.0566037735849,0" />
+                    End="17.943396226415,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="17.943396226415,0"
+                    Point2="21.943396226415,0"
+                    Point3="21.943396226415,4" />
                   <mssgle:LineSegment
-                    End="33.0566037735849,8.52830188679241" />
+                    End="21.943396226415,5.5377358490566" />
+                  <mssgle:CubicBezierSegment
+                    Point1="21.943396226415,5.5377358490566"
+                    Point2="21.943396226415,9.5377358490566"
+                    Point3="25.943396226415,9.5377358490566" />
                   <mssgle:LineSegment
-                    End="58.6132075471699,8.52830188679241" />
+                    End="36.38679245283,9.5377358490566" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -5890,7 +5911,7 @@ and cep.Active = 1</property>
           TopLeft="180.971698113207,1081.91509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-32.9194484760522,47.2561683599379"
               Start="0,0"
               End="-32.9194484760522,39.7561683599379">
@@ -5926,7 +5947,7 @@ and cep.Active = 1</property>
           TopLeft="404.33381712627,1225.25326560232">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="77.420899854862,-189.857039187226"
               Start="0,0"
               End="69.920899854862,-189.857039187226">
@@ -5960,7 +5981,7 @@ and cep.Active = 1</property>
           TopLeft="328.22641509434,95.6745283018868">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="45.811320754717,0"
               Start="0,0"
               End="38.311320754717,0">
@@ -5989,7 +6010,7 @@ and cep.Active = 1</property>
           TopLeft="536.801886792453,168.179245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="134.698113207547,71.584905660377"
               Start="0,0"
               End="134.698113207547,64.084905660377">
@@ -6060,7 +6081,7 @@ and cep.Active = 1</property>
     design-time-name="Package\Get Active Customers">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="136,44"
           Id="Package\Get Active Customers\Get Customers"
@@ -6100,15 +6121,13 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <AnnotationLayout
           Text="IMPORTANT:&#xA;Order of column in CustomerList is important&#xA;to the For Loop container in the Control Flow&#xA; that iterates through the result set&#xA;"
           ParentId="Package\Get Active Customers"
-          Size="359,NaN"
+          Size="359,103"
           Id="fb3b2298-a5da-4595-b8d5-ec246e580d3f"
           TopLeft="223.650943396226,103.915094339623">
           <AnnotationLayout.FontInfo>
@@ -6135,20 +6154,20 @@ and cep.Active = 1</property>
     </Properties>
   </PipelineComponentMetadata>
   <TaskHost
-    design-time-name="Package\Loop Through Customer List\Data Flow Task">
+    design-time-name="Package\Loop Through Customer List\Find Pre Process">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="184,42"
-          Id="Package\Loop Through Customer List\Data Flow Task\Recordset Destination"
+          Id="Package\Loop Through Customer List\Find Pre Process\Recordset Destination"
           TopLeft="154,228" />
         <NodeLayout
           Size="152,42"
-          Id="Package\Loop Through Customer List\Data Flow Task\OLE DB Source"
+          Id="Package\Loop Through Customer List\Find Pre Process\OLE DB Source"
           TopLeft="185,147" />
         <EdgeLayout
-          Id="Package\Loop Through Customer List\Data Flow Task.Paths[OLE DB Source Output]"
+          Id="Package\Loop Through Customer List\Find Pre Process.Paths[OLE DB Source Output]"
           TopLeft="261,189">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -6178,29 +6197,35 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Loop Through Customer List\Find Pre Process\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
   <TaskHost
-    design-time-name="Package\Loop Through Customer List\Process Packages\Data Flow Task">
+    design-time-name="Package\Loop Through Customer List\Process Packages\Find Post Process">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="184,42"
-          Id="Package\Loop Through Customer List\Process Packages\Data Flow Task\Recordset Destination"
+          Id="Package\Loop Through Customer List\Process Packages\Find Post Process\Recordset Destination"
           TopLeft="263,233" />
         <NodeLayout
           Size="152,42"
-          Id="Package\Loop Through Customer List\Process Packages\Data Flow Task\OLE DB Source"
+          Id="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source"
           TopLeft="253,135" />
         <EdgeLayout
-          Id="Package\Loop Through Customer List\Process Packages\Data Flow Task.Paths[OLE DB Source Output]"
+          Id="Package\Loop Through Customer List\Process Packages\Find Post Process.Paths[OLE DB Source Output]"
           TopLeft="329,177">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -6230,13 +6255,19 @@ and cep.Active = 1</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Loop Through Customer List\Process Packages\Find Post Process\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
