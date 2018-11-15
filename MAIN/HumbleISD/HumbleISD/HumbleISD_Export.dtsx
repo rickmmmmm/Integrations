@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="HumbleISD_Export"
   DTS:PackageType="5"
-  DTS:VersionBuild="183"
-  DTS:VersionGUID="{E2A597F6-D9C5-4D40-ABF3-3164813F5A4F}">
+  DTS:VersionBuild="184"
+  DTS:VersionGUID="{5BA3E1F7-5294-4B79-B7F3-DB5CA5A0EFEB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::DatabaseServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Humble_0723;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_FineExport-{1206D90D-C338-4A46-956C-56FA62AFD2D6}LocalHost.TIPWebHostedKellerISD;" />
+          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWebHostedHumbleisd;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-KISD_FineExport-{1206D90D-C338-4A46-956C-56FA62AFD2D6}LocalHost.TIPWebHostedKellerISD;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -45,7 +45,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.txt">
+          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.txt">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnDelimiter=""
@@ -74,7 +74,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.txt">
+          DTS:ConnectionString="E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.txt">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnDelimiter=""
@@ -753,7 +753,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFilePath">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Archived\Export\export_07302018.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Archived\Export\export_11152018.zip</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -773,7 +773,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ClientExportFilePath">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.txt</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.txt</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -784,7 +784,18 @@
       DTS:Namespace="User"
       DTS:ObjectName="ClientExportZipFile">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.zip</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.zip</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{25DB8C4E-B8D7-4A52-84CE-75F04ED25C89}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::ClientExportZipFile]+&quot;p&quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClientExportZippFile">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.zipp</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -918,6 +929,47 @@
       <DTS:LoggingOptions
         DTS:FilterKind="0" />
       <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Export, Zip, Archive File\Copy file to Archive"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{C164AC57-6832-4AD6-92E0-4EDDFFF0E43D}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Copy file to Archive"
+          DTS:TaskContact="File System Task;Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOverwriteDestFile="True"
+              TaskSourcePath="User::ClientExportZipFile"
+              TaskIsSourceVariable="True"
+              TaskDestinationPath="User::ArchiveFilePath"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Export, Zip, Archive File\Copy zip to ZIPP"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{E1F90124-E0D0-43E0-AB71-CF131EE142D1}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Copy zip to ZIPP"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOverwriteDestFile="True"
+              TaskSourcePath="User::ClientExportZipFile"
+              TaskIsSourceVariable="True"
+              TaskDestinationPath="User::ClientExportZippFile"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Export, Zip, Archive File\Export Data"
           DTS:CreationName="Microsoft.Pipeline"
@@ -4119,28 +4171,6 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Export, Zip, Archive File\File System Task"
-          DTS:CreationName="Microsoft.FileSystemTask"
-          DTS:Description="File System Task"
-          DTS:DTSID="{C164AC57-6832-4AD6-92E0-4EDDFFF0E43D}"
-          DTS:ExecutableType="Microsoft.FileSystemTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="File System Task"
-          DTS:TaskContact="File System Task;Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:LoggingOptions
-            DTS:FilterKind="0" />
-          <DTS:ObjectData>
-            <FileSystemData
-              TaskOverwriteDestFile="True"
-              TaskSourcePath="User::ClientExportZipFile"
-              TaskIsSourceVariable="True"
-              TaskDestinationPath="User::ArchiveFilePath"
-              TaskIsDestinationVariable="True" />
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
           DTS:refId="Package\Export, Zip, Archive File\Zip export file"
           DTS:CreationName="Microsoft.ExecuteProcess"
           DTS:Description="Execute Process Task"
@@ -4156,7 +4186,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           <DTS:ObjectData>
             <ExecuteProcessData
               Executable="E:\Integration\7z.exe"
-              Arguments="a &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.zip&quot; &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_07302018.txt&quot;" />
+              Arguments="a &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.zip&quot; &quot;E:\EZImportFiles\Humbleisd_SFTP_User\Integration\Export\export_11152018.txt&quot;" />
           </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
@@ -4176,7 +4206,15 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           DTS:From="Package\Export, Zip, Archive File\Zip export file"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 1"
-          DTS:To="Package\Export, Zip, Archive File\File System Task" />
+          DTS:To="Package\Export, Zip, Archive File\Copy file to Archive" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Export, Zip, Archive File.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{06F93F08-4E5A-4E24-8656-C53C5980008C}"
+          DTS:From="Package\Export, Zip, Archive File\Copy file to Archive"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
+          DTS:To="Package\Export, Zip, Archive File\Copy zip to ZIPP" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -4234,7 +4272,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
                 SQLTask:ParameterSize="1000" />
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@attachment"
-                SQLTask:DtsVariableName="User::ClientExportZipFile"
+                SQLTask:DtsVariableName="User::ClientExportZippFile"
                 SQLTask:ParameterDirection="Input"
                 SQLTask:DataType="130"
                 SQLTask:ParameterSize="1000" />
@@ -4351,7 +4389,7 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           TopLeft="14.4528301886792,17.2641509433962" />
         <NodeLayout
           Size="136,44"
-          Id="Package\Export, Zip, Archive File\File System Task"
+          Id="Package\Export, Zip, Archive File\Copy file to Archive"
           TopLeft="14.4905660377358,189" />
         <NodeLayout
           Size="136,44"
@@ -4409,11 +4447,49 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="159,42"
+          Id="Package\Export, Zip, Archive File\Copy zip to ZIPP"
+          TopLeft="14,275" />
+        <EdgeLayout
+          Id="Package\Export, Zip, Archive File.PrecedenceConstraints[Constraint 2]"
+          TopLeft="82.4905660377358,233">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="11.5094339622642,42"
+              Start="0,0"
+              End="11.5094339622642,34.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,17" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17"
+                    Point2="0,21"
+                    Point3="4,21" />
+                  <mssgle:LineSegment
+                    End="7.5094339622642,21" />
+                  <mssgle:CubicBezierSegment
+                    Point1="7.5094339622642,21"
+                    Point2="11.5094339622642,21"
+                    Point3="11.5094339622642,25" />
+                  <mssgle:LineSegment
+                    End="11.5094339622642,34.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <ContainerLayout
           HeaderHeight="43.924528301886795"
           IsExpanded="True"
-          PanelSize="177,246"
-          Size="177,290"
+          PanelSize="194,424"
+          Size="194,468"
           Id="Package\Export, Zip, Archive File"
           TopLeft="384.141509433962,24.5754716981132" />
         <NodeLayout
@@ -4463,9 +4539,9 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="77.641509433962,58.122641509434"
+              EndConnector="77.641509433962,147.122641509434"
               Start="0,0"
-              End="70.141509433962,58.122641509434">
+              End="70.141509433962,147.122641509434">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -4476,13 +4552,13 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
                     Point2="38.820754716981,0"
                     Point3="38.820754716981,4" />
                   <mssgle:LineSegment
-                    End="38.820754716981,54.122641509434" />
+                    End="38.820754716981,143.122641509434" />
                   <mssgle:CubicBezierSegment
-                    Point1="38.820754716981,54.122641509434"
-                    Point2="38.820754716981,58.122641509434"
-                    Point3="42.820754716981,58.122641509434" />
+                    Point1="38.820754716981,143.122641509434"
+                    Point2="38.820754716981,147.122641509434"
+                    Point3="42.820754716981,147.122641509434" />
                   <mssgle:LineSegment
-                    End="70.141509433962,58.122641509434" />
+                    End="70.141509433962,147.122641509434" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -4493,30 +4569,30 @@ where tti.ArchiveUID = 0 and tti.InventoryUID &gt; 0</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="561.141509433962,169.575471698113">
+          TopLeft="578.141509433962,258.575471698113">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="105.22641509434,-60.0754716981132"
+              EndConnector="88.2264150943399,-149.075471698113"
               Start="0,0"
-              End="97.7264150943399,-60.0754716981132">
+              End="80.7264150943399,-149.075471698113">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="48.61320754717,0" />
+                    End="40.11320754717,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="48.61320754717,0"
-                    Point2="52.61320754717,0"
-                    Point3="52.61320754717,-4" />
+                    Point1="40.11320754717,0"
+                    Point2="44.11320754717,0"
+                    Point3="44.11320754717,-4" />
                   <mssgle:LineSegment
-                    End="52.61320754717,-56.0754716981132" />
+                    End="44.11320754717,-145.075471698113" />
                   <mssgle:CubicBezierSegment
-                    Point1="52.61320754717,-56.0754716981132"
-                    Point2="52.61320754717,-60.0754716981132"
-                    Point3="56.61320754717,-60.0754716981132" />
+                    Point1="44.11320754717,-145.075471698113"
+                    Point2="44.11320754717,-149.075471698113"
+                    Point3="48.11320754717,-149.075471698113" />
                   <mssgle:LineSegment
-                    End="97.7264150943399,-60.0754716981132" />
+                    End="80.7264150943399,-149.075471698113" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
