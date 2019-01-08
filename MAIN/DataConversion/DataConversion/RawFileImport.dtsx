@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="RawFileImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="440"
-  DTS:VersionGUID="{71EF3ADA-9074-4EB8-ACB2-AB84433964E3}">
+  DTS:VersionBuild="451"
+  DTS:VersionGUID="{EFCD425D-096B-4F3A-8DDE-24517474E752}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -582,7 +582,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_LocalImportPathFileName">
       <DTS:VariableValue
-        DTS:DataType="8">D:\Temp\Tucson_11072018-Corrections Made.xlsx</DTS:VariableValue>
+        DTS:DataType="8">D:\Temp\Training_IT_DataConversion.xlsx</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -591,7 +591,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_SSISKeyID">
       <DTS:VariableValue
-        DTS:DataType="3">2069</DTS:VariableValue>
+        DTS:DataType="3">2075</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -641,7 +641,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{B22F1E39-640F-4A2B-9405-2AA692906B69}"
-              SQLTask:SqlStatementSource="&#xA;/****** Object:  UserDefinedFunction [dbo].[SplitArrayToTable]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SplitArrayToTable]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))&#xA;BEGIN&#xA;execute dbo.sp_executesql @statement = N'&#xA;&#xA;&#xA;&#xA;CREATE FUNCTION [dbo].[SplitArrayToTable] &#xA;   (  @Delimiter varchar(5), &#xA;      @List      varchar(MAX)&#xA;   ) &#xA;   RETURNS @TableOfValues table &#xA;      (  RowID   smallint IDENTITY(1,1), &#xA;         [Value] varchar(MAX) &#xA;      ) &#xA;AS &#xA;   BEGIN&#xA;    &#xA;      DECLARE @LenString int &#xA; &#xA;      WHILE len( @List ) &gt; 0 &#xA;         BEGIN &#xA;         &#xA;            SELECT @LenString = &#xA;               (CASE charindex( @Delimiter, @List ) &#xA;                   WHEN 0 THEN len( @List ) &#xA;                   ELSE ( charindex( @Delimiter, @List ) -1 )&#xA;                END&#xA;               ) &#xA;                                &#xA;            INSERT INTO @TableOfValues &#xA;               SELECT substring( @List, 1, @LenString )&#xA;                &#xA;            SELECT @List = &#xA;               (CASE ( len( @List ) - @LenString ) &#xA;                   WHEN 0 THEN '''' &#xA;                   ELSE right( @List, len( @List ) - @LenString - 1 ) &#xA;                END&#xA;               ) &#xA;         END&#xA;          &#xA;      RETURN &#xA;      &#xA;   END &#xA;' &#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[ChangingDelimiterCol2Update]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[ChangingDelimiterCol2Update]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[ChangingDelimiterCol2Update] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Changing Delimiter to remove any issues&#xA;-- with extra ' or &quot; values withing text&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[ChangingDelimiterCol2Update]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Changing delimiter to reduce column splitting issues &#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col2=RTRIM(LTRIM(REPLACE(Col2,'&quot;,&quot;','||')))&#xA;&#xA;&#x9;-- Remove patterens that causes column splitting errors&#xA;&#x9;UPDATE ETL.PreValudation SET Col2=REPLACE(Col2,'&quot;','''''') WHERE PreRowID &gt; 1&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[FixGeneralUnNeededRowsUpdate]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[FixGeneralUnNeededRowsUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[FixGeneralUnNeededRowsUpdate] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;General Cleanup of import&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[FixGeneralUnNeededRowsUpdate]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Remove extra Hearders&#xA;&#x9;DELETE FROM ETL.PreValudation WHERE Col1 = (SELECT COL1 FROM ETL.PreValudation WHERE PreRowID=1) AND PreRowID &gt; 1&#xA;&#x9;-- Remove blank lines&#xA;&#x9;DELETE FROM ETL.PreValudation WHERE LEN(Col1)=0&#xA;&#xA;&#x9;-- Replace emtpy strings because this can cause issues with the insert statement&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET COL1=REPLACE(Col1,'&quot;&quot;','&quot;***NULL***&quot;')&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[MoveToCol2Update]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[MoveToCol2Update]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[MoveToCol2Update] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Moved Cleanup data to Column 2&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[MoveToCol2Update]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col2=LTRIM(RTRIM(SUBSTRING(Col1,2,LEN(Col1)-2)))&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[RemoveNonViewableCharsUpdate]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[RemoveNonViewableCharsUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[RemoveNonViewableCharsUpdate] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Remove non Viewable Chars&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[RemoveNonViewableCharsUpdate]&#xA;AS&#xA;BEGIN&#xA;SET NOCOUNT ON&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(9),' ')&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(10),' ')&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(13),' ')&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[CreateStageRawImport]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[CreateStageRawImport]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[CreateStageRawImport] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/11/2018&#xA;-- Description:&#x9;Create RawImport Table&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[CreateStageRawImport]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#x9;DECLARE @SQL1&#x9;&#x9;VARCHAR(MAX)=''&#xA;&#x9;DECLARE @SQL2&#x9;&#x9;VARCHAR(MAX)='CREATE TABLE ETL.RawImport (RowID INT NOT NULL IDENTITY(1,1),'&#xA;&#x9;DECLARE @SQL3&#x9;&#x9;VARCHAR(MAX)&#xA;&#x9;DECLARE @Counter&#x9;INT=1&#xA;&#x9;DECLARE @CounterMax&#x9;INT&#xA;&#xA;&#x9;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name='RawImport')&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;DROP TABLE ETL.RawImport&#xA;&#x9;END&#xA;&#xA;&#x9;SELECT @CounterMax=MAX(B.RowID)&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#xA;&#xA;&#x9;WHILE @Counter &lt;= @CounterMax&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;&#x9;SELECT @SQL2=@SQL2+'['+CASE &#xA;&#x9;&#x9;WHEN B.RowID=1 THEN CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) &#xA;&#x9;&#x9;ELSE LTRIM(RTRIM(B.Value)) END &#xA;&#x9;&#x9;WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) &#xA;&#x9;&#x9;ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END +'] VARCHAR(MAX),'&#xA;&#xA;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;&#x9;WHERE A.PreRowID=1&#xA;&#x9;&#x9;AND B.RowID=@Counter&#xA;&#xA;&#xA;&#x9;&#x9;SET @Counter=@Counter+1&#xA;&#x9;END&#xA;&#xA;&#x9;SET @SQL2=@SQL2+'ImportFIleName VARCHAR(100) NOT NULL,PreRowID INT NOT NULL,ImportFileRowID INT NOT NULL,CustomerCode VARCHAR(50) NOT NULL,IntegrationName VARCHAR(100) NOT NULL,CreationDate DATE NOT NULL DEFAULT GETDATE(),CreationTime Time NOT NULL DEFAULT GETDATE(),Exception BIT NOT NULL,ExceptionReason VARCHAR(MAX) NULL,'&#xA;&#xA;&#xA;&#x9;SET @SQL3='&#xA;&#x9; CONSTRAINT [PK_Stage_RawImport] PRIMARY KEY CLUSTERED &#xA;&#x9;(&#xA;&#x9;&#x9;[RowID] ASC&#xA;&#x9;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]&#xA;&#x9;) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]&#xA;&#xA;&#x9;ALTER TABLE [ETL].[RawImport] ADD  DEFAULT ((0)) FOR [Exception]&#xA;&#x9;'&#xA;&#xA;&#x9;EXEC(@SQL1+@SQL2+@SQL3)&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[CustomDataFixesSelect]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[CustomDataFixesSelect]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[CustomDataFixesSelect] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 11/2/2018&#xA;-- Description:&#x9;Custom fixes data or mapping issues for each integration&#xA;-- by Customer and integration&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[CustomDataFixesSelect]&#xA;@CustomerCode VARCHAR(50),&#xA;@IntegrationName VARCHAR(100),&#xA;@ImportRawTable VARCHAR(200)&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#x9;DECLARE @SQL VARCHAR(MAX)&#xA;&#xA;&#x9;IF @CustomerCode='PCS' AND @IntegrationName='Munis'&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;-- Adding SiteID because it is not in the File&#xA;&#x9;&#x9;SET @SQL = 'ALTER TABLE ' + @ImportRawTable + ' ADD SiteID VARCHAR(100)'&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#x9;&#x9;SET @SQL = 'UPDATE ' + @ImportRawTable + ' SET SiteID=RoomNumber'&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[MainETL]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[MainETL]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[MainETL] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Call all Cleanup Stored Procedures&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[MainETL]&#xA;@BatchCount INT &#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Cleanup and Data Prep&#xA;&#x9;EXEC Cleanup.FixGeneralUnNeededRowsUpdate&#xA;&#x9;EXEC Cleanup.RemoveNonViewableCharsUpdate&#xA;&#x9;EXEC Cleanup.MoveToCol2Update&#xA;&#x9;EXEC Cleanup.ChangingDelimiterCol2Update&#xA;&#xA;&#x9;--Staging Data&#xA;&#x9;EXEC ETL.CreateStageRawImport&#xA;&#x9;EXEC ETL.RawImportInsert @BatchCount=@BatchCount&#xA;&#x9;EXEC Cleanup.RemoveEmptyStringUpdate&#xA;END&#xA;&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[RawImportInsert]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[RawImportInsert]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[RawImportInsert] AS' &#xA;END&#xA;GO&#xA;&#xA;&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/11/2018&#xA;-- Description:&#x9;Insert Data ino RawImport Table&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[RawImportInsert]&#xA;@BatchCount INT &#xA;AS&#xA;BEGIN&#xA;&#x9;DECLARE @Counter&#x9;&#x9;&#x9;INT=2&#xA;&#x9;DECLARE @CounterMax&#x9;&#x9;&#x9;INT&#xA;&#x9;DECLARE @ColumnCounterMax&#x9;INT&#xA;&#x9;DECLARE @SQLStart&#x9;&#x9;&#x9;VARCHAR(MAX) = 'INSERT INTO ETL.RawImport ('&#xA;&#x9;DECLARE @SQLValues&#x9;&#x9;&#x9;VARCHAR(MAX) = ''&#xA;&#x9;DECLARE @BatchRows&#x9;&#x9;&#x9;INT=@BatchCount&#xA;&#x9;DECLARE @ImportFIleName&#x9;&#x9;VARCHAR(100)&#xA;&#x9;DECLARE @ImportFileRowID&#x9;INT&#xA;&#x9;DECLARE @PreRowID&#x9;&#x9;&#x9;INT&#xA;&#x9;DECLARE @CustomerCode&#x9;&#x9;VARCHAR(50)&#xA;&#x9;DECLARE @IntegratonName&#x9;&#x9;VARCHAR(100)&#xA;&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;SELECT @ColumnCounterMax=MAX(B.RowID)&#xA;&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#xA;&#x9;SELECT @CounterMax=MAX(PreRowID)&#xA;&#x9;FROM ETL.PreValudation&#xA;&#xA;&#xA;&#x9;SELECT @SQLStart=@SQLStart +&#xA;&#x9;CASE &#xA;&#x9;WHEN B.RowID=1 THEN '['+CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(B.Value)) END+'],'&#xA;&#x9;WHEN B.RowID=@ColumnCounterMax THEN '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']'&#xA;&#x9;ELSE '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(SUBSTRING(B.Value,2,LEN(B.Value)) AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+'],' END&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1  &#xA;&#xA;&#x9;SET @SQLStart=@SQLStart+',ImportFIleName,PreRowID,ImportFileRowID,CustomerCode,IntegrationName) VALUES '&#xA;&#xA;&#x9;WHILE @Counter &lt;= @CounterMax&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;&#x9;IF EXISTS (SELECT Col2 FROM ETL.PreValudation WHERE PreRowID=@Counter)&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SELECT @ImportFIleName=ImportFIleName,@PreRowID=PreRowID,@ImportFileRowID=ImportFileRowID,@CustomerCode=CustomerCode,@IntegratonName=IntegrationName&#xA;&#x9;&#x9;&#x9;FROM ETL.PreValudation WHERE PreRowID=@Counter &#xA;&#xA;&#x9;&#x9;&#x9;SELECT @SQLValues=@SQLValues+ CASE &#xA;&#x9;&#x9;&#x9;--WHEN B.RowID=1 THEN '('''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''','&#xA;&#x9;&#x9;&#x9;WHEN B.RowID=1 THEN '('''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(B.Value,''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''','&#xA;&#x9;&#x9;&#x9;WHEN B.RowID=@ColumnCounterMax THEN ''''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''''&#xA;&#x9;&#x9;&#x9;ELSE ''''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''',' END&#xA;&#xA;&#x9;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#xA;&#x9;&#x9;&#x9;WHERE A.PreRowID=@Counter&#xA;&#xA;&#x9;&#x9;&#x9;ORDER BY A.PreRowID&#xA;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=@SQLValues+ ',''' + @ImportFIleName  + ''',' + CAST(@PreRowID AS VARCHAR(50)) + ',' + CAST(@ImportFileRowID AS VARCHAR(50)) + ',''' + @CustomerCode  + ''',''' + @IntegratonName+''')'&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=REPLACE(@SQLValues,'***NULL***','')&#xA;&#x9;&#x9;&#x9;IF @Counter &lt; @BatchRows&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @SQLValues=@SQLValues + ','&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;END&#xA;&#x9;&#x9;IF @Counter &gt;= @BatchRows&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;EXEC (@SQLStart + @SQLValues)&#xA;&#xA;&#x9;&#x9;&#x9;IF @@ERROR &gt; 0&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;PRINT 'BatchRows: ' + CAST(@BatchRows AS VARCHAR(50))&#xA;&#x9;&#x9;&#x9;&#x9;PRINT @SQLStart&#xA;&#x9;&#x9;&#x9;&#x9;PRINT @SQLValues&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;&#x9;IF ( @BatchRows + @BatchCount &lt;= @CounterMax)&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @BatchRows= @BatchRows + @BatchCount&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;&#x9;ELSE&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @BatchRows=@CounterMax&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=''&#x9;&#x9;&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;SET @Counter=@Counter+1&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;&#xA;/****** Object:  StoredProcedure [Cleanup].[RemoveEmptyStringUpdate]    Script Date: 12/12/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[RemoveEmptyStringUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[RemoveEmptyStringUpdate]AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 12/12/2018&#xA;-- Description:&#x9;Remove all empty stings in columns&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[RemoveEmptyStringUpdate]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;DECLARE @ColumnCounterMax&#x9;INT&#xA;&#x9;DECLARE @ColumnCounter&#x9;&#x9;INT = 1&#xA;&#x9;DECLARE @ColumnName&#x9;&#x9;&#x9;VARCHAR(200)&#xA;&#x9;DECLARE @SQL&#x9;&#x9;&#x9;&#x9;VARCHAR(MAX)&#xA;&#xA;&#x9;SELECT @ColumnCounterMax=MAX(B.RowID)&#xA;&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#x9;&#xA;&#xA;&#x9;WHILE @ColumnCounter &lt;= @ColumnCounterMax&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;SELECT @ColumnName=&#xA;&#x9;&#x9;CASE &#xA;&#x9;&#x9;WHEN B.RowID=1 THEN '['+CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(B.Value)) END+']'&#xA;&#x9;&#x9;WHEN B.RowID=@ColumnCounterMax THEN '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']'&#xA;&#x9;&#x9;ELSE '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(SUBSTRING(B.Value,2,LEN(B.Value)) AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']' END&#xA;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;&#x9;WHERE A.PreRowID=1  &#xA;&#x9;&#x9;AND B.RowID=@ColumnCounter&#xA;&#xA;&#x9;&#x9;SET @SQL = 'UPDATE Clients_ETL&#xA;&#x9;&#x9;SET ' + @ColumnName + ' = NULL&#xA;&#x9;&#x9;WHERE ' + @ColumnName + ' = '''''&#xA;&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#xA;&#x9;&#x9;SET @ColumnCounter=@ColumnCounter + 1&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;IF NOT EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name = 'RawImportStats')&#xA;BEGIN&#xA;&#x9;CREATE TABLE ETL.[RawImportStats](&#xA;&#x9;&#x9;[RawDataImportID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;&#x9;[RawDataImportDate] [datetime] NOT NULL,&#xA;&#x9;&#x9;[FileName] [varchar](100) NOT NULL,&#xA;&#x9;&#x9;[TotalRowsInFile] [int] NOT NULL,&#xA;&#x9;&#x9;[TotalRowsImported] [int] NOT NULL,&#xA;&#x9;&#x9;[TotalRowsInETL] [int] NOT NULL,&#xA;&#x9; CONSTRAINT [PK_ETL.RawImportStats] PRIMARY KEY CLUSTERED &#xA;&#x9;(&#xA;&#x9;&#x9;[RawDataImportDate] DESC,&#xA;&#x9;&#x9;[FileName] ASC&#xA;&#x9;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]&#xA;&#x9;) ON [PRIMARY]&#xA;END&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="&#xA;/****** Object:  UserDefinedFunction [dbo].[SplitArrayToTable]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SplitArrayToTable]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))&#xA;BEGIN&#xA;execute dbo.sp_executesql @statement = N'&#xA;&#xA;&#xA;&#xA;CREATE FUNCTION [dbo].[SplitArrayToTable] &#xA;   (  @Delimiter varchar(5), &#xA;      @List      varchar(MAX)&#xA;   ) &#xA;   RETURNS @TableOfValues table &#xA;      (  RowID   smallint IDENTITY(1,1), &#xA;         [Value] varchar(MAX) &#xA;      ) &#xA;AS &#xA;   BEGIN&#xA;    &#xA;      DECLARE @LenString int &#xA; &#xA;      WHILE len( @List ) &gt; 0 &#xA;         BEGIN &#xA;         &#xA;            SELECT @LenString = &#xA;               (CASE charindex( @Delimiter, @List ) &#xA;                   WHEN 0 THEN len( @List ) &#xA;                   ELSE ( charindex( @Delimiter, @List ) -1 )&#xA;                END&#xA;               ) &#xA;                                &#xA;            INSERT INTO @TableOfValues &#xA;               SELECT substring( @List, 1, @LenString )&#xA;                &#xA;            SELECT @List = &#xA;               (CASE ( len( @List ) - @LenString ) &#xA;                   WHEN 0 THEN '''' &#xA;                   ELSE right( @List, len( @List ) - @LenString - 1 ) &#xA;                END&#xA;               ) &#xA;         END&#xA;          &#xA;      RETURN &#xA;      &#xA;   END &#xA;' &#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[ChangingDelimiterCol2Update]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[ChangingDelimiterCol2Update]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[ChangingDelimiterCol2Update] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Changing Delimiter to remove any issues&#xA;-- with extra ' or &quot; values withing text&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[ChangingDelimiterCol2Update]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Changing delimiter to reduce column splitting issues &#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col2=RTRIM(LTRIM(REPLACE(Col2,'&quot;,&quot;','||')))&#xA;&#xA;&#x9;-- Remove patterens that causes column splitting errors&#xA;&#x9;UPDATE ETL.PreValudation SET Col2=REPLACE(Col2,'&quot;','''''') WHERE PreRowID &gt; 1&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[FixGeneralUnNeededRowsUpdate]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[FixGeneralUnNeededRowsUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[FixGeneralUnNeededRowsUpdate] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;General Cleanup of import&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[FixGeneralUnNeededRowsUpdate]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Remove extra Hearders&#xA;&#x9;DELETE FROM ETL.PreValudation WHERE Col1 = (SELECT COL1 FROM ETL.PreValudation WHERE PreRowID=1) AND PreRowID &gt; 1&#xA;&#x9;-- Remove blank lines&#xA;&#x9;DELETE FROM ETL.PreValudation WHERE LEN(Col1)=0&#xA;&#xA;&#x9;-- Replace emtpy strings because this can cause issues with the insert statement&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET COL1=REPLACE(Col1,'&quot;&quot;','&quot;***NULL***&quot;')&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[MoveToCol2Update]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[MoveToCol2Update]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[MoveToCol2Update] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Moved Cleanup data to Column 2&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[MoveToCol2Update]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col2=LTRIM(RTRIM(SUBSTRING(Col1,2,LEN(Col1)-2)))&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [Cleanup].[RemoveNonViewableCharsUpdate]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[RemoveNonViewableCharsUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[RemoveNonViewableCharsUpdate] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Remove non Viewable Chars&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[RemoveNonViewableCharsUpdate]&#xA;AS&#xA;BEGIN&#xA;SET NOCOUNT ON&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(9),' ')&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(10),' ')&#xA;&#xA;&#x9;UPDATE ETL.PreValudation&#xA;&#x9;SET Col1=REPLACE(Col1,CHAR(13),' ')&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[CreateStageRawImport]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[CreateStageRawImport]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[CreateStageRawImport] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/11/2018&#xA;-- Description:&#x9;Create RawImport Table&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[CreateStageRawImport]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#x9;DECLARE @SQL1&#x9;&#x9;VARCHAR(MAX)=''&#xA;&#x9;DECLARE @SQL2&#x9;&#x9;VARCHAR(MAX)='CREATE TABLE ETL.RawImport (RowID INT NOT NULL IDENTITY(1,1),'&#xA;&#x9;DECLARE @SQL3&#x9;&#x9;VARCHAR(MAX)&#xA;&#x9;DECLARE @Counter&#x9;INT=1&#xA;&#x9;DECLARE @CounterMax&#x9;INT&#xA;&#xA;&#x9;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name='RawImport')&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;DROP TABLE ETL.RawImport&#xA;&#x9;END&#xA;&#xA;&#x9;SELECT @CounterMax=MAX(B.RowID)&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#xA;&#xA;&#x9;WHILE @Counter &lt;= @CounterMax&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;&#x9;SELECT @SQL2=@SQL2+'['+CASE &#xA;&#x9;&#x9;WHEN B.RowID=1 THEN CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) &#xA;&#x9;&#x9;ELSE LTRIM(RTRIM(B.Value)) END &#xA;&#x9;&#x9;WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) &#xA;&#x9;&#x9;ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END +'] VARCHAR(MAX),'&#xA;&#xA;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;&#x9;WHERE A.PreRowID=1&#xA;&#x9;&#x9;AND B.RowID=@Counter&#xA;&#xA;&#xA;&#x9;&#x9;SET @Counter=@Counter+1&#xA;&#x9;END&#xA;&#xA;&#x9;SET @SQL2=@SQL2+'ImportFIleName VARCHAR(100) NOT NULL,PreRowID INT NOT NULL,ImportFileRowID INT NOT NULL,CustomerCode VARCHAR(50) NOT NULL,IntegrationName VARCHAR(100) NOT NULL,CreationDate DATE NOT NULL DEFAULT GETDATE(),CreationTime Time NOT NULL DEFAULT GETDATE(),Exception BIT NOT NULL,ExceptionReason VARCHAR(MAX) NULL,'&#xA;&#xA;&#xA;&#x9;SET @SQL3='&#xA;&#x9; CONSTRAINT [PK_Stage_RawImport] PRIMARY KEY CLUSTERED &#xA;&#x9;(&#xA;&#x9;&#x9;[RowID] ASC&#xA;&#x9;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]&#xA;&#x9;) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]&#xA;&#xA;&#x9;ALTER TABLE [ETL].[RawImport] ADD  DEFAULT ((0)) FOR [Exception]&#xA;&#x9;'&#xA;&#xA;&#x9;EXEC(@SQL1+@SQL2+@SQL3)&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[CustomDataFixesSelect]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[CustomDataFixesSelect]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[CustomDataFixesSelect] AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 11/2/2018&#xA;-- Description:&#x9;Custom fixes data or mapping issues for each integration&#xA;-- by Customer and integration&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[CustomDataFixesSelect]&#xA;@CustomerCode VARCHAR(50),&#xA;@IntegrationName VARCHAR(100),&#xA;@ImportRawTable VARCHAR(200)&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#x9;DECLARE @SQL VARCHAR(MAX)&#xA;&#xA;&#x9;IF @CustomerCode='PCS' AND @IntegrationName='Munis'&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;-- Adding SiteID because it is not in the File&#xA;&#x9;&#x9;SET @SQL = 'ALTER TABLE ' + @ImportRawTable + ' ADD SiteID VARCHAR(100)'&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#x9;&#x9;SET @SQL = 'UPDATE ' + @ImportRawTable + ' SET SiteID=RoomNumber'&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[MainETL]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[MainETL]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[MainETL] AS' &#xA;END&#xA;GO&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/10/2018&#xA;-- Description:&#x9;Call all Cleanup Stored Procedures&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[MainETL]&#xA;@BatchCount INT &#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;-- Cleanup and Data Prep&#xA;&#x9;EXEC Cleanup.FixGeneralUnNeededRowsUpdate&#xA;&#x9;EXEC Cleanup.RemoveNonViewableCharsUpdate&#xA;&#x9;EXEC Cleanup.MoveToCol2Update&#xA;&#x9;EXEC Cleanup.ChangingDelimiterCol2Update&#xA;&#xA;&#x9;--Staging Data&#xA;&#x9;EXEC ETL.CreateStageRawImport&#xA;&#x9;EXEC ETL.RawImportInsert @BatchCount=@BatchCount&#xA;&#x9;--EXEC Cleanup.RemoveEmptyStringUpdate&#xA;END&#xA;&#xA;GO&#xA;/****** Object:  StoredProcedure [ETL].[RawImportInsert]    Script Date: 11/8/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[ETL].[RawImportInsert]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [ETL].[RawImportInsert] AS' &#xA;END&#xA;GO&#xA;&#xA;&#xA;&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 10/11/2018&#xA;-- Description:&#x9;Insert Data ino RawImport Table&#xA;-- =============================================&#xA;ALTER PROCEDURE [ETL].[RawImportInsert]&#xA;@BatchCount INT &#xA;AS&#xA;BEGIN&#xA;&#x9;DECLARE @Counter&#x9;&#x9;&#x9;INT=2&#xA;&#x9;DECLARE @CounterMax&#x9;&#x9;&#x9;INT&#xA;&#x9;DECLARE @ColumnCounterMax&#x9;INT&#xA;&#x9;DECLARE @SQLStart&#x9;&#x9;&#x9;VARCHAR(MAX) = 'INSERT INTO ETL.RawImport ('&#xA;&#x9;DECLARE @SQLValues&#x9;&#x9;&#x9;VARCHAR(MAX) = ''&#xA;&#x9;DECLARE @BatchRows&#x9;&#x9;&#x9;INT=@BatchCount&#xA;&#x9;DECLARE @ImportFIleName&#x9;&#x9;VARCHAR(100)&#xA;&#x9;DECLARE @ImportFileRowID&#x9;INT&#xA;&#x9;DECLARE @PreRowID&#x9;&#x9;&#x9;INT&#xA;&#x9;DECLARE @CustomerCode&#x9;&#x9;VARCHAR(50)&#xA;&#x9;DECLARE @IntegratonName&#x9;&#x9;VARCHAR(100)&#xA;&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;SELECT @ColumnCounterMax=MAX(B.RowID)&#xA;&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#xA;&#x9;SELECT @CounterMax=MAX(PreRowID)&#xA;&#x9;FROM ETL.PreValudation&#xA;&#xA;&#xA;&#x9;SELECT @SQLStart=@SQLStart +&#xA;&#x9;CASE &#xA;&#x9;WHEN B.RowID=1 THEN '['+CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(B.Value)) END+'],'&#xA;&#x9;WHEN B.RowID=@ColumnCounterMax THEN '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']'&#xA;&#x9;ELSE '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(SUBSTRING(B.Value,2,LEN(B.Value)) AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+'],' END&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1  &#xA;&#xA;&#x9;SET @SQLStart=@SQLStart+',ImportFIleName,PreRowID,ImportFileRowID,CustomerCode,IntegrationName) VALUES '&#xA;&#xA;&#x9;WHILE @Counter &lt;= @CounterMax&#xA;&#x9;BEGIN&#xA;&#xA;&#x9;&#x9;IF EXISTS (SELECT Col2 FROM ETL.PreValudation WHERE PreRowID=@Counter)&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SELECT @ImportFIleName=ImportFIleName,@PreRowID=PreRowID,@ImportFileRowID=ImportFileRowID,@CustomerCode=CustomerCode,@IntegratonName=IntegrationName&#xA;&#x9;&#x9;&#x9;FROM ETL.PreValudation WHERE PreRowID=@Counter &#xA;&#xA;&#x9;&#x9;&#x9;SELECT @SQLValues=@SQLValues+ CASE &#xA;&#x9;&#x9;&#x9;--WHEN B.RowID=1 THEN '('''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''','&#xA;&#x9;&#x9;&#x9;WHEN B.RowID=1 THEN '('''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(B.Value,''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''','&#xA;&#x9;&#x9;&#x9;WHEN B.RowID=@ColumnCounterMax THEN ''''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''''&#xA;&#x9;&#x9;&#x9;ELSE ''''+RTRIM(LTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(SUBSTRING(B.Value,2,LEN(B.Value)),''),'''',''''''),CHAR(13),''),CHAR(11),''),CHAR(10),''),CHAR(9),'')))+''',' END&#xA;&#xA;&#x9;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#xA;&#x9;&#x9;&#x9;WHERE A.PreRowID=@Counter&#xA;&#xA;&#x9;&#x9;&#x9;ORDER BY A.PreRowID&#xA;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=@SQLValues+ ',''' + @ImportFIleName  + ''',' + CAST(@PreRowID AS VARCHAR(50)) + ',' + CAST(@ImportFileRowID AS VARCHAR(50)) + ',''' + @CustomerCode  + ''',''' + @IntegratonName+''')'&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=REPLACE(@SQLValues,'***NULL***','')&#xA;&#x9;&#x9;&#x9;IF @Counter &lt; @BatchRows&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @SQLValues=@SQLValues + ','&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;END&#xA;&#x9;&#x9;IF @Counter &gt;= @BatchRows&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;EXEC (@SQLStart + @SQLValues)&#xA;&#xA;&#x9;&#x9;&#x9;IF @@ERROR &gt; 0&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;PRINT 'BatchRows: ' + CAST(@BatchRows AS VARCHAR(50))&#xA;&#x9;&#x9;&#x9;&#x9;PRINT @SQLStart&#xA;&#x9;&#x9;&#x9;&#x9;PRINT @SQLValues&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;&#x9;IF ( @BatchRows + @BatchCount &lt;= @CounterMax)&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @BatchRows= @BatchRows + @BatchCount&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;&#x9;ELSE&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SET @BatchRows=@CounterMax&#xA;&#x9;&#x9;&#x9;END&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;SET @SQLValues=''&#x9;&#x9;&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;SET @Counter=@Counter+1&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;&#xA;/****** Object:  StoredProcedure [Cleanup].[RemoveEmptyStringUpdate]    Script Date: 12/12/2018 3:57:28 PM ******/&#xA;SET ANSI_NULLS ON&#xA;GO&#xA;SET QUOTED_IDENTIFIER ON&#xA;GO&#xA;IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[Cleanup].[RemoveEmptyStringUpdate]') AND type in (N'P', N'PC'))&#xA;BEGIN&#xA;EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [Cleanup].[RemoveEmptyStringUpdate]AS' &#xA;END&#xA;GO&#xA;-- =============================================&#xA;-- Author:&#x9;&#x9;RJ Gailey&#xA;-- Create date: 12/12/2018&#xA;-- Description:&#x9;Remove all empty stings in columns&#xA;-- =============================================&#xA;ALTER PROCEDURE [Cleanup].[RemoveEmptyStringUpdate]&#xA;AS&#xA;BEGIN&#xA;&#x9;SET NOCOUNT ON&#xA;&#xA;&#x9;DECLARE @ColumnCounterMax&#x9;INT&#xA;&#x9;DECLARE @ColumnCounter&#x9;&#x9;INT = 1&#xA;&#x9;DECLARE @ColumnName&#x9;&#x9;&#x9;VARCHAR(200)&#xA;&#x9;DECLARE @SQL&#x9;&#x9;&#x9;&#x9;VARCHAR(MAX)&#xA;&#xA;&#x9;SELECT @ColumnCounterMax=MAX(B.RowID)&#xA;&#xA;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;WHERE A.PreRowID=1&#xA;&#x9;&#xA;&#xA;&#x9;WHILE @ColumnCounter &lt;= @ColumnCounterMax&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;SELECT @ColumnName=&#xA;&#x9;&#x9;CASE &#xA;&#x9;&#x9;WHEN B.RowID=1 THEN '['+CASE WHEN LTRIM(RTRIM(B.Value)) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(B.Value)) END+']'&#xA;&#x9;&#x9;WHEN B.RowID=@ColumnCounterMax THEN '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(B.RowID AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']'&#xA;&#x9;&#x9;ELSE '['+CASE WHEN LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) = '' THEN 'BlankHeader_'+CAST(SUBSTRING(B.Value,2,LEN(B.Value)) AS VARCHAR(50)) ELSE LTRIM(RTRIM(SUBSTRING(B.Value,2,LEN(B.Value)))) END+']' END&#xA;&#x9;&#x9;FROM ETL.PreValudation AS A&#xA;&#x9;&#x9;CROSS APPLY dbo.SplitArrayToTable( '||', A.[col2] ) AS B&#xA;&#x9;&#x9;WHERE A.PreRowID=1  &#xA;&#x9;&#x9;AND B.RowID=@ColumnCounter&#xA;&#xA;&#x9;&#x9;SET @SQL = 'UPDATE Clients_ETL&#xA;&#x9;&#x9;SET ' + @ColumnName + ' = NULL&#xA;&#x9;&#x9;WHERE ' + @ColumnName + ' = '''''&#xA;&#xA;&#x9;&#x9;EXEC(@SQL)&#xA;&#xA;&#x9;&#x9;SET @ColumnCounter=@ColumnCounter + 1&#xA;&#x9;END&#xA;&#xA;END&#xA;GO&#xA;IF NOT EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name = 'RawImportStats')&#xA;BEGIN&#xA;&#x9;CREATE TABLE ETL.[RawImportStats](&#xA;&#x9;&#x9;[RawDataImportID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;&#x9;[RawDataImportDate] [datetime] NOT NULL,&#xA;&#x9;&#x9;[FileName] [varchar](100) NOT NULL,&#xA;&#x9;&#x9;[TotalRowsInFile] [int] NOT NULL,&#xA;&#x9;&#x9;[TotalRowsImported] [int] NOT NULL,&#xA;&#x9;&#x9;[TotalRowsInETL] [int] NOT NULL,&#xA;&#x9; CONSTRAINT [PK_ETL.RawImportStats] PRIMARY KEY CLUSTERED &#xA;&#x9;(&#xA;&#x9;&#x9;[RawDataImportDate] DESC,&#xA;&#x9;&#x9;[FileName] ASC&#xA;&#x9;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]&#xA;&#x9;) ON [PRIMARY]&#xA;END&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -662,6 +662,36 @@
               Language="CSharp"
               ReadOnlyVariables="User::_LocalImportPathFileName,User::Debug,User::FileName"
               ReadWriteVariables="User::FilePath,User::FilePathFull,User::RootPath">
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_2f63266a8b334f9380b49b1c166d95c5")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_2f63266a8b334f9380b49b1c166d95c5")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -781,35 +811,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_2f63266a8b334f9380b49b1c166d95c5.Properties.Settings.get_Default():ST_2f63266a8b334f9380b49b1c166d95c5.Properties.Sett" +
-    "ings")]
-
-namespace ST_2f63266a8b334f9380b49b1c166d95c5.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -1079,35 +1080,34 @@ namespace ST_2f63266a8b334f9380b49b1c166d95c5.Properties {
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_2f63266a8b334f9380b49b1c166d95c5")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_2f63266a8b334f9380b49b1c166d95c5")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_2f63266a8b334f9380b49b1c166d95c5.Properties.Settings.get_Default():ST_2f63266a8b334f9380b49b1c166d95c5.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace ST_2f63266a8b334f9380b49b1c166d95c5.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -1355,7 +1355,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{41489ED5-061B-4D57-9EF3-08A4032B6A13}"
-              SQLTask:SqlStatementSource="IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name='PreValudation')&#xA;BEGIN&#xA; DROP TABLE ETL.PreValudation&#xA;END&#xA;&#xA;CREATE TABLE [ETL].[PreValudation](&#xA;&#x9;[PreRowID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[ImportFileRowID] [int] NOT NULL,&#xA;&#x9;[ImportFileName] [varchar](200) NOT NULL,&#xA;&#x9;[Col1] [varchar](max) NULL,&#xA;&#x9;[Col2] [varchar](max) NULL,&#xA;&#x9;[CreateDate] [datetime] NOT NULL DEFAULT GETDATE(),&#xA;&#x9;[CustomerCode] [varchar](50) NOT NULL,&#xA;&#x9;[IntegrationName] [varchar](50) NOT NULL,&#xA;&#x9;CONSTRAINT [PK_ETL_PreValudation] PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[PreRowID] ASC&#xA;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR=70) ON [PRIMARY]&#xA;) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]&#xA;&#xA;DECLARE @TBName&#x9;&#x9;&#x9;VARCHAR(100) &#xA;DECLARE @TBTotalRows&#x9;INT = 0&#xA;&#xA;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Type='U' AND Name='Clients_ETL' )&#xA;BEGIN &#xA;&#x9;SELECT @TBTotalRows=COUNT(*) FROM Clients_ETL&#xA;&#xA;&#x9;IF (@TBTotalRows &gt; 0)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;SET @TBName = 'Clients_ETL' + FORMAT(DATEPART(MM,GETDATE()),'0#') + FORMAT(DATEPART(DD,GETDATE()),'0#') + FORMAT(DATEPART(YYYY,GETDATE()),'0000#') + '_' + FORMAT(DATEPART(HH,GETDATE()),'0#') + FORMAT(DATEPART(MI,GETDATE()),'0#')&#xA;&#x9;&#x9;EXEC sp_rename 'Clients_ETL', @TBName&#xA;&#x9;END&#xA;END&#xA;&#xA;IF NOT EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Type='U' AND Name='Clients_ETL' )&#xA;BEGIN&#xA;&#x9;CREATE TABLE [dbo].[Clients_ETL]&#xA;&#x9;([iKey] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[ProductNumber] [int] NULL,&#xA;&#x9;[ProductName] [varchar](1000) NULL,&#xA;&#x9;[ManufacturerName] [varchar](100) NULL,&#xA;&#x9;[ModelNumber] [varchar](100) NULL,&#xA;&#x9;[ItemTypeName] [varchar](50) NULL,&#xA;&#x9;[ItemSuggestedPrice] [varchar](50) NULL,&#xA;&#x9;[DepartmentName] [varchar](100) NULL,&#xA;&#x9;[SKU] [varchar](50) NULL,&#xA;&#x9;[serial_required] [char](10) NULL,&#xA;&#x9;[Serial] [varchar](250) NULL,&#xA;&#x9;[ProjectedLife] [varchar](50) NULL,&#xA;&#x9;[ProductInfo1] [varchar](1000) NULL,&#xA;&#x9;[ProductInfo2] [varchar](1000) NULL,&#xA;&#x9;[ProductInfo3] [varchar](1000) NULL,&#xA;&#x9;[SiteID] [varchar](100) NULL,&#xA;&#x9;[SiteName] [varchar](200) NULL,&#xA;&#x9;[RoomNumber] [varchar](50) NULL,&#xA;&#x9;[RoomDesc] [varchar](50) NULL,&#xA;&#x9;[RoomType] [varchar](50) NULL,&#xA;&#x9;[Tag] [varchar](50) NULL,&#xA;&#x9;[ParentTag] [varchar](50) NULL,&#xA;&#x9;[TagNotes] [varchar](1000) NULL,&#xA;&#x9;[ExpirationDate] [varchar](50) NULL,&#xA;&#x9;[EntityID] [varchar](50) NULL,&#xA;&#x9;[EntityLastName] [varchar](50) NULL,&#xA;&#x9;[EntityFirstName] [varchar](50) NULL,&#xA;&#x9;[EntityType] [varchar](50) NULL,&#xA;&#x9;[PONumber] [varchar](50) NULL,&#xA;&#x9;[Fundingsource] [varchar](500) NULL,&#xA;&#x9;[PurchaseDate] [varchar](50) NULL,&#xA;&#x9;[PurchasePrice] [varchar](50) NULL,&#xA;&#x9;[AccountCode] [varchar](100) NULL,&#xA;&#x9;[VendorName] [varchar](300) NULL,&#xA;&#x9;[PO_Notes] [varchar](500) NULL,&#xA;&#x9;[newPONumber] [varchar](50) NULL,&#xA;&#x9;[Accessory1Included] [varchar](50) NULL,&#xA;&#x9;[Accessory2Included] [varchar](50) NULL,&#xA;&#x9;[Accessory3Included] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF1_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF2_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF3_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF4_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF1] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF2] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF3] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF4] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF1DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF2DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF3DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF4DataType] [varchar](50) NULL,&#xA;&#x9;[CustomField1Required] [varchar](50) NULL,&#xA;&#x9;[CustomField2Required] [varchar](50) NULL,&#xA;&#x9;[CustomField3Required] [varchar](50) NULL,&#xA;&#x9;[CustomField4Required] [varchar](50) NULL,&#xA;&#x9;[AccessoryName1] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice1] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity1] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable1] [varchar](50) NULL,&#xA;&#x9;[AccessoryName2] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice2] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity2] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable2] [varchar](50) NULL,&#xA;&#x9;[AccessoryName3] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice3] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity3] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable3] [varchar](50) NULL,&#xA;&#x9;[oldproductname] [varchar](255) NULL,&#xA;&#x9;[Other2] [varchar](200) NULL,&#xA;&#x9;[Other1] [varchar](200) NULL,&#xA;&#x9;[Status] [varchar](50) NULL,&#xA;&#x9;[Date_Loaded] [datetime] NULL,&#xA;&#x9;[DataSource] [varchar](200) NULL,&#xA;&#x9;[ReviewFlag] [bit] NULL,&#xA;&#x9;[ReviewNotes] [varchar](1000) NULL,&#xA;&#x9;[import] [bit] NOT NULL DEFAULT 1,&#xA;&#x9;[RejectNotes] [varchar](1000) NULL,&#xA;&#x9;[ManufacturerUID] [int] NULL,&#xA;&#x9;[VendorUID] [int] NULL,&#xA;&#x9;[ItemTypeUID] [int] NULL,&#xA;&#x9;[ItemUID] [int] NULL,&#xA;&#x9;[InventoryUID] [int] NULL,&#xA;&#x9;[SiteUID] [int] NULL,&#xA;&#x9;[RoomUID] [int] NULL,&#xA;&#x9;[RoomTypeUID] [int] NULL,&#xA;&#x9;[EntityTypeUID] [int] NULL,&#xA;&#x9;[EntityUID] [int] NULL,&#xA;&#x9;[FundingSourceUID] [int] NULL,&#xA;&#x9;[PurchaseUID] [int] NULL,&#xA;&#x9;[PurchaseItemDetailUID] [int] NULL,&#xA;&#x9;[PurchaseItemShipmentUID] [int] NULL,&#xA;&#x9;[CreateDate] [datetime] NOT NULL DEFAULT GETDATE(),&#xA;&#x9;) ON [PRIMARY]&#xA;END&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name='PreValudation')&#xA;BEGIN&#xA; DROP TABLE ETL.PreValudation&#xA;END&#xA;&#xA;CREATE TABLE [ETL].[PreValudation](&#xA;&#x9;[PreRowID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[ImportFileRowID] [int] NOT NULL,&#xA;&#x9;[ImportFileName] [varchar](200) NOT NULL,&#xA;&#x9;[Col1] [varchar](max) NULL,&#xA;&#x9;[Col2] [varchar](max) NULL,&#xA;&#x9;[CreateDate] [datetime] NOT NULL DEFAULT GETDATE(),&#xA;&#x9;[CustomerCode] [varchar](50) NOT NULL,&#xA;&#x9;[IntegrationName] [varchar](50) NOT NULL,&#xA;&#x9;CONSTRAINT [PK_ETL_PreValudation] PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[PreRowID] ASC&#xA;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR=70) ON [PRIMARY]&#xA;) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]&#xA;&#xA;DECLARE @TBName&#x9;&#x9;&#x9;VARCHAR(100) &#xA;DECLARE @TBTotalRows&#x9;INT = 0&#xA;&#xA;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Type='U' AND Name='Clients_ETL' )&#xA;BEGIN &#xA;&#x9;SELECT @TBTotalRows=COUNT(*) FROM Clients_ETL&#xA;&#xA;&#x9;IF (@TBTotalRows &gt; 0)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;SET @TBName = 'Clients_ETL' + FORMAT(DATEPART(MM,GETDATE()),'0#') + FORMAT(DATEPART(DD,GETDATE()),'0#') + FORMAT(DATEPART(YYYY,GETDATE()),'0000#') + '_' + FORMAT(DATEPART(HH,GETDATE()),'0#') + FORMAT(DATEPART(MI,GETDATE()),'0#')&#xA;&#x9;&#x9;EXEC sp_rename 'Clients_ETL', @TBName&#xA;&#x9;END&#xA;END&#xA;&#xA;IF NOT EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Type='U' AND Name='Clients_ETL' )&#xA;BEGIN&#xA;&#x9;CREATE TABLE [dbo].[Clients_ETL]&#xA;&#x9;([iKey] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[ProductNumber] [int] NULL,&#xA;&#x9;[ProductName] [varchar](1000) NULL,&#xA;&#x9;[ManufacturerName] [varchar](100) NULL,&#xA;&#x9;[ModelNumber] [varchar](100) NULL,&#xA;&#x9;[ItemTypeName] [varchar](50) NULL,&#xA;&#x9;[ItemSuggestedPrice] [varchar](50) NULL,&#xA;&#x9;[DepartmentName] [varchar](100) NULL,&#xA;&#x9;[SKU] [varchar](50) NULL,&#xA;&#x9;[serial_required] [char](10) NULL,&#xA;&#x9;[Serial] [varchar](250) NULL,&#xA;&#x9;[ProjectedLife] [varchar](50) NULL,&#xA;&#x9;[ProductInfo1] [varchar](1000) NULL,&#xA;&#x9;[ProductInfo2] [varchar](1000) NULL,&#xA;&#x9;[ProductInfo3] [varchar](1000) NULL,&#xA;&#x9;[SiteID] [varchar](100) NULL,&#xA;&#x9;[SiteName] [varchar](200) NULL,&#xA;&#x9;[RoomNumber] [varchar](50) NULL,&#xA;&#x9;[RoomDesc] [varchar](50) NULL,&#xA;&#x9;[RoomType] [varchar](50) NULL,&#xA;&#x9;[Tag] [varchar](50) NULL,&#xA;&#x9;[ParentTag] [varchar](50) NULL,&#xA;&#x9;[TagNotes] [varchar](1000) NULL,&#xA;&#x9;[ExpirationDate] [varchar](50) NULL,&#xA;&#x9;[EntityID] [varchar](50) NULL,&#xA;&#x9;[EntityLastName] [varchar](50) NULL,&#xA;&#x9;[EntityFirstName] [varchar](50) NULL,&#xA;&#x9;[EntityType] [varchar](50) NULL,&#xA;&#x9;[PONumber] [varchar](50) NULL,&#xA;&#x9;[Fundingsource] [varchar](500) NULL,&#xA;&#x9;[PurchaseDate] [varchar](50) NULL,&#xA;&#x9;[PurchasePrice] [varchar](50) NULL,&#xA;&#x9;[AccountCode] [varchar](100) NULL,&#xA;&#x9;[VendorName] [varchar](300) NULL,&#xA;&#x9;[PO_Notes] [varchar](500) NULL,&#xA;&#x9;[newPONumber] [varchar](50) NULL,&#xA;&#x9;[Accessory1Included] [varchar](50) NULL,&#xA;&#x9;[Accessory2Included] [varchar](50) NULL,&#xA;&#x9;[Accessory3Included] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF1_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF2_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF3_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF4_Value] [varchar](250) NULL,&#xA;&#x9;[CustomUDEF1] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF2] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF3] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF4] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF1DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF2DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF3DataType] [varchar](50) NULL,&#xA;&#x9;[CustomUDEF4DataType] [varchar](50) NULL,&#xA;&#x9;[CustomField1Required] [varchar](50) NULL,&#xA;&#x9;[CustomField2Required] [varchar](50) NULL,&#xA;&#x9;[CustomField3Required] [varchar](50) NULL,&#xA;&#x9;[CustomField4Required] [varchar](50) NULL,&#xA;&#x9;[AccessoryName1] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice1] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity1] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable1] [varchar](50) NULL,&#xA;&#x9;[AccessoryName2] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice2] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity2] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable2] [varchar](50) NULL,&#xA;&#x9;[AccessoryName3] [varchar](150) NULL,&#xA;&#x9;[AccessoryPrice3] [varchar](50) NULL,&#xA;&#x9;[AccessoryQuantity3] [varchar](50) NULL,&#xA;&#x9;[AccessoryConsumable3] [varchar](50) NULL,&#xA;&#x9;[oldproductname] [varchar](255) NULL,&#xA;&#x9;[Other2] [varchar](200) NULL,&#xA;&#x9;[Other1] [varchar](200) NULL,&#xA;&#x9;[Status] [varchar](50) NULL,&#xA;&#x9;[Date_Loaded] [datetime] NULL,&#xA;&#x9;[DataSource] [varchar](200) NULL,&#xA;&#x9;[ReviewFlag] [bit] NULL,&#xA;&#x9;[ReviewNotes] [varchar](1000) NULL,&#xA;&#x9;[import] [bit] NOT NULL DEFAULT 1,&#xA;&#x9;[RejectNotes] [varchar](1000) NULL,&#xA;&#x9;[ManufacturerUID] [int] NULL,&#xA;&#x9;[VendorUID] [int] NULL,&#xA;&#x9;[ItemTypeUID] [int] NULL,&#xA;&#x9;[ItemUID] [int] NULL,&#xA;&#x9;[InventoryUID] [int] NULL,&#xA;&#x9;[SiteUID] [int] NULL,&#xA;&#x9;[RoomUID] [int] NULL,&#xA;&#x9;[RoomTypeUID] [int] NULL,&#xA;&#x9;[EntityTypeUID] [int] NULL,&#xA;&#x9;[EntityUID] [int] NULL,&#xA;&#x9;[FundingSourceUID] [int] NULL,&#xA;&#x9;[PurchaseUID] [int] NULL,&#xA;&#x9;[PurchaseItemDetailUID] [int] NULL,&#xA;&#x9;[PurchaseItemShipmentUID] [int] NULL,&#xA;&#x9;[CreateDate] [datetime] NOT NULL DEFAULT GETDATE(),&#xA;&#x9;[ModfiedDate] [datetime] NOT NULL DEFAULT GETDATE(),&#xA;&#x9;[ModfiedBy] [varchar](200) NULL&#xA;&#x9;) ON [PRIMARY]&#xA;END&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -3071,15 +3071,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==]]></arrayElement>
                   Language="CSharp"
                   ReadWriteVariables="User::FileName,User::ImportFileType">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -3198,6 +3189,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==]]></arrayElement>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties.Settings.get_Default():ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties.Sett" +
+    "ings")]
+
+namespace ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ST_5dd6e46167cf4a6ca7e2f8af24a0c759.csproj"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3432,35 +3452,6 @@ namespace ST_5dd6e46167cf4a6ca7e2f8af24a0c759
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties.Settings.get_Default():ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties.Sett" +
-    "ings")]
-
-namespace ST_5dd6e46167cf4a6ca7e2f8af24a0c759.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -3490,6 +3481,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -3698,15 +3698,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   ReadOnlyVariables="User::Debug,User::FileName,User::FilePathFull,User::RootPath"
                   ReadWriteVariables="User::FileSize">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -3825,6 +3816,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_d0f88997e175452b8de20e6a79b2eba1.Properties.Settings.get_Default():ST_d0f88997e175452b8de20e6a79b2eba1.Properties.Sett" +
+    "ings")]
+
+namespace ST_d0f88997e175452b8de20e6a79b2eba1.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -4065,35 +4085,6 @@ namespace ST_d0f88997e175452b8de20e6a79b2eba1
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_d0f88997e175452b8de20e6a79b2eba1.Properties.Settings.get_Default():ST_d0f88997e175452b8de20e6a79b2eba1.Properties.Sett" +
-    "ings")]
-
-namespace ST_d0f88997e175452b8de20e6a79b2eba1.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -4123,6 +4114,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4331,15 +4331,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   ReadOnlyVariables="User::Debug,User::ImportFileType"
                   ReadWriteVariables="User::ApprovedFileType,User::FileTypeCheck">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -4458,6 +4449,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties.Settings.get_Default():ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties.Sett" +
+    "ings")]
+
+namespace ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -4705,35 +4725,6 @@ namespace ST_efb0c886cfbc4554afd1859aa3f70ed5
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties.Settings.get_Default():ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties.Sett" +
-    "ings")]
-
-namespace ST_efb0c886cfbc4554afd1859aa3f70ed5.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -4763,6 +4754,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4980,15 +4980,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
                   ReadOnlyVariables="User::Debug,User::FileName,User::FilePathFull,User::RootPath"
                   ReadWriteVariables="User::FileExists">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -5200,6 +5191,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
                   <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_872f31cf8d1843319fdb31e1c344dd8d.Properties.Settings.get_Default():ST_872f31cf8d1843319fdb31e1c344dd8d.Properties.Sett" +
+    "ings")]
+
+namespace ST_872f31cf8d1843319fdb31e1c344dd8d.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+                  <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
 /* The Script Task allows you to perform virtually any operation that can be accomplished in
@@ -5346,35 +5366,6 @@ namespace ST_872f31cf8d1843319fdb31e1c344dd8d
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_872f31cf8d1843319fdb31e1c344dd8d.Properties.Settings.get_Default():ST_872f31cf8d1843319fdb31e1c344dd8d.Properties.Sett" +
-    "ings")]
-
-namespace ST_872f31cf8d1843319fdb31e1c344dd8d.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -5404,6 +5395,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5612,15 +5612,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   ReadOnlyVariables="User::Debug,User::FileName,User::FilePathFull,User::ImportFileType,User::RootPath"
                   ReadWriteVariables="User::ExcelSheetName">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -5739,6 +5730,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties.Settings.get_Default():ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties.Sett" +
+    "ings")]
+
+namespace ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -6039,35 +6059,6 @@ namespace ST_500b8cb6f6f04e38bb1d0b2618d86b19
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties.Settings.get_Default():ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties.Sett" +
-    "ings")]
-
-namespace ST_500b8cb6f6f04e38bb1d0b2618d86b19.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -6097,6 +6088,15 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6341,15 +6341,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
                   ReadOnlyVariables="User::Debug,User::FileName,User::FilePath"
                   ReadWriteVariables="User::ImportFileType">
                   <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -6468,6 +6459,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+                  <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_29257c8545c448a988e0000fff8b58e7.Properties.Settings.get_Default():ST_29257c8545c448a988e0000fff8b58e7.Properties.Sett" +
+    "ings")]
+
+namespace ST_29257c8545c448a988e0000fff8b58e7.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
                   <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -6623,34 +6643,35 @@ namespace ST_29257c8545c448a988e0000fff8b58e7
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                    Name="Properties\AssemblyInfo.cs"
+                    Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_29257c8545c448a988e0000fff8b58e7")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_29257c8545c448a988e0000fff8b58e7")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_29257c8545c448a988e0000fff8b58e7.Properties.Settings.get_Default():ST_29257c8545c448a988e0000fff8b58e7.Properties.Sett" +
-    "ings")]
-
-namespace ST_29257c8545c448a988e0000fff8b58e7.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
                   <ProjectItem
                     Name="ST_29257c8545c448a988e0000fff8b58e7.csproj"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6744,35 +6765,14 @@ namespace ST_29257c8545c448a988e0000fff8b58e7.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
                   <ProjectItem
-                    Name="Properties\AssemblyInfo.cs"
-                    Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_29257c8545c448a988e0000fff8b58e7")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_29257c8545c448a988e0000fff8b58e7")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7052,25 +7052,25 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="153,42"
+          Size="152.8,41.6"
           Id="Package\Set Varables\Create ETL DB"
           TopLeft="62,160" />
         <NodeLayout
-          Size="196,42"
+          Size="196,41.6"
           Id="Package\Set Varables\Create SP and Funtions"
           TopLeft="47,225" />
         <NodeLayout
-          Size="146,42"
+          Size="145.6,41.6"
           Id="Package\Set Varables\Fix File Paths"
           TopLeft="65.8888888888889,91.722222222222" />
         <NodeLayout
-          Size="204,42"
+          Size="204,41.6"
           Id="Package\Set Varables\Prepear Tables for Import"
           TopLeft="45.3333333333333,292.444444444445" />
         <NodeLayout
-          Size="150,42"
+          Size="150.4,41.6"
           Id="Package\Set Varables\SSIS Varables"
           TopLeft="70.25,24.5" />
         <EdgeLayout
@@ -7078,7 +7078,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="142.069444444444,66.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,25.222222222222"
               Start="0,0"
               End="0,17.722222222222">
@@ -7100,7 +7100,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="138.694444444444,133.722222222222">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,26.277777777778"
               Start="0,0"
               End="0,18.777777777778">
@@ -7122,7 +7122,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="141.75,202">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,23"
               Start="0,0"
               End="0,15.5">
@@ -7144,7 +7144,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="146.166666666667,267">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,25.444444444445"
               Start="0,0"
               End="0,17.944444444445">
@@ -7164,44 +7164,56 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="284,389"
+          PanelSize="284,388.8"
           Size="284,432"
           Id="Package\Set Varables"
           TopLeft="119.25,247" />
         <NodeLayout
-          Size="180,42"
+          Size="180,41.6"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate\Fix Missing Columns"
           TopLeft="39,165" />
         <NodeLayout
-          Size="180,42"
+          Size="180,41.6"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate\Populate Client_ETL"
           TopLeft="45,232" />
         <NodeLayout
-          Size="134,42"
+          Size="134.4,41.6"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate\Rebuild PK"
           TopLeft="62.285714285714,26.1428571428571" />
         <NodeLayout
-          Size="207,42"
+          Size="207.2,41.6"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate\Rename RawImport Table"
           TopLeft="31.1428571428567,299.571428571429" />
         <NodeLayout
-          Size="208,42"
+          Size="222.4,41.6"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate\Run Cleanup and Stage Data"
           TopLeft="27.2857142857147,94.107142857143" />
         <EdgeLayout
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate.PrecedenceConstraints[Constraint]"
-          TopLeft="130.142857142857,136.107142857143">
+          TopLeft="138.285714285715,136.107142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,28.892857142857"
+              StartConnector="{assembly:Null}"
+              EndConnector="-9.2857142857147,28.892857142857"
               Start="0,0"
-              End="0,21.392857142857">
+              End="-9.2857142857147,21.392857142857">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,21.392857142857" />
+                    End="0,10.4464285714285" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,10.4464285714285"
+                    Point2="0,14.4464285714285"
+                    Point3="-4,14.4464285714285" />
+                  <mssgle:LineSegment
+                    End="-5.2857142857147,14.4464285714285" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-5.2857142857147,14.4464285714285"
+                    Point2="-9.2857142857147,14.4464285714285"
+                    Point3="-9.2857142857147,18.4464285714285" />
+                  <mssgle:LineSegment
+                    End="-9.2857142857147,21.392857142857" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -7212,18 +7224,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate.PrecedenceConstraints[Constraint 1]"
-          TopLeft="130.285714285714,68.1428571428571">
+          TopLeft="129.285714285714,68.1428571428571">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,25.9642857142859"
+              StartConnector="{assembly:Null}"
+              EndConnector="9.00000000000071,25.9642857142859"
               Start="0,0"
-              End="0,18.4642857142859">
+              End="9.00000000000071,18.4642857142859">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,18.4642857142859" />
+                    End="0,8.98214285714295" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,8.98214285714295"
+                    Point2="0,12.982142857143"
+                    Point3="4,12.982142857143" />
+                  <mssgle:LineSegment
+                    End="5.00000000000071,12.982142857143" />
+                  <mssgle:CubicBezierSegment
+                    Point1="5.00000000000071,12.982142857143"
+                    Point2="9.00000000000071,12.982142857143"
+                    Point3="9.00000000000071,16.982142857143" />
+                  <mssgle:LineSegment
+                    End="9.00000000000071,18.4642857142859" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -7237,7 +7261,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="132,207">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,25"
               Start="0,0"
               End="0,17.5">
@@ -7259,7 +7283,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="134.821428571428,274">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,25.571428571429"
               Start="0,0"
               End="0,18.071428571429">
@@ -7279,43 +7303,43 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="267,395"
-          Size="267,438"
+          PanelSize="267.2,395.2"
+          Size="267.2,438.4"
           Id="Package\Stage 2 - Data Cleanup and Staging Raw Table Populate"
           TopLeft="1303.80952380952,242.083333333333" />
         <NodeLayout
-          Size="156,42"
+          Size="156,41.6"
           Id="Package\Staging File Import\Stage 1b - Import File to Cleanup Table\Import CSV File"
           TopLeft="25.0833333333335,86.0000000000001" />
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="215,255"
-          Size="215,298"
+          PanelSize="215.2,255.2"
+          Size="215.2,297.6"
           Id="Package\Staging File Import\Stage 1b - Import File to Cleanup Table"
           TopLeft="476,22" />
         <NodeLayout
-          Size="162,42"
+          Size="161.6,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Change File Type"
           TopLeft="227.75,190" />
         <NodeLayout
-          Size="150,42"
+          Size="150.4,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Check file size"
           TopLeft="227.5,104.75" />
         <NodeLayout
-          Size="165,42"
+          Size="164.8,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Check if Excel File"
           TopLeft="27,107" />
         <NodeLayout
-          Size="172,42"
+          Size="172,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Check if File Exsits"
           TopLeft="221.25,31.5" />
         <NodeLayout
-          Size="179,42"
+          Size="179.2,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Convert XLS to CSV"
           TopLeft="20.5,191.5" />
         <NodeLayout
-          Size="178,42"
+          Size="177.6,41.6"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks\Get Import File Type"
           TopLeft="18.5000000000001,26.75" />
         <EdgeLayout
@@ -7323,7 +7347,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="196.5,50.125">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="24.7500000000001,0"
               Start="0,0"
               End="17.2500000000001,0">
@@ -7345,7 +7369,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="304.875,73.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,31.25"
               Start="0,0"
               End="0,23.75">
@@ -7369,7 +7393,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="227.5,126.875">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-35.5,0"
               Start="0,0"
               End="-28,0">
@@ -7391,7 +7415,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="109.75,149">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,42.4999999999999"
               Start="0,0"
               End="0,34.9999999999999">
@@ -7413,7 +7437,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="199.5,211.75">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="28.25,0"
               Start="0,0"
               End="20.75,0">
@@ -7433,8 +7457,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="406,261"
-          Size="406,304"
+          PanelSize="406.4,260.8"
+          Size="406.4,304"
           Id="Package\Staging File Import\Stage1a - File and File Type Checks"
           TopLeft="19,20" />
         <EdgeLayout
@@ -7442,7 +7466,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="425,171.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="51,0"
               Start="0,0"
               End="43.5,0">
@@ -7464,8 +7488,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="739,377"
-          Size="739,420"
+          PanelSize="739.2,376.8"
+          Size="739.2,420"
           Id="Package\Staging File Import"
           TopLeft="476,244" />
         <EdgeLayout
@@ -7473,7 +7497,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="403.25,463">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="72.75,-9"
               Start="0,0"
               End="65.25,-9">
@@ -7507,7 +7531,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="1215,457.541666666667">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="88.80952380952,0"
               Start="0,0"
               End="81.30952380952,0">
@@ -7531,7 +7555,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Staging File Import\Stage 1b - Import File to Cleanup Table\Import CSV File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="167,42"
           Id="Package\Staging File Import\Stage 1b - Import File to Cleanup Table\Import CSV File\Generate File Row Number"
@@ -7557,7 +7581,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="505.5,279">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="9,59"
               Start="0,0"
               End="9,51.5">
@@ -7593,7 +7617,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="504.25,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,42"
               Start="0,0"
               End="0,34.5">
@@ -7617,7 +7641,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="513.5,380">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,35"
               Start="0,0"
               End="0,27.5">
@@ -7641,7 +7665,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="516,457">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
