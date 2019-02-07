@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/12/2017 4:05:14 PM"
@@ -12,7 +12,8 @@
   DTS:LocaleID="1033"
   DTS:MaxErrorCount="0"
   DTS:ObjectName="ASTCourses"
-  DTS:VersionGUID="{93D6E1B8-C341-4677-A266-A8805F90F7E2}">
+  DTS:VersionBuild="6"
+  DTS:VersionGUID="{D6659AB3-883E-4804-9D12-166032E3060B}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -35,29 +36,29 @@
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
               DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="11"
-              DTS:DataType="3"
+              DTS:MaximumWidth="200"
+              DTS:DataType="129"
               DTS:TextQualified="True"
               DTS:ObjectName="CourseID"
-              DTS:DTSID="{49DFA560-8B22-40BD-9C8A-287C581450F3}"
+              DTS:DTSID="{508E186C-12E0-4340-BD6F-8A7E3AADF17E}"
               DTS:CreationName="" />
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
               DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
+              DTS:MaximumWidth="200"
               DTS:DataType="129"
               DTS:TextQualified="True"
               DTS:ObjectName="CourseShort"
-              DTS:DTSID="{D6D31FE9-C70A-443B-84C1-1E531C388FE8}"
+              DTS:DTSID="{223B1B95-E870-40C3-B7E5-645690D1FAD9}"
               DTS:CreationName="" />
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
               DTS:ColumnDelimiter="_x000D__x000A_"
-              DTS:MaximumWidth="50"
+              DTS:MaximumWidth="200"
               DTS:DataType="129"
               DTS:TextQualified="True"
               DTS:ObjectName="SubjectShort"
-              DTS:DTSID="{8CDE7EDF-9297-4706-B6B4-373288DA0107}"
+              DTS:DTSID="{D6E999C1-4693-4137-B069-75164C7127CC}"
               DTS:CreationName="" />
           </DTS:FlatFileColumns>
         </DTS:ConnectionManager>
@@ -70,7 +71,7 @@
       DTS:ObjectName="SourceConnectionOLEDB">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=US-SYNC;Initial Catalog=MobilePrincipaldb;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=false;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=EVASourcedb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=false;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -102,12 +103,12 @@
                 <property
                   dataType="System.Boolean"
                   description="Specifies whether the data will overwrite or append to the destination file."
-                  name="Overwrite">false</property>
+                  name="Overwrite">true</property>
                 <property
-                  dataType="System.String"
+                  dataType="System.Null"
                   description="Specifies the text to write to the destination file before any data is written."
                   expressionType="Notify"
-                  name="Header"></property>
+                  name="Header" />
               </properties>
               <connections>
                 <connection
@@ -140,7 +141,7 @@
                       refId="Package\Data Flow Task 1\Destination - ASTCourses_txt.Inputs[Flat File Destination Input].Columns[SubjectShort]"
                       cachedCodepage="1252"
                       cachedDataType="str"
-                      cachedLength="50"
+                      cachedLength="255"
                       cachedName="SubjectShort"
                       externalMetadataColumnId="Package\Data Flow Task 1\Destination - ASTCourses_txt.Inputs[Flat File Destination Input].ExternalColumns[SubjectShort]"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[SubjectShort]" />
@@ -149,19 +150,21 @@
                     isUsed="True">
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Destination - ASTCourses_txt.Inputs[Flat File Destination Input].ExternalColumns[CourseID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
+                      length="200"
                       name="CourseID" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Destination - ASTCourses_txt.Inputs[Flat File Destination Input].ExternalColumns[CourseShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="200"
                       name="CourseShort" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Destination - ASTCourses_txt.Inputs[Flat File Destination Input].ExternalColumns[SubjectShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="200"
                       name="SubjectShort" />
                   </externalMetadataColumns>
                 </input>
@@ -192,11 +195,8 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT c.CourseID, c.Abbreviation AS CourseShort, c.Department AS SubjectShort
-FROM            ASTLINKEDSERVER.ABS_AR.dbo.Courses AS c INNER JOIN
-                         ASTLINKEDSERVER.ABS_AR.dbo.vw_Class AS cl ON c.CourseID = cl.CourseID INNER JOIN
-                         ASTLINKEDSERVER.ABS_AR.dbo.SchoolYear AS sy ON cl.YearID = sy.YearID
-WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select Cast([CourseID] as varchar(255)) as CourseID, cast([CourseShort] as varchar(255)) as CourseShort, cast([SubjectShort] as varchar(255)) as SubjectShort
+from [ASTCourses]</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -259,7 +259,7 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       externalMetadataColumnId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[SubjectShort]"
-                      length="50"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[SubjectShort]"
                       name="SubjectShort"
                       truncationRowDisposition="FailComponent" />
@@ -268,19 +268,21 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                     isUsed="True">
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[CourseID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
                       name="CourseID" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[CourseShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       name="CourseShort" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[SubjectShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       name="SubjectShort" />
                   </externalMetadataColumns>
                 </output>
@@ -291,21 +293,23 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                   <outputColumns>
                     <outputColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[CourseID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[CourseID]"
                       name="CourseID" />
                     <outputColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[CourseShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[CourseShort]"
                       name="CourseShort" />
                     <outputColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[SubjectShort]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[SubjectShort]"
                       name="SubjectShort" />
                     <outputColumn
@@ -337,4 +341,70 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="162,42"
+          Id="Package\Data Flow Task 1"
+          TopLeft="226.5,62.5" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Data Flow Task 1">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Data Flow Task 1\Source - Query"
+          TopLeft="38.5,5.5" />
+        <NodeLayout
+          Size="218,42"
+          Id="Package\Data Flow Task 1\Destination - ASTCourses_txt"
+          TopLeft="5.50000000000001,107.5" />
+        <EdgeLayout
+          Id="Package\Data Flow Task 1.Paths[OLE DB Source Output]"
+          TopLeft="114.5,47.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task 1\Source - Query">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>

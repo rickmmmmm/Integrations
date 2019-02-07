@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/12/2017 4:15:05 PM"
@@ -12,7 +12,8 @@
   DTS:LocaleID="1033"
   DTS:MaxErrorCount="0"
   DTS:ObjectName="ASTStudentSchedules"
-  DTS:VersionGUID="{6630C711-A55A-475B-8026-04DC0F7924CE}">
+  DTS:VersionBuild="2"
+  DTS:VersionGUID="{E37B2283-E502-47C7-B9C0-D45D89726585}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -39,7 +40,7 @@
               DTS:DataType="129"
               DTS:TextQualified="True"
               DTS:ObjectName="LocationGivenID"
-              DTS:DTSID="{3E1BEC79-908B-454D-A58E-7FD772B09F51}"
+              DTS:DTSID="{20CEC963-E667-40A6-B6F7-CDD9CEAADD14}"
               DTS:CreationName="" />
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -47,8 +48,8 @@
               DTS:MaximumWidth="11"
               DTS:DataType="3"
               DTS:TextQualified="True"
-              DTS:ObjectName="StudentID"
-              DTS:DTSID="{3CB05236-3673-4A48-8D4A-92C38375B242}"
+              DTS:ObjectName="StudentGivenID"
+              DTS:DTSID="{39FCCB3C-B346-4085-B78F-E6B6F18C61FA}"
               DTS:CreationName="" />
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -57,7 +58,7 @@
               DTS:DataType="3"
               DTS:TextQualified="True"
               DTS:ObjectName="ClassGivenID"
-              DTS:DTSID="{AC057ED4-CBC6-45BA-961E-26CA722CC3C6}"
+              DTS:DTSID="{C1C959B2-DECF-4A7B-B3BB-B43537991DF3}"
               DTS:CreationName="" />
           </DTS:FlatFileColumns>
         </DTS:ConnectionManager>
@@ -70,7 +71,7 @@
       DTS:ObjectName="SourceConnectionOLEDB">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=US-SYNC;Initial Catalog=MobilePrincipaldb;Provider=SQLNCLI11;Integrated Security=SSPI;Auto Translate=false;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=EVASourcedb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=false;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -126,19 +127,15 @@
                       refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].Columns[LocationGivenID]"
                       cachedCodepage="1252"
                       cachedDataType="str"
-                      cachedLength="50"
+                      cachedLength="255"
                       cachedName="LocationGivenID"
                       externalMetadataColumnId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[LocationGivenID]"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[LocationGivenID]" />
                     <inputColumn
-                      refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].Columns[StudentID]"
-                      cachedDataType="i4"
-                      cachedName="StudentID"
-                      externalMetadataColumnId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[StudentID]"
-                      lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[StudentID]" />
-                    <inputColumn
                       refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].Columns[ClassGivenID]"
-                      cachedDataType="i4"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="255"
                       cachedName="ClassGivenID"
                       externalMetadataColumnId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[ClassGivenID]"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[ClassGivenID]" />
@@ -152,13 +149,13 @@
                       length="50"
                       name="LocationGivenID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[StudentID]"
-                      dataType="i4"
-                      name="StudentID" />
-                    <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[ClassGivenID]"
                       dataType="i4"
                       name="ClassGivenID" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt.Inputs[Flat File Destination Input].ExternalColumns[StudentGivenID]"
+                      dataType="i4"
+                      name="StudentGivenID" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -188,11 +185,11 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT        c.SchoolCode AS LocationGivenID, r.StudentID, r.ClassID AS ClassGivenID
-FROM            ASTLINKEDSERVER.ABS_AR.dbo.Courses AS c INNER JOIN
-                         ASTLINKEDSERVER.ABS_AR.dbo.vw_Roster AS r ON c.CourseID = r.CourseID INNER JOIN
-                         ASTLINKEDSERVER.ABS_AR.dbo.SchoolYear AS sy ON r.YearID = sy.YearID
-WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT cast(LocationGivenID as varchar(255)) as LocationGivenID,
+      cast(StudentGivenID as varchar(255)) as StudentGivenID,
+      cast(ClassGivenID as varchar(255)) as ClassGivenID
+  FROM EVASourcedb.dbo.ASTStudentSchedules</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -235,27 +232,31 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       externalMetadataColumnId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[LocationGivenID]"
-                      length="50"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[LocationGivenID]"
                       name="LocationGivenID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[StudentID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[StudentID]"
-                      lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[StudentID]"
-                      name="StudentID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[ClassGivenID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       externalMetadataColumnId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[ClassGivenID]"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[ClassGivenID]"
                       name="ClassGivenID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[StudentGivenID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[StudentGivenID]"
+                      length="255"
+                      lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].Columns[StudentGivenID]"
+                      name="StudentGivenID"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
@@ -264,16 +265,20 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[LocationGivenID]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       name="LocationGivenID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[StudentID]"
-                      dataType="i4"
-                      name="StudentID" />
-                    <externalMetadataColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[ClassGivenID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
                       name="ClassGivenID" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Output].ExternalColumns[StudentGivenID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="StudentGivenID" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -285,17 +290,21 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[LocationGivenID]"
                       codePage="1252"
                       dataType="str"
-                      length="50"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[LocationGivenID]"
                       name="LocationGivenID" />
                     <outputColumn
-                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[StudentID]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[StudentID]"
-                      name="StudentID" />
+                      refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[StudentGivenID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[StudentGivenID]"
+                      name="StudentGivenID" />
                     <outputColumn
                       refId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[ClassGivenID]"
-                      dataType="i4"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
                       lineageId="Package\Data Flow Task 1\Source - Query.Outputs[OLE DB Source Error Output].Columns[ClassGivenID]"
                       name="ClassGivenID" />
                     <outputColumn
@@ -327,4 +336,70 @@ WHERE        (sy.LastDay &gt; DATEADD(dd, 30, GETDATE()))</property>
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="162,42"
+          Id="Package\Data Flow Task 1"
+          TopLeft="66.5,58.5" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Data Flow Task 1">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Data Flow Task 1\Source - Query"
+          TopLeft="62,5.5" />
+        <NodeLayout
+          Size="265,42"
+          Id="Package\Data Flow Task 1\Destination - ASTStudentSchedules_txt"
+          TopLeft="5.50000000000003,107.5" />
+        <EdgeLayout
+          Id="Package\Data Flow Task 1.Paths[OLE DB Source Output]"
+          TopLeft="138,47.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task 1\Source - Query">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
