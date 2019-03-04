@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Configuration;
 
 namespace MiddleWay_Utilities
 {
@@ -75,6 +76,23 @@ namespace MiddleWay_Utilities
             catch (Exception ex)
             {
                 return false;
+            }
+        }
+    }
+
+    public class LogFileCleanup
+    {
+        public static void RemoveOldFiles()
+        {
+            string LogFilePath = Directory.GetCurrentDirectory() + "\\Logs\\";
+
+            Int32 LogRetention = 30 * -1;
+            string[] files = Directory.GetFiles(LogFilePath);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (File.GetCreationTime(fi.ToString()) < DateTime.Now.AddDays(LogRetention))
+                    fi.Delete();
             }
         }
     }
