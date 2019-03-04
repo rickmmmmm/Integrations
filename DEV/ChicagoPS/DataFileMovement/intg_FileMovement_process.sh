@@ -1,7 +1,7 @@
 #!/bin/bash
 #Integration EC2 Process
 echo " #### Setting Script Variables"
-ENVIRONMENT="QA"
+ENVIRONMENT="Production"
 CLIENT="CPS"
 TYPE="FileMovement"
 
@@ -15,7 +15,8 @@ if [ $ENVIRONMENT = "Production" ]; then
     AWSBUCKET="hssintg-prod"
     FOLDER="intg_prod"
     REGION="us-east-1"
-	SFTPFolder="hssintg-sftp/chicagoint_sftp_user/uploads"
+	SFTPAWSBUCKET="hssintg-sftp"
+	SFTPFolder="chicagoint_sftp_user/uploads"
 else
     ### QA
     DEBUG=false
@@ -46,7 +47,7 @@ fileCount="$(ls | wc -l)"
 if [ $fileCount -gt 0 ]; then
 
     # Moving files to the production path
-    echo " #### Processing input files to Production path: //$AWSBUCKET/$FOLDER/$CLIENT/ PurchaseOrder/Shipping folders"
+    echo " #### Processing input files to Production path: //$AWSBUCKET/$FOLDER/$CLIENT/  PurchaseOrder/Shipping folders"
     processedFiles=""
 	echo " "
  
@@ -80,7 +81,7 @@ if [ $fileCount -gt 0 ]; then
 
 	echo -e " ##### \033[1;34mCoping run.process\e[0m file to PurchaseOrder/files folder"
 	aws s3 cp "s3://$AWSBUCKET/$FOLDER/$CLIENT/PurchaseOrder/run.process" "s3://$SFTPAWSBUCKET/$SFTPFolder/run.process"
-	aws s3 mv "s3://$SFTPAWSBUCKET/$SFTPFolder/run.process" "s3://$AWSBUCKET/$FOLDER/$CLIENT/PurchaseOrder/files/run.process"
+	aws s3 mv "s3://$SFTPAWSBUCKET/$SFTPFolder/run.process" "s3://$AWSBUCKET/$FOLDER/$CLIENT/PurchaseOrder/files/process.run"
 fi
 if [ $DEBUG == true ]; then
 	echo -e " #### \033[1;32m Stop instance \e[0m "

@@ -1,7 +1,7 @@
 #!/bin/bash
 echo ">>> Setting Script Variables"
 DEBUG=true
-ENVIRONMENT="QA"
+ENVIRONMENT="Production"
 CLIENT="CPS"
 TYPE="DataFileMovement"
 INTGFILE="intg_FileMovement_process.sh"
