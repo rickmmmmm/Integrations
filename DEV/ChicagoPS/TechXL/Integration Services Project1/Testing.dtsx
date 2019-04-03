@@ -1,0 +1,2253 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="8/14/2018 1:29:28 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="RND-RGAILEY"
+  DTS:CreatorName="HAYESSOFT\rgailey"
+  DTS:DTSID="{49C62DF6-06B4-456C-941B-2CF6CBB5F426}"
+  DTS:EnableConfig="True"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="14.0.3002.107"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Testing"
+  DTS:PackageType="5"
+  DTS:ProtectionLevel="0"
+  DTS:VersionBuild="28"
+  DTS:VersionGUID="{CDB3674C-262F-4E9F-9443-DDFF3E8D0261}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Target - CPS Database]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{245E98F5-54AE-46F8-AC46-084D687C3A23}"
+      DTS:ObjectName="Target - CPS Database">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=TipWebHostedChicagoPS;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Target - Intergration]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{FD3F2DA5-AB84-4DF7-9D97-60F445D4E81C}"
+      DTS:ObjectName="Target - Intergration">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=DB;Initial Catalog=IntegrationMiddleWay;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{149CD674-BA81-4B9A-8DB1-AC2CD7B05133}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="ItemNumber">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Popluate Update Serial Number"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{f8b4c24a-32c5-45fe-90b4-64331b9b3eda}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Popluate Update Serial Number"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Popluate Update Serial Number\By AssetID Seial Number"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="By AssetID Seial Number"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT InventoryUID,Serial
+FROM tblTechInventory</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (SELECT InventoryUID,Serial
+FROM tblTechInventory) [refTable]
+where [refTable].[Serial] = ? and [refTable].[InventoryUID] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="InventoryUID" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Serial" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]};#{Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output].Columns[InventoryUID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input].Columns[SERIALNUMBER]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="SERIALNUMBER"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">Serial</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input].Columns[InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="InventoryUID"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output].Columns[InventoryUID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">InventoryUID</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\By Tag Seial Number"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="By Tag Seial Number"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT InventoryUID,Serial
+FROM tblTechInventory</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (SELECT InventoryUID,Serial
+FROM tblTechInventory) [refTable]
+where [refTable].[Serial] = ? and [refTable].[InventoryUID] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="InventoryUID" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Serial" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]};#{Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\By Tag Seial Number.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input].Columns[SERIALNUMBER]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="SERIALNUMBER"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">Serial</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input].Columns[ByTag.InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="ByTag.InventoryUID"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">InventoryUID</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Check if AssetID is null"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Check if AssetID is null"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT InventoryUID FROM tblTechInventory
+WHERE AssetID IS NULL</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (SELECT InventoryUID FROM tblTechInventory
+WHERE AssetID IS NULL) [refTable]
+where [refTable].[InventoryUID] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="InventoryUID" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Check if AssetID is null.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input].Columns[ByTag.InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="ByTag.InventoryUID"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">InventoryUID</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Get ID By AssetID"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Get ID By AssetID"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT InventoryUID,AssetID
+FROM tblTechInventory
+WHERE AssetID IS NOT NULL</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (SELECT InventoryUID,AssetID
+FROM tblTechInventory
+WHERE AssetID IS NOT NULL) [refTable]
+where [refTable].[AssetID] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="InventoryUID" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="AssetID" dataType="DT_STR" length="100" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Get ID By AssetID.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input].Columns[ASSETUID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="ASSETUID"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">AssetID</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  errorRowDisposition="RedirectRow"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output].Columns[InventoryUID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Copy Column"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output].Columns[InventoryUID]"
+                      name="InventoryUID"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">InventoryUID</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Get ID By Tag"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Get ID By Tag"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT InventoryUID,Tag
+FROM tblTechInventory</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select * from (SELECT InventoryUID,Tag
+FROM tblTechInventory) [refTable]
+where [refTable].[Tag] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="InventoryUID" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Tag" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[TAG]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Get ID By Tag.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input].Columns[TAG]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="TAG"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[TAG]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">Tag</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Copy Column"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]"
+                      name="ByTag.InventoryUID"
+                      truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn">InventoryUID</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Get InvetoryData"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="Get InvetoryData"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT DISTINCT 
+PRODUCT_TYPE
+,PRODUCT_NAME
+,LTRIM(RTRIM(SUBSTRING(PRODUCT_NAME,1,100))) AS PRODUCT_DESC
+,LTRIM(RTRIM(REPLACE(PRODUCT_NAME,SUBSTRING(MANUFACTURER,1,100),''))) AS ModelNumber
+,LTRIM(RTRIM(SUBSTRING(MANUFACTURER,1,100))) AS MANUFACTURER
+,LTRIM(RTRIM(TAG)) AS TAG
+,LTRIM(RTRIM(SERIALNUMBER)) AS SERIALNUMBER
+,LTRIM(RTRIM(ASSETUID)) AS ASSETUID
+,1 AS InventoryTypeUID
+,17 AS SiteUIDDefault
+,LTRIM(RTRIM(SHIPPEDTOSITE)) AS SHIPPEDTOSITE
+,LocationType AS RoomType
+,Location AS RoomNumber
+,0 AS RoomTypeID
+, 2 AS EntityTypeUID
+, 26 AS StatusID
+, 9 AS DepartmentID
+, 'Hayes TechXL Integration - Updated Serial on ' + CONVERT(VARCHAR(8),GETDATE(),1)  AS Notes
+FROM StaggingTechXLData
+WHERE Rejected=0
+AND ASSETUID IN ('1349','78208','411')</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Get InvetoryData.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - Intergration]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - Intergration]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_TYPE]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_TYPE]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_TYPE]"
+                      name="PRODUCT_TYPE"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_NAME]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_NAME]"
+                      length="200"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_NAME]"
+                      name="PRODUCT_NAME"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_DESC]"
+                      length="200"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[PRODUCT_DESC]"
+                      name="PRODUCT_DESC"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ModelNumber]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[ModelNumber]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ModelNumber]"
+                      name="ModelNumber"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[MANUFACTURER]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[MANUFACTURER]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[MANUFACTURER]"
+                      name="MANUFACTURER"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[TAG]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[TAG]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[TAG]"
+                      name="TAG"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[ASSETUID]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]"
+                      name="ASSETUID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SERIALNUMBER]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]"
+                      name="SERIALNUMBER"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomTypeID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomTypeID]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomTypeID]"
+                      name="RoomTypeID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[InventoryTypeUID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[InventoryTypeUID]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[InventoryTypeUID]"
+                      name="InventoryTypeUID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[EntityTypeUID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[EntityTypeUID]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[EntityTypeUID]"
+                      name="EntityTypeUID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SHIPPEDTOSITE]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SHIPPEDTOSITE]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SHIPPEDTOSITE]"
+                      name="SHIPPEDTOSITE"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomType]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomType]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomType]"
+                      name="RoomType"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomNumber]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomNumber]"
+                      length="100"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[RoomNumber]"
+                      name="RoomNumber"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SiteUIDDefault]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SiteUIDDefault]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SiteUIDDefault]"
+                      name="SiteUIDDefault"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[StatusID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[StatusID]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[StatusID]"
+                      name="StatusID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[DepartmentID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[DepartmentID]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[DepartmentID]"
+                      name="DepartmentID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[Notes]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[Notes]"
+                      length="500"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[Notes]"
+                      name="Notes"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_TYPE]"
+                      codePage="1252"
+                      dataType="text"
+                      name="PRODUCT_TYPE" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_NAME]"
+                      codePage="1252"
+                      dataType="text"
+                      name="PRODUCT_NAME" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[PRODUCT_DESC]"
+                      codePage="1252"
+                      dataType="text"
+                      name="PRODUCT_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[ModelNumber]"
+                      codePage="1252"
+                      dataType="text"
+                      name="ModelNumber" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[MANUFACTURER]"
+                      codePage="1252"
+                      dataType="text"
+                      name="MANUFACTURER" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[TAG]"
+                      codePage="1252"
+                      dataType="text"
+                      name="TAG" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[ASSETUID]"
+                      codePage="1252"
+                      dataType="text"
+                      name="ASSETUID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SERIALNUMBER]"
+                      codePage="1252"
+                      dataType="text"
+                      name="SERIALNUMBER" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomTypeID]"
+                      dataType="i4"
+                      name="RoomTypeID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[InventoryTypeUID]"
+                      dataType="i4"
+                      name="InventoryTypeUID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[EntityTypeUID]"
+                      dataType="i4"
+                      name="EntityTypeUID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SHIPPEDTOSITE]"
+                      codePage="1252"
+                      dataType="text"
+                      name="SHIPPEDTOSITE" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomType]"
+                      codePage="1252"
+                      dataType="text"
+                      name="RoomType" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[RoomNumber]"
+                      codePage="1252"
+                      dataType="text"
+                      name="RoomNumber" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[SiteUIDDefault]"
+                      dataType="i4"
+                      name="SiteUIDDefault" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[StatusID]"
+                      dataType="i4"
+                      name="StatusID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[DepartmentID]"
+                      dataType="i4"
+                      name="DepartmentID" />
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].ExternalColumns[Notes]"
+                      codePage="1252"
+                      dataType="str"
+                      length="53"
+                      name="Notes" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_TYPE]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_TYPE]"
+                      name="PRODUCT_TYPE" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_NAME]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_NAME]"
+                      name="PRODUCT_NAME" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_DESC]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[PRODUCT_DESC]"
+                      name="PRODUCT_DESC" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ModelNumber]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ModelNumber]"
+                      name="ModelNumber" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[MANUFACTURER]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[MANUFACTURER]"
+                      name="MANUFACTURER" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[TAG]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[TAG]"
+                      name="TAG" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ASSETUID]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ASSETUID]"
+                      name="ASSETUID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SERIALNUMBER]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SERIALNUMBER]"
+                      name="SERIALNUMBER" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[InventoryTypeUID]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[InventoryTypeUID]"
+                      name="InventoryTypeUID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SiteUIDDefault]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SiteUIDDefault]"
+                      name="SiteUIDDefault" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SHIPPEDTOSITE]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[SHIPPEDTOSITE]"
+                      name="SHIPPEDTOSITE" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomType]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomType]"
+                      name="RoomType" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomNumber]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomNumber]"
+                      name="RoomNumber" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomTypeID]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[RoomTypeID]"
+                      name="RoomTypeID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[EntityTypeUID]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[EntityTypeUID]"
+                      name="EntityTypeUID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[StatusID]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[StatusID]"
+                      name="StatusID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[DepartmentID]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[DepartmentID]"
+                      name="DepartmentID" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[Notes]"
+                      codePage="1252"
+                      dataType="str"
+                      length="53"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[Notes]"
+                      name="Notes" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+              name="Update tblTechInventory For AssetID"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">DECLARE @InventoryUID INT = ?
+DECLARE @SerailNumber VARCHAR(50)=?
+DECLARE @Notes VARCHAR(100)=?
+DECLARE @AssetID VARCHAR(100)=?
+
+UPDATE tblTechInventory
+SET LastModifiedDate=GETDATE(),
+	LastModifiedByUserID=0,
+	InventoryNotes=CASE WHEN InventoryNotes IS NULL THEN @Notes ELSE InventoryNotes + ', ' + @Notes END,
+	AssetID=@AssetID
+WHERE InventoryUID=@InventoryUID
+
+</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].Columns[ByTag.InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="ByTag.InventoryUID"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].Columns[SERIALNUMBER]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="SERIALNUMBER"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].Columns[Notes]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="500"
+                      cachedName="Notes"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[Notes]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].Columns[ASSETUID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="ASSETUID"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      dataType="i4"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Param_3">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+              name="Update tblTechInventory For AssitID"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">DECLARE @InventoryUID INT = ?
+DECLARE @SerailNumber VARCHAR(50)=?
+DECLARE @Notes VARCHAR(100)=?
+
+UPDATE tblTechInventory
+SET Serial=@SerailNumber,
+	LastModifiedDate=GETDATE(),
+	LastModifiedByUserID=0,
+	InventoryNotes=CASE WHEN InventoryNotes IS NULL THEN @Notes ELSE InventoryNotes +  ', ' + @Notes END
+WHERE InventoryUID=@InventoryUID
+</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].Columns[InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="InventoryUID"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output].Columns[InventoryUID]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].Columns[SERIALNUMBER]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="SERIALNUMBER"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].Columns[Notes]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="500"
+                      cachedName="Notes"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[Notes]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      dataType="i4"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+              name="Update tblTechInventory For Tag"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">DECLARE @InventoryUID INT = ?
+DECLARE @SerailNumber VARCHAR(50)=?
+DECLARE @Notes VARCHAR(100)=?
+DECLARE @AssetID VARCHAR(100)=?
+
+UPDATE tblTechInventory
+SET Serial=@SerailNumber,
+	LastModifiedDate=GETDATE(),
+	LastModifiedByUserID=0,
+	InventoryNotes=CASE WHEN InventoryNotes IS NULL THEN @Notes ELSE InventoryNotes + ', ' + @Notes END,
+	AssetID=CASE WHEN AssetID IS NULL THEN @AssetID ELSE AssetID END
+WHERE InventoryUID=@InventoryUID
+
+</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - CPS Database]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - CPS Database]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].Columns[ByTag.InventoryUID]"
+                      cachedDataType="i4"
+                      cachedName="ByTag.InventoryUID"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output].Columns[ByTag.InventoryUID]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].Columns[SERIALNUMBER]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="SERIALNUMBER"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[SERIALNUMBER]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].Columns[Notes]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="500"
+                      cachedName="Notes"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[Notes]" />
+                    <inputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].Columns[ASSETUID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="ASSETUID"
+                      externalMetadataColumnId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      lineageId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output].Columns[ASSETUID]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      dataType="i4"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="Param_3">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup Error Output]"
+              endId="Package\Popluate Update Serial Number\Get ID By Tag.Inputs[Lookup Input]"
+              name="Lookup Error Output"
+              startId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Error Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup Match Output]"
+              endId="Package\Popluate Update Serial Number\By AssetID Seial Number.Inputs[Lookup Input]"
+              name="Lookup Match Output"
+              startId="Package\Popluate Update Serial Number\Get ID By AssetID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup Match Output1]"
+              endId="Package\Popluate Update Serial Number\By Tag Seial Number.Inputs[Lookup Input]"
+              name="Lookup Match Output"
+              startId="Package\Popluate Update Serial Number\Get ID By Tag.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup Match Output2]"
+              endId="Package\Popluate Update Serial Number\Check if AssetID is null.Inputs[Lookup Input]"
+              name="Lookup Match Output"
+              startId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup Match Output3]"
+              endId="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID.Inputs[OLE DB Command Input]"
+              name="Lookup Match Output"
+              startId="Package\Popluate Update Serial Number\Check if AssetID is null.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup No Match Output]"
+              endId="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID.Inputs[OLE DB Command Input]"
+              name="Lookup No Match Output"
+              startId="Package\Popluate Update Serial Number\By AssetID Seial Number.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[Lookup No Match Output1]"
+              endId="Package\Popluate Update Serial Number\Update tblTechInventory For Tag.Inputs[OLE DB Command Input]"
+              name="Lookup No Match Output"
+              startId="Package\Popluate Update Serial Number\By Tag Seial Number.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\Popluate Update Serial Number.Paths[OLE DB Source Output]"
+              endId="Package\Popluate Update Serial Number\Get ID By AssetID.Inputs[Lookup Input]"
+              name="OLE DB Source Output"
+              startId="Package\Popluate Update Serial Number\Get InvetoryData.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="207,42"
+          Id="Package\Popluate Update Serial Number"
+          TopLeft="361.999985615413,217.706668396844" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Popluate Update Serial Number">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="144,41.6"
+          Id="Package\Popluate Update Serial Number\Get ID By Tag"
+          TopLeft="404.333360539541,323.826667801751" />
+        <NodeLayout
+          Size="161.6,41.6"
+          Id="Package\Popluate Update Serial Number\Get InvetoryData"
+          TopLeft="394.333338843451,103.959999371847" />
+        <NodeLayout
+          Size="162.4,41.6"
+          Id="Package\Popluate Update Serial Number\Get ID By AssetID"
+          TopLeft="394.333348300721,215.826666975233" />
+        <NodeLayout
+          Size="245.6,41.6"
+          Id="Package\Popluate Update Serial Number\Update tblTechInventory For AssitID"
+          TopLeft="1006.66665495767,221.679999107361" />
+        <NodeLayout
+          Size="240,41.6"
+          Id="Package\Popluate Update Serial Number\Update tblTechInventory For Tag"
+          TopLeft="1010.00000063578,315.359999867757" />
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup Error Output]"
+          TopLeft="475.933354420131,257.426666975233">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,66.4000008265174"
+              Start="0,0"
+              End="0,58.9000008265174">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,58.9000008265174" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-45.86638671875,23.6453129132587,91.7327734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[OLE DB Source Output]"
+          TopLeft="475.333343572086,145.559999371847">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,70.2666676033868"
+              Start="0,0"
+              End="0,62.7666676033868">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,62.7666676033868" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="195.2,41.6"
+          Id="Package\Popluate Update Serial Number\By AssetID Seial Number"
+          TopLeft="667.999973456066,218.400001735687" />
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup Match Output]"
+          TopLeft="556.733348300721,237.91333435546">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="111.266625155345,0"
+              Start="0,0"
+              End="103.766625155345,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="103.766625155345,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="3.69192585892237,5,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup No Match Output]"
+          TopLeft="863.199973456066,240.840000421524">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="143.4666815016,0"
+              Start="0,0"
+              End="135.9666815016,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="135.9666815016,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="12.1769540320499,5,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="176.8,41.6"
+          Id="Package\Popluate Update Serial Number\By Tag Seial Number"
+          TopLeft="675.999973138175,319.626669206831" />
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup Match Output1]"
+          TopLeft="548.333360539541,342.526668504291">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="127.666612598633,0"
+              Start="0,0"
+              End="120.166612598633,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="120.166612598633,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="11.8919195805667,5,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup No Match Output1]"
+          TopLeft="852.799973138175,338.293334537294">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="157.200027497608,0"
+              Start="0,0"
+              End="149.700027497608,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="149.700027497608,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="19.043627030054,5,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="184.8,41.6"
+          Id="Package\Popluate Update Serial Number\Check if AssetID is null"
+          TopLeft="675.999973138174,416.000003306071" />
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup Match Output2]"
+          TopLeft="766.399973138175,361.226669206831">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,54.7733340992397"
+              Start="0,0"
+              End="0,47.2733340992397">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,47.2733340992397" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-48.19138671875,17.8319795496199,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="248.8,41.6"
+          Id="Package\Popluate Update Serial Number\Update tblTechInventory For AssetID"
+          TopLeft="1007.99995994568,414.613336628384" />
+        <EdgeLayout
+          Id="Package\Popluate Update Serial Number.Paths[Lookup Match Output3]"
+          TopLeft="860.799973138174,436.106669967227">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="147.199986807506,0"
+              Start="0,0"
+              End="139.699986807506,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="139.699986807506,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="21.6586066850031,5,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\By Tag Seial Number">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\Get ID By AssetID">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\Get InvetoryData">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\Check if AssetID is null">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\By AssetID Seial Number">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Popluate Update Serial Number\Get ID By Tag">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
