@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DTSID="{D8016182-6565-49A0-9D5B-B3640301F71F}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="14.0.0800.90"
+  DTS:LastModifiedProductVersion="14.0.3026.27"
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="157"
-  DTS:VersionGUID="{E44FFFDD-7D6A-4573-B7E1-38EBBC0E40F6}">
+  DTS:VersionBuild="158"
+  DTS:VersionGUID="{5229C7B3-1670-471A-993D-CAF6CD330DBE}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Chicago_0129;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWeb_Chicago_0129;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -135,7 +135,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-ChicagoRecycleTransfer-{C46FBD62-8FF9-45BA-85AC-131E22C04DEF}IMS;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-ChicagoRecycleTransfer-{C46FBD62-8FF9-45BA-85AC-131E22C04DEF}IMS;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -148,7 +148,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=msdb;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -1096,7 +1096,7 @@ Order by TransferNumber, Tag</property>
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-                  SQLTask:SqlStatementSource="&#xA;declare @DestinationSite int, @TransferUID int,  @TagTransferStatusUID int,  @RoomUID int, @ContainerUID int, @transDate datetime&#xA;declare @EntityUID int, @EntityTypeUID int, @SiteUID int&#xA;&#xA;declare @ReceivingTransferStatusUID int, @CompletedTransferStatusUID int, @DeliveredTransferInventory int&#xA;&#xA;declare @tagCount int, @OrigSiteName varchar(50)&#xA;&#xA;set @DestinationSite = 551&#xA;set @TransferUID = 4033&#xA;set @TagTransferStatusUID = 1&#xA;set @RoomUID = 13997&#xA;set @ContainerUID = 0&#xA;&#xA;set @tagCount = 0&#xA;set @OrigSiteName = ''&#xA;set @transDate = getdate()&#xA; &#xA;select @EntityUID = EntityUID, @EntityTypeUID = EntityTypeUID, @SiteUID = SiteUID from tblTechContainers where containeruid = @ContainerUID&#xA;&#xA;&#xA;&#xA;select @ReceivingTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Receiving')&#xA;select @CompletedTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Complete')&#xA;select @DeliveredTransferInventory =  (select statusid from tblStatus where statustypeuid = 15 and statusdesc = 'Delivered')&#xA;--print 'Receiving: ' + cast(@ReceivingTransferStatusUID as varchar(10))&#xA;--select * from tblTechContainers where containeruid = 0&#xA;&#xA;&#x9;--Add history record for receiving&#xA;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT T.TransferUID, @ReceivingTransferStatusUID, T.StatusUID, 0,&#xA;&#x9;0, @transDate, 0, @transDate&#xA;&#x9;FROM tblTechTransfers T&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Update transfer to Receiving&#xA;&#x9;Update t&#xA;&#x9;set StatusUID = @CompletedTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;--select *&#xA;&#x9;from tblTechTransfers t&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;&#x9;--Add history for new location&#xA;&#x9;INSERT INTO tblTechInventoryHistory&#xA;&#x9;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;&#x9;StatusUID,&#xA;&#x9;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, InventoryHistoryNotes,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;&#x9;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;&#x9;SELECT I.InventoryUID, I.InventoryTypeUID, T.DestinationSiteUID, @RoomUID, 2, &#xA;&#x9;@TagTransferStatusUID,&#xA;&#x9;I.SiteUID, I.StatusUID, I.EntityUID, I.EntityTypeUID, 'Transfer Received via Automated Process',&#xA;&#x9;0, @transDate, 0, @transDate, &#xA;&#x9;I.ParentInventoryUID, I.ParentInventoryUID, 0, I.InventorySourceUID, I.ContainerUID, I.ContainerUID&#xA;&#x9;FROM tblTechInventory I&#xA;&#x9;join tblTechTransferInventoryTagged ttt on I.InventoryUID = ttt.InventoryUID&#xA;&#x9;JOIN tblTechTransferInventory TI ON ttt.TransferInventoryUID = ti.TransferInventoryUID&#xA;&#x9;JOIN tblStatus S ON TI.OriginStatusID = S.statusID&#xA;&#x9;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID &#xA;&#x9;where ti.transferUID = @TransferUID&#xA;&#xA;&#xA;&#x9;--update tag to new location&#xA;&#x9;UPDATE I&#xA;&#x9;SET SiteUID = T.DestinationSiteUID, EntityUID = @RoomUID, EntityTypeUID = 2,&#xA;&#x9;StatusUID = @TagTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;--select *&#xA;&#x9;FROM tblTechInventory I&#xA;&#x9;join tblTechTransferInventoryTagged ttt on I.InventoryUID = ttt.InventoryUID&#xA;&#x9;JOIN tblTechTransferInventory TI ON ttt.TransferInventoryUID = ti.TransferInventoryUID&#xA;&#x9;JOIN tblStatus S ON TI.OriginStatusID = S.statusID&#xA;&#x9;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID&#xA;&#x9;JOIN tblTechTransfers tr ON TI.TransferUID = tr.TransferUID &#xA;&#x9;WHERE ti.transferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Inventory (tags)&#xA;&#x9;--select *&#xA;&#x9;Update ti set StatusID = @DeliveredTransferInventory,  LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryTagged ttt on ti.TransferInventoryUID = ttt.TransferInventoryUID&#xA;&#x9;join tblTechInventory tti on ttt.InventoryUID = tti.InventoryUID&#xA;&#x9;where ti.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Inventory (un tagged)&#xA;&#x9;--select *&#xA;&#x9;Update ti set StatusID = @DeliveredTransferInventory,  LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryUnTagged ttt on ti.TransferInventoryUID = ttt.TransferInventoryUID&#xA;&#x9;join tblTechUntaggedInventory tti on ttt.UntaggedInventoryUID = tti.UntaggedInventoryUID&#xA;&#x9;where ti.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Untagged Inventory into Container&#xA;&#x9;INSERT INTO tblTechTransferInventoryContainer&#xA;&#x9;(ContainerUID, TransferInventoryUID) &#xA;&#x9;(select distinct @ContainerUID, ttr.TransferInventoryUID&#xA;&#x9;from tblTechTransferInventory ttr&#xA;&#x9;join tblTechTransferInventoryUntagged ttu on ttr.TransferInventoryUID = ttu.TransferInventoryUID&#xA;&#x9;where  ttr.TransferUID = @TransferUID)&#xA;&#x9;&#xA;&#x9;--Untagged Inventory History&#xA;&#x9;--select *&#xA;&#x9;Insert tblTechUntaggedInventoryLocationHistory&#xA;&#x9;(UntaggedInventoryUID, OriginEntityUID, EntityUID, OriginEntityTypeUID, EntityTypeUID, OriginSiteUID, SiteUID, CreatedByUserID, CreatedDate)&#xA;&#xA;&#x9;(select tul.UntaggedInventoryUID, tul.EntityUID, @EntityUID, tul.EntityTypeUID, @EntityTypeUID, tul.SiteUID, @SiteUID, 0, @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryUntagged ttu on ti.TransferInventoryUID = ttu.TransferInventoryUID&#xA;&#x9;join tblTechUntaggedInventory tui on ttu.UntaggedInventoryUID = tui.UntaggedInventoryUID&#xA;&#x9;join tblTechUntaggedInventoryLocation tul on tui.UntaggedInventoryUID = tul.UntaggedInventoryUID&#x9;&#xA;&#x9;where ti.TransferUID = @TransferUID)&#xA;&#xA;&#x9;--Transfer History from Receiving to Complete&#xA;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT T.TransferUID, @CompletedTransferStatusUID, T.StatusUID, 0,&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM tblTechTransfers T&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Set TransferInventory to Complete&#xA;&#xA;&#x9;--Set Transfer to Complete&#xA;&#x9;Update t&#xA;&#x9;set StatusUID = @CompletedTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;&#x9;--select *&#xA;&#x9;from tblTechTransfers t&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;select @tagCount = isNull((select count(distinct Tag)&#xA;&#x9;from tblTechInventory tti&#xA;&#x9;join tblTechInventoryHistory ttih on tti.InventoryUID = ttih.InventoryUID and OriginEntityTypeUID = 6 and OriginEntityUID = @TransferUID &#xA;&#x9;join tblTechTransfers ttr on ttr.TransferUID = ttih.OriginEntityUID&#xA;&#x9;join tblTechSites ts on ts.SiteUID = tti.SiteUID&#xA;&#x9;join tblUnvRooms rm on tti.EntityUID = rm.RoomUID&#xA;&#x9;join tblTechItems ttm on tti.ItemUID = ttm.ItemUID&#xA;&#x9;join tblTechItemTypes tty on tty.ItemTypeUID = ttm.ItemTypeUID&#xA;&#x9;where tti.siteuid = @DestinationSite) , 0)&#xA;&#xA;&#x9;select @OrigSiteName = isNull((select SiteName &#xA;&#x9;from tblTechSites ts&#xA;&#x9;join tblTechTransfers tr on ts.SiteUID = tr.SiteUID&#xA;&#x9;where tr.TransferUID = @TransferUID), 0)&#xA;&#xA;&#x9;select @tagCount as cnt, @OrigSiteName as OrigSiteName&#xA;&#xA;"
+                  SQLTask:SqlStatementSource="&#xA;declare @DestinationSite int, @TransferUID int,  @TagTransferStatusUID int,  @RoomUID int, @ContainerUID int, @transDate datetime&#xA;declare @EntityUID int, @EntityTypeUID int, @SiteUID int&#xA;&#xA;declare @ReceivingTransferStatusUID int, @CompletedTransferStatusUID int, @DeliveredTransferInventory int&#xA;&#xA;declare @tagCount int, @OrigSiteName varchar(50)&#xA;&#xA;set @DestinationSite = ?&#xA;set @TransferUID = ?&#xA;set @TagTransferStatusUID = ?&#xA;set @RoomUID = ?&#xA;set @ContainerUID = ?&#xA;&#xA;set @tagCount = 0&#xA;set @OrigSiteName = ''&#xA;set @transDate = getdate()&#xA; &#xA;select @EntityUID = EntityUID, @EntityTypeUID = EntityTypeUID, @SiteUID = SiteUID from tblTechContainers where containeruid = @ContainerUID&#xA;&#xA;&#xA;&#xA;select @ReceivingTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Receiving')&#xA;select @CompletedTransferStatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Complete')&#xA;select @DeliveredTransferInventory =  (select statusid from tblStatus where statustypeuid = 15 and statusdesc = 'Delivered')&#xA;--print 'Receiving: ' + cast(@ReceivingTransferStatusUID as varchar(10))&#xA;--select * from tblTechContainers where containeruid = 0&#xA;&#xA;&#x9;--Add history record for receiving&#xA;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT T.TransferUID, @ReceivingTransferStatusUID, T.StatusUID, 0,&#xA;&#x9;0, @transDate, 0, @transDate&#xA;&#x9;FROM tblTechTransfers T&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Update transfer to Receiving&#xA;&#x9;Update t&#xA;&#x9;set StatusUID = @CompletedTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;--select *&#xA;&#x9;from tblTechTransfers t&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;&#x9;--Add history for new location&#xA;&#x9;INSERT INTO tblTechInventoryHistory&#xA;&#x9;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;&#x9;StatusUID,&#xA;&#x9;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, InventoryHistoryNotes,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;&#x9;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;&#x9;SELECT I.InventoryUID, I.InventoryTypeUID, T.DestinationSiteUID, @RoomUID, 2, &#xA;&#x9;@TagTransferStatusUID,&#xA;&#x9;I.SiteUID, I.StatusUID, I.EntityUID, I.EntityTypeUID, 'Transfer Received via Automated Process',&#xA;&#x9;0, @transDate, 0, @transDate, &#xA;&#x9;I.ParentInventoryUID, I.ParentInventoryUID, 0, I.InventorySourceUID, I.ContainerUID, I.ContainerUID&#xA;&#x9;FROM tblTechInventory I&#xA;&#x9;join tblTechTransferInventoryTagged ttt on I.InventoryUID = ttt.InventoryUID&#xA;&#x9;JOIN tblTechTransferInventory TI ON ttt.TransferInventoryUID = ti.TransferInventoryUID&#xA;&#x9;JOIN tblStatus S ON TI.OriginStatusID = S.statusID&#xA;&#x9;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID &#xA;&#x9;where ti.transferUID = @TransferUID&#xA;&#xA;&#xA;&#x9;--update tag to new location&#xA;&#x9;UPDATE I&#xA;&#x9;SET SiteUID = T.DestinationSiteUID, EntityUID = @RoomUID, EntityTypeUID = 2,&#xA;&#x9;StatusUID = @TagTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;--select *&#xA;&#x9;FROM tblTechInventory I&#xA;&#x9;join tblTechTransferInventoryTagged ttt on I.InventoryUID = ttt.InventoryUID&#xA;&#x9;JOIN tblTechTransferInventory TI ON ttt.TransferInventoryUID = ti.TransferInventoryUID&#xA;&#x9;JOIN tblStatus S ON TI.OriginStatusID = S.statusID&#xA;&#x9;JOIN tblTechTransfers T ON TI.TransferUID = T.TransferUID&#xA;&#x9;JOIN tblTechTransfers tr ON TI.TransferUID = tr.TransferUID &#xA;&#x9;WHERE ti.transferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Inventory (tags)&#xA;&#x9;--select *&#xA;&#x9;Update ti set StatusID = @DeliveredTransferInventory,  LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryTagged ttt on ti.TransferInventoryUID = ttt.TransferInventoryUID&#xA;&#x9;join tblTechInventory tti on ttt.InventoryUID = tti.InventoryUID&#xA;&#x9;where ti.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Inventory (un tagged)&#xA;&#x9;--select *&#xA;&#x9;Update ti set StatusID = @DeliveredTransferInventory,  LastModifiedByUserID = 0, LastModifiedDate = @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryUnTagged ttt on ti.TransferInventoryUID = ttt.TransferInventoryUID&#xA;&#x9;join tblTechUntaggedInventory tti on ttt.UntaggedInventoryUID = tti.UntaggedInventoryUID&#xA;&#x9;where ti.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Receive Untagged Inventory into Container&#xA;&#x9;INSERT INTO tblTechTransferInventoryContainer&#xA;&#x9;(ContainerUID, TransferInventoryUID) &#xA;&#x9;(select distinct @ContainerUID, ttr.TransferInventoryUID&#xA;&#x9;from tblTechTransferInventory ttr&#xA;&#x9;join tblTechTransferInventoryUntagged ttu on ttr.TransferInventoryUID = ttu.TransferInventoryUID&#xA;&#x9;where  ttr.TransferUID = @TransferUID)&#xA;&#x9;&#xA;&#x9;--Untagged Inventory History&#xA;&#x9;--select *&#xA;&#x9;Insert tblTechUntaggedInventoryLocationHistory&#xA;&#x9;(UntaggedInventoryUID, OriginEntityUID, EntityUID, OriginEntityTypeUID, EntityTypeUID, OriginSiteUID, SiteUID, CreatedByUserID, CreatedDate)&#xA;&#xA;&#x9;(select tul.UntaggedInventoryUID, tul.EntityUID, @EntityUID, tul.EntityTypeUID, @EntityTypeUID, tul.SiteUID, @SiteUID, 0, @transDate&#xA;&#x9;from tblTechTransferInventory ti&#xA;&#x9;join tblTechTransferInventoryUntagged ttu on ti.TransferInventoryUID = ttu.TransferInventoryUID&#xA;&#x9;join tblTechUntaggedInventory tui on ttu.UntaggedInventoryUID = tui.UntaggedInventoryUID&#xA;&#x9;join tblTechUntaggedInventoryLocation tul on tui.UntaggedInventoryUID = tul.UntaggedInventoryUID&#x9;&#xA;&#x9;where ti.TransferUID = @TransferUID)&#xA;&#xA;&#x9;--Transfer History from Receiving to Complete&#xA;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;SELECT T.TransferUID, @CompletedTransferStatusUID, T.StatusUID, 0,&#xA;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;FROM tblTechTransfers T&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;--Set TransferInventory to Complete&#xA;&#xA;&#x9;--Set Transfer to Complete&#xA;&#x9;Update t&#xA;&#x9;set StatusUID = @CompletedTransferStatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;&#x9;--select *&#xA;&#x9;from tblTechTransfers t&#xA;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;select @tagCount = isNull((select count(distinct Tag)&#xA;&#x9;from tblTechInventory tti&#xA;&#x9;join tblTechInventoryHistory ttih on tti.InventoryUID = ttih.InventoryUID and OriginEntityTypeUID = 6 and OriginEntityUID = @TransferUID &#xA;&#x9;join tblTechTransfers ttr on ttr.TransferUID = ttih.OriginEntityUID&#xA;&#x9;join tblTechSites ts on ts.SiteUID = tti.SiteUID&#xA;&#x9;join tblUnvRooms rm on tti.EntityUID = rm.RoomUID&#xA;&#x9;join tblTechItems ttm on tti.ItemUID = ttm.ItemUID&#xA;&#x9;join tblTechItemTypes tty on tty.ItemTypeUID = ttm.ItemTypeUID&#xA;&#x9;where tti.siteuid = @DestinationSite) , 0)&#xA;&#xA;&#x9;select @OrigSiteName = isNull((select SiteName &#xA;&#x9;from tblTechSites ts&#xA;&#x9;join tblTechTransfers tr on ts.SiteUID = tr.SiteUID&#xA;&#x9;where tr.TransferUID = @TransferUID), 0)&#xA;&#xA;&#x9;select @tagCount as cnt, @OrigSiteName as OrigSiteName&#xA;&#xA;"
                   SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
                   <SQLTask:ResultBinding
                     SQLTask:ResultName="cnt"
@@ -1412,7 +1412,7 @@ Order by TransferNumber, Tag</property>
           PanelSize="256,114"
           Size="256,157"
           Id="Package\Site List\Process Approved Transfers"
-          TopLeft="39,136" />
+          TopLeft="37,163" />
         <NodeLayout
           Size="138,42"
           Id="Package\Site List\Process In Transit Transfers\Get Tag List"
@@ -1527,33 +1527,33 @@ Order by TransferNumber, Tag</property>
           PanelSize="500,198"
           Size="500,241"
           Id="Package\Site List\Process In Transit Transfers"
-          TopLeft="343,129" />
+          TopLeft="344,148" />
         <EdgeLayout
           Id="Package\Site List.PrecedenceConstraints[Constraint]"
           TopLeft="197.5,85">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-71.8333333333333,51"
+              EndConnector="-73.8333333333333,78"
               Start="0,0"
-              End="-71.8333333333333,43.5">
+              End="-73.8333333333333,70.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,26.4099378881988" />
+                    End="0,42.5093167701863" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,26.4099378881988"
-                    Point2="0,30.4099378881988"
-                    Point3="-4,30.4099378881988" />
+                    Point1="0,42.5093167701863"
+                    Point2="0,46.5093167701863"
+                    Point3="-4,46.5093167701863" />
                   <mssgle:LineSegment
-                    End="-67.8333333333333,30.4099378881988" />
+                    End="-69.8333333333333,46.5093167701863" />
                   <mssgle:CubicBezierSegment
-                    Point1="-67.8333333333333,30.4099378881988"
-                    Point2="-71.8333333333333,30.4099378881988"
-                    Point3="-71.8333333333333,34.4099378881988" />
+                    Point1="-69.8333333333333,46.5093167701863"
+                    Point2="-73.8333333333333,46.5093167701863"
+                    Point3="-73.8333333333333,50.5093167701863" />
                   <mssgle:LineSegment
-                    End="-71.8333333333333,43.5" />
+                    End="-73.8333333333333,70.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1568,26 +1568,26 @@ Order by TransferNumber, Tag</property>
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="113.333333333333,51"
+              EndConnector="114.333333333333,70"
               Start="0,0"
-              End="113.333333333333,43.5">
+              End="114.333333333333,62.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,16.6938775510204" />
+                    End="0,24.4033613445378" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,16.6938775510204"
-                    Point2="0,20.6938775510204"
-                    Point3="4,20.6938775510204" />
+                    Point1="0,24.4033613445378"
+                    Point2="0,28.4033613445378"
+                    Point3="4,28.4033613445378" />
                   <mssgle:LineSegment
-                    End="109.333333333333,20.6938775510204" />
+                    End="110.333333333333,28.4033613445378" />
                   <mssgle:CubicBezierSegment
-                    Point1="109.333333333333,20.6938775510204"
-                    Point2="113.333333333333,20.6938775510204"
-                    Point3="113.333333333333,24.6938775510204" />
+                    Point1="110.333333333333,28.4033613445378"
+                    Point2="114.333333333333,28.4033613445378"
+                    Point3="114.333333333333,32.4033613445378" />
                   <mssgle:LineSegment
-                    End="113.333333333333,43.5" />
+                    End="114.333333333333,62.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1598,30 +1598,30 @@ Order by TransferNumber, Tag</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Site List.PrecedenceConstraints[Constraint 2]"
-          TopLeft="208.333333333333,136">
+          TopLeft="206.333333333333,163">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="219,-58"
+              EndConnector="221,-85"
               Start="0,0"
-              End="219,-50.5">
+              End="221,-77.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,-24.8774894387447" />
+                    End="0,-38.3204586602293" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,-24.8774894387447"
-                    Point2="0,-28.8774894387447"
-                    Point3="4,-28.8774894387447" />
+                    Point1="0,-38.3204586602293"
+                    Point2="0,-42.3204586602293"
+                    Point3="4,-42.3204586602293" />
                   <mssgle:LineSegment
-                    End="215,-28.8774894387447" />
+                    End="217,-42.3204586602293" />
                   <mssgle:CubicBezierSegment
-                    Point1="215,-28.8774894387447"
-                    Point2="219,-28.8774894387447"
-                    Point3="219,-32.8774894387447" />
+                    Point1="217,-42.3204586602293"
+                    Point2="221,-42.3204586602293"
+                    Point3="221,-46.3204586602293" />
                   <mssgle:LineSegment
-                    End="219,-50.5" />
+                    End="221,-77.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1675,14 +1675,14 @@ Order by TransferNumber, Tag</property>
           Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xA;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xA;currently using approvals only by fund account&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xA;Also, tblTechTransferWorkflows - still need to determine&#xA;how that may play in.&#xA;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xA;to Status 24 (Transit)&#xA;&#xA;Still unclear how tags will be received.&#xA;&#xA;1/18 - Current scope:  Move tags from approved to received&#xA;1/22 - Move tags from submitted to received&#xA;1/29 - Add 'Donate' site to the list with email of tags&#xA;&#xA;2/2 - Add 'Untagged' and 'Warehouse' transfers&#xA;1/30/2019 - Deactivate untagged warehouse transfers"
           ParentId="Package"
           FontInfo="{assembly:Null}"
-          Size="349,441"
+          Size="349,439"
           Id="d86dd133-5c01-4ca4-9e4b-e7fcb8800116"
           TopLeft="1111,77" />
         <AnnotationLayout
           Text="Email to sballard2@cps.edu&#xA;Sharmin Ballard"
           ParentId="Package"
           FontInfo="{assembly:Null}"
-          Size="177,58"
+          Size="177,56"
           Id="9854bf47-561a-4f67-abfe-04424b2f278d"
           TopLeft="1070,586" />
       </GraphLayout>
