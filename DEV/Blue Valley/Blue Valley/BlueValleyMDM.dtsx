@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="BlueValleyMDM"
   DTS:PackageType="5"
-  DTS:VersionBuild="45"
-  DTS:VersionGUID="{BA7C8A02-0A59-46AC-B1EF-648139D43765}">
+  DTS:VersionBuild="46"
+  DTS:VersionGUID="{D3E5B60F-3698-4F9D-BA73-5BF585484C22}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -85,7 +85,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TIPWebHostedBlueValleySD;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TIPWeb_BlueValley_0510;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -4015,7 +4015,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         DTS:FilterKind="0" />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
-          SQLTask:Connection="{4E7D4A21-2BEA-4701-A74F-0E9C1319F216}"
+          SQLTask:Connection="{3EE44891-4CDA-4EFA-A941-87C7746BEA64}"
           SQLTask:SqlStatementSource="DECLARE&#xA; @clientname NVARCHAR(100),&#xA; @jobname NVARCHAR(100),&#xA; @totcount int,&#xA; @errcount int,&#xA; @chromefilename NVARCHAR(1000),&#xA; @macfilename NVARCHAR(1000),&#xA; @packagename NVARCHAR(100),&#xA; @chromeclientfileexists BIT, &#xA; @macclientfileexists bit&#xA;&#xA;&#xA;SET @clientname = ?&#xA;SET @jobname = ?&#xA;SET @chromefilename = ?&#xA;SET @packagename = ?&#xA;SET @chromeclientfileexists = ?&#xA;SET @macfilename = ?&#xA;SET @macclientfileexists = ?&#xA;&#xA;SET @totcount = (SELECT COUNT(*) AS totalcount&#xA;FROM _ETL_StagingMDM)&#xA;&#xA;SET @errcount = (SELECT COUNT(*) AS errorcount&#xA;FROM _ETL_StagingMDM&#xA;WHERE Accepted = 0)&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.ErrorCount&#xA;WHERE Client = @clientname AND JobName = @jobname&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.FileExist&#xA;WHERE client = @clientname AND job_name = @jobname&#xA;&#xA;DELETE FROM _IntegrationDashboard.dbo.TaskOnError&#xA;WHERE Client = @clientname AND JobName = @jobname&#xA;&#xA;INSERT INTO _IntegrationDashboard.dbo.FileExist&#xA;(client, job_name, filecheck, filename, filesize, file_rcvd_date, category)&#xA;VALUES (@clientname, @jobname, @chromeclientfileexists, @chromefilename, -1, GETDATE(), 'Chrome File')&#xA;&#xA;INSERT INTO _IntegrationDashboard.dbo.FileExist&#xA;(client, job_name, filecheck, filename, filesize, file_rcvd_date, category)&#xA;VALUES (@clientname, @jobname, @macclientfileexists, @macfilename, -1, GETDATE(), 'Mac File')&#xA;&#xA;INSERT INTO _IntegrationDashboard.dbo.ErrorCount&#xA;(Client, JobName, TotalRecord, ErrorCount, ErrorRptPath, RptDate, Category)&#xA;VALUES (@clientname, @jobname , @totcount,  @errcount, '', GETDATE(), 'MDM Custom Field')&#xA;&#xA;IF EXISTS (SELECT * FROM sys.tables WHERE name = 'sysssislog')&#xA;BEGIN&#xA; INSERT INTO _IntegrationDashboard.dbo.TaskOnError&#xA; (Client, JobName, error_id, starttime, endtime, [MESSAGE], taskname, category)&#xA; SELECT @clientname, @jobname, id AS error_id,&#xA; starttime, endtime, [message], [source] AS taskname, 'MDM Custom Field'&#xA; FROM sysssislog&#xA; WHERE (EVENT IN ('OnError'))&#xA; AND source != @packagename&#xA; ORDER BY id&#xA;END&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="@clientname"
