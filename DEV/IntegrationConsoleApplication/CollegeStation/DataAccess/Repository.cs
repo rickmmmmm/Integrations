@@ -597,7 +597,7 @@ namespace DataAccess
             query += ",[Active],[CreatedByUserID],[CreatedDate],[LastModifiedByUserID],[LastModifiedDate],SerialRequired,AllowUntagged,ProjectedLife) ";
             query += "VALUES ('" + item.ItemNumber +"','" + item.ItemName + "','" + item.ItemDescription + "','" + item.ItemType + "','" + item.ModelNumber + "','";
             query += item.ManufacturerUID + "','" + item.ItemSuggestedPrice + "','" + item.AreaUID + "','" + item.ItemNotes + "','" + item.SKU + "','" + item.Active + "','";
-            query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "','" + item.LastModifiedDate.ToString() + "','FALSE',0,0)";
+            query += item.CreatedByUserId + "','" + item.CreatedDate.ToString() + "','" + item.LastModifiedByUserID + "','" + item.LastModifiedDate.ToString() + "','TRUE',0,0)";
 
             if (_conn.State == ConnectionState.Closed)
             {
