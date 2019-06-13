@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="IT_Validation_Migration"
   DTS:PackageType="5"
-  DTS:VersionBuild="124"
-  DTS:VersionGUID="{61482EBF-DB95-4211-B9CF-F88B4D51BA96}">
+  DTS:VersionBuild="126"
+  DTS:VersionGUID="{B9A72DF1-1EA5-4578-851E-CC14004E3F47}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -120,7 +120,7 @@
  StagingDBName,
 
 UseAccessories,UseCustomField
- FROM dbo.SSIS_ITVariables where iPkey = 2103</DTS:VariableValue>
+ FROM dbo.SSIS_ITVariables where iPkey = 2112</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -165,7 +165,7 @@ UseAccessories,UseCustomField
       DTS:Namespace="User"
       DTS:ObjectName="___0Recordkey">
       <DTS:VariableValue
-        DTS:DataType="3">2103</DTS:VariableValue>
+        DTS:DataType="3">2112</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -456,7 +456,6 @@ UseAccessories,UseCustomField
           DTS:refId="Package\Insert Staging and Update ETL\Purchase Inventory"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
-          DTS:Disabled="True"
           DTS:DTSID="{4EE387A3-1ACE-4C09-989E-F03B1A08A698}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
@@ -481,7 +480,6 @@ UseAccessories,UseCustomField
           DTS:refId="Package\Insert Staging and Update ETL\Purchase Item Detail"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
-          DTS:Disabled="True"
           DTS:DTSID="{E98AD1BA-E10E-49B3-969B-E4C1E1230603}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
@@ -506,7 +504,6 @@ UseAccessories,UseCustomField
           DTS:refId="Package\Insert Staging and Update ETL\Purchase Item Shipments"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
-          DTS:Disabled="True"
           DTS:DTSID="{7E0B59DD-6F3D-4ED0-BBB3-7930592D4742}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
@@ -531,7 +528,6 @@ UseAccessories,UseCustomField
           DTS:refId="Package\Insert Staging and Update ETL\Purchase Order"
           DTS:CreationName="Microsoft.ExecuteSQLTask"
           DTS:Description="Execute SQL Task"
-          DTS:Disabled="True"
           DTS:DTSID="{C6900A49-3452-4320-99E8-989968B9A860}"
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
@@ -638,7 +634,7 @@ UseAccessories,UseCustomField
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{6375cd30-80d7-4a1b-b7d0-b0fbd9756daf}"
-              SQLTask:SqlStatementSource="declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = N'''Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = &#xA;&#xA;N' INSERT INTO ' + @StagingDB  + N'.dbo.tblTechItems ' +&#xA;N' &#x9;(ItemNumber, ' +&#xA;N'&#x9;ItemName, ItemDescription, ItemTypeUID, ' +&#xA;N' &#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice, ' +&#xA;N' &#x9;AreaUID, ItemNotes, ' +&#xA;N'&#x9;SKU, SerialRequired, Active, ' +&#xA;N' &#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, projectedlife) ' +&#xA;&#xA;N' SELECT DISTINCT ''H'' + CONVERT(VARCHAR(20), ProductNumber) as ProductNumber, ' +&#xA;N'&#x9;LEFT(ProductName, 100) AS itemname, ProductName, ItemTypeUID, ' +&#xA;N'&#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice, ' +&#xA;N'&#x9;0 AS areaUID, ' + @notes + N''', ' +&#xA;N'&#x9;MAX(SKU) AS SKU, CASE WHEN serial_required = ''Y'' THEN 1 ELSE 0 END  AS SerialRequired, 1, ' +&#xA;N'&#x9;0, getdate(), 0, getdate(), 0 as Projectedlife ' +&#xA;N' FROM clients_etl_Final AS etl ' +&#xA;N'  where import = 1  ' +&#xA;N' and LEFT(ProductName, 100)  NOT IN (SELECT ItemName FROM ' + @StagingDB  + N'.dbo.tblTechItems) ' +&#xA;N'  GROUP BY [ProductNumber],[ProductName],  ItemTypeUID, ModelNumber,   etl.ManufacturerUID,  ' +&#xA;N' &#x9; ItemSuggestedPrice, serial_required,  ProductInfo1, ProductInfo2, ProductInfo3, ProjectedLife  ' +&#xA;N'  ORDER BY ProductNumber '&#xA;&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;----------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select * ' +&#xA;N' update etl set ItemUID = tw.ItemUID ' +&#xA;N' from ' + @StagingDB  + N'.dbo.tblTechItems tw ' +&#xA;N' inner join clients_etl_Final etl &#xA;on tw.itemname = LEFT(etl.ProductName, 100) AND tw.ItemTypeUID=etl.ItemTypeUID' +&#xA;N' where etl.import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' Update tw set ProjectedLife = etl.ProjectedLife  ' +&#xA;N' from ' + @StagingDB  + '.dbo.tblTechItems tw  ' +&#xA;N' join clients_etl_Final etl on tw.ItemUID = etl.ItemUID ' +&#xA;N' where etl.import = 1 ' +&#xA;N' and etl.ProjectedLife &lt;&gt; 0 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;declare @MaxProdNum int&#xA;select @MaxProdNum = max(ProductNumber) from clients_etl_Final&#xA;--print @MaxProdNum&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update tw set value = ''' + cast(@MaxProdNum as varchar) + &#xA;N''' FROM ' + @StagingDB + N'.dbo.tblUnvCounter tw ' +&#xA;N' WHERE CounterUID = 4 ' &#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = 'Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = '&#xA;INSERT INTO '+ @StagingDB  +'.dbo.tblTechItems  &#x9;(ItemNumber, &#x9;ItemName, ItemDescription, ItemTypeUID,  &#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice,  &#x9;AreaUID, ItemNotes, &#x9;SKU, SerialRequired, Active,  &#x9;&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, projectedlife)  &#xA;&#xA;SELECT DISTINCT ''H'' + CONVERT(VARCHAR(20), A.ProductNumber) as ProductNumber, &#x9;LEFT(A.ProductName, 100) AS itemname, A.ProductName, A.ItemTypeUID,A.ModelNumber, A.ManufacturerUID, A.ItemSuggestedPrice, &#x9;&#xA;0 AS areaUID, '''+ @notes +''', &#x9;MAX(A.SKU) AS SKU, CASE WHEN A.serial_required = ''Y'' THEN 1 ELSE 0 END  AS SerialRequired, 1, 0, getdate(), 0, getdate(), 0 as Projectedlife  &#xA;FROM clients_etl_Final AS A   &#xA;&#xA;LEFT JOIN '+ @StagingDB  +'.dbo.tblTechItems AS B&#xA;ON LEFT(A.ProductName, 100)=B.ItemName AND A.ItemTypeUID=B.ItemTypeUID&#xA;&#xA;where import = 1  &#xA;AND B.ItemUID IS NULL&#xA; &#xA;GROUP BY A.[ProductNumber],A.[ProductName],  A.ItemTypeUID, A.ModelNumber,   A.ManufacturerUID,A.ItemSuggestedPrice, A.serial_required,  A.ProductInfo1, A.ProductInfo2, A.ProductInfo3, A.ProjectedLife    &#xA;'&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;----------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select * ' +&#xA;N' update etl set ItemUID = tw.ItemUID ' +&#xA;N' from ' + @StagingDB  + N'.dbo.tblTechItems tw ' +&#xA;N' inner join clients_etl_Final etl &#xA;on tw.itemname = LEFT(etl.ProductName, 100) AND tw.ItemTypeUID=etl.ItemTypeUID' +&#xA;N' where etl.import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' Update tw set ProjectedLife = etl.ProjectedLife  ' +&#xA;N' from ' + @StagingDB  + '.dbo.tblTechItems tw  ' +&#xA;N' join clients_etl_Final etl on tw.ItemUID = etl.ItemUID ' +&#xA;N' where etl.import = 1 ' +&#xA;N' and etl.ProjectedLife &lt;&gt; 0 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;declare @MaxProdNum int&#xA;select @MaxProdNum = max(ProductNumber) from clients_etl_Final&#xA;--print @MaxProdNum&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update tw set value = ''' + cast(@MaxProdNum as varchar) + &#xA;N''' FROM ' + @StagingDB + N'.dbo.tblUnvCounter tw ' +&#xA;N' WHERE CounterUID = 4 ' &#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@StagingDB"
                 SQLTask:DtsVariableName="User::_02StagingDB"
@@ -1399,7 +1395,7 @@ UseAccessories,UseCustomField
         <NodeLayout
           Size="138,42"
           Id="Package\Insert Staging and Update ETL\tblTechItems"
-          TopLeft="524.843890348499,101.514240782784" />
+          TopLeft="525.843890348499,100.514240782784" />
         <NodeLayout
           Size="170,44"
           Id="Package\Insert Staging and Update ETL\tblTechItemTypes"
@@ -1640,13 +1636,13 @@ UseAccessories,UseCustomField
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Insert Staging and Update ETL.PrecedenceConstraints[Constraint 2]"
-          TopLeft="419.870305442839,146.533108707312">
+          TopLeft="420.070305442839,146.533108707312">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="173.77358490566,-3.418867924528"
+              EndConnector="174.77358490566,-4.01886792452802"
               Start="0,0"
-              End="173.77358490566,4.081132075472">
+              End="174.77358490566,3.48113207547198">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -1657,13 +1653,13 @@ UseAccessories,UseCustomField
                     Point2="0,22.5"
                     Point3="4,22.5" />
                   <mssgle:LineSegment
-                    End="169.77358490566,22.5" />
+                    End="170.77358490566,22.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="169.77358490566,22.5"
-                    Point2="173.77358490566,22.5"
-                    Point3="173.77358490566,18.5" />
+                    Point1="170.77358490566,22.5"
+                    Point2="174.77358490566,22.5"
+                    Point3="174.77358490566,18.5" />
                   <mssgle:LineSegment
-                    End="173.77358490566,4.081132075472" />
+                    End="174.77358490566,3.48113207547198" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1674,18 +1670,18 @@ UseAccessories,UseCustomField
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Insert Staging and Update ETL.PrecedenceConstraints[Constraint 3]"
-          TopLeft="662.443890348499,122.409478881958">
+          TopLeft="663.843890348499,122.009478881958">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="36.2400719156523,0"
+              EndConnector="34.8400719156519,0"
               Start="0,0"
-              End="28.7400719156523,0">
+              End="27.3400719156519,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="28.7400719156523,0" />
+                    End="27.3400719156519,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
