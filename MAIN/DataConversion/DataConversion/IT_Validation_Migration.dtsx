@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="IT_Validation_Migration"
   DTS:PackageType="5"
-  DTS:VersionBuild="151"
-  DTS:VersionGUID="{28DD0E31-EA17-42D1-AD65-B1D44D06F2E9}">
+  DTS:VersionBuild="152"
+  DTS:VersionGUID="{9C75D53A-D8E0-4873-B234-4AB6216EC137}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -62,11 +62,11 @@
             <DTS:Property
               DTS:Name="ServerPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAADmBVJnlG1ixj4AtMF9k+Q4AAAAAASAAACgAAAAEAAAABZNuat9hX23QmiumsPro1MQAAAA5oZM05j4jdII/kNVur+9jRQAAACNT3q4TmxIWLtLJ04FB+i1ElWE9w</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAB59XNdKQRwK6FDoNyvSW4dAAAAAASAAACgAAAAEAAAAGa/jJUgu/z+ePUcO6f+l1cQAAAA3WlVRpmXs03c3y6SlCkdZRQAAABBDZ3ZOUJyfz4jndiIFQnQUp4oqg</DTS:Property>
             <DTS:Property
               DTS:Name="ProxyPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAByyLq4cvqb1L7jrxESRElWAAAAAASAAACgAAAAEAAAACiGcAUzbjx/d96w+TJ34hQIAAAA4D2FwkUAz48UAAAAz2e/JSRsdyeFrx19lqEkreGWkC8</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAD1NF+s8DhoR+mKY9ThxAiIAAAAAASAAACgAAAAEAAAANGZkiqYZU3VfvZObjSM+qQIAAAAGCG42fRHx3EUAAAAELEQQ4U1dBW/LVeWW7EqSQlYxIM</DTS:Property>
           </DTS:HttpConnection>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
@@ -893,22 +893,6 @@ UseAccessories,UseCustomField
       <DTS:Variables />
       <DTS:Executables>
         <DTS:Executable
-          DTS:refId="Package\Prepare Data\Add Report Used to Staging DB"
-          DTS:CreationName="Microsoft.ExecuteSQLTask"
-          DTS:Description="Execute SQL Task"
-          DTS:DTSID="{AF5CDF66-E270-46B8-9A41-247AF4605B56}"
-          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Add Report Used to Staging DB"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:ObjectData>
-            <SQLTask:SqlTaskData
-              SQLTask:Connection="{e5a48323-38b7-45b0-8073-64dbfcde0190}"
-              SQLTask:SqlStatementSource="IF NOT EXISTS (SELECT Name FROM sys.sysusers WHERE issqluser = 1 AND name = 'appDataConversionTool')&#xA;BEGIN&#xA;&#x9;CREATE USER [appDataConversionTool] FOR LOGIN [appDataConversionTool] WITH DEFAULT_SCHEMA=[dbo]   &#xA;&#x9;ALTER ROLE [db_owner] ADD MEMBER [appDataConversionTool]&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
           DTS:refId="Package\Prepare Data\Assign Variables"
           DTS:CreationName="STOCK:FOREACHLOOP"
           DTS:Description="Foreach Loop Container"
@@ -954,6 +938,22 @@ UseAccessories,UseCustomField
               DTS:ValueIndex="3"
               DTS:VariableName="User::_19UseCustomFields" />
           </DTS:ForEachVariableMappings>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Prepare Data\Fix User Accounts"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{AF5CDF66-E270-46B8-9A41-247AF4605B56}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Fix User Accounts"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{e5a48323-38b7-45b0-8073-64dbfcde0190}"
+              SQLTask:SqlStatementSource="IF NOT EXISTS (SELECT Name FROM sys.sysusers WHERE issqluser = 1 AND name = 'appDataConversionTool')&#xA;BEGIN&#xA;&#x9;CREATE USER [appDataConversionTool] FOR LOGIN [appDataConversionTool] WITH DEFAULT_SCHEMA=[dbo]   &#xA;&#x9;ALTER ROLE [db_owner] ADD MEMBER [appDataConversionTool]&#xA;END&#xA;&#xA;&#xA;--Part 2 - Fix orphaned users in current Database&#xA;DECLARE @SQL VARCHAR(100)&#xA;&#xA;DECLARE curSQL CURSOR&#xA;        FOR SELECT&#xA;                'EXEC sp_change_users_login ''UPDATE_ONE'', ''' + name&#xA;                + ''', ''' + name + ''''&#xA;            FROM&#xA;                sysusers&#xA;            WHERE&#xA;                issqluser = 1&#xA;                AND name = 'TIPWeb'&#xA;&#xA;OPEN curSQL&#xA;&#xA;FETCH curSQL INTO @SQL&#xA;&#xA;WHILE @@FETCH_STATUS = 0&#xA;      BEGIN&#xA;            EXEC (&#xA;                  @SQL&#xA;                )&#xA;            FETCH curSQL INTO @SQL&#xA;      END&#xA;&#xA;CLOSE curSQL&#xA;DEALLOCATE curSQL" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Prepare Data\Get Client Variables"
@@ -1218,7 +1218,7 @@ UseAccessories,UseCustomField
           DTS:From="Package\Prepare Data\Assign Variables"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 1"
-          DTS:To="Package\Prepare Data\Add Report Used to Staging DB" />
+          DTS:To="Package\Prepare Data\Fix User Accounts" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -2633,8 +2633,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <NodeLayout
-          Size="234,42"
-          Id="Package\Prepare Data\Add Report Used to Staging DB"
+          Size="168,42"
+          Id="Package\Prepare Data\Fix User Accounts"
           TopLeft="478,29" />
         <EdgeLayout
           Id="Package\Prepare Data.PrecedenceConstraints[Constraint 1]"
@@ -2642,9 +2642,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="239.452830188679,-21.5849056603774"
+              EndConnector="206.452830188679,-21.5849056603774"
               Start="0,0"
-              End="239.452830188679,-14.0849056603774">
+              End="206.452830188679,-14.0849056603774">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -2655,13 +2655,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
                     Point2="0,22.5"
                     Point3="4,22.5" />
                   <mssgle:LineSegment
-                    End="235.452830188679,22.5" />
+                    End="202.452830188679,22.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="235.452830188679,22.5"
-                    Point2="239.452830188679,22.5"
-                    Point3="239.452830188679,18.5" />
+                    Point1="202.452830188679,22.5"
+                    Point2="206.452830188679,22.5"
+                    Point3="206.452830188679,18.5" />
                   <mssgle:LineSegment
-                    End="239.452830188679,-14.0849056603774" />
+                    End="206.452830188679,-14.0849056603774" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
