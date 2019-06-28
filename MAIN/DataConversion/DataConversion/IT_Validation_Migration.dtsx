@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="IT_Validation_Migration"
   DTS:PackageType="5"
-  DTS:VersionBuild="139"
-  DTS:VersionGUID="{CE142CDE-506D-4B16-975A-E21FC8333B32}">
+  DTS:VersionBuild="142"
+  DTS:VersionGUID="{7D9E9983-85D0-4E6E-8AF6-0EC7D77EAE70}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -120,7 +120,7 @@
  StagingDBName,
 
 UseAccessories,UseCustomField
- FROM dbo.SSIS_ITVariables where iPkey = 2112</DTS:VariableValue>
+ FROM dbo.SSIS_ITVariables where iPkey = 2118</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -165,7 +165,7 @@ UseAccessories,UseCustomField
       DTS:Namespace="User"
       DTS:ObjectName="___0Recordkey">
       <DTS:VariableValue
-        DTS:DataType="3">2112</DTS:VariableValue>
+        DTS:DataType="3">2118</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -562,7 +562,7 @@ UseAccessories,UseCustomField
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{6375cd30-80d7-4a1b-b7d0-b0fbd9756daf}"
-              SQLTask:SqlStatementSource=" &#xA;&#xA;declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = N'''Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;-------------------- Room Type --------------------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;N' INSERT INTO ' + @StagingDB + '.dbo.tblUnvRoomTypes ' +&#xA;N' (RoomTypeName, RoomTypeDescription, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT DISTINCT RoomType, RoomType AS roomtypedesc, 0, GETDATE(), 0, GETDATE() ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' WHERE import = 1  ' +&#xA;N' and etl.RoomType IS NOT NULL  ' +&#xA;N' AND etl.Roomtype NOT IN (SELECT RoomTypeName FROM ' + @StagingDB + '.dbo.tblUnvRoomTypes) ' &#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;-- update room type uid&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update etl set RoomTypeUID = tw.RoomTypeUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' join ' + @StagingDB + '.dbo.tblUnvRoomTypes tw ' +&#xA;N' &#x9;on etl.roomtype = tw.RoomTypeName '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;-------------------- Room  --------------------------------&#xA;&#xA;SELECT @SQL = &#xA;&#x9;&#xA;N' INSERT INTO ' + @StagingDB + '.dbo.tblUnvRooms ' +&#xA;N' (RoomNumber, RoomDescription, RoomTypeUID, ' +&#xA;N' RoomNotes, SiteUID, Active,  ' +&#xA;N' CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT DISTINCT RoomNumber, RoomDesc, RoomTypeUID,  ' +&#xA;  @notes + N''', SiteUID, 1,  ' +&#xA;N' &#x9;0, getdate(), 0, getdate() ' +&#xA;N' FROM  ' +&#xA;N' &#x9;( ' +&#xA;N' &#x9;SELECT DISTINCT etl.RoomNumber, etl.RoomDesc, RoomTypeUID, SiteUID ' +&#xA;N' &#x9;FROM clients_etl_Final etl ' +&#xA;N' &#x9;where import = 1 ' +&#xA;N' &#x9;and ltrim(rtrim(RoomNumber)) not in  ' +&#xA;N' &#x9;&#x9;(select ltrim(rtrim(RoomNumber)) from ' + @StagingDB + '.dbo.tblUnvRooms  ' +&#xA;N' &#x9;&#x9;where SiteUID = etl.SiteUID) ' +&#xA;N' &#x9;) a '&#xA;&#x9;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select *  ' +&#xA;N' update etl set RoomUID = tw.RoomUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' join ' + @StagingDB + '.dbo.tblUnvRooms tw ' +&#xA;N' &#x9;on etl.SiteUID = tw.SiteUID and etl.RoomNumber = tw.RoomNumber and etl.RoomTypeUID = tw.RoomTypeUID '  +&#xA;N' where import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select *  ' +&#xA;N' update etl set EntityUID= RoomUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' where import = 1 ' +&#xA;N' and EntityTypeUID = 2 ' +&#xA;N' and EntityUID is null '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="&#xA;declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = N'''Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;-------------------- Correct SIS Room Types --------------------------------&#xA;&#xA;SET @SQL = &#xA;'&#xA;UPDATE C&#xA;SET RoomTypeUID = E.RoomTypeUID&#xA;--SELECT DISTINCT A.SiteID,A.RoomNumber,A.RoomType,D.RoomTypeName&#xA;FROM Clients_ETL_Final AS A &#xA;&#xA;INNER JOIN ' + @StagingDB + '.dbo.tblTechSites AS B&#xA;ON A.SiteID=B.SiteID&#xA;&#xA;INNER JOIN ' + @StagingDB + '.dbo.tblUnvRooms AS C&#xA;ON B.SiteUID=C.SiteUID AND A.RoomNumber=C.RoomNumber&#xA;&#xA;INNER JOIn ' + @StagingDB + '.dbo.tblUnvRoomTypes AS D&#xA;ON C.RoomTypeUID=D.RoomTypeUID&#xA;&#xA;INNER JOIN ' + @StagingDB + '.dbo.tblUnvRoomTypes AS E&#xA;ON A.RoomType=E.RoomTypeName&#xA;&#xA;WHERE D.RoomTypeName != A.RoomType '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;-------------------- Room Type --------------------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;N' INSERT INTO ' + @StagingDB + '.dbo.tblUnvRoomTypes ' +&#xA;N' (RoomTypeName, RoomTypeDescription, CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT DISTINCT RoomType, RoomType AS roomtypedesc, 0, GETDATE(), 0, GETDATE() ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' WHERE import = 1  ' +&#xA;N' and etl.RoomType IS NOT NULL  ' +&#xA;N' AND etl.Roomtype NOT IN (SELECT RoomTypeName FROM ' + @StagingDB + '.dbo.tblUnvRoomTypes) ' &#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;-- update room type uid&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update etl set RoomTypeUID = tw.RoomTypeUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' join ' + @StagingDB + '.dbo.tblUnvRoomTypes tw ' +&#xA;N' &#x9;on etl.roomtype = tw.RoomTypeName '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;-------------------- Room  --------------------------------&#xA;&#xA;SELECT @SQL = &#xA;&#x9;&#xA;N' INSERT INTO ' + @StagingDB + '.dbo.tblUnvRooms ' +&#xA;N' (RoomNumber, RoomDescription, RoomTypeUID, ' +&#xA;N' RoomNotes, SiteUID, Active,  ' +&#xA;N' CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate) ' +&#xA;&#xA;N' SELECT DISTINCT RoomNumber, RoomDesc, RoomTypeUID,  ' +&#xA;  @notes + N''', SiteUID, 1,  ' +&#xA;N' &#x9;0, getdate(), 0, getdate() ' +&#xA;N' FROM  ' +&#xA;N' &#x9;( ' +&#xA;N' &#x9;SELECT DISTINCT etl.RoomNumber, etl.RoomDesc, RoomTypeUID, SiteUID ' +&#xA;N' &#x9;FROM clients_etl_Final etl ' +&#xA;N' &#x9;where import = 1 ' +&#xA;N' &#x9;and ltrim(rtrim(RoomNumber)) not in  ' +&#xA;N' &#x9;&#x9;(select ltrim(rtrim(RoomNumber)) from ' + @StagingDB + '.dbo.tblUnvRooms  ' +&#xA;N' &#x9;&#x9;where SiteUID = etl.SiteUID) ' +&#xA;N' &#x9;) a '&#xA;&#x9;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select *  ' +&#xA;N' update etl set RoomUID = tw.RoomUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' join ' + @StagingDB + '.dbo.tblUnvRooms tw ' +&#xA;N' &#x9;on etl.SiteUID = tw.SiteUID and etl.RoomNumber = tw.RoomNumber and etl.RoomTypeUID = tw.RoomTypeUID '  +&#xA;N' where import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select *  ' +&#xA;N' update etl set EntityUID= RoomUID ' +&#xA;N' from clients_etl_Final etl ' +&#xA;N' where import = 1 ' +&#xA;N' and EntityTypeUID = 2 ' +&#xA;N' and EntityUID is null '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@StagingDB"
                 SQLTask:DtsVariableName="User::_02StagingDB"
@@ -862,6 +862,22 @@ UseAccessories,UseCustomField
       DTS:ObjectName="Prepare Data">
       <DTS:Variables />
       <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Prepare Data\Add Report Used to Staging DB"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{AF5CDF66-E270-46B8-9A41-247AF4605B56}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Add Report Used to Staging DB"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{e5a48323-38b7-45b0-8073-64dbfcde0190}"
+              SQLTask:SqlStatementSource="IF NOT EXISTS (SELECT Name FROM sys.sysusers WHERE issqluser = 1 AND name = 'appDataConversionTool')&#xA;BEGIN&#xA;&#x9;CREATE USER [appDataConversionTool] FOR LOGIN [appDataConversionTool] WITH DEFAULT_SCHEMA=[dbo]   &#xA;&#x9;ALTER ROLE [db_owner] ADD MEMBER [appDataConversionTool]&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Prepare Data\Assign Variables"
           DTS:CreationName="STOCK:FOREACHLOOP"
@@ -1165,6 +1181,14 @@ UseAccessories,UseCustomField
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint"
           DTS:To="Package\Prepare Data\Assign Variables" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Prepare Data.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{8F5B5737-F141-4EC2-A438-5449BF5EDD0C}"
+          DTS:From="Package\Prepare Data\Assign Variables"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Prepare Data\Add Report Used to Staging DB" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -1235,7 +1259,7 @@ UseAccessories,UseCustomField
         <NodeLayout
           Size="136,44"
           Id="Package\Begin Transaction"
-          TopLeft="777.047169811321,16.6320754716981" />
+          TopLeft="967.047169811321,175.632075471698" />
         <NodeLayout
           Size="136,44"
           Id="Package\Commit Transaction"
@@ -1840,36 +1864,70 @@ UseAccessories,UseCustomField
           PanelSize="1189,562"
           Size="1189,606"
           Id="Package\Insert Staging and Update ETL"
-          TopLeft="5.5,230.179245283019" />
+          TopLeft="18.5,278.179245283019" />
         <ContainerLayout
           HeaderHeight="43.924528301886795"
           IsExpanded="True"
           PanelSize="206,50"
           Size="206,79"
           Id="Package\Prepare Data\Assign Variables"
-          TopLeft="253.547169811321,14.5849056603774" />
+          TopLeft="252.547169811321,13.5849056603774" />
         <NodeLayout
           Size="136,44"
           Id="Package\Prepare Data\Get Client Variables"
           TopLeft="68.7924528301887,28.5849056603774" />
         <EdgeLayout
           Id="Package\Prepare Data.PrecedenceConstraints[Constraint]"
-          TopLeft="204.566037735849,50.5471698113208">
+          TopLeft="204.792452830189,51.8349056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="48.9811320754717,3.47169811320754"
+              EndConnector="47.7547169811323,0"
               Start="0,0"
-              End="41.4811320754717,3.47169811320754">
+              End="40.2547169811323,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="24.4905660377358,0" />
+                    End="40.2547169811323,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="234,42"
+          Id="Package\Prepare Data\Add Report Used to Staging DB"
+          TopLeft="478,29" />
+        <EdgeLayout
+          Id="Package\Prepare Data.PrecedenceConstraints[Constraint 1]"
+          TopLeft="355.547169811321,92.5849056603774">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="239.452830188679,-21.5849056603774"
+              Start="0,0"
+              End="239.452830188679,-14.0849056603774">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
                   <mssgle:LineSegment
-                    End="24.4905660377358,3.47169811320754" />
+                    End="0,18.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,18.5"
+                    Point2="0,22.5"
+                    Point3="4,22.5" />
                   <mssgle:LineSegment
-                    End="41.4811320754717,3.47169811320754" />
+                    End="235.452830188679,22.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="235.452830188679,22.5"
+                    Point2="239.452830188679,22.5"
+                    Point3="239.452830188679,18.5" />
+                  <mssgle:LineSegment
+                    End="239.452830188679,-14.0849056603774" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1881,8 +1939,8 @@ UseAccessories,UseCustomField
         <ContainerLayout
           HeaderHeight="43.924528301886795"
           IsExpanded="True"
-          PanelSize="541,145"
-          Size="541,189"
+          PanelSize="717,170"
+          Size="717,214"
           Id="Package\Prepare Data"
           TopLeft="43.5377358490566,5.5" />
         <NodeLayout
@@ -1891,22 +1949,30 @@ UseAccessories,UseCustomField
           TopLeft="626.594339622642,888.141509433962" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="584.707547169811,99.7641509433962">
+          TopLeft="760.537735849057,112.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="192.339622641509,-61.1698113207547"
+              EndConnector="206.509433962264,85.1320754716981"
               Start="0,0"
-              End="184.839622641509,-61.1698113207547">
+              End="199.009433962264,85.1320754716981">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="96.188679245283,0" />
+                    End="99.2547169811322,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="99.2547169811322,0"
+                    Point2="103.254716981132,0"
+                    Point3="103.254716981132,4" />
                   <mssgle:LineSegment
-                    End="96.188679245283,-61.1698113207547" />
+                    End="103.254716981132,81.1320754716981" />
+                  <mssgle:CubicBezierSegment
+                    Point1="103.254716981132,81.1320754716981"
+                    Point2="103.254716981132,85.1320754716981"
+                    Point3="107.254716981132,85.1320754716981" />
                   <mssgle:LineSegment
-                    End="184.839622641509,-61.1698113207547" />
+                    End="199.009433962264,85.1320754716981" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1917,30 +1983,30 @@ UseAccessories,UseCustomField
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="845.047169811321,60.6320754716981">
+          TopLeft="1035.04716981132,219.632075471698">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="-245.047169811321,169.547169811321"
+              EndConnector="-422.047169811321,58.5471698113209"
               Start="0,0"
-              End="-245.047169811321,162.047169811321">
+              End="-422.047169811321,51.0471698113209">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,80.7735849056604" />
+                    End="0,25.2735849056604" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,80.7735849056604"
-                    Point2="0,84.7735849056604"
-                    Point3="-4,84.7735849056604" />
+                    Point1="0,25.2735849056604"
+                    Point2="0,29.2735849056604"
+                    Point3="-4,29.2735849056604" />
                   <mssgle:LineSegment
-                    End="-241.047169811321,84.7735849056604" />
+                    End="-418.047169811321,29.2735849056604" />
                   <mssgle:CubicBezierSegment
-                    Point1="-241.047169811321,84.7735849056604"
-                    Point2="-245.047169811321,84.7735849056604"
-                    Point3="-245.047169811321,88.7735849056604" />
+                    Point1="-418.047169811321,29.2735849056604"
+                    Point2="-422.047169811321,29.2735849056604"
+                    Point3="-422.047169811321,33.2735849056604" />
                   <mssgle:LineSegment
-                    End="-245.047169811321,162.047169811321" />
+                    End="-422.047169811321,51.0471698113209" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1951,18 +2017,24 @@ UseAccessories,UseCustomField
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="404.125786163522,836.179245283019">
+          TopLeft="416.166666666667,884.179245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="0,50.415094339623"
+              EndConnector="56.9182389937104,24.415094339623"
               Start="0,0"
-              End="0,42.915094339623">
+              End="49.4182389937104,24.415094339623">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,42.915094339623" />
+                    End="0,20.415094339623" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.415094339623"
+                    Point2="0,24.415094339623"
+                    Point3="4,24.415094339623" />
+                  <mssgle:LineSegment
+                    End="49.4182389937104,24.415094339623" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1973,37 +2045,31 @@ UseAccessories,UseCustomField
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="796.833333333333,836.179245283019">
+          TopLeft="809.833333333333,884.179245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="-102.238993710691,51.962264150943"
+              EndConnector="-47.2389937106913,25.962264150943"
               Start="0,0"
-              End="-102.238993710691,44.462264150943">
+              End="-39.7389937106913,25.962264150943">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,16.8268036727952" />
+                    End="0,21.962264150943" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,16.8268036727952"
-                    Point2="0,20.8268036727952"
-                    Point3="-4,20.8268036727952" />
+                    Point1="0,21.962264150943"
+                    Point2="0,25.962264150943"
+                    Point3="-4,25.962264150943" />
                   <mssgle:LineSegment
-                    End="-98.2389937106913,20.8268036727952" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-98.2389937106913,20.8268036727952"
-                    Point2="-102.238993710691,20.8268036727952"
-                    Point3="-102.238993710691,24.8268036727952" />
-                  <mssgle:LineSegment
-                    End="-102.238993710691,44.462264150943" />
+                    End="-39.7389937106913,25.962264150943" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-66.3608445115956,25.8268036727952,30.4826953125,9.7490234375"
+              BoundingBox="-37.1108445115956,30.962264150943,30.4826953125,9.7490234375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -2014,13 +2080,13 @@ UseAccessories,UseCustomField
     design-time-name="Package\Prepare Data\Get Client Variables">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="NaN,NaN"
+          Size="157,42"
           Id="Package\Prepare Data\Get Client Variables\OLE DB Source"
           TopLeft="NaN,NaN" />
         <NodeLayout
-          Size="NaN,NaN"
+          Size="187,42"
           Id="Package\Prepare Data\Get Client Variables\Recordset Destination"
           TopLeft="NaN,NaN" />
         <EdgeLayout
@@ -2038,9 +2104,7 @@ UseAccessories,UseCustomField
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
