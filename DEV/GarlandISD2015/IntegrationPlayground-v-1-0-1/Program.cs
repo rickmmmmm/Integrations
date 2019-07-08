@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -267,20 +268,64 @@ namespace IntegrationPlayground_v_1_0_1
 
                         ISender mailer = new SqlDbMailService(_repo);
 
+                        // Zip file because it is over 5 mgs 
+                        string ZipDirectory;
+                        string FileName;
+                        string ZipPathAndFile;
+                        FileName = Path.GetFileName(rejectFile);
+                        ZipDirectory = rejectFile.Replace(FileName, "");
+                        ZipPathAndFile = ZipDirectory + "GarlandRejectionFile.Zip";
+                        ZipDirectory = ZipDirectory + "ZipTemp";
+
+
+                        // Create Directory if not exists
+                        bool exists = System.IO.Directory.Exists(ZipDirectory);
+
+                        if (!exists)
+                            System.IO.Directory.CreateDirectory(ZipDirectory);
+
+                        // Remove files if they already eixsts
+                        if (File.Exists(ZipDirectory + "\\" + FileName))
+                        {
+                            File.Delete(ZipDirectory + "\\" + FileName);
+                        }
+
+                        if (File.Exists(ZipPathAndFile))
+                        {
+                            File.Delete(ZipPathAndFile);
+                        }
+
+                        // Copy file to Zip Directory
+                        File.Copy(rejectFile, ZipDirectory + "\\" + FileName);
+
+                        // Zip All Files in Directory
+                        ZipFile.CreateFromDirectory(ZipDirectory, ZipPathAndFile);
+
+
                         IMessage notification = new EmailMessage
-                                                                {
-                                                                    Body = body,
-                                                                    Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
-                                                                    Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                                                                    Subject = "Automatic Notification from Hayes Software Systems",
-                                                                    SentDate = DateTime.Now,
-                                                                    fileAttachment = rejectFile
-                                                                };
+                        {
+                            Body = body,
+                            Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
+                            Sender = ConfigurationManager.AppSettings["notificationFrom"],
+                            Subject = "Automatic Notification from Hayes Software Systems",
+                            SentDate = DateTime.Now,
+                            //fileAttachment = rejectFile
+                            fileAttachment = ZipPathAndFile
+                        };
 
                         mailer.send(notification);
+                        File.Delete(ZipPathAndFile);
 
                         try
                         {
+                            // Remove All files in ZipTemp Directory
+                            DirectoryInfo dir = new DirectoryInfo(ZipDirectory);
+
+                            foreach (FileInfo fi in dir.GetFiles())
+                            {
+                                fi.Delete();
+                            }
+
                             ft.archiveFile(file);
                             ft.archiveFile(rejectFile);
                         }
