@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="UserPermissionMain"
   DTS:PackageType="5"
-  DTS:VersionBuild="95"
-  DTS:VersionGUID="{0441A8EB-B91F-4383-8624-E61ABF8EB247}">
+  DTS:VersionBuild="96"
+  DTS:VersionGUID="{68ED3B1E-7EDB-4D4A-AE4D-528191914041}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -2894,7 +2894,7 @@ and ClientUID = ?</property>
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{4E4701C5-C7B0-4ED2-996E-6F89E5CDF0EE}"
-                  SQLTask:SqlStatementSource="&#xA;----------- remove Site UID 1 from users who are no longer Admin/Admin&#xA;/*&#xA;NOTE: Previous scripts updated tblUser; this is for tblTechUserSites&#xA;*/&#xA;select *&#xA;--delete us&#xA;from tblUser u&#xA;join tblTechUserSites us on u.UserID = us.UserID&#xA;where us.siteuid = 1 and u.SiteUID &lt;&gt; 1&#xA;&#xA;&#xA;&#xA;------------- Remove extra site mappings ------------------------&#xA;--select u.active, *&#xA;delete us&#xA;from tblUser u&#xA;join tblTechUserSites us on u.UserID = us.UserID&#xA;where u.UserRoleUID in (4, 5)&#xA;and us.UserID not in (&#xA;&#x9;select UserSiteUID&#xA;&#x9;from tblTechUserSites us&#xA;&#x9;Join (&#xA;&#x9;&#x9;select distinct userID, SiteUID&#xA;&#x9;&#x9;from  _LDAPFileProcessing.dbo.UserPermissionList up &#xA;&#x9;&#x9;where up.Import = 1&#xA;&#x9;&#x9;and up.UserRoleUID in (4, 5)&#xA;&#x9;&#x9;) ds on us.UserID = ds.UserID and us.SiteUID = ds.SiteUID&#xA;&#x9;) &#xA;--order by loginname&#xA;&#xA;/*&#xA;----------- A check query that all admin users have all sites ----------------&#xA;select *&#xA;from tblTechUserSites us&#xA;left outer join (&#xA;&#x9;select u.UserID, s.SIteUID&#xA;&#x9;from tblUser u&#xA;&#x9;join _LDAPFileProcessing.dbo.UserPermissionList up on u.LoginName = up.Login &#xA;&#x9;cross join tblTechSites s&#xA;&#x9;where u.applicationuid = 2&#xA;&#x9;and up.Import = 1&#xA;&#x9;and u.active = 1&#xA;&#x9;and u.CampusID = 'District'&#xA;&#x9;and u.UserRoleUID in (2,3)&#xA;&#x9;) up on us.UserID = up.UserID and us.SiteUID  = up.SiteUID&#xA;where us.UserSiteUID is null&#xA;*/&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  SQLTask:SqlStatementSource="&#xA;----------- remove Site UID 1 from users who are no longer Admin/Admin&#xA;/*&#xA;NOTE: Previous scripts updated tblUser; this is for tblTechUserSites&#xA;*/&#xA;select *&#xA;--delete us&#xA;from tblUser u&#xA;join tblTechUserSites us on u.UserID = us.UserID&#xA;where us.siteuid = 1 and u.SiteUID &lt;&gt; 1&#xA;&#xA;&#xA;&#xA;------------- Remove extra site mappings ------------------------&#xA;--select u.active, *&#xA;delete us&#xA;from tblUser u&#xA;join tblTechUserSites us on u.UserID = us.UserID&#xA;where u.UserRoleUID in (4, 5)&#xA;and us.UserSiteUID not in (&#xA;&#x9;select UserSiteUID&#xA;&#x9;from tblTechUserSites us&#xA;&#x9;Join (&#xA;&#x9;&#x9;select distinct userID, SiteUID&#xA;&#x9;&#x9;from  _LDAPFileProcessing.dbo.UserPermissionList up &#xA;&#x9;&#x9;where up.Import = 1&#xA;&#x9;&#x9;and up.UserRoleUID in (4, 5)&#xA;&#x9;&#x9;) ds on us.UserID = ds.UserID and us.SiteUID = ds.SiteUID&#xA;&#x9;) &#xA;--order by loginname&#xA;&#xA;----------- Make sure all site users still have their sites --------------------&#xA;&#xA;insert tblTechUserSites (UserID, SiteUID)&#xA;select up.UserID, up.SiteUID&#xA;from tblTechUserSites us&#xA;right outer join _LDAPFileProcessing.dbo.UserPermissionList up on us.UserID = up.UserID and us.SiteUID = up.SiteUID&#xA;where up.Import = 1&#xA;and up.UserRoleUID in (4, 5)&#xA;and us.UserSiteUID is null&#xA;&#xA;/*&#xA;----------- A check query that all admin users have all sites ----------------&#xA;select *&#xA;from tblTechUserSites us&#xA;left outer join (&#xA;&#x9;select u.UserID, s.SIteUID&#xA;&#x9;from tblUser u&#xA;&#x9;join _LDAPFileProcessing.dbo.UserPermissionList up on u.LoginName = up.Login &#xA;&#x9;cross join tblTechSites s&#xA;&#x9;where u.applicationuid = 2&#xA;&#x9;and up.Import = 1&#xA;&#x9;and u.active = 1&#xA;&#x9;and u.CampusID = 'District'&#xA;&#x9;and u.UserRoleUID in (2,3)&#xA;&#x9;) up on us.UserID = up.UserID and us.SiteUID  = up.SiteUID&#xA;where us.UserSiteUID is null&#xA;*/&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
@@ -6422,41 +6422,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="140,42"
           Id="Package\Run Client Import\Cleanup Role Changes\District to Site"
-          TopLeft="19,12" />
+          TopLeft="19,28" />
         <NodeLayout
           Size="155,42"
           Id="Package\Run Client Import\Cleanup Role Changes\User Site ID Changes"
-          TopLeft="193,62" />
+          TopLeft="174,74" />
         <NodeLayout
           Size="178,42"
           Id="Package\Run Client Import\Cleanup Role Changes\Remove Site Old IDs"
-          TopLeft="365,19" />
+          TopLeft="332,21" />
         <EdgeLayout
           Id="Package\Run Client Import\Cleanup Role Changes.PrecedenceConstraints[Constraint]"
-          TopLeft="159,33">
+          TopLeft="159,49">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="34,50"
+              EndConnector="68,25"
               Start="0,0"
-              End="26.5,50">
+              End="68,17.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="13,0" />
+                    End="64,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="13,0"
-                    Point2="17,0"
-                    Point3="17,4" />
+                    Point1="64,0"
+                    Point2="68,0"
+                    Point3="68,4" />
                   <mssgle:LineSegment
-                    End="17,46" />
-                  <mssgle:CubicBezierSegment
-                    Point1="17,46"
-                    Point2="17,50"
-                    Point3="21,50" />
-                  <mssgle:LineSegment
-                    End="26.5,50" />
+                    End="68,17.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6467,24 +6461,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Run Client Import\Cleanup Role Changes.PrecedenceConstraints[Constraint 1]"
-          TopLeft="270.5,62">
+          TopLeft="276,74">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="94.5,-22"
+              EndConnector="56,-32"
               Start="0,0"
-              End="87,-22">
+              End="48.5,-32">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,-18" />
+                    End="0,-28" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,-18"
-                    Point2="0,-22"
-                    Point3="4,-22" />
+                    Point1="0,-28"
+                    Point2="0,-32"
+                    Point3="4,-32" />
                   <mssgle:LineSegment
-                    End="87,-22" />
+                    End="48.5,-32" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6496,24 +6490,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="554,137"
-          Size="554,180"
+          PanelSize="554,150"
+          Size="554,194"
           Id="Package\Run Client Import\Cleanup Role Changes"
-          TopLeft="713,360" />
+          TopLeft="736,358" />
         <EdgeLayout
           Id="Package\Run Client Import.PrecedenceConstraints[Constraint 7]"
-          TopLeft="993.5,336">
+          TopLeft="997,336">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,24"
+              EndConnector="-261,119"
               Start="0,0"
-              End="0,16.5">
+              End="-253.5,119">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,16.5" />
+                    End="0,115" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,115"
+                    Point2="0,119"
+                    Point3="-4,119" />
+                  <mssgle:LineSegment
+                    End="-253.5,119" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6524,30 +6524,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Run Client Import.PrecedenceConstraints[Constraint 9]"
-          TopLeft="990,540">
+          TopLeft="1013,552">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-296,36"
+              EndConnector="-319,24"
               Start="0,0"
-              End="-296,28.5">
+              End="-319,16.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,14" />
+                    End="0,8" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,14"
-                    Point2="0,18"
-                    Point3="-4,18" />
+                    Point1="0,8"
+                    Point2="0,12"
+                    Point3="-4,12" />
                   <mssgle:LineSegment
-                    End="-292,18" />
+                    End="-315,12" />
                   <mssgle:CubicBezierSegment
-                    Point1="-292,18"
-                    Point2="-296,18"
-                    Point3="-296,22" />
+                    Point1="-315,12"
+                    Point2="-319,12"
+                    Point3="-319,16" />
                   <mssgle:LineSegment
-                    End="-296,28.5" />
+                    End="-319,16.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
