@@ -307,7 +307,7 @@ namespace IntegrationPlayground_v_1_0_1
                             Body = body,
                             Receivers = ConfigurationManager.AppSettings["notificationSentTo"].Split(',').ToList(),
                             Sender = ConfigurationManager.AppSettings["notificationFrom"],
-                            Subject = "Automatic Notification from Hayes Software Systems",
+                            Subject = "Garland ISD Purchase Order Integration",
                             SentDate = DateTime.Now,
                             //fileAttachment = rejectFile
                             fileAttachment = ZipPathAndFile
