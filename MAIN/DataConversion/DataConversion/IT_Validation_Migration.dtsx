@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="IT_Validation_Migration"
   DTS:PackageType="5"
-  DTS:VersionBuild="162"
-  DTS:VersionGUID="{71BB55C0-A037-49C6-BA83-B2F65D0E9777}">
+  DTS:VersionBuild="165"
+  DTS:VersionGUID="{FD5A66BB-D6DA-4298-AC79-63694FAAC5A4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -62,11 +62,11 @@
             <DTS:Property
               DTS:Name="ServerPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAAndd1wNNZvvvf5eI0x1EuNAAAAAASAAACgAAAAEAAAAATdAql/rGkPXB8WILXKU68QAAAAuKWhActoGfW3SMevZfFVDhQAAADe6fe0CN7FjB/unuwBdKP4WgmWbw</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAACBwCsvhwyBWmSzk2SSbVZKAAAAAASAAACgAAAAEAAAAONfeJHVy6eQ6YM7Vv5RiVYQAAAAcXiQbdRa4ZoXK1RD28ShLhQAAADUaxfmWpmouDgcupyaf8x4QIU54w</DTS:Property>
             <DTS:Property
               DTS:Name="ProxyPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAADCNke3yVxNzuKa5L3Ygs3yAAAAAASAAACgAAAAEAAAABgdn9ZGvToOHANqqru4DQ0IAAAAkLH+d33OhW8UAAAAMbGXHTJyG3sJYMQd386+BAY2oTE</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAw/LfgQL8pEi85KFzuKRfpQAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAB/29Do8r9acBrNNhp/t9CsAAAAAASAAACgAAAAEAAAAGPRgnBdPaHPfWEkhRlFZlUIAAAAna+MUzJXTnwUAAAAm0diMT+K2RGpnmOtcIPCf/0moYw</DTS:Property>
           </DTS:HttpConnection>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
@@ -167,7 +167,7 @@
  StagingDBName,
 
 UseAccessories,UseCustomField
- FROM dbo.SSIS_ITVariables where iPkey = 2123</DTS:VariableValue>
+ FROM dbo.SSIS_ITVariables where iPkey = 2112</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -212,7 +212,7 @@ UseAccessories,UseCustomField
       DTS:Namespace="User"
       DTS:ObjectName="___0Recordkey">
       <DTS:VariableValue
-        DTS:DataType="3">2123</DTS:VariableValue>
+        DTS:DataType="3">2112</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -664,7 +664,7 @@ UseAccessories,UseCustomField
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{6375cd30-80d7-4a1b-b7d0-b0fbd9756daf}"
-              SQLTask:SqlStatementSource="declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = 'Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = '&#xA;INSERT INTO '+ @StagingDB  +'.dbo.tblTechItems  &#x9;(ItemNumber, &#x9;ItemName, ItemDescription, ItemTypeUID,  &#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice,  &#x9;AreaUID, ItemNotes, &#x9;SKU, SerialRequired, Active,  &#x9;&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, projectedlife)  &#xA;&#xA;SELECT DISTINCT ''H'' + CONVERT(VARCHAR(20), A.ProductNumber) as ProductNumber, &#x9;LEFT(A.ProductName, 100) AS itemname, A.ProductName, A.ItemTypeUID,A.ModelNumber, A.ManufacturerUID, A.ItemSuggestedPrice, &#x9;&#xA;0 AS areaUID, '''+ @notes +''', &#x9;MAX(A.SKU) AS SKU, CASE WHEN A.serial_required = ''Y'' THEN 1 ELSE 0 END  AS SerialRequired, 1, 0, getdate(), 0, getdate(), 0 as Projectedlife  &#xA;FROM clients_etl_Final AS A   &#xA;&#xA;LEFT JOIN '+ @StagingDB  +'.dbo.tblTechItems AS B&#xA;ON LEFT(A.ProductName, 100)=B.ItemName AND A.ItemTypeUID=B.ItemTypeUID&#xA;&#xA;where import = 1  &#xA;AND B.ItemUID IS NULL&#xA; &#xA;GROUP BY A.[ProductNumber],A.[ProductName],  A.ItemTypeUID, A.ModelNumber,   A.ManufacturerUID,A.ItemSuggestedPrice, A.serial_required,  A.ProductInfo1, A.ProductInfo2, A.ProductInfo3, A.ProjectedLife    &#xA;'&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;----------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select * ' +&#xA;N' update etl set ItemUID = tw.ItemUID ' +&#xA;N' from ' + @StagingDB  + N'.dbo.tblTechItems tw ' +&#xA;N' inner join clients_etl_Final etl &#xA;on tw.itemname = LEFT(etl.ProductName, 100) AND tw.ItemTypeUID=etl.ItemTypeUID' +&#xA;N' where etl.import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' Update tw set ProjectedLife = etl.ProjectedLife  ' +&#xA;N' from ' + @StagingDB  + '.dbo.tblTechItems tw  ' +&#xA;N' join clients_etl_Final etl on tw.ItemUID = etl.ItemUID ' +&#xA;N' where etl.import = 1 ' +&#xA;N' and etl.ProjectedLife &lt;&gt; 0 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;declare @MaxProdNum int&#xA;select @MaxProdNum = max(ProductNumber) from clients_etl_Final&#xA;--print @MaxProdNum&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update tw set value = ''' + cast(@MaxProdNum as varchar) + &#xA;N''' FROM ' + @StagingDB + N'.dbo.tblUnvCounter tw ' +&#xA;N' WHERE CounterUID = 4 ' &#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;---------------------- Setting Parent Tags ----------------------&#xA;SET @SQL = '&#xA;UPDATE C&#xA;SET ParentInventoryUID = B.InventoryUID&#xA;FROM Clients_ETL_Final AS A&#xA;&#xA;INNER JOIN '+ @StagingDB +'.dbo.tblTechInventory AS B&#xA;ON A.ParentTag=B.Tag&#xA;&#xA;INNER JOIN '+ @StagingDB +'.dbo.tblTechInventory AS C&#xA;ON A.Tag=C.Tag&#xA;&#xA;WHERE A.ParentTag != ''''&#xA;'&#xA;--print @SQL&#xA;EXEC(@SQL)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="declare @StagingDB nvarchar(100)&#xA;set @StagingDB = ?&#xA;&#xA;&#xA;declare @notes nvarchar(max)&#xA;set @notes = 'Hayes Initial Conversion - ' + CONVERT(NVARCHAR(10), GETDATE(), 101)&#xA;&#xA;DECLARE @SQL NVARCHAR(MAX)&#xA;&#xA;SELECT @SQL = '&#xA;INSERT INTO '+ @StagingDB  +'.dbo.tblTechItems  &#x9;(ItemNumber, &#x9;ItemName, ItemDescription, ItemTypeUID,  &#x9;ModelNumber, ManufacturerUID, ItemSuggestedPrice,  &#x9;AreaUID, ItemNotes, &#x9;SKU, SerialRequired, Active,  &#x9;&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, projectedlife)  &#xA;&#xA;SELECT DISTINCT ''H'' + CONVERT(VARCHAR(20), A.ProductNumber) as ProductNumber, &#x9;LEFT(A.ProductName, 100) AS itemname, A.ProductName, A.ItemTypeUID,A.ModelNumber, A.ManufacturerUID, A.ItemSuggestedPrice, &#x9;&#xA;0 AS areaUID, '''+ @notes +''', &#x9;MAX(A.SKU) AS SKU, CASE WHEN A.serial_required = ''Y'' THEN 1 ELSE 0 END  AS SerialRequired, 1, 0, getdate(), 0, getdate(), 0 as Projectedlife  &#xA;FROM clients_etl_Final AS A   &#xA;&#xA;LEFT JOIN '+ @StagingDB  +'.dbo.tblTechItems AS B&#xA;ON LEFT(A.ProductName, 100)=B.ItemName AND A.ItemTypeUID=B.ItemTypeUID&#xA;&#xA;where import = 1  &#xA;AND B.ItemUID IS NULL&#xA; &#xA;GROUP BY A.[ProductNumber],A.[ProductName],  A.ItemTypeUID, A.ModelNumber,   A.ManufacturerUID,A.ItemSuggestedPrice, A.serial_required,  A.ProductInfo1, A.ProductInfo2, A.ProductInfo3, A.ProjectedLife    &#xA;'&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;----------------------&#xA;&#xA;SELECT @SQL = &#xA;&#xA;--N' select * ' +&#xA;N' update etl set ItemUID = tw.ItemUID ' +&#xA;N' from ' + @StagingDB  + N'.dbo.tblTechItems tw ' +&#xA;N' inner join clients_etl_Final etl &#xA;on tw.itemname = LEFT(etl.ProductName, 100) AND tw.ItemTypeUID=etl.ItemTypeUID AND tw.ModelNumber=etl.ModelNumber tw.ManufacturerUID=etl.ManufacturerUID' +&#xA;N' where etl.import = 1 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' Update tw set ProjectedLife = etl.ProjectedLife  ' +&#xA;N' from ' + @StagingDB  + '.dbo.tblTechItems tw  ' +&#xA;N' join clients_etl_Final etl on tw.ItemUID = etl.ItemUID ' +&#xA;N' where etl.import = 1 ' +&#xA;N' and etl.ProjectedLife &lt;&gt; 0 '&#xA;&#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;declare @MaxProdNum int&#xA;select @MaxProdNum = max(ProductNumber) from clients_etl_Final&#xA;--print @MaxProdNum&#xA;&#xA;&#xA;SELECT @SQL = &#xA;--N' select * ' +&#xA;N' update tw set value = ''' + cast(@MaxProdNum as varchar) + &#xA;N''' FROM ' + @StagingDB + N'.dbo.tblUnvCounter tw ' +&#xA;N' WHERE CounterUID = 4 ' &#xA;--print @SQL&#xA;EXEC sys.sp_executesql @SQL&#xA;&#xA;&#xA;---------------------- Setting Parent Tags ----------------------&#xA;SET @SQL = '&#xA;UPDATE C&#xA;SET ParentInventoryUID = B.InventoryUID&#xA;FROM Clients_ETL_Final AS A&#xA;&#xA;INNER JOIN '+ @StagingDB +'.dbo.tblTechInventory AS B&#xA;ON A.ParentTag=B.Tag&#xA;&#xA;INNER JOIN '+ @StagingDB +'.dbo.tblTechInventory AS C&#xA;ON A.Tag=C.Tag&#xA;&#xA;WHERE A.ParentTag != ''''&#xA;'&#xA;--print @SQL&#xA;EXEC(@SQL)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@StagingDB"
                 SQLTask:DtsVariableName="User::_02StagingDB"
@@ -1230,7 +1230,7 @@ UseAccessories,UseCustomField
       DTS:LocaleID="-1"
       DTS:ObjectName="Rollback Transaction"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="1">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -1257,7 +1257,7 @@ UseAccessories,UseCustomField
           DTS:LocaleID="-1"
           DTS:ObjectName="Commit Transaction"
           DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008 R2; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -1273,7 +1273,7 @@ UseAccessories,UseCustomField
           DTS:ExecutableType="Microsoft.ScriptTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Create Conversion Report"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <ScriptProject
@@ -1907,7 +1907,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Set Folder Name"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -1993,7 +1993,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="136,44"
           Id="Package\Begin Transaction"
@@ -2015,7 +2015,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="171.509433962264,44.811320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="27.0943396226414,0.981132075471692"
               Start="0,0"
               End="19.5943396226414,0.981132075471692">
@@ -2041,7 +2041,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="334.377358490566,45.7924528301887">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="35.0188679245283,0.0754716981132333"
               Start="0,0"
               End="27.5188679245283,0.0754716981132333">
@@ -2086,7 +2086,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="182.754716981132,66.811320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="22,37.9622641509434"
               Start="0,0"
               End="22,30.4622641509434">
@@ -2151,7 +2151,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           Id="Package\Insert Staging and Update ETL\tblFundingSources"
           TopLeft="1008.98113207547,102.77358490566" />
         <NodeLayout
-          Size="138,42"
+          Size="142,42"
           Id="Package\Insert Staging and Update ETL\tblTechItems"
           TopLeft="525.843890348499,100.514240782784" />
         <NodeLayout
@@ -2171,7 +2171,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="177.25,125.485849056604">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="29.0188679245283,0"
               Start="0,0"
               End="21.5188679245283,0">
@@ -2193,7 +2193,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="309.468867924528,125.028346806486">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="25.6014375183108,0"
               Start="0,0"
               End="18.1014375183108,0">
@@ -2215,7 +2215,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="665.811320754717,205.603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="34.9811320754717,2.98113207547169"
               Start="0,0"
               End="27.4811320754717,2.98113207547169">
@@ -2241,7 +2241,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="836.792452830189,209.632075471698">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="56.716981132075,0"
               Start="0,0"
               End="49.216981132075,0">
@@ -2263,7 +2263,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="952.842767295597,231.641509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-621.786163522012,40.867924528302"
               Start="0,0"
               End="-621.786163522012,33.367924528302">
@@ -2299,7 +2299,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="601.320754716981,349.377358490566">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="112.716981132075,47.8490566037736"
               Start="0,0"
               End="105.216981132075,47.8490566037736">
@@ -2327,7 +2327,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1008.17610062893,231.641509433962">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-93.6383647798737,55.773584905661"
               Start="0,0"
               End="-93.6383647798737,48.273584905661">
@@ -2363,7 +2363,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="623.891509433962,66.7311320754717">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-527.509433962264,36.7924528301887"
               Start="0,0"
               End="-527.509433962264,29.2924528301887">
@@ -2397,10 +2397,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="420.070305442839,146.533108707312">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="174.77358490566,-4.01886792452802"
+              StartConnector="{assembly:Null}"
+              EndConnector="176.77358490566,-4.01886792452802"
               Start="0,0"
-              End="174.77358490566,3.48113207547198">
+              End="176.77358490566,3.48113207547198">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -2411,13 +2411,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
                     Point2="0,22.5"
                     Point3="4,22.5" />
                   <mssgle:LineSegment
-                    End="170.77358490566,22.5" />
+                    End="172.77358490566,22.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="170.77358490566,22.5"
-                    Point2="174.77358490566,22.5"
-                    Point3="174.77358490566,18.5" />
+                    Point1="172.77358490566,22.5"
+                    Point2="176.77358490566,22.5"
+                    Point3="176.77358490566,18.5" />
                   <mssgle:LineSegment
-                    End="174.77358490566,3.48113207547198" />
+                    End="176.77358490566,3.48113207547198" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2428,18 +2428,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Insert Staging and Update ETL.PrecedenceConstraints[Constraint 3]"
-          TopLeft="663.843890348499,122.009478881958">
+          TopLeft="667.843890348499,122.009478881958">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="34.8400719156519,0"
+              StartConnector="{assembly:Null}"
+              EndConnector="30.8400719156519,0"
               Start="0,0"
-              End="27.3400719156519,0">
+              End="23.3400719156519,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="27.3400719156519,0" />
+                    End="23.3400719156519,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2453,7 +2453,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="814.683962264151,123.629716981132">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="23.561320754717,0"
               Start="0,0"
               End="16.061320754717,0">
@@ -2475,7 +2475,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="974.245283018868,124.764150943396">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="34.735849056602,0"
               Start="0,0"
               End="27.235849056602,0">
@@ -2497,7 +2497,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1071.58490566038,146.698113207547">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-967.018867924528,32.9433962264151"
               Start="0,0"
               End="-967.018867924528,25.4433962264151">
@@ -2523,7 +2523,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="172.452830188679,201.603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="21.0566037735849,-0.981132075471692"
               Start="0,0"
               End="13.5566037735849,-0.981132075471692">
@@ -2549,7 +2549,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="329.283018867925,200.622641509434">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="32.9811320754717,4.98113207547169"
               Start="0,0"
               End="25.4811320754717,4.98113207547169">
@@ -2575,7 +2575,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="498.037735849057,205.603773584906">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="32,0"
               Start="0,0"
               End="24.5,0">
@@ -2619,7 +2619,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="204.792452830189,51.8349056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="47.7547169811323,0"
               Start="0,0"
               End="40.2547169811323,0">
@@ -2641,7 +2641,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="355.547169811321,92.5849056603774">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="206.452830188679,-21.5849056603774"
               Start="0,0"
               End="206.452830188679,-14.0849056603774">
@@ -2698,7 +2698,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="107.042452830188,76.594339622642">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,35.405660377358"
               Start="0,0"
               End="0,27.905660377358">
@@ -2720,7 +2720,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="107.75,154">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="0,46"
               Start="0,0"
               End="0,38.5">
@@ -2749,7 +2749,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="760.537735849057,112.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="206.509433962264,85.1320754716981"
               Start="0,0"
               End="199.009433962264,85.1320754716981">
@@ -2783,7 +2783,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1035.04716981132,219.632075471698">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="-617.880503144654,58.5471698113209"
               Start="0,0"
               End="-617.880503144654,51.0471698113209">
@@ -2817,7 +2817,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1208.5,584.58962264151">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="127.5,0"
               Start="0,0"
               End="120,0">
@@ -2839,7 +2839,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="810.833333333333,278.179245283019">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
+              StartConnector="{assembly:Null}"
               EndConnector="410.761006289309,-51.037735849057"
               Start="0,0"
               End="410.761006289309,-43.537735849057">
