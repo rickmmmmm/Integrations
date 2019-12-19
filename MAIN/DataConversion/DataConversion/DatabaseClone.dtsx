@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\rgailey"
   DTS:DTSID="{D8D597EE-2666-4D4B-876E-D3E5AF56CF46}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="14.0.3002.107"
+  DTS:LastModifiedProductVersion="15.0.1301.433"
   DTS:LocaleID="1033"
   DTS:ObjectName="DatabaseClone"
   DTS:PackageType="5"
-  DTS:VersionBuild="24"
-  DTS:VersionGUID="{6D3E758E-DAC7-4DCF-A058-9107824FDA2A}">
+  DTS:VersionBuild="30"
+  DTS:VersionGUID="{A9214F2E-66F2-4352-B63D-FCB3C4BEB492}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -37,7 +37,26 @@
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
-  <DTS:Variables />
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{7500B5E5-DFCD-426B-859B-BDDFDE4B1D08}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="SourceDatabase">
+      <DTS:VariableValue
+        DTS:DataType="8">TipWebHostedAustinISDIT</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{97B9C7CE-161B-4FCD-BC00-1788695087E7}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="TargetDatabase">
+      <DTS:VariableValue
+        DTS:DataType="8">TipWeb_Staging_AustinISDIT</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
   <DTS:Executables>
     <DTS:Executable
       DTS:refId="Package\Transfer SQL Server Objects Task"
@@ -49,12 +68,16 @@
       DTS:ObjectName="Transfer SQL Server Objects Task"
       DTS:ThreadHint="0">
       <DTS:Variables />
+      <DTS:PropertyExpression
+        DTS:Name="DestinationDatabase">@[User::TargetDatabase]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="SourceDatabase">@[User::SourceDatabase]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <TransferSqlServerObjectsTaskData
           SourceConnection="{8C55C0F7-4B53-4A57-962C-CC7FBD151ADB}"
           DestinationConnection="{A6216B2B-9BFC-4A80-B305-ACDA961BF62D}"
-          SourceDatabase="TipWebHostedCatoosaPSD"
-          DestinationDatabase="TIPWeb_Staging_CatoosaCPS"
+          SourceDatabase="TipWebHostedAustinISDIT"
+          DestinationDatabase="TipWeb_Staging_AustinISDIT"
           CopyAllObjects="True"
           CopyAllTables="True"
           CopyAllViews="True"
@@ -69,8 +92,13 @@
           CopyAllUserDefinedTypes="True"
           CopyAllXmlSchemaCollections="True"
           DropObjectsFirst="True"
+          IncludeDependentObjects="True"
           IncludeExtendedProperties="True"
           CopyData="True"
+          CopyDatabaseUsers="True"
+          CopyDatabaseRoles="True"
+          CopySqlServerLogins="True"
+          CopyObjectLevelPermissions="True"
           CopyIndexes="True"
           CopyTriggers="True"
           CopyFullTextIndexes="True"

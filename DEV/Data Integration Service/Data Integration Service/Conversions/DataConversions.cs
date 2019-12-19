@@ -76,7 +76,7 @@ namespace Data_Integration_Service.Conversions
             return dt;
         }
 
-        public static string ConvertToChargesPostAPICall(string URL, DataTable ChargeData, string CustomerCode)
+        public static int ConvertToChargesPostAPICall(string URL, DataTable ChargeData, string CustomerCode)
         {
             string Results = "Succesful";
             string Payload = "";
@@ -88,52 +88,68 @@ namespace Data_Integration_Service.Conversions
             string ChargeDate;
             string ChargeComments;
             string LoginName;
-
+            int Retries = 0;
+            int ErrorCount = 0;
 
             for (int i = 0; i < ChargeData.Rows.Count; i++)
             {
-                ChargeUID = ChargeData.Rows[i]["ChargeUID"].ToString();
-                StudentID = ChargeData.Rows[i]["StudentID"].ToString();
-                CampusID = ChargeData.Rows[i]["CampusID"].ToString();
-                ChargeTypeName = ChargeData.Rows[i]["CreateDate"].ToString();
-                ChargeAmount = ChargeData.Rows[i]["ItemCode"].ToString();
-                ChargeComments = ChargeData.Rows[i]["TransactionComments"].ToString();
-                LoginName = ChargeData.Rows[i]["LoginName"].ToString();
-                ChargeDate = ChargeData.Rows[i]["CreateDate"].ToString();
-
-                if (CustomerCode == "CPS")
+                if (Retries <= 3)
                 {
-                    ChargeDate = ChargeData.Rows[i]["CreateDateUTC"].ToString().Replace(" ","T") + "Z";
+                    ChargeUID = ChargeData.Rows[i]["ChargeUID"].ToString();
+                    StudentID = ChargeData.Rows[i]["StudentID"].ToString();
+                    CampusID = ChargeData.Rows[i]["CampusID"].ToString();
+                    ChargeTypeName = ChargeData.Rows[i]["CreateDate"].ToString();
+                    ChargeAmount = ChargeData.Rows[i]["ItemCode"].ToString();
+                    ChargeComments = ChargeData.Rows[i]["TransactionComments"].ToString();
+                    LoginName = ChargeData.Rows[i]["LoginName"].ToString();
+                    ChargeDate = ChargeData.Rows[i]["CreateDate"].ToString();
 
-                    Payload = @"{
-                        feeReference: " + ChargeUID + 
-                        ",studentId: " + StudentID + 
-                        ",schoolId: " + CampusID + 
-                        ",itemCode: " + ChargeTypeName + 
-                        ",transactionDate: " + ChargeDate + 
-                        ",transactionQuantity: 1" +
-                        ",transactionAmount: " + ChargeAmount + 
-                        ", unitPrice: " + ChargeAmount + 
-                        ",comment: " + ChargeComments + 
-                        ",paymentDueDate: " + ChargeDate + 
-                        ",feeEntryUser: " + LoginName + 
-                        "} ";
+                    if (CustomerCode == "CPS")
+                    {
+                        ChargeDate = ChargeData.Rows[i]["CreateDateUTC"].ToString().Replace(" ", "T") + "Z";
+
+                        Payload = @"{" +
+                            "\"feeReference\": \"" + ChargeUID + "\"" +
+                            ",\"studentId\": \"" + StudentID + "\"" +
+                            ",\"schoolId\": \"" + CampusID + "\"" +
+                            ",\"itemCode\": \"" + ChargeTypeName + "\"" +
+                            ",\"transactionDate\": \"" + ChargeDate + "\"" +
+                            ",\"transactionQuantity\": 1" +
+                            ",\"transactionAmount\": " + ChargeAmount +
+                            ",\"unitPrice\": " + ChargeAmount +
+                            ",\"comment\": \"" + ChargeComments + "\"" +
+                            ",\"paymentDueDate\": \"" + ChargeDate + "\"" +
+                            ",\"feeEntryUser\": \"" + LoginName + "\"" +
+                            "}";
+                    }
+
+                    try
+                    {
+                        Results = APICharges.PostAPICall(URL, Payload);
+                    }
+                    catch
+                    {
+                        Results = "false";
+                    }
+
+                    if (Results.Contains("true"))
+                    {
+                        EventLogWrite.WriteToIntegrationLog(Convert.ToInt32(ChargeUID), "ChargeUID", "Charges", CustomerCode, true, "OK");
+                    }
+                    else
+                    {
+                        EventLogWrite.WriteToIntegrationLog(Convert.ToInt32(ChargeUID), "ChargeUID", "Charges", CustomerCode, true, Results);
+                        ErrorCount = ErrorCount + 1;
+
+                        if (Results.Contains("- StatusCode: (500) ") || Results.Contains("- StatusCode: (504) "))
+                        {
+                            Retries = Retries + 1;
+                        }
+                    }
                 }
-
-                try
-                {
-                    APICharges.PostAPICall(URL, Payload);
-
-                    //Log IDs that where sent
-                    EventLogWrite.WriteToIntegrationLog(Convert.ToInt32(ChargeUID),"ChargeUID","Charges", CustomerCode);
-                }
-                catch
-                {
-                    Results = "Failure";
-                }                
             }
 
-            return Results;
+            return ErrorCount;
         }
     }
 }

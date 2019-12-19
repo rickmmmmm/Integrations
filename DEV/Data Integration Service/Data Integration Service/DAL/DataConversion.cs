@@ -10,7 +10,7 @@ namespace Data_Integration_Service.DAL
         public static string RebuildIndex(string SQLServerConnectionString)
         {
             string Results = "Successful";
-            string SQLCommand = "SELECT SettingValue FROM app.RefApplicationSettings WHERE SettingName = 'IntegrationsChargesTimer'";
+            string SQLCommand = "ALTER INDEX PK_ETL_PreValudation ON ETL.PreValudation REBUILD;";
 
             using (SqlConnection connection = new SqlConnection(SQLServerConnectionString))
             {
