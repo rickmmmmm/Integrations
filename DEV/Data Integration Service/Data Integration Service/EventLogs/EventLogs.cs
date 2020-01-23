@@ -52,10 +52,10 @@ namespace Data_Integration_Service.EventLogs
 
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
-                using (SqlCommand command = new SqlCommand("app.ApplicatonLogEventInsert", connection))
+                using (SqlCommand command = new SqlCommand("app.ApplicationLogInsert", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add(new SqlParameter("@AppName", ApplicationName));
+                    command.Parameters.Add(new SqlParameter("@ApplicationName", ApplicationName));
                     command.Parameters.Add(new SqlParameter("@EventMessage", EventMessage));
                     command.Parameters.Add(new SqlParameter("@EventTypeID", EventTypeID));
                     command.Parameters.Add(new SqlParameter("@EventTypeText", EventTypeText));
@@ -77,7 +77,7 @@ namespace Data_Integration_Service.EventLogs
             }
         }
 
-        public static void WriteToIntegrationLog(int UniqueID, string ColumnName, string IntegrationType, string CustomerCode )
+        public static void WriteToIntegrationLog(int UniqueID, string ColumnName, string IntegrationType, string CustomerCode, bool Successful, string EventText )
         {
             string ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["Intergration"].ConnectionString;
 
@@ -90,6 +90,7 @@ namespace Data_Integration_Service.EventLogs
                     command.Parameters.Add(new SqlParameter("@ColumnName", ColumnName));
                     command.Parameters.Add(new SqlParameter("@IntegrationType", IntegrationType));
                     command.Parameters.Add(new SqlParameter("@CustomCode", CustomerCode));
+                    command.Parameters.Add(new SqlParameter("@Successful", Successful));
 
                     connection.Open();
 

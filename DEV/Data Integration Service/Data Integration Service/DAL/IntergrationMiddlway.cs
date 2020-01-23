@@ -65,47 +65,7 @@ namespace Data_Integration_Service.DAL
             return Results;
         }
 
-        public static string GetChargesCustomerLastQueryDate(string SQLServerConnectionString, string CustomerCode)
-        {
-            string Results = "";
-            string SQLCommand = @"
-            SELECT SUBSTRING(ApplicationLogMessage,CHARINDEX('LastQueryDate: ',ApplicationLogMessage) + 15,24)
-            FROM app.ApplicationLog  WITH (NOLOCK) WHERE ApplicationLogID =
-            (SELECT MAX(ApplicationLogID)
-            FROM app.ApplicationLog WITH (NOLOCK)
-            WHERE EventTypeID = 1 
-            AND ApplicationLogMessage LIKE 'Instegration Service - Successful Charges CustomerCode: " + CustomerCode + " LastQueryDate: %')";
-
-            using (SqlConnection connection = new SqlConnection(SQLServerConnectionString))
-            {
-
-                using (SqlCommand command = new SqlCommand(SQLCommand, connection))
-                {
-                    connection.Open();
-
-                    try
-                    {
-                        Results = command.ExecuteScalar().ToString();
-                    }
-                    catch (Exception e)
-                    {
-                        EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Error while setting Charges LastQueryDate for " + CustomerCode + " - " + e.Message.ToString(), true);
-                    }
-
-                    connection.Close();
-                }
-
-            }
-
-            if (Results == "" || Results == null)
-            {
-                Results = "2019-11-01 00:00:00.000";
-            }
-
-            return Results;
-        }
-
-        public static string GetChargesCustomerTIPWebITDatabase(string SQLServerConnectionString, string CustomerCode)
+        public static string GetChargesCustomerTIPWebDatabase(string SQLServerConnectionString, string CustomerCode)
         {
             string Results = "TipWebHostedChicagoPS";
 
@@ -136,7 +96,7 @@ namespace Data_Integration_Service.DAL
             return Results;
         }
 
-        public static DataTable GetCharges(string SQLServerConnectionString,string CustomerCode, string FromDate)
+        public static DataTable GetCharges(string SQLServerConnectionString,string CustomerCode)
         {
             DataTable Results = new DataTable();
 
@@ -148,31 +108,35 @@ namespace Data_Integration_Service.DAL
             tblUnvCharges.ChargeAmount, ISNULL(tblUnvCharges.Notes, '') + ', ' + ISNULL(F.Accession, '') + ' - ' + REPLACE(ISNULL(dbo.tblBookInventory.Title, ''), '""', '') AS TransactionComments,
             G.LoginName,GETDATE() AS QueryDateTime
 
-            FROM dbo.tblBookInventory
+            FROM dbo.tblBookInventory WITH (NOLOCK) 
 
-            RIGHT OUTER JOIN tblUnvChargeTypes
+            RIGHT OUTER JOIN tblUnvChargeTypes WITH (NOLOCK) 
 
-            INNER JOIN tblUnvCharges
+            INNER JOIN tblUnvCharges WITH (NOLOCK) 
             ON dbo.tblUnvChargeTypes.ChargeTypeUID = dbo.tblUnvCharges.ChargeTypeUID
 
-            LEFT OUTER JOIN dbo.tblCampuses
+            LEFT OUTER JOIN dbo.tblCampuses WITH (NOLOCK) 
 
             INNER JOIN dbo.v_IMAllEntityInfo
             ON dbo.tblCampuses.CampusID = dbo.v_IMAllEntityInfo.CampusID ON dbo.tblUnvCharges.EntityTypeUID = dbo.v_IMAllEntityInfo.EntityTypeUID AND
             dbo.tblUnvCharges.EntityUID = dbo.v_IMAllEntityInfo.EntityUID ON dbo.tblBookInventory.BookInventoryUID = dbo.tblUnvCharges.ItemUID
 
-            LEFT OUTER JOIN dbo.tblUnvChargePayments
+            LEFT OUTER JOIN dbo.tblUnvChargePayments WITH (NOLOCK) 
             ON dbo.tblUnvCharges.ChargeUID = dbo.tblUnvChargePayments.ChargeUID
 
-            LEFT JOIN tblStudentsDistribution AS F
+            LEFT JOIN tblStudentsDistribution AS F WITH (NOLOCK) 
             ON F.StudentsUID = v_IMAllEntityInfo.EntityID AND dbo.tblUnvCharges.UniversalID = F.Accession
 
-            INNER JOIN tblUser AS G
+            INNER JOIN tblUser AS G WITH (NOLOCK) 
             ON tblUnvCharges.CreatedByUserID = G.UserID
 
-            WHERE(dbo.v_IMAllEntityInfo.EntityType = 'Student') AND(dbo.tblUnvCharges.ApplicationUID = 1)
-            AND tblUnvCharges.DateSatisfied IS NULL
-            AND tblUnvCharges.CreatedDate >= '" + FromDate + "'";
+			LEFT JOIN IntegrationMiddleWay.app.IntergationServiceLog AS H WITH (NOLOCK) 
+			ON tblUnvCharges.ChargeUID = H.UniqueID AND H.ColumnName = 'ChargeUID' AND H.Successful = 1 AND H.IntegrationType = 'Charges' AND H.CustomCode = '" + CustomerCode + "' " +
+            " " +
+            "WHERE(dbo.v_IMAllEntityInfo.EntityType = 'Student') " +
+            "AND(dbo.tblUnvCharges.ApplicationUID = 1) " +
+            "AND tblUnvCharges.DateSatisfied IS NULL " +
+            "AND H.UniqueID IS NULL ";
 
             using (SqlConnection connection = new SqlConnection(SQLServerConnectionString))
             {

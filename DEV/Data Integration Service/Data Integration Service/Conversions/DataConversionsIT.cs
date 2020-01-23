@@ -31,8 +31,8 @@ namespace Data_Integration_Service.Conversions
             string SQLCommand= @"
             SELECT ProcessID,iPkey,FolderName,Go_LiveDate,ProcessEmail,StagingDBName,ProductionDBName,ConversionStatusID
             FROM SSIS_Variables 
-            WHERE Active = 1 AND  ConversionType = 2 
-            AND ProcessID = 1 AND ConversionStatusID < 14";
+            WHERE Active = 1 AND ConversionType = 2 
+            AND ConversionStatusID = 2";
 
             using (SqlConnection connection = new SqlConnection(DC_SQLServerConnectionString))
             {
@@ -77,7 +77,7 @@ namespace Data_Integration_Service.Conversions
 
                 try
                 {
-                    EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Starting IT Data Conversion Process for " + FolderName, true); 
+                    EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Starting IT Data Conversion Process for " + FolderName, true); 
 
                     Results = ProcessRawData(ProcessSQLServerConnectionString, FolderName);
 
@@ -134,12 +134,12 @@ namespace Data_Integration_Service.Conversions
                         SendEmails.DBEmailsNormalPriority(DC_SQLServerConnectionString, ProcessEmails, "Data Conversion Report", "Data Conversion Report for " + FolderName, "", @"~\GeneratedReports\" + ReportName);
                     }
 
-                    EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Completed Successfully IT Data Conversion Process for " + FolderName, true);
+                    EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Completed Successfully IT Data Conversion Process for " + FolderName, true);
                 }
                 catch
                 {
                     Results = "Failure";
-                    EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Instegration Service - Completed with Failure IT Data Conversion Process for " + FolderName, true);
+                    EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Data Conversion Service - Completed with Failure IT Data Conversion Process for " + FolderName, true);
                 }
             }
 
@@ -147,7 +147,7 @@ namespace Data_Integration_Service.Conversions
         }
         public static string ProcessRawData(string TIPWebDatabase,string FolderName)
         {
-            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Starting IT Data Conversion RawData Import for " + FolderName, true);
+            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Starting IT Data Conversion RawData Import for " + FolderName, true);
 
             string Results = "Succussful"; ;
 
@@ -212,7 +212,7 @@ namespace Data_Integration_Service.Conversions
         }
         public static string CloneProductionDatabase(string StagingDatabase, string ProductionDatabase, string FolderName)
         {
-            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Starting IT Data Conversion Cloning Producution Database for " + FolderName, true);
+            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Starting IT Data Conversion Cloning Producution Database for " + FolderName, true);
 
             string PackageName = "DatabaseClone.dtsx";
             string PackagePath = @"~\SSIS Packages\";
@@ -235,18 +235,18 @@ namespace Data_Integration_Service.Conversions
             if (pkgResults == DTSExecResult.Failure)
             {
                 Results = "Failure";
-                EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Instegration Service - Completed with Failure IT Data Conversion Cloning Production Database for " + FolderName, true);
+                EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Data Conversion Service - Completed with Failure IT Data Conversion Cloning Production Database for " + FolderName, true);
             }
             else
             {
-                EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Completed Successfully IT Data Conversion Cloning Production Databasefor " + FolderName, true);
+                EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Completed Successfully IT Data Conversion Cloning Production Databasefor " + FolderName, true);
             }
 
             return Results;
         }
         public static string PopulateTIPWebITDatabase(int IPKey,bool ReleaseToProduction, string FolderName)
         {
-            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Starting IT Data Conversion Populating TIPWeb Database for " + FolderName, true);
+            EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Starting IT Data Conversion Populating TIPWeb Database for " + FolderName, true);
 
             string PackageName = "IT_Conversion.dtsx";
             string PackagePath = @"~\SSIS Packages\";
@@ -269,11 +269,11 @@ namespace Data_Integration_Service.Conversions
             if (pkgResults == DTSExecResult.Failure)
             {
                 Results = "Failure";
-                EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Instegration Service - Completed with Failure IT Data ConversionPopulating TIPWeb Database for " + FolderName, true);
+                EventLogs.EventLogWrite.WriteApplicationLogErrorEvent("Data Conversion Service - Completed with Failure IT Data ConversionPopulating TIPWeb Database for " + FolderName, true);
             }
             else
             {
-                EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Instegration Service - Completed Successfully IT Data Conversion Populating TIPWeb Databasefor " + FolderName, true);
+                EventLogs.EventLogWrite.WriteApplicationLogInformatonEvent("Data Conversion Service - Completed Successfully IT Data Conversion Populating TIPWeb Databasefor " + FolderName, true);
             }
 
             return Results;

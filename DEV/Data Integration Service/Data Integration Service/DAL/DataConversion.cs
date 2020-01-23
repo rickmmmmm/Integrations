@@ -381,7 +381,7 @@ namespace Data_Integration_Service.DAL
         {
             string Results = "Successful";
             string SQLCommand = @"
-                DECLARE @NewTableName VARCHAR(200) = ? + '_'+ FORMAT(DATEPART(MM,GETDATE()),'0#') + FORMAT(DATEPART(DD,GETDATE()),'0#') + FORMAT(DATEPART(YYYY,GETDATE()),'0000#') + '_' + FORMAT(DATEPART(HH,GETDATE()),'0#') + FORMAT(DATEPART(MI,GETDATE()),'0#')
+                DECLARE @NewTableName VARCHAR(200) = 'ETL.RawImport_'+ FORMAT(DATEPART(MM,GETDATE()),'0#') + FORMAT(DATEPART(DD,GETDATE()),'0#') + FORMAT(DATEPART(YYYY,GETDATE()),'0000#') + '_' + FORMAT(DATEPART(HH,GETDATE()),'0#') + FORMAT(DATEPART(MI,GETDATE()),'0#')
                 DECLARE @NewIndexName VARCHAR(200) = 'PK_' + @NewTableName
 
                 EXEC sp_rename  'ETL.RawImport.PK_Stage_RawImport', @NewIndexName
@@ -435,7 +435,7 @@ namespace Data_Integration_Service.DAL
                 ON A.object_id=B.object_id
 
                 WHERE A.name = 'Clients_ETL'
-                AND B.name NOT IN  ('IKey','Date_Loaded','DataSource','ReviewFlag','ReviewNotes','import','RejectNotes','CreateDate','ModfiedDate','ModfiedBy')
+                AND B.name NOT IN  ('IKey','Date_Loaded','PurchaseDate','CustomUDEF1_Value','CustomUDEF2_Value','CustomUDEF3_Value','CustomUDEF4_Value','DataSource','ReviewFlag','ReviewNotes','import','RejectNotes','CreateDate','ModfiedDate','ModfiedBy')
 
                 SET @CounterMax = @@ROWCOUNT
 

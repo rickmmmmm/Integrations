@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-
 
 namespace Data_Integration_Service.APICalls
 {
@@ -11,10 +11,12 @@ namespace Data_Integration_Service.APICalls
     {
         public static string PostAPICall(string URL, string Payload)
         {
-            string Results = "Failure";
+            HttpResponseMessage Message;
+            string Results = "true";
+            string StatusCode = "200";
 
-            var JsonString = JsonConvert.SerializeObject(Payload);
-            var Content = new StringContent(JsonString, Encoding.UTF8, "application/json");
+            //var JsonString = JsonConvert.SerializeObject(Payload);
+            var Content = new StringContent(Payload, Encoding.UTF8, "application/json");
 
             using (var client = new HttpClient())
             {
@@ -22,7 +24,37 @@ namespace Data_Integration_Service.APICalls
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                Results = client.PostAsync(URL, Content).Result.ToString();
+                try
+                {
+                    Message = client.PostAsync(URL, Content).Result;
+
+                    if (Message.StatusCode.ToString() == "Fee Created")
+                    {
+                        StatusCode = "201";
+                    }
+
+                    if (Message.StatusCode.ToString() == "Failed Validation")
+                    {
+                        StatusCode = "400";
+                    }
+
+                    if (Message.StatusCode.ToString() == "Internal Server Error" || Message.StatusCode.ToString() == "InternalServerError")
+                    {
+                        StatusCode = "500";
+                    }
+
+                    if (Message.StatusCode.ToString() == "API Timeout")
+                    {
+                        StatusCode = "504";
+                    }
+
+                    Results = Message.IsSuccessStatusCode.ToString() + " - StatusCode: (" + StatusCode + ") ErrorMessage: " + Message.ReasonPhrase.ToString() + ")";
+                }
+                catch (WebException e)
+                {
+                    Results = e.ToString();
+                }
+
             }
 
             return Results; 
