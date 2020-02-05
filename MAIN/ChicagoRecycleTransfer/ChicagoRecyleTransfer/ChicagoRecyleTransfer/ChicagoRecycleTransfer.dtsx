@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DTSID="{D8016182-6565-49A0-9D5B-B3640301F71F}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="14.0.3026.27"
+  DTS:LastModifiedProductVersion="15.0.2000.68"
   DTS:LocaleID="1033"
   DTS:ObjectName="ChicagoRecycleTransfer"
   DTS:PackageType="5"
-  DTS:VersionBuild="168"
-  DTS:VersionGUID="{82E71991-07FA-4D8B-9A3C-E800D6AE170C}">
+  DTS:VersionBuild="172"
+  DTS:VersionGUID="{12595125-0A79-43D5-B526-FA944AA4AE40}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -28,7 +28,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWeb_Chicago_0716;Provider=SQLOLEDB.1;Integrated Security=SSPI;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWeb_Chicago_1220;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-ChicagoRecycleTransfer-{98E290BE-BE98-4915-BCBC-6632D35A60EC}ClientDB;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -608,7 +608,7 @@
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{98E290BE-BE98-4915-BCBC-6632D35A60EC}"
-                  SQLTask:SqlStatementSource=" /*&#xA; SSIS takes the list of transfers and iterates through them...&#xA; Inserting into history and changing status&#xA; */&#xA;&#xA; declare @TransferUID int, @TransferTypeUID int, @DriverID int&#xA; &#xA; declare @StatusUID int&#xA;&#xA;set @TransferUID = ?&#xA;set @TransferTypeUID = ?&#xA;set @DriverID = ?&#xA;&#xA;&#xA;if @TransferTypeUID = 4 and 1=0&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;select @StatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Scheduled')&#xA;&#xA;&#x9;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;&#x9;(TransferUID, StatusUID, OriginStatusUID, &#xA;&#x9;&#x9;DriverID, DeliveryDate,&#xA;&#x9;&#x9;Denied,&#xA;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;SELECT T.TransferUID, @StatusUID, T.StatusUID,&#xA;&#x9;&#x9;@DriverID, convert(varchar(10), getdate(), 101),&#xA;&#x9;&#x9;0,&#xA;&#x9;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;&#x9;FROM tblTechTransfers T&#xA;&#x9;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;&#x9;Update t &#xA;&#x9;&#x9;set StatusUID = @StatusUID, DriverID = @DriverID, DeliveryDate = convert(varchar(10), getdate(), 101),&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;&#x9;&#x9;--select *&#xA;&#x9;&#x9;from tblTechTransfers t&#xA;&#x9;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;END&#xA;&#xA;&#xA;select @StatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'In Transit')&#xA;--print cast(@StatusUID as varchar(10))&#xA;&#xA;Update t &#xA;set StatusUID = @StatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;--select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;INSERT INTO tblTechTransferHistory&#xA;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @StatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;&#xA;/*&#xA;Note:  OriginStatusUID is 26 and not the inventory StatusUID (57 - Pending Transfer which is not recorded in the history table)&#xA;The application is putting in 26 for the OriginStatusUID , so this puts in 26 also&#xA;26 is the completed status for the transfer&#xA;*/&#xA;&#xA;INSERT INTO tblTechInventoryHistory&#xA;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;StatusUID,&#xA;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, &#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT tti.InventoryUID, tti.InventoryTypeUID, tti.SiteUID, tts.TransferUID, 6, &#xA;@StatusUID, &#xA;tti.SiteUID, 26, tti.EntityUID, tti.EntityTypeUID, &#xA;0, GETDATE(), 0, GETDATE(), &#xA;tti.ParentInventoryUID, tti.ParentInventoryUID, 0, tti.InventorySourceUID, tti.ContainerUID, tti.ContainerUID&#xA;&#xA;FROM tblTechInventory tti&#xA;join tblTechTransferInventoryTagged ttt on tti.InventoryUID = ttt.InventoryUID&#xA;JOIN tblTechTransferInventory ttr ON ttt.TransferInventoryUID = ttr.TransferInventoryUID&#xA;JOIN tblTechTransfers tts ON tts.TransferUID = ttr.TransferUID &#xA;where tts.transferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;--select *&#xA;update tti set EntityUID = ttr.TransferUID, EntityTypeUID = 6, StatusUID = @StatusUID&#xA;from tblTechInventory tti&#xA;join tblTechTransferInventoryTagged ttt on tti.InventoryUID = ttt.InventoryUID&#xA;join tblTechTransferInventory ttr on ttt.TransferInventoryUID = ttr.TransferInventoryUID&#xA;join tblTechTransfers tts on tts.TransferUID = ttr.TransferUID&#xA;where tts.transferUID = @TransferUID&#xA;&#xA; &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  SQLTask:SqlStatementSource=" /*&#xA; SSIS takes the list of transfers and iterates through them...&#xA; Inserting into history and changing status&#xA; */&#xA;&#xA; declare @TransferUID int, @TransferTypeUID int, @DriverID int&#xA; &#xA; declare @StatusUID int&#xA;&#xA;set @TransferUID = ?&#xA;set @TransferTypeUID = ?&#xA;set @DriverID = ?&#xA;&#xA;&#xA;if @TransferTypeUID = 4 &#xA;RETURN&#xA;&#xA;/*&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;select @StatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'Scheduled')&#xA;&#xA;&#x9;&#x9;INSERT INTO tblTechTransferHistory&#xA;&#x9;&#x9;(TransferUID, StatusUID, OriginStatusUID, &#xA;&#x9;&#x9;DriverID, DeliveryDate,&#xA;&#x9;&#x9;Denied,&#xA;&#x9;&#x9;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;&#x9;&#x9;SELECT T.TransferUID, @StatusUID, T.StatusUID,&#xA;&#x9;&#x9;@DriverID, convert(varchar(10), getdate(), 101),&#xA;&#x9;&#x9;0,&#xA;&#x9;&#x9;0, GETDATE(), 0, GETDATE()&#xA;&#x9;&#x9;FROM tblTechTransfers T&#xA;&#x9;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;&#x9;Update t &#xA;&#x9;&#x9;set StatusUID = @StatusUID, DriverID = @DriverID, DeliveryDate = convert(varchar(10), getdate(), 101),&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;&#x9;&#x9;--select *&#xA;&#x9;&#x9;from tblTechTransfers t&#xA;&#x9;&#x9;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#x9;END&#xA;*/&#xA;&#xA;select @StatusUID = (select statusid from tblStatus where statustypeuid = 4 and statusdesc = 'In Transit')&#xA;--print cast(@StatusUID as varchar(10))&#xA;&#xA;Update t &#xA;set StatusUID = @StatusUID, LastModifiedByUserID = 0, LastModifiedDate = getdate()&#xA;--select *&#xA;from tblTechTransfers t&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;INSERT INTO tblTechTransferHistory&#xA;(TransferUID, StatusUID, OriginStatusUID, Denied,&#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate)&#xA;SELECT T.TransferUID, @StatusUID, T.StatusUID, 0,&#xA;0, GETDATE(), 0, GETDATE()&#xA;FROM tblTechTransfers T&#xA;WHERE t.TransferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;&#xA;/*&#xA;Note:  OriginStatusUID is 26 and not the inventory StatusUID (57 - Pending Transfer which is not recorded in the history table)&#xA;The application is putting in 26 for the OriginStatusUID , so this puts in 26 also&#xA;26 is the completed status for the transfer&#xA;*/&#xA;&#xA;INSERT INTO tblTechInventoryHistory&#xA;(InventoryUID, InventoryTypeUID, SiteUID, EntityUID, EntityTypeUID, &#xA;StatusUID,&#xA;OriginSiteUID, OriginStatusUID, OriginEntityUID, OriginEntityTypeUID, &#xA;CreatedByUserID, CreatedDate, LastModifiedByUserID, LastModifiedDate, &#xA;ParentInventoryUID, OriginParentInventoryUID, BulkEditUID, InventorySourceUID, ContainerUID, OriginContainerUID)&#xA;SELECT tti.InventoryUID, tti.InventoryTypeUID, tti.SiteUID, tts.TransferUID, 6, &#xA;@StatusUID, &#xA;tti.SiteUID, 26, tti.EntityUID, tti.EntityTypeUID, &#xA;0, GETDATE(), 0, GETDATE(), &#xA;tti.ParentInventoryUID, tti.ParentInventoryUID, 0, tti.InventorySourceUID, tti.ContainerUID, tti.ContainerUID&#xA;&#xA;FROM tblTechInventory tti&#xA;join tblTechTransferInventoryTagged ttt on tti.InventoryUID = ttt.InventoryUID&#xA;JOIN tblTechTransferInventory ttr ON ttt.TransferInventoryUID = ttr.TransferInventoryUID&#xA;JOIN tblTechTransfers tts ON tts.TransferUID = ttr.TransferUID &#xA;where tts.transferUID = @TransferUID&#xA;&#xA;&#xA;&#xA;--select *&#xA;update tti set EntityUID = ttr.TransferUID, EntityTypeUID = 6, StatusUID = @StatusUID&#xA;from tblTechInventory tti&#xA;join tblTechTransferInventoryTagged ttt on tti.InventoryUID = ttt.InventoryUID&#xA;join tblTechTransferInventory ttr on ttt.TransferInventoryUID = ttr.TransferInventoryUID&#xA;join tblTechTransfers tts on tts.TransferUID = ttr.TransferUID&#xA;where tts.transferUID = @TransferUID&#xA;&#xA; &#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
                   <SQLTask:ParameterBinding
                     SQLTask:ParameterName="@TransferUID"
                     SQLTask:DtsVariableName="User::TransferUID"
@@ -692,6 +692,10 @@
                           description="Specifies the text to write to the destination file before any data is written."
                           expressionType="Notify"
                           name="Header" />
+                        <property
+                          dataType="System.Boolean"
+                          description="When text qualifier is enabled, specifies whether the text qualifier in the data written to the destination file will be escaped or not."
+                          name="EscapeQualifier">false</property>
                       </properties>
                       <connections>
                         <connection
@@ -848,7 +852,7 @@
                           dataType="System.String"
                           description="The SQL command to be executed."
                           name="SqlCommand"
-                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select distinct TransferNumber, Tag, Serial, sitename as [Site Name], RoomNumber as [Room Number], ItemName as [Product Name], ItemTypeName as [Product Type], convert(varchar(10), ttih.CreatedDate, 101) as TransferDate
+                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select distinct TransferNumber, Tag, Serial, sitename as [Site Name], RoomNumber as [Room Number], ItemName as [Product Name], ItemTypeName as [Product Type], convert(varchar(10), ttih.CreatedDate, 101) as TransferDate
 --,tti.*
 from tblTechInventory tti
 join tblTechInventoryHistory ttih on tti.InventoryUID = ttih.InventoryUID and OriginEntityTypeUID = 6 and OriginEntityUID = ? 
@@ -1634,6 +1638,10 @@ Order by TransferNumber, Tag</property>
           Id="Package\Site List\Get List of Approved Transfers"
           TopLeft="326,231" />
         <NodeLayout
+          Size="225,42"
+          Id="Package\Site List\Get List of Transfer Pending Approval"
+          TopLeft="35,26" />
+        <NodeLayout
           Size="165,42"
           Id="Package\Site List\List of In Transit Transfers"
           TopLeft="633,244" />
@@ -1763,6 +1771,55 @@ Order by TransferNumber, Tag</property>
           Size="500,241"
           Id="Package\Site List\Process In Transit Transfers"
           TopLeft="335,341" />
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Site List\Process Pending Transfers\Get Pending Stats"
+          TopLeft="49,23" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Site List\Process Pending Transfers\Send Email Report"
+          TopLeft="33,108" />
+        <EdgeLayout
+          Id="Package\Site List\Process Pending Transfers.PrecedenceConstraints[Constraint]"
+          TopLeft="130.5,65">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-15,43"
+              Start="0,0"
+              End="-15,35.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,17.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17.5"
+                    Point2="0,21.5"
+                    Point3="-4,21.5" />
+                  <mssgle:LineSegment
+                    End="-11,21.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-11,21.5"
+                    Point2="-15,21.5"
+                    Point3="-15,25.5" />
+                  <mssgle:LineSegment
+                    End="-15,35.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="252,205"
+          Size="252,248"
+          Id="Package\Site List\Process Pending Transfers"
+          TopLeft="30,144" />
         <EdgeLayout
           Id="Package\Site List.PrecedenceConstraints[Constraint]"
           TopLeft="438.5,231">
@@ -1865,59 +1922,6 @@ Order by TransferNumber, Tag</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="225,42"
-          Id="Package\Site List\Get List of Transfer Pending Approval"
-          TopLeft="35,26" />
-        <NodeLayout
-          Size="165,42"
-          Id="Package\Site List\Process Pending Transfers\Send Email Report"
-          TopLeft="33,108" />
-        <NodeLayout
-          Size="163,42"
-          Id="Package\Site List\Process Pending Transfers\Get Pending Stats"
-          TopLeft="49,23" />
-        <EdgeLayout
-          Id="Package\Site List\Process Pending Transfers.PrecedenceConstraints[Constraint]"
-          TopLeft="130.5,65">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-15,43"
-              Start="0,0"
-              End="-15,35.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,17.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,17.5"
-                    Point2="0,21.5"
-                    Point3="-4,21.5" />
-                  <mssgle:LineSegment
-                    End="-11,21.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-11,21.5"
-                    Point2="-15,21.5"
-                    Point3="-15,25.5" />
-                  <mssgle:LineSegment
-                    End="-15,35.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <ContainerLayout
-          HeaderHeight="43"
-          IsExpanded="True"
-          PanelSize="252,205"
-          Size="252,248"
-          Id="Package\Site List\Process Pending Transfers"
-          TopLeft="30,144" />
         <EdgeLayout
           Id="Package\Site List.PrecedenceConstraints[Constraint 3]"
           TopLeft="147.5,68">
@@ -2028,7 +2032,7 @@ Order by TransferNumber, Tag</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <AnnotationLayout
-          Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xA;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xA;currently using approvals only by fund account&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xA;Also, tblTechTransferWorkflows - still need to determine&#xA;how that may play in.&#xA;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xA;to Status 24 (Transit)&#xA;&#xA;Still unclear how tags will be received.&#xA;&#xA;1/18 - Current scope:  Move tags from approved to received&#xA;1/22 - Move tags from submitted to received&#xA;1/29 - Add 'Donate' site to the list with email of tags&#xA;&#xA;2/2 - Add 'Untagged' and 'Warehouse' transfers&#xA;1/30/2019 - Deactivate untagged warehouse transfers&#xD;&#xA;&#xD;&#xA;7/18/19 - Add email only for pending approval"
+          Text="Original scope:&#xA;Receive In-Transit&#xA;&#xA;12/21-Change put all approved into&#xA;In-Transit&#xA;&#xA;1/2-Waiting on final confirmation of process&#xA;Do not deploy.&#xA;&#xA;1/4-May pick up at &quot;New&quot; assuming all are approved&#xA;currently using approvals only by fund account&#xA;Look for tblTechTransferInventory.FundingSourceApproved&#xA;Also, tblTechTransferWorkflows - still need to determine&#xA;how that may play in.&#xA;&#xA;May move from status 23 (new) to status 93 (Submitted)&#xA;to Status 24 (Transit)&#xA;&#xA;Still unclear how tags will be received.&#xA;&#xA;1/18 - Current scope:  Move tags from approved to received&#xA;1/22 - Move tags from submitted to received&#xA;1/29 - Add 'Donate' site to the list with email of tags&#xA;&#xA;2/2 - Add 'Untagged' and 'Warehouse' transfers&#xA;1/30/2019 - Deactivate untagged warehouse transfers&#xA;&#xA;7/18/19 - Add email only for pending approval"
           ParentId="Package"
           FontInfo="{assembly:Null}"
           Size="347,471"
@@ -2048,7 +2052,7 @@ Order by TransferNumber, Tag</property>
     design-time-name="Package\Site List\Process In Transit Transfers\Get Tag List">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Site List\Process In Transit Transfers\Get Tag List\OLE DB Source"
@@ -2076,7 +2080,9 @@ Order by TransferNumber, Tag</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
