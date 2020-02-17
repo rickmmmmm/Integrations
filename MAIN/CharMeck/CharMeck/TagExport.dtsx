@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="TagExport"
   DTS:PackageType="5"
-  DTS:VersionBuild="53"
-  DTS:VersionGUID="{89BD52E2-DE02-4CD0-95D6-5B9D7DDABDB9}">
+  DTS:VersionBuild="54"
+  DTS:VersionGUID="{4E4A76A5-6AB1-4FF2-BC16-5C623E220E85}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -444,14 +444,35 @@
               Language="CSharp"
               ReadOnlyVariables="User::DeleteFileName">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_5131a3dd70c647cab0e04b9a7ffb8bcf")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_5131a3dd70c647cab0e04b9a7ffb8bcf")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -750,35 +771,14 @@ namespace ST_5131a3dd70c647cab0e04b9a7ffb8bcf.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_5131a3dd70c647cab0e04b9a7ffb8bcf")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_5131a3dd70c647cab0e04b9a7ffb8bcf")]
-[assembly: AssemblyCopyright("Copyright @  2018")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -2512,7 +2512,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{733D2823-8F17-4E3F-BA6D-3496A7FAF0A6}"
-          SQLTask:SqlStatementSource="&#xA;--select histDate.maxDate, etl.LastScanDate, *, &#xA;update etl set LastScanDate = &#xA;(case when histDate.maxDate &gt; cast(etl.LastScanDate as datetime) then convert(varchar(10), histDate.maxDate, 101) else etl.LastScanDate end)&#xA;from _ETL_TagExport etl&#xA;join  (select InventoryUID, max(CreateDate) as maxDate&#xA;&#x9;&#x9;from tblTechTagHistory where OriginTag is not null &#xA;&#x9;&#x9;group by InventoryUID&#xA;&#x9;) histDate&#xA;&#x9;on histDate.InventoryUID = etl.InventoryUID" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="&#xA;--select histDate.maxDate, etl.LastScanDate, *, &#xA;update etl set LastScanDate = &#xA;&#x9;(case when histDate.maxDate &gt; cast(etl.LastScanDate as datetime) then convert(varchar(10), histDate.maxDate, 101) else etl.LastScanDate end), &#xA;&#x9;LastScanBy = (case when histDate.maxDate &gt; cast(etl.LastScanDate as datetime) then u.RealName else etl.LastScanBy end)&#xA;from _ETL_TagExport etl&#xA;join  (select InventoryUID, CreatedByUserID, max(CreateDate) as maxDate&#xA;&#x9;&#x9;from tblTechTagHistory where OriginTag is not null &#xA;&#x9;&#x9;group by InventoryUID, CreatedByUserID&#xA;&#x9;) histDate&#xA;&#x9;on histDate.InventoryUID = etl.InventoryUID&#xA;join tblUser u on histDate.CreatedByUserID = u.UserID" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -2528,7 +2528,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{733D2823-8F17-4E3F-BA6D-3496A7FAF0A6}"
-          SQLTask:SqlStatementSource="--select * &#xA;update etl set InventoryNotes = tti.InventoryNotes&#xA;from _ETL_TagExport etl&#xA;join tblTechInventory tti on etl.InventoryUID = tti.InventoryUID&#xA;&#xA;update _ETL_TagExport set InventoryNotes = replace(replace(replace(replace(InventoryNotes, char(10), ' '), char(13), ''), char(9), ' '), '&quot;', '')&#xA;&#xA;--select * &#xA;update etl set PoliceReportNumber = (case when tid.PoliceReportNumber is null then '' else tid.PoliceReportNumber end), &#xA;&#x9;LastScanDate = (case when tid.PoliceReportNumber is not null &#xA;&#x9;&#x9;and tid.LastModifiedDate &gt; cast(etl.LastScanDate as datetime) &#xA;&#x9;&#x9;then convert(varchar(10), tid.LastModifiedDate, 101) else etl.LastScanDate end)&#xA;from _ETL_TagExport etl&#xA;join tblTechInventoryDetails tid on etl.InventoryUID = tid.InventoryUID&#xA;&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="--select * &#xA;update etl set InventoryNotes = tti.InventoryNotes&#xA;from _ETL_TagExport etl&#xA;join tblTechInventory tti on etl.InventoryUID = tti.InventoryUID&#xA;&#xA;update _ETL_TagExport set InventoryNotes = replace(replace(replace(replace(InventoryNotes, char(10), ' '), char(13), ''), char(9), ' '), '&quot;', '')&#xA;&#xA;--select * &#xA;update etl set PoliceReportNumber = (case when tid.PoliceReportNumber is null then '' else tid.PoliceReportNumber end), &#xA;&#x9;LastScanDate = (case when tid.PoliceReportNumber is not null &#xA;&#x9;&#x9;and tid.LastModifiedDate &gt; cast(etl.LastScanDate as datetime) &#xA;&#x9;&#x9;then convert(varchar(10), tid.LastModifiedDate, 101) else etl.LastScanDate end), &#xA;&#x9;LastScanBy = (case when tid.PoliceReportNumber is not null &#xA;&#x9;&#x9;and tid.LastModifiedDate &gt; cast(etl.LastScanDate as datetime) &#xA;&#x9;&#x9;then u.RealName else etl.LastScanBy end)&#xA;&#xA;from _ETL_TagExport etl&#xA;join tblTechInventoryDetails tid on etl.InventoryUID = tid.InventoryUID&#xA;join tblUser u on tid.LastModifiedByUserID = u.UserID&#xA;&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -2686,6 +2686,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Get Custom Data Types"
           TopLeft="81,247" />
         <NodeLayout
+          Size="186,42"
+          Id="Package\Get Tag Change Date"
+          TopLeft="483,320" />
+        <NodeLayout
           Size="163,42"
           Id="Package\Get Tag Notes and Police Report"
           TopLeft="319,245" />
@@ -2839,17 +2843,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <AnnotationLayout
-          Text="Client wants CSV&#xA;Do not Email&#xA;Do not zip"
-          ParentId="Package"
-          FontInfo="{x:Null}"
-          Size="120,72"
-          Id="1870ccd7-1bd4-49f6-a411-9bec348deae8"
-          TopLeft="1082,108" />
-        <NodeLayout
-          Size="186,42"
-          Id="Package\Get Tag Change Date"
-          TopLeft="483,320" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 5]"
           TopLeft="400.5,287">
@@ -2918,6 +2911,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <AnnotationLayout
+          Text="Client wants CSV&#xA;Do not Email&#xA;Do not zip"
+          ParentId="Package"
+          FontInfo="{x:Null}"
+          Size="120,72"
+          Id="1870ccd7-1bd4-49f6-a411-9bec348deae8"
+          TopLeft="1082,108" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
