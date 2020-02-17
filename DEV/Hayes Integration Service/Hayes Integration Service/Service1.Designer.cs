@@ -1,6 +1,6 @@
-﻿namespace Data_Integration_Service
+﻿namespace Hayes_Integration_Service
 {
-    partial class Service
+    partial class Service1
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            this.ServiceName = "ADAM Data Service";
+            this.ServiceName = "Service1";
         }
 
         #endregion
