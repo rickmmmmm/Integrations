@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DTSID="{E5380435-0E1A-4053-8C27-6A511810A1DB}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="14.0.0800.90"
+  DTS:LastModifiedProductVersion="15.0.2000.68"
   DTS:LocaleID="1033"
   DTS:ObjectName="Humble_TIPWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="4"
-  DTS:VersionGUID="{3AD45A06-73E2-4804-AA04-4BA7DDB8332B}">
+  DTS:VersionBuild="13"
+  DTS:VersionGUID="{9FE788AB-CAE9-4A23-872E-B77792139E12}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::DatabaseServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=CSS-NBLAKELY\MSSQLSERVER2014;Initial Catalog=TipWeb_Humble_0118;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Humble_TIPWebImport-{F417D611-D00E-46F5-A6CC-63EAC002B061}DB.databasename;" />
+          DTS:ConnectionString="Data Source=RND-NBLAKELY;Initial Catalog=TipWeb_Humble_0226;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Humble_TIPWebImport-{F417D611-D00E-46F5-A6CC-63EAC002B061}DB.databasename;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -53,7 +53,7 @@
       DTS:refId="Package\End SPs"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
-      DTS:DTSID="{34B38530-7737-4F3D-BD2E-554FF396A88D}"
+      DTS:DTSID="{e0a0eb41-41f1-423c-adb8-d52148f12b6b}"
       DTS:ExecutableType="Microsoft.ExecuteSQLTask"
       DTS:LocaleID="-1"
       DTS:ObjectName="End SPs"
@@ -62,7 +62,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F417D611-D00E-46F5-A6CC-63EAC002B061}"
-          SQLTask:SqlStatementSource="&#x9;SET NOCOUNT ON;&#xA;&#xA;&#x9;EXEC _ETL_SP13_InventoryUpdateInventory;&#xA;&#x9;EXEC _ETL_SP14_InventoryUpdateInventoryCustom;&#xA;&#x9;EXEC _ETL_SP15_InventoryInsertInventory;&#xA;&#x9;EXEC _ETL_SP16_InventoryInsertInventoryCustom;&#xA;&#x9;EXEC _ETL_SP19_InventoryUpdatePurchaseItemDetails;&#xA;&#x9;EXEC _ETL_SP20_InventoryInsertPurchaseItemDetails;&#xA;&#x9;EXEC _ETL_SP22_InventoryUpdatePurchaseItemShipments;&#xA;&#x9;EXEC _ETL_SP23_InventoryInsertPurchaseItemShipments;&#xA;&#x9;EXEC _ETL_SP24_InventoryUpdatePurchaseInventory;&#xA;&#x9;EXEC _ETL_SP25_InventoryInsertPurchaseInventory;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource=" SET NOCOUNT ON;&#xA;&#xA; EXEC _ETL_SP13_InventoryUpdateInventory&#xA; EXEC _ETL_SP14_InventoryUpdateInventoryCustom;&#xA; EXEC _ETL_SP15_InventoryInsertInventory;&#xA; EXEC _ETL_SP16_InventoryInsertInventoryCustom;&#xA; EXEC _ETL_SP19_InventoryUpdatePurchaseItemDetails;&#xA; EXEC _ETL_SP20_InventoryInsertPurchaseItemDetails;&#xA; EXEC _ETL_SP22_InventoryUpdatePurchaseItemShipments;&#xA; EXEC _ETL_SP23_InventoryInsertPurchaseItemShipments;&#xA; EXEC _ETL_SP24_InventoryUpdatePurchaseInventory;&#xA; EXEC _ETL_SP25_InventoryInsertPurchaseInventory 1;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -78,7 +78,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F417D611-D00E-46F5-A6CC-63EAC002B061}"
-          SQLTask:SqlStatementSource="&#xA;    SET NOCOUNT ON;&#xA;&#xA;            IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 1 AND ETLSettingValue = 'ProductNumber') = 0&#xA;                BEGIN&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET ItemUID = _ETL_Items.ItemUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN _ETL_Items ON UPPER(Tags.Product) = UPPER(_ETL_Items.Product)&#xA;                    AND UPPER(ISNULL(Tags.Model, '')) = UPPER(ISNULL(_ETL_Items.Model, ''))&#xA;                    AND UPPER(ISNULL(Tags.Manufacturer, '')) = UPPER(ISNULL(_ETL_Items.Manufacturer, ''))&#xA;                    AND UPPER(ISNULL(Tags.Area, '')) = UPPER(ISNULL(_ETL_Items.Area, ''))&#xA;                    WHERE _ETL_Items.ItemUID &gt; 0&#xA;                    AND Tags.Product IS NOT NULL AND Tags.Product &lt;&gt; ''&#xA;                    AND Tags.Product &lt;&gt; 'N/A' AND Tags.Product &lt;&gt; 'NONE' AND Tags.Product &lt;&gt; 'UNKNOWN'&#xA;                    AND (Tags.ItemUID IS NULL&#xA;                    OR Tags.ItemUID &lt;&gt; _ETL_Items.ItemUID)&#xA;&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET ItemUID = Items.ItemUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT MIN(ItemUID) AS ItemUID, Product&#xA;                    FROM _ETL_Items&#xA;                    GROUP BY Product) AS Items&#xA;                    ON UPPER(Tags.Product) = UPPER(Items.Product)&#xA;                    WHERE Tags.ItemUID IS NULL&#xA;                END&#xA;            ELSE&#xA;                BEGIN&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET ItemUID = _ETL_Items.ItemUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN _ETL_Items ON UPPER(Tags.Product) = UPPER(_ETL_Items.Product)&#xA;                    WHERE Tags.Product IS NOT NULL AND Tags.Product &lt;&gt; ''&#xA;                    AND Tags.Product &lt;&gt; 'N/A' AND Tags.Product &lt;&gt; 'NONE' AND Tags.Product &lt;&gt; 'UNKNOWN'&#xA;                    AND (Tags.ItemUID IS NULL&#xA;                    OR Tags.ItemUID &lt;&gt; _ETL_Items.ItemUID)&#xA;                END&#xA;&#xA;            IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 17 AND ETLSettingValue = 'True') = 1&#xA;                BEGIN&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, PID.PurchasePrice,&#xA;                    MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;                    FROM tblTechPurchaseItemDetails PID&#xA;                    JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;                    JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;                    WHERE PID.LineNumber &gt; 0&#xA;                    GROUP BY P.OrderNumber, PID.PurchasePrice) AS Purchases&#xA;                    ON Tags.PurchasePrice = Purchases.PurchasePrice&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, I.ItemName,&#xA;                    MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;                    FROM tblTechPurchaseItemDetails PID&#xA;                    JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;                    JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;                    WHERE PID.LineNumber &gt; 0&#xA;                    GROUP BY P.OrderNumber, I.ItemName) AS Purchases&#xA;                    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, I.ItemName, PID.PurchasePrice,&#xA;                    MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;                    FROM tblTechPurchaseItemDetails PID&#xA;                    JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;                    JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;                    WHERE PID.LineNumber &gt; 0&#xA;                    GROUP BY P.OrderNumber, I.ItemName, PID.PurchasePrice) AS Purchases&#xA;                    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;                    AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;                END&#xA;            ELSE&#xA;                BEGIN&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, PID.PurchasePrice, pid.ItemUID,&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;GROUP BY P.OrderNumber, PID.PurchasePrice,  pid.ItemUID) AS Purchases&#xA;                    ON Tags.PurchasePrice = Purchases.PurchasePrice&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;and tags.ItemUID = purchases.itemuid&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, I.ItemName, pid.ItemUID,&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;GROUP BY P.OrderNumber, I.ItemName, pid.ItemUID) AS Purchases&#xA;                    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;and tags.ItemUID = purchases.itemuid&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;                    UPDATE _ETL_Inventory&#xA;                    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;                    FROM _ETL_Inventory AS Tags&#xA;                    JOIN (SELECT P.OrderNumber, I.ItemName, PID.PurchasePrice, pid.ItemUID,&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;                    GROUP BY P.OrderNumber, I.ItemName, PID.PurchasePrice, pid.ItemUID) AS Purchases&#xA;                    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;                    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;                    AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;and tags.ItemUID = purchases.itemuid&#xA;                    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;                    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;                END&#xA;&#xA;            UPDATE _ETL_Inventory&#xA;            SET ItemUID = Purchases.ItemUID&#xA;            FROM _ETL_Inventory AS Tags&#xA;            JOIN tblTechPurchaseItemDetails AS Purchases&#xA;            ON Tags.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;            WHERE Purchases.ItemUID &gt; 0&#xA;            AND (Tags.ItemUID IS NULL&#xA;            OR Tags.ItemUID &lt;&gt; Purchases.ItemUID)&#xA;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET ItemUID = 0&#xA;    WHERE ItemUID IS NULL&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="&#xA;    SET NOCOUNT ON;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET ItemUID = _ETL_Items.ItemUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN _ETL_Items ON UPPER(Tags.Product) = UPPER(_ETL_Items.Product)&#xA;    AND UPPER(ISNULL(Tags.Model, '')) = UPPER(ISNULL(_ETL_Items.Model, ''))&#xA;    AND UPPER(ISNULL(Tags.Manufacturer, '')) = UPPER(ISNULL(_ETL_Items.Manufacturer, ''))&#xA;    AND UPPER(ISNULL(Tags.Area, '')) = UPPER(ISNULL(_ETL_Items.Area, ''))&#xA;    WHERE _ETL_Items.ItemUID &gt; 0&#xA;    AND Tags.Product IS NOT NULL AND Tags.Product &lt;&gt; ''&#xA;    AND Tags.Product &lt;&gt; 'N/A' AND Tags.Product &lt;&gt; 'NONE' AND Tags.Product &lt;&gt; 'UNKNOWN'&#xA;    AND (Tags.ItemUID IS NULL&#xA;    OR Tags.ItemUID &lt;&gt; _ETL_Items.ItemUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET ItemUID = Items.ItemUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN (SELECT MIN(ItemUID) AS ItemUID, Product&#xA;    FROM _ETL_Items&#xA;    GROUP BY Product) AS Items&#xA;    ON UPPER(Tags.Product) = UPPER(Items.Product)&#xA;    WHERE Tags.ItemUID IS NULL&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN (SELECT P.OrderNumber, PID.PurchasePrice, pid.ItemUID,&#xA;&#x9;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;&#x9;&#x9;&#x9;GROUP BY P.OrderNumber, PID.PurchasePrice,  pid.ItemUID) AS Purchases&#xA;    ON Tags.PurchasePrice = Purchases.PurchasePrice&#xA;    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;&#x9;and tags.ItemUID = purchases.itemuid&#xA;    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN (SELECT P.OrderNumber, I.ItemName, pid.ItemUID,&#xA;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;&#x9;&#x9;GROUP BY P.OrderNumber, I.ItemName, pid.ItemUID) AS Purchases&#xA;    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;&#x9;and tags.ItemUID = purchases.itemuid&#xA;    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;    FROM _ETL_Inventory AS Tags&#xA;    JOIN (SELECT P.OrderNumber, I.ItemName, PID.PurchasePrice, pid.ItemUID,&#xA;&#x9;&#x9;MIN(PID.PurchaseItemDetailUID) AS PurchaseItemDetailUID&#xA;&#x9;&#x9;FROM tblTechPurchaseItemDetails PID&#xA;&#x9;&#x9;JOIN tblTechPurchases P ON PID.PurchaseUID = P.PurchaseUID&#xA;&#x9;&#x9;JOIN tblTechItems I ON PID.ItemUID = I.ItemUID&#xA;    GROUP BY P.OrderNumber, I.ItemName, PID.PurchasePrice, pid.ItemUID) AS Purchases&#xA;    ON UPPER(Tags.Product) = UPPER(Purchases.ItemName)&#xA;    AND Tags.PurchaseOrder = Purchases.OrderNumber&#xA;    AND Tags.PurchasePrice = Purchases.PurchasePrice&#xA;&#x9;and tags.ItemUID = purchases.itemuid&#xA;    WHERE (Tags.PurchaseItemDetailUID IS NULL&#xA;    OR Tags.PurchaseItemDetailUID &lt;&gt; Purchases.PurchaseItemDetailUID)&#xA;&#xA;&#xA;UPDATE _ETL_Inventory&#xA;SET ItemUID = Purchases.ItemUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN tblTechPurchaseItemDetails AS Purchases&#xA;ON Tags.PurchaseItemDetailUID = Purchases.PurchaseItemDetailUID&#xA;WHERE Purchases.ItemUID &gt; 0&#xA;AND (Tags.ItemUID IS NULL&#xA;OR Tags.ItemUID &lt;&gt; Purchases.ItemUID)&#xA;&#xA;&#xA;    UPDATE _ETL_Inventory&#xA;    SET ItemUID = 0&#xA;    WHERE ItemUID IS NULL&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -86,7 +86,7 @@
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint]"
       DTS:CreationName=""
-      DTS:DTSID="{4FC8C10F-DC88-4EFF-9D76-32D645ADC490}"
+      DTS:DTSID="{2D0F8B1A-ED03-4494-97D7-BF07A07EAA5C}"
       DTS:From="Package\Begin SPs"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint"
@@ -94,7 +94,7 @@
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
       DTS:CreationName=""
-      DTS:DTSID="{CC8636A0-00BE-47F6-8A85-668CDBE9DD1D}"
+      DTS:DTSID="{609365A3-DD75-462D-BC3A-D473773998EA}"
       DTS:From="Package\Special SP 12"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 1"
@@ -111,29 +111,45 @@
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="165,42"
           Id="Package\Begin SPs"
           TopLeft="193,72" />
         <NodeLayout
+          Size="119,42"
+          Id="Package\End SPs"
+          TopLeft="190,248" />
+        <NodeLayout
           Size="174,42"
           Id="Package\Special SP 12"
-          TopLeft="190,157" />
+          TopLeft="174,139" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="276.25,114">
+          TopLeft="275.5,114">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,43"
+              StartConnector="{assembly:Null}"
+              EndConnector="-14.5,25"
               Start="0,0"
-              End="0,35.5">
+              End="-14.5,17.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,35.5" />
+                    End="0,8.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,8.5"
+                    Point2="0,12.5"
+                    Point3="-4,12.5" />
+                  <mssgle:LineSegment
+                    End="-10.5,12.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-10.5,12.5"
+                    Point2="-14.5,12.5"
+                    Point3="-14.5,16.5" />
+                  <mssgle:LineSegment
+                    End="-14.5,17.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -142,24 +158,32 @@
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="119,42"
-          Id="Package\End SPs"
-          TopLeft="218,259" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="277.25,199">
+          TopLeft="261,181">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{x:Null}"
-              EndConnector="0,60"
+              StartConnector="{assembly:Null}"
+              EndConnector="-11.5,67"
               Start="0,0"
-              End="0,52.5">
+              End="-11.5,59.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,52.5" />
+                    End="0,29.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,29.5"
+                    Point2="0,33.5"
+                    Point3="-4,33.5" />
+                  <mssgle:LineSegment
+                    End="-7.5,33.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-7.5,33.5"
+                    Point2="-11.5,33.5"
+                    Point3="-11.5,37.5" />
+                  <mssgle:LineSegment
+                    End="-11.5,59.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
