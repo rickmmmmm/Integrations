@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="UFA File List"
   DTS:PackageType="5"
-  DTS:VersionBuild="22"
-  DTS:VersionGUID="{009B5008-DCD1-40B3-910B-991051B579EE}">
+  DTS:VersionBuild="23"
+  DTS:VersionGUID="{83F32111-6CA1-4244-B08D-9C5074EBB601}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -306,8 +306,13 @@
                   name="SqlCommand"
                   UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ClientName, convert(varchar(10), LatestDate, 101) as LastDate, Reference, RejectEmail, isNull(n.Note, '') as Notes
 from (
+	select clientName, filedate as LatestDate, 'No Files' as Reference
+	from FileListReport
+	where fileSize = 0
+	Union
 	select clientName, max(filedate) as LatestDate, 'File Date' as Reference
 	from FileListReport
+	where fileSize &gt; 0
 	group by clientName having max(fileDate) &lt; dateadd(d, -14, getdate())
 
 	union
