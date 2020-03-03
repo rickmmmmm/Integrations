@@ -8,12 +8,12 @@
   DTS:DelayValidation="True"
   DTS:DTSID="{F6AAEEBE-193F-40C5-9FD3-0C0EF83D69DB}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="14.0.0800.90"
+  DTS:LastModifiedProductVersion="15.0.2000.68"
   DTS:LocaleID="1033"
   DTS:ObjectName="ClassesToStaging"
   DTS:PackageType="5"
-  DTS:VersionBuild="186"
-  DTS:VersionGUID="{48DF94E7-6C82-499D-820D-FE251DDD9379}">
+  DTS:VersionBuild="201"
+  DTS:VersionGUID="{5A6B330B-E999-4138-9795-8D66FD4526BB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -149,7 +149,7 @@
         DTS:Name="ServerName">@[User::_0ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=DB;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ClassesToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ClassesToStaging-{43764AB3-429B-48EE-B56B-C05667F04CD7}ClientTipWeb;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -165,6 +165,18 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectionString="Data Source=.;Initial Catalog=ImportManagementSystem;Provider=SQLOLEDB.1;Integrated Security=SSPI;Connect Timeout=0;Application Name=SSIS-ClassesToStaging-{38041D3F-3E38-4040-964C-CEA24AEEE9C0}ImportManagementSystem;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[PSPlugin]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{74189EA9-2A15-446B-917D-146AFDF72A6C}"
+      DTS:ObjectName="PSPlugin">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=.;Initial Catalog=PowerSchoolAPIPlugIn;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -306,9 +318,31 @@
       DTS:Expression="&quot; SELECT distinct sc.SchoolCode,   left(RTRIM(LTRIM(sc.CourseID)) + 'S' + RTRIM(LTRIM(sc.SectionNumber)) + 'P' + RTRIM(LTRIM(sc.Period)),50) as ClassID, &quot;+&#xA;&quot; sc.Period, sc.CourseID, sc.SectionNumber, ms.room &quot;+&#xA;&quot; FROM AeriesSSISImport.dbo.AeriesStudentClass sc &quot;+&#xA;&quot; join AeriesSSISImport.dbo.MasterSchedule ms on sc.CourseID = ms.CourseID &quot;+&#xA;&quot; &#x9;and sc.SchoolCode = ms.SchoolCode and sc.Period = ms.Period &quot;+&#xA;&quot; &#x9;and sc.SectionNumber = ms.SectionNumber and sc.CustomerID = ms.CustomerID &quot;+&#xA;&quot; where  sc.CustomerID =  &quot;+ (DT_STR, 10, 1252) @[User::ExternalKey]  +&#xA;&quot; and (ms.Semester = 'Y'  &quot;+&#xA;&quot; &#x9;or ms.Semester in ('F', '1', '2') and month(getdate()) between 7 and 12 &quot;+&#xA;&quot; &#x9;or ms.Semester in ('S', '3', '4') and month(getdate()) between 1 and 6 &quot;+&#xA;&quot; &#x9;) &quot;"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
-      DTS:ObjectName="ClassesSQL">
+      DTS:ObjectName="ClassesSQLAeries">
       <DTS:VariableValue
         DTS:DataType="8"> SELECT distinct sc.SchoolCode,   left(RTRIM(LTRIM(sc.CourseID)) + 'S' + RTRIM(LTRIM(sc.SectionNumber)) + 'P' + RTRIM(LTRIM(sc.Period)),50) as ClassID,  sc.Period, sc.CourseID, sc.SectionNumber, ms.room  FROM AeriesSSISImport.dbo.AeriesStudentClass sc  join AeriesSSISImport.dbo.MasterSchedule ms on sc.CourseID = ms.CourseID  	and sc.SchoolCode = ms.SchoolCode and sc.Period = ms.Period  	and sc.SectionNumber = ms.SectionNumber and sc.CustomerID = ms.CustomerID  where  sc.CustomerID =  0 and (ms.Semester = 'Y'   	or ms.Semester in ('F', '1', '2') and month(getdate()) between 7 and 12  	or ms.Semester in ('S', '3', '4') and month(getdate()) between 1 and 6  	) </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{5EF54C4C-DA8C-4914-9650-812C14BF02ED}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select cl.courseSourcedId as courseID, cl.schoolSourcedId as campusID, cl.sourcedId as classID, substring(cr.title, 1, 100) as ClassName, &quot; +&#xA;&quot;  case when periods = '' then '1' else periods end as period, '01' as section, &quot; +&#xA;&quot; substring(ltrim(rtrim(replace(replace(location, 'Classroom', ''), 'Room', ''))), 1, 50) as roomLocation &quot; +&#xA;&quot; from ImportManagementSystem.OneRoster.Classes cl &quot; +&#xA;&quot; join ImportManagementSystem.OneRoster.AcademicSessions s on cl.termSourcedIds = s.sourcedId &quot; +&#xA;&quot; join ImportManagementSystem.OneRoster.courses cr on cl.courseSourcedId = cr.sourcedId &quot; +&#xA;&quot; where cl.ClientUID =  &quot; + (DT_STR, 10, 1252) @[User::ExternalKey]  +&#xA;&quot; and getdate() &gt; dateadd(d, -30, cast(s.StartDate as datetime)) &quot; +&#xA;&quot; and getdate() &lt; dateadd(d, 30, cast(s.endDate as datetime))  &quot;"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClassesSQLOneRoster">
+      <DTS:VariableValue
+        DTS:DataType="8"> select cl.courseSourcedId as courseID, cl.schoolSourcedId as campusID, cl.sourcedId as classID, substring(cr.title, 1, 100) as ClassName,   case when periods = '' then '1' else periods end as period, '01' as section,  substring(ltrim(rtrim(replace(replace(location, 'Classroom', ''), 'Room', ''))), 1, 50) as roomLocation  from ImportManagementSystem.OneRoster.Classes cl  join ImportManagementSystem.OneRoster.AcademicSessions s on cl.termSourcedIds = s.sourcedId  join ImportManagementSystem.OneRoster.courses cr on cl.courseSourcedId = cr.sourcedId  where cl.ClientUID =  0 and getdate() &gt; dateadd(d, -30, cast(s.StartDate as datetime))  and getdate() &lt; dateadd(d, 30, cast(s.endDate as datetime))  </DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{6CBED5E7-B87B-48C8-B98C-31A67C9A26D6}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="&quot; select CourseID, CampusID, ClassID, ClassName, Period, Section, RoomLocation &quot; +&#xA;&quot; from PSClasses  &quot; +&#xA;&quot; where ClientUID = &quot; +  (DT_STR, 10, 1252) @[User::ExternalKey]"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ClassesSQLPSPlugin">
+      <DTS:VariableValue
+        DTS:DataType="8"> select CourseID, CampusID, ClassID, ClassName, Period, Section, RoomLocation  from PSClasses   where ClientUID = 0</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -437,7 +471,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="_0ServerName">
       <DTS:VariableValue
-        DTS:DataType="8">DB</DTS:VariableValue>
+        DTS:DataType="8">.</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -503,7 +537,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">declare @CustomerID int
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">declare @CustomerID int
 
 set @CustomerID = ?
 
@@ -521,7 +555,7 @@ and (ms.Semester = 'Y'
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable">User::ClassesSQL</property>
+                  name="SqlCommandVariable">User::ClassesSQLAeries</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -749,7 +783,7 @@ and (ms.Semester = 'Y'
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1646,7 +1680,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{D031E904-6728-4558-9FEF-59B69364F259}"
-          SQLTask:SqlStatementSource="declare @CustomerID int, @cnt int&#xA;&#xA;set @CustomerID = ?&#xA;&#xA;select @cnt = count(*)&#xA;&#xA;FROM AeriesSSISImport.dbo.AeriesStudentClass sc&#xA;join AeriesSSISImport.dbo.MasterSchedule ms on sc.CourseID = ms.CourseID&#xA;&#x9;and sc.SchoolCode = ms.SchoolCode and sc.Period = ms.Period&#xA;&#x9;and sc.SectionNumber = ms.SectionNumber and sc.CustomerID = ms.CustomerID&#xA;where  sc.CustomerID = @CustomerID &#xA;and (ms.Semester = 'Y'&#xA;&#x9;or ms.Semester in ('F', '1', '2') and month(getdate()) between 7 and 12&#xA;&#x9;or ms.Semester in ('S', '3', '4') and month(getdate()) between 1 and 6&#xA;&#x9;)&#xA;&#xA;select @cnt as cnt"
+          SQLTask:SqlStatementSource="declare @CustomerID int, @SourceOrigin varchar(50), @cnt int&#xA;&#xA;set @CustomerID = ?&#xA;set @SourceOrigin = ?&#xA;set @cnt = 0&#xA;&#xA;&#xA;&#xA;if @SourceOrigin = 'AERIES' &#xA;&#xA;&#x9;select @cnt = count(*)&#xA;&#x9;FROM AeriesSSISImport.dbo.AeriesStudentClass sc&#xA;&#x9;join AeriesSSISImport.dbo.MasterSchedule ms on sc.CourseID = ms.CourseID&#xA;&#x9;&#x9;and sc.SchoolCode = ms.SchoolCode and sc.Period = ms.Period&#xA;&#x9;&#x9;and sc.SectionNumber = ms.SectionNumber and sc.CustomerID = ms.CustomerID&#xA;&#x9;where  sc.CustomerID = @CustomerID &#xA;&#x9;and (ms.Semester = 'Y'&#xA;&#x9;&#x9;or ms.Semester in ('F', '1', '2') and month(getdate()) between 7 and 12&#xA;&#x9;&#x9;or ms.Semester in ('S', '3', '4') and month(getdate()) between 1 and 6&#xA;&#x9;&#x9;)&#xA;&#xA;if @SourceOrigin = 'PSPLUGIN'&#xA;&#x9;select @cnt = count(*)&#xA;&#x9;from PowerSchoolAPIPlugIn.dbo.PSClasses cl&#xA;&#x9;where cl.ClientUID = @CustomerID&#xA;&#xA;&#xA;if @SourceOrigin = 'ONEROSTER' &#xA;&#xA;&#x9;select @cnt = count(*)&#xA;&#x9;from ImportManagementSystem.OneRoster.Classes cl&#xA;&#x9;join ImportManagementSystem.OneRoster.AcademicSessions s on cl.termSourcedIds = s.sourcedId&#xA;&#x9;join ImportManagementSystem.OneRoster.courses cr on cl.courseSourcedId = cr.sourcedId&#xA;&#xA;&#x9;where cl.ClientUID = @CustomerID &#xA;&#x9;and getdate() &gt; dateadd(d, -30, cast(s.StartDate as datetime))&#xA;&#x9;and getdate() &lt; dateadd(d, 30, cast(s.endDate as datetime))&#xA;&#xA;&#xA;select @cnt as cnt"
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="cnt"
@@ -1656,6 +1690,12 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             SQLTask:DtsVariableName="User::ExternalKey"
             SQLTask:ParameterDirection="Input"
             SQLTask:DataType="3"
+            SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding
+            SQLTask:ParameterName="@SourceOrigin"
+            SQLTask:DtsVariableName="User::SourceOrigin"
+            SQLTask:ParameterDirection="Input"
+            SQLTask:DataType="129"
             SQLTask:ParameterSize="-1" />
         </SQLTask:SqlTaskData>
       </DTS:ObjectData>
@@ -2018,7 +2058,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -2533,7 +2573,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -2876,6 +2916,1022 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             SQLTask:DataType="129"
             SQLTask:ParameterSize="50" />
         </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\One Roster Class List"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{5149333E-13AB-4C2A-8437-8FE1D9BAF71A}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="One Roster Class List"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\One Roster Class List\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[_IMS_Classes]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\One Roster Class List\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[ClientTipWeb]"
+                  connectionManagerRefId="Package.ConnectionManagers[ClientTipWeb]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[courseID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="courseID"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CourseID]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[courseID]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[campusID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="campusID"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[campusID]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[classID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="classID"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassID]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[classID]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ClassName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="ClassName"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassName]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[period]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="period"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Period]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[period]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[section]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="2"
+                      cachedName="section"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Section]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[section]" />
+                    <inputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[roomLocation]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="roomLocation"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RoomLocation]"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[roomLocation]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IMS_ClassID]"
+                      dataType="i4"
+                      name="IMS_ClassID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CourseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CourseID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CampusID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ClassID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="ClassName" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Period" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Section" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RoomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="RoomLocation" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Import]"
+                      dataType="bool"
+                      name="Import" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RejectMessage]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1000"
+                      name="RejectMessage" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MasterCourseUID]"
+                      dataType="i4"
+                      name="MasterCourseUID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusUID]"
+                      dataType="i4"
+                      name="CampusUID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusCourseAssignedUID]"
+                      dataType="i4"
+                      name="CampusCourseAssignedUID" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\One Roster Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\One Roster Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\One Roster Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\One Roster Class List\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable">User::ClassesSQLOneRoster</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\One Roster Class List\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[ImportManagementSystem]"
+                  connectionManagerRefId="Package.ConnectionManagers[ImportManagementSystem]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[courseID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[courseID]"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[courseID]"
+                      name="courseID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[campusID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[campusID]"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[campusID]"
+                      name="campusID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[classID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[classID]"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[classID]"
+                      name="classID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassName]"
+                      length="100"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]"
+                      name="ClassName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[period]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[period]"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[period]"
+                      name="period"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[section]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[section]"
+                      length="2"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[section]"
+                      name="section"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[roomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[roomLocation]"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[roomLocation]"
+                      name="roomLocation"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[courseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="courseID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[campusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="campusID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[classID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="classID" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="ClassName" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="period" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="2"
+                      name="section" />
+                    <externalMetadataColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[roomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="roomLocation" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[courseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[courseID]"
+                      name="courseID" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[campusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[campusID]"
+                      name="campusID" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[classID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[classID]"
+                      name="classID" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassName]"
+                      name="ClassName" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[period]"
+                      name="period" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="2"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[section]"
+                      name="section" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[roomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[roomLocation]"
+                      name="roomLocation" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\One Roster Class List.Paths[OLE DB Source Output]"
+              endId="Package\One Roster Class List\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\One Roster Class List\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\PSPlugin Class List"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{E09C3A15-7E4D-4990-AE91-F66DA811E8D3}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="PSPlugin Class List"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\PSPlugin Class List\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[dbo].[_IMS_Classes]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\PSPlugin Class List\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[ClientTipWeb]"
+                  connectionManagerRefId="Package.ConnectionManagers[ClientTipWeb]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CourseID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="CourseID"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CourseID]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CourseID]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CampusID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="CampusID"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CampusID]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ClassID]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="ClassID"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassID]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassID]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ClassName]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="100"
+                      cachedName="ClassName"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassName]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Period]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Period"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Period]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Period]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Section]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Section"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Section]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Section]" />
+                    <inputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[RoomLocation]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="RoomLocation"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RoomLocation]"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[RoomLocation]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IMS_ClassID]"
+                      dataType="i4"
+                      name="IMS_ClassID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CourseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CourseID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CampusID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ClassID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="ClassName" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Period" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Section" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RoomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="RoomLocation" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Import]"
+                      dataType="bool"
+                      name="Import" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RejectMessage]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1000"
+                      name="RejectMessage" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MasterCourseUID]"
+                      dataType="i4"
+                      name="MasterCourseUID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusUID]"
+                      dataType="i4"
+                      name="CampusUID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusCourseAssignedUID]"
+                      dataType="i4"
+                      name="CampusCourseAssignedUID" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\PSPlugin Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\PSPlugin Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\PSPlugin Class List\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\PSPlugin Class List\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable">User::ClassesSQLPSPlugin</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\PSPlugin Class List\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[PSPlugin]"
+                  connectionManagerRefId="Package.ConnectionManagers[PSPlugin]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CourseID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CourseID]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CourseID]"
+                      name="CourseID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CampusID]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[CampusID]"
+                      name="CampusID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassID]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassID]"
+                      name="ClassID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassName]"
+                      length="100"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ClassName]"
+                      name="ClassName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Period]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Period]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Period]"
+                      name="Period"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Section]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Section]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[Section]"
+                      name="Section"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[RoomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RoomLocation]"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].Columns[RoomLocation]"
+                      name="RoomLocation"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CourseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CourseID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="CampusID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="ClassID" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="ClassName" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Period" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Section" />
+                    <externalMetadataColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RoomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="RoomLocation" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CourseID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CourseID]"
+                      name="CourseID" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CampusID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CampusID]"
+                      name="CampusID" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassID]"
+                      name="ClassID" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ClassName]"
+                      name="ClassName" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Period]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Period]"
+                      name="Period" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Section]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Section]"
+                      name="Section" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RoomLocation]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RoomLocation]"
+                      name="RoomLocation" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\PSPlugin Class List.Paths[OLE DB Source Output]"
+              endId="Package\PSPlugin Class List\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\PSPlugin Class List\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -3543,6 +4599,38 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       DTS:ObjectName="Constraint 13"
       DTS:To="Package\Log End Data to Staging" />
     <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 14]"
+      DTS:CreationName=""
+      DTS:DTSID="{9136195E-9556-47A5-9BCF-62824247F94E}"
+      DTS:EvalOp="1"
+      DTS:Expression="@SourceOrigin==&quot;ONEROSTER&quot;"
+      DTS:From="Package\Set Exists for Class Parent"
+      DTS:ObjectName="Constraint 14"
+      DTS:To="Package\One Roster Class List" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 15]"
+      DTS:CreationName=""
+      DTS:DTSID="{DA256BAB-B019-4295-923D-2739823BFF71}"
+      DTS:From="Package\One Roster Class List"
+      DTS:ObjectName="Constraint 15"
+      DTS:To="Package\Log End Data to Staging" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 16]"
+      DTS:CreationName=""
+      DTS:DTSID="{F9B9468A-395C-48F6-9723-182A09B20C99}"
+      DTS:EvalOp="1"
+      DTS:Expression="@[User::SourceOrigin]==&quot;PSPLUGIN&quot;"
+      DTS:From="Package\Set Exists for Class Parent"
+      DTS:ObjectName="Constraint 16"
+      DTS:To="Package\PSPlugin Class List" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 17]"
+      DTS:CreationName=""
+      DTS:DTSID="{27A84C0C-DC5D-4FD8-8B36-AD049FFC4F48}"
+      DTS:From="Package\PSPlugin Class List"
+      DTS:ObjectName="Constraint 17"
+      DTS:To="Package\Log End Data to Staging" />
+    <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
       DTS:CreationName=""
       DTS:DTSID="{9A5FCAA5-2EA3-4CB4-B029-B2EA90F31273}"
@@ -3627,7 +4715,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="156,42"
           Id="Package\Aeries Class List"
-          TopLeft="905,367" />
+          TopLeft="636,391" />
         <NodeLayout
           Size="147,42"
           Id="Package\Class List Info"
@@ -3643,11 +4731,11 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="136,44"
           Id="Package\Import AST Class List"
-          TopLeft="601.481132075472,344.915094339623" />
+          TopLeft="469.481132075472,435.915094339623" />
         <NodeLayout
           Size="136,44"
           Id="Package\Import UFA Class List"
-          TopLeft="281.820754716981,347.575471698113" />
+          TopLeft="282.820754716981,377.575471698113" />
         <NodeLayout
           Size="136,58"
           Id="Package\Log Begin Data to Staging"
@@ -3657,7 +4745,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Log Class File Exists"
           TopLeft="160.971698113207,241.896226415094" />
         <NodeLayout
-          Size="408,44"
+          Size="531,44"
           Id="Package\Log End Data to Staging"
           TopLeft="424.896226415094,643.990566037736" />
         <NodeLayout
@@ -3665,7 +4753,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Log Missing Class List File"
           TopLeft="733.216981132075,97.688679245283" />
         <NodeLayout
-          Size="240,63"
+          Size="186,42"
+          Id="Package\One Roster Class List"
+          TopLeft="754,451" />
+        <NodeLayout
+          Size="175,42"
+          Id="Package\PSPlugin Class List"
+          TopLeft="980,378" />
+        <NodeLayout
+          Size="403,63"
           Id="Package\Set Exists for Class Parent"
           TopLeft="527.16037735849,246.047169811321" />
         <EdgeLayout
@@ -3740,30 +4836,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 10]"
-          TopLeft="983,409">
+          TopLeft="714,433">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="-254.103773584906,234.990566037736"
+              EndConnector="-23.603773584906,210.990566037736"
               Start="0,0"
-              End="-254.103773584906,227.490566037736">
+              End="-23.603773584906,203.490566037736">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,151.643102180838" />
+                    End="0,101.495283018868" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,151.643102180838"
-                    Point2="0,155.643102180838"
-                    Point3="-4,155.643102180838" />
+                    Point1="0,101.495283018868"
+                    Point2="0,105.495283018868"
+                    Point3="-4,105.495283018868" />
                   <mssgle:LineSegment
-                    End="-250.103773584906,155.643102180838" />
+                    End="-19.603773584906,105.495283018868" />
                   <mssgle:CubicBezierSegment
-                    Point1="-250.103773584906,155.643102180838"
-                    Point2="-254.103773584906,155.643102180838"
-                    Point3="-254.103773584906,159.643102180838" />
+                    Point1="-19.603773584906,105.495283018868"
+                    Point2="-23.603773584906,105.495283018868"
+                    Point3="-23.603773584906,109.495283018868" />
                   <mssgle:LineSegment
-                    End="-254.103773584906,227.490566037736" />
+                    End="-23.603773584906,203.490566037736" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3810,72 +4906,178 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 12]"
-          TopLeft="608.493710691823,309.047169811321">
+          TopLeft="610.16037735849,309.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="-258.672955974842,38.528301886792"
+              EndConnector="-259.339622641509,68.528301886792"
               Start="0,0"
-              End="-258.672955974842,31.028301886792">
+              End="-259.339622641509,61.028301886792">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,11.5644133449955" />
+                    End="0,15.9924395662697" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,11.5644133449955"
-                    Point2="0,15.5644133449955"
-                    Point3="-4,15.5644133449955" />
+                    Point1="0,15.9924395662697"
+                    Point2="0,19.9924395662697"
+                    Point3="-4,19.9924395662697" />
                   <mssgle:LineSegment
-                    End="-254.672955974842,15.5644133449955" />
+                    End="-255.339622641509,19.9924395662697" />
                   <mssgle:CubicBezierSegment
-                    Point1="-254.672955974842,15.5644133449955"
-                    Point2="-258.672955974842,15.5644133449955"
-                    Point3="-258.672955974842,19.5644133449955" />
+                    Point1="-255.339622641509,19.9924395662697"
+                    Point2="-259.339622641509,19.9924395662697"
+                    Point3="-259.339622641509,23.9924395662697" />
                   <mssgle:LineSegment
-                    End="-258.672955974842,31.028301886792" />
+                    End="-259.339622641509,61.028301886792" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-137.336477987421,20.5644133449955,16,16"
+              BoundingBox="-137.669811320754,24.9924395662697,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 13]"
-          TopLeft="349.820754716981,391.575471698113">
+          TopLeft="350.820754716981,421.575471698113">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="212.408805031446,252.415094339623"
+              EndConnector="165.24213836478,222.415094339623"
               Start="0,0"
-              End="212.408805031446,244.915094339623">
+              End="165.24213836478,214.915094339623">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,146.857458726415" />
+                    End="0,161.564133309822" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,146.857458726415"
-                    Point2="0,150.857458726415"
-                    Point3="4,150.857458726415" />
+                    Point1="0,161.564133309822"
+                    Point2="0,165.564133309822"
+                    Point3="4,165.564133309822" />
                   <mssgle:LineSegment
-                    End="208.408805031446,150.857458726415" />
+                    End="161.24213836478,165.564133309822" />
                   <mssgle:CubicBezierSegment
-                    Point1="208.408805031446,150.857458726415"
-                    Point2="212.408805031446,150.857458726415"
-                    Point3="212.408805031446,154.857458726415" />
+                    Point1="161.24213836478,165.564133309822"
+                    Point2="165.24213836478,165.564133309822"
+                    Point3="165.24213836478,169.564133309822" />
                   <mssgle:LineSegment
-                    End="212.408805031446,244.915094339623" />
+                    End="165.24213836478,214.915094339623" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 14]"
+          TopLeft="794.493710691823,309.047169811321">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="52.5062893081767,141.952830188679"
+              Start="0,0"
+              End="52.5062893081767,134.452830188679">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,53.1179455133884" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,53.1179455133884"
+                    Point2="0,57.1179455133884"
+                    Point3="4,57.1179455133884" />
+                  <mssgle:LineSegment
+                    End="48.5062893081767,57.1179455133884" />
+                  <mssgle:CubicBezierSegment
+                    Point1="48.5062893081767,57.1179455133884"
+                    Point2="52.5062893081767,57.1179455133884"
+                    Point3="52.5062893081767,61.1179455133884" />
+                  <mssgle:LineSegment
+                    End="52.5062893081767,134.452830188679" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="18.2531446540884,62.1179455133884,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 15]"
+          TopLeft="847,493">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-69.4371069182394,150.990566037736"
+              Start="0,0"
+              End="-69.4371069182394,143.490566037736">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,86.3221823875755" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,86.3221823875755"
+                    Point2="0,90.3221823875755"
+                    Point3="-4,90.3221823875755" />
+                  <mssgle:LineSegment
+                    End="-65.4371069182394,90.3221823875755" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-65.4371069182394,90.3221823875755"
+                    Point2="-69.4371069182394,90.3221823875755"
+                    Point3="-69.4371069182394,94.3221823875755" />
+                  <mssgle:LineSegment
+                    End="-69.4371069182394,143.490566037736" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 16]"
+          TopLeft="860.327044025157,309.047169811321">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="207.172955974843,68.952830188679"
+              Start="0,0"
+              End="207.172955974843,61.452830188679">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,13.7464593667423" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,13.7464593667423"
+                    Point2="0,17.7464593667423"
+                    Point3="4,17.7464593667423" />
+                  <mssgle:LineSegment
+                    End="203.172955974843,17.7464593667423" />
+                  <mssgle:CubicBezierSegment
+                    Point1="203.172955974843,17.7464593667423"
+                    Point2="207.172955974843,17.7464593667423"
+                    Point3="207.172955974843,21.7464593667423" />
+                  <mssgle:LineSegment
+                    End="207.172955974843,61.452830188679" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="95.5864779874216,22.7464593667423,16,16"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -3974,37 +5176,37 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 5]"
-          TopLeft="685.827044025157,309.047169811321">
+          TopLeft="662.827044025157,309.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="-16.3459119496846,35.867924528302"
+              EndConnector="-125.345911949685,126.867924528302"
               Start="0,0"
-              End="-16.3459119496846,28.367924528302">
+              End="-125.345911949685,119.367924528302">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,10.4896913657379" />
+                    End="0,47.0481910855353" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,10.4896913657379"
-                    Point2="0,14.4896913657379"
-                    Point3="-4,14.4896913657379" />
+                    Point1="0,47.0481910855353"
+                    Point2="0,51.0481910855353"
+                    Point3="-4,51.0481910855353" />
                   <mssgle:LineSegment
-                    End="-12.3459119496846,14.4896913657379" />
+                    End="-121.345911949685,51.0481910855353" />
                   <mssgle:CubicBezierSegment
-                    Point1="-12.3459119496846,14.4896913657379"
-                    Point2="-16.3459119496846,14.4896913657379"
-                    Point3="-16.3459119496846,18.4896913657379" />
+                    Point1="-121.345911949685,51.0481910855353"
+                    Point2="-125.345911949685,51.0481910855353"
+                    Point3="-125.345911949685,55.0481910855353" />
                   <mssgle:LineSegment
-                    End="-16.3459119496846,28.367924528302" />
+                    End="-125.345911949685,119.367924528302" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-16.1729559748423,19.4896913657379,16,16"
+              BoundingBox="-70.6729559748423,56.0481910855353,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -4082,66 +5284,66 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 8]"
-          TopLeft="705.16037735849,309.047169811321">
+          TopLeft="728.66037735849,309.047169811321">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="277.83962264151,57.952830188679"
+              EndConnector="-14.66037735849,81.952830188679"
               Start="0,0"
-              End="277.83962264151,50.452830188679">
+              End="-14.66037735849,74.452830188679">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,15.7421729214181" />
+                    End="0,36.9764150943395" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,15.7421729214181"
-                    Point2="0,19.7421729214181"
-                    Point3="4,19.7421729214181" />
+                    Point1="0,36.9764150943395"
+                    Point2="0,40.9764150943395"
+                    Point3="-4,40.9764150943395" />
                   <mssgle:LineSegment
-                    End="273.83962264151,19.7421729214181" />
+                    End="-10.66037735849,40.9764150943395" />
                   <mssgle:CubicBezierSegment
-                    Point1="273.83962264151,19.7421729214181"
-                    Point2="277.83962264151,19.7421729214181"
-                    Point3="277.83962264151,23.7421729214181" />
+                    Point1="-10.66037735849,40.9764150943395"
+                    Point2="-14.66037735849,40.9764150943395"
+                    Point3="-14.66037735849,44.9764150943395" />
                   <mssgle:LineSegment
-                    End="277.83962264151,50.452830188679" />
+                    End="-14.66037735849,74.452830188679" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="130.919811320755,24.7421729214181,16,16"
+              BoundingBox="-15.330188679245,45.9764150943395,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 9]"
-          TopLeft="669.481132075472,388.915094339623">
+          TopLeft="537.481132075472,479.915094339623">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="26.0817610062886,255.075471698113"
+              EndConnector="65.7484276729554,164.075471698113"
               Start="0,0"
-              End="26.0817610062886,247.575471698113">
+              End="65.7484276729554,156.575471698113">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,148.447449882075" />
+                    End="0,94.1495405238806" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,148.447449882075"
-                    Point2="0,152.447449882075"
-                    Point3="4,152.447449882075" />
+                    Point1="0,94.1495405238806"
+                    Point2="0,98.1495405238806"
+                    Point3="4,98.1495405238806" />
                   <mssgle:LineSegment
-                    End="22.0817610062886,152.447449882075" />
+                    End="61.7484276729554,98.1495405238806" />
                   <mssgle:CubicBezierSegment
-                    Point1="22.0817610062886,152.447449882075"
-                    Point2="26.0817610062886,152.447449882075"
-                    Point3="26.0817610062886,156.447449882075" />
+                    Point1="61.7484276729554,98.1495405238806"
+                    Point2="65.7484276729554,98.1495405238806"
+                    Point3="65.7484276729554,102.149540523881" />
                   <mssgle:LineSegment
-                    End="26.0817610062886,247.575471698113" />
+                    End="65.7484276729554,156.575471698113" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -4153,7 +5355,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <AnnotationLayout
           Text="EZ Import Format does not have Class List File"
           ParentId="Package"
-          Size="363,43"
+          Size="363,41"
           Id="12301507-4b68-4b90-94a0-5364d5cb58a0"
           TopLeft="889,157">
           <AnnotationLayout.FontInfo>
@@ -4168,6 +5370,40 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             </mssge:FontInfo>
           </AnnotationLayout.FontInfo>
         </AnnotationLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 17]"
+          TopLeft="1067.5,420">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="-202.770440251573,223.990566037736"
+              Start="0,0"
+              End="-202.770440251573,216.490566037736">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,162.73690266267" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,162.73690266267"
+                    Point2="0,166.73690266267"
+                    Point3="-4,166.73690266267" />
+                  <mssgle:LineSegment
+                    End="-198.770440251573,166.73690266267" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-198.770440251573,166.73690266267"
+                    Point2="-202.770440251573,166.73690266267"
+                    Point3="-202.770440251573,170.73690266267" />
+                  <mssgle:LineSegment
+                    End="-202.770440251573,216.490566037736" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -4332,6 +5568,136 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <Name>TableInfoObjectType</Name>
         <Value
           type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\One Roster Class List">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="157,42"
+          Id="Package\One Roster Class List\OLE DB Source"
+          TopLeft="482,110" />
+        <NodeLayout
+          Size="177,42"
+          Id="Package\One Roster Class List\OLE DB Destination"
+          TopLeft="478,211" />
+        <EdgeLayout
+          Id="Package\One Roster Class List.Paths[OLE DB Source Output]"
+          TopLeft="563.5,152">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="0,59"
+              Start="0,0"
+              End="0,51.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,51.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\One Roster Class List\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\One Roster Class List\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\PSPlugin Class List">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="157,42"
+          Id="Package\PSPlugin Class List\OLE DB Source"
+          TopLeft="449,73" />
+        <NodeLayout
+          Size="177,42"
+          Id="Package\PSPlugin Class List\OLE DB Destination"
+          TopLeft="469,179" />
+        <EdgeLayout
+          Id="Package\PSPlugin Class List.Paths[OLE DB Source Output]"
+          TopLeft="527.5,115">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{x:Null}"
+              EndConnector="30,64"
+              Start="0,0"
+              End="30,56.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,28"
+                    Point2="0,32"
+                    Point3="4,32" />
+                  <mssgle:LineSegment
+                    End="26,32" />
+                  <mssgle:CubicBezierSegment
+                    Point1="26,32"
+                    Point2="30,32"
+                    Point3="30,36" />
+                  <mssgle:LineSegment
+                    End="30,56.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\PSPlugin Class List\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\PSPlugin Class List\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
       </Property>
     </Properties>
   </PipelineComponentMetadata>
