@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="IT_Conversion"
   DTS:PackageType="5"
-  DTS:VersionBuild="322"
-  DTS:VersionGUID="{B22E8E55-8493-475C-AABC-B2054C32B63A}">
+  DTS:VersionBuild="339"
+  DTS:VersionGUID="{F6FCB4E0-260D-4721-A096-B8EBD98636FB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -35,11 +35,11 @@
             <DTS:Property
               DTS:Name="ServerPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAR8EqNzCuWkSt+A0vSDGGoAAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAA5L8yJrgCWY4HmFzRKgDeUAAAAAASAAACgAAAAEAAAAOyTxBwyYICu0lm33eFaERoQAAAA+9wIRQUC15eNm1O8UA7x4RQAAADesyKoPgF3xGVMDL3HL2/G9mEZbQ</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAHI7lJ1ppZE+7/5oxgtQJdAAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAABnLI7vH6oTiOaO3VNhPqOfAAAAAASAAACgAAAAEAAAADF95Jurvr/ae8KEU6O8CvsQAAAAXVEKFj6x8JECLEjXLWAeYxQAAAAf7NZz2/nrGoc07hnElFO8a24FcA</DTS:Property>
             <DTS:Property
               DTS:Name="ProxyPassword"
               Sensitive="1"
-              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAR8EqNzCuWkSt+A0vSDGGoAAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAACePpJJwUUqumZg5YmUYwSKAAAAAASAAACgAAAAEAAAAPYiY6/Ttgvj1Zq8YQs4aNsIAAAAsLofcDPfTMcUAAAAX+XbNgpUJZDly5lTU5DydG3Ewxc</DTS:Property>
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAHI7lJ1ppZE+7/5oxgtQJdAAAAAAIAAAARABUAFMAAAADZgAAwAAAABAAAAAw/0xS3D2hst5JLB0jxMlhAAAAAASAAACgAAAAEAAAACtQcs+4b+EfQu4LH9nnH+UIAAAAsx2a9V/NO68UAAAAcemKo8e6f5kKWZFudBf6YJ2JqPc</DTS:Property>
           </DTS:HttpConnection>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
@@ -54,7 +54,7 @@
         DTS:Name="InitialCatalog">@[User::ETLDatabase]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=RND-RGAILEY\MSSQL2014;Initial Catalog=TipWeb_ETL_Peoria;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=hss-np-sql-01;Initial Catalog=TipWeb_ETL_Peoria;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -64,7 +64,7 @@
       DTS:ObjectName="Source - DataConversion">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=RND-RGAILEY\MSSQL2014;Initial Catalog=_DataConversion;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=hss-np-sql-01;Initial Catalog=_DataConversion;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -77,7 +77,7 @@
         DTS:Name="ConnectionString">"Data Source= "+@[User::TargetServer] +" ;Initial Catalog=" + @[User::TargetDB] +";Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;"</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source= RND-RGAILEY\MSSQL2014 ;Initial Catalog=TipWeb_IT_Staging_Peoria;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source= hss-np-sql-01 ;Initial Catalog=TipWeb_IT_Staging_Peoria;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -296,7 +296,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="TargetServer">
       <DTS:VariableValue
-        DTS:DataType="8">RND-RGAILEY\MSSQL2014</DTS:VariableValue>
+        DTS:DataType="8">hss-np-sql-01</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -1405,7 +1405,7 @@ WHERE ISNUMERIC(ItemSuggestedPrice) = 0</property>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{B52CC2D5-28EF-40D7-8319-249B06782AC7}"
-              SQLTask:SqlStatementSource="SET NOCOUNT ON&#xA;&#xA;-- ItemSuggested Price&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'ItemSuggested Price is invalid' ELSE RejectNotes + ',ItemSuggested Price is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='ItemSuggested Price' &#xA;&#xA;-- Purchase Price&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Purchase Price is invalid' ELSE RejectNotes + ',Purchase Price is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Price' &#xA;&#xA;-- Purchase Date&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'PO Date is invalid' ELSE RejectNotes + ',PO Date is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Date' &#xA;&#xA;-- PO Number&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'PO Number is invalid' ELSE RejectNotes + ',PO Number is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PONumber,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Order'&#xA;&#xA;-- Tag Already Exists&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag Already Exist' ELSE RejectNotes + ',Tag Already Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - Already Exists'&#xA;&#xA;-- Tag is NULL&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag is Null' ELSE RejectNotes + ',Tag is Null' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - is Null'&#xA;&#xA;-- Tag is Dup&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag is Duplicated' ELSE RejectNotes + ',Tag is Duplicated' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - is Dupped'&#xA;&#xA;-- SiteID does not exists&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Site ID does not exists in TIPWeb' ELSE RejectNotes + ',Site ID does not exists in TIPWeb' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.SiteID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='SiteID'&#xA;&#xA;-- Product Name is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Product Name is not Valid' ELSE RejectNotes + ',Product Name is not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.ProductName,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Product Name'&#xA;&#xA;-- Parent Tag is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'ParentTag Does Not Exists' ELSE RejectNotes + ',ParentTag Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.ParentTag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='ParentTag - Does Not Exists'&#xA;&#xA;-- StaffID is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'StaffID Does Not Exists' ELSE RejectNotes + ',StaffID Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='StaffID'&#xA;AND A.EntityType = 'Staff'&#xA;&#xA;-- StudnetID is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'StudnetID Does Not Exists' ELSE RejectNotes + ',StudnetID Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='StudentID'&#xA;AND A.EntityType = 'Student'&#xA;&#xA;-- Due Date is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Due Date is not Valid' ELSE RejectNotes + ',Due Date is not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.DueDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Due Date'&#xA;&#xA;-- EntityTypes - Not Valid&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'EntityType Not Valid' ELSE RejectNotes + ',EntityType Not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityType,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='EntityTypes - Not Valid'&#xA;&#xA;-- PO More than one Vendor&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Vendors - More than on on PO' ELSE RejectNotes + ',Vendors - More than on on PO' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PONumber,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Vendor - Not Valid'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="SET NOCOUNT ON&#xA;&#xA;-- ItemSuggested Price&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'ItemSuggested Price is invalid' ELSE RejectNotes + ',ItemSuggested Price is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='ItemSuggested Price' &#xA;&#xA;-- Purchase Price&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Purchase Price is invalid' ELSE RejectNotes + ',Purchase Price is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Price' &#xA;&#xA;-- Purchase Date&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'PO Date is invalid' ELSE RejectNotes + ',PO Date is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PurchaseDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Date' &#xA;&#xA;-- PO Number&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'PO Number is invalid' ELSE RejectNotes + ',PO Number is invalid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PONumber,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Purchase Order'&#xA;&#xA;-- Tag Already Exists&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag Already Exist' ELSE RejectNotes + ',Tag Already Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - Already Exists'&#xA;&#xA;-- Tag is NULL&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag is Null' ELSE RejectNotes + ',Tag is Null' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - is Null'&#xA;&#xA;-- Tag is Dup&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Tag is Duplicated' ELSE RejectNotes + ',Tag is Duplicated' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.Tag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Tag - is Dupped'&#xA;&#xA;-- SiteID does not exists&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Site ID does not exists in TIPWeb' ELSE RejectNotes + ',Site ID does not exists in TIPWeb' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.SiteID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='SiteID'&#xA;&#xA;-- Product Name is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Product Name is not Valid' ELSE RejectNotes + ',Product Name is not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.ProductName,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Product Name'&#xA;&#xA;-- Parent Tag is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'ParentTag Does Not Exists' ELSE RejectNotes + ',ParentTag Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.ParentTag,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='ParentTag - Does Not Exists'&#xA;&#xA;-- StaffID is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'StaffID Does Not Exists' ELSE RejectNotes + ',StaffID Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='StaffID'&#xA;AND A.EntityType = 'Staff'&#xA;&#xA;-- StudnetID is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'StudnetID Does Not Exists' ELSE RejectNotes + ',StudnetID Does Not Exists' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityID,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='StudentID'&#xA;AND A.EntityType = 'Student'&#xA;&#xA;-- Due Date is not Vaild&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Due Date is not Valid' ELSE RejectNotes + ',Due Date is not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.DueDate,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Due Date'&#xA;&#xA;-- EntityTypes - Not Valid&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'EntityType Not Valid' ELSE RejectNotes + ',EntityType Not Valid' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.EntityType,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='EntityTypes - Not Valid'&#xA;&#xA;-- PO More than one Vendor&#xA;UPDATE A&#xA;SET Import=0,&#xA;    RejectNotes=CASE WHEN ISNULL(RejectNotes,'') = '' THEN 'Vendors - More than on on PO' ELSE RejectNotes + ',Vendors - More than on on PO' END &#xA;FROM Clients_ETL AS A&#xA;INNER JOIN  Clients_ETL_Exceptions AS B&#xA;ON ISNULL(A.PONumber,'')=ISNULL(B.ExceptionValue,'') AND B.ExceptionColumn='Vendor - Not Valid'&#xA;&#xA;-- Greater Then Max Char Lens&#xA;&#xA;DECLARE @Counter INT = 1&#xA;DECLARE @CounterMax INT &#xA;DECLARE @SQL VARCHAR(MAX)&#xA;&#xA;DECLARE @ColumnsTB TABLE&#xA;(RowID INT NOT NULL IDENTITY (1,1),ColumnName VARCHAR(MAX) NOT NULL, MaxChar INT NOT NULL,DateFmt BIT NOT NULL,NumberFmt BIT NOT NULL)&#xA;&#xA;INSERT INTO @ColumnsTB&#xA;(ColumnName,MaxChar,DateFmt,NumberFmt)&#xA;&#xA;SELECT 'Tag' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'ParentTag' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'TagNotes' AS ColumnName, '1000' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'Serial' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'Serial_Required' AS ColumnName, '1' AS MaxChar,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'ProductName' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'ManufacturerName' AS ColumnName, '100' AS MaxChar ,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'ModelNumber' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'ItemTypeName' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'ProjectedLife' AS ColumnName, '10' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'ItemSuggestedPrice' AS ColumnName, '19' AS MaxChar,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'SiteID' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'SiteName' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'DepartmentName' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'RoomNumber' AS ColumnName, '25' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'RoomDesc' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'RoomType' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'PONumber' AS ColumnName, '10' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'FundingSource' AS ColumnName, '100' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'PurchaseDate' AS ColumnName, '10' AS MaxChar ,1 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'PurchasePrice' AS ColumnName, '19' AS MaxChar,0 AS DateFmt,1 AS NumberFmt&#xA;UNION &#xA;SELECT 'PO_Notes' AS ColumnName, '1000' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'AccountCode' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'VendorName' AS ColumnName, '100' AS MaxChar ,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'CustomUDEF1_Value ' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'CustomUDEF2_Value ' AS ColumnName, '50' AS MaxChar ,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'CustomUDEF3_Value ' AS ColumnName, '50' AS MaxChar,0 AS DateFmt,0 AS NumberFmt  &#xA;UNION &#xA;SELECT 'CustomUDEF4_Value ' AS ColumnName, '50' AS MaxChar ,0 AS DateFmt,0 AS NumberFmt &#xA;UNION &#xA;SELECT 'Accessory1Included' AS ColumnName, '1' AS MaxChar  ,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'Accessory2Included' AS ColumnName, '1' AS MaxChar  ,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'Accessory3Included' AS ColumnName, '1' AS MaxChar   ,0 AS DateFmt,0 AS NumberFmt&#xA;UNION &#xA;SELECT 'DueDate' AS ColumnName, '23' AS MaxChar ,1 AS DateFmt,0 AS NumberFmt &#xA;&#xA;SET @CounterMax = @@ROWCOUNT&#xA;&#xA;WHILE @Counter &lt;= @CounterMax&#xA;BEGIN&#xA;&#x9;SELECT @SQL = '&#xA;&#x9;UPDATE Clients_ETL&#xA;&#x9;SET import = 0,&#xA;&#x9;&#x9;RejectNotes =  CASE WHEN RejectNotes IS NULL THEN ''' + CASE WHEN ColumnName = 'ItemTypeName' THEN 'ProductType' ELSE ColumnName END + ' is over Max Chars'' ELSE RejectNotes + '',' + + CASE WHEN ColumnName = 'ItemTypeName' THEN 'ProductType' ELSE ColumnName END + + ' is over Max Chars'' END&#xA;&#x9;WHERE LEN(' + ColumnName + ') &gt; ' + CAST(MaxChar AS VARCHAR(50))&#xA;&#xA;&#x9;FROM @ColumnsTB&#xA;&#x9;WHERE RowID = @Counter&#xA;&#xA;&#x9;EXEC (@SQL)&#xA;&#xA;&#x9;IF @@ERROR &gt; 0&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;PRINT @SQL&#xA;&#x9;END&#xA;&#xA;&#x9;SET @Counter = @Counter + 1&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -7762,7 +7762,6 @@ HAVING COUNT(PONumber) &gt; 1</property>
           DTS:refId="Package\Process Data\Accessories"
           DTS:CreationName="STOCK:SEQUENCE"
           DTS:Description="Sequence Container"
-          DTS:Disabled="True"
           DTS:DTSID="{6F75C60B-C0DD-451C-844A-8BF17C19923C}"
           DTS:ExecutableType="STOCK:SEQUENCE"
           DTS:LocaleID="-1"
@@ -21454,7 +21453,6 @@ where [refTable].[ManufacturerName] = ?</property>
               DTS:refId="Package\Process Data\tblTechInventory\Parrent Tags"
               DTS:CreationName="Microsoft.Pipeline"
               DTS:Description="Data Flow Task"
-              DTS:Disabled="True"
               DTS:DTSID="{DF7FDFFF-DC51-43BC-ADFB-3AA5CBB8DF2F}"
               DTS:ExecutableType="Microsoft.Pipeline"
               DTS:LocaleID="-1"
@@ -44211,7 +44209,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="CustomFields"
-          DTS:ThreadHint="0">
+          DTS:ThreadHint="2">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44266,7 +44264,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="ItemSuggestedPrice"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44305,7 +44303,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Model Number"
-          DTS:ThreadHint="2">
+          DTS:ThreadHint="1">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44369,7 +44367,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="ProductName"
-          DTS:ThreadHint="2">
+          DTS:ThreadHint="1">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44486,7 +44484,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="RoomType"
-          DTS:ThreadHint="2">
+          DTS:ThreadHint="1">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44509,7 +44507,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Serial Required"
-          DTS:ThreadHint="2">
+          DTS:ThreadHint="1">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -44892,7 +44890,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="256" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="256" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="197,42"
           Id="Package\Exceptions\CustomField DataTypes"
@@ -44966,7 +44964,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="603.111111111111,114.527777777778">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-137.611111111111,36.972222222222"
               Start="0,0"
               End="-130.111111111111,36.972222222222">
@@ -45002,7 +45000,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="204.5,61.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="155.666666666667,77.75"
               Start="0,0"
               End="155.666666666667,70.25">
@@ -45038,7 +45036,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="185.055555555555,207.583333333333">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="120.444444444445,-41.9166666666664"
               Start="0,0"
               End="112.944444444445,-41.9166666666664">
@@ -45074,7 +45072,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="201.5,144.222222222222">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="104,15.777777777778"
               Start="0,0"
               End="96.5,15.777777777778">
@@ -45110,7 +45108,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="620.5,174">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-155,-14"
               Start="0,0"
               End="-147.5,-14">
@@ -45146,7 +45144,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="594.75,300.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-23.3928571428576,-22.2142857142853"
               Start="0,0"
               End="-15.8928571428576,-22.2142857142853">
@@ -45182,7 +45180,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="665.75,321.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-157.488095238095,28.5238095238097"
               Start="0,0"
               End="-157.488095238095,21.0238095238097">
@@ -45218,7 +45216,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="666.986111111111,279.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-34.222222222222"
               Start="0,0"
               End="0,-26.722222222222">
@@ -45242,7 +45240,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="128.130952380952,329.321428571429">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="232.035714285714,-148.321428571429"
               Start="0,0"
               End="232.035714285714,-140.821428571429">
@@ -45278,7 +45276,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="340.380952380953,315.571428571429">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="45.1190476190475,-134.571428571429"
               Start="0,0"
               End="45.1190476190475,-127.071428571429">
@@ -45314,7 +45312,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="477.277777777778,63.7777777777778">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-66.4444444444447,75.2222222222222"
               Start="0,0"
               End="-66.4444444444447,67.7222222222222">
@@ -45350,7 +45348,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="623.678571428572,64.464285714286">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-187.511904761905,74.535714285714"
               Start="0,0"
               End="-187.511904761905,67.035714285714">
@@ -45386,7 +45384,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="522.357142857142,257.035714285715">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-86.1904761904757,-76.0357142857147"
               Start="0,0"
               End="-86.1904761904757,-68.5357142857147">
@@ -45422,7 +45420,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="74.5952380952383,60.285714285714">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="260.238095238095,78.714285714286"
               Start="0,0"
               End="260.238095238095,71.214285714286">
@@ -45458,7 +45456,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="609.222222222222,224.027777777778">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-143.722222222222,-58.3611111111114"
               Start="0,0"
               End="-136.222222222222,-58.3611111111114">
@@ -45494,7 +45492,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="466.595238095238,349.77380952381">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-55.7619047619047,-168.77380952381"
               Start="0,0"
               End="-55.7619047619047,-161.27380952381">
@@ -45530,7 +45528,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="82.361111111112,251.337301587301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="265.138888888888,-70.337301587301"
               Start="0,0"
               End="265.138888888888,-62.837301587301">
@@ -45566,7 +45564,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="338.888888888889,60.6666666666667">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="46.6111111111109,78.3333333333333"
               Start="0,0"
               End="46.6111111111109,70.8333333333333">
@@ -45617,7 +45615,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="172,46">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="48.5,0"
               Start="0,0"
               End="41,0">
@@ -45685,7 +45683,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="117.101190476191,63.6190476190477">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,27.0039682539688"
               Start="0,0"
               End="0,19.5039682539688">
@@ -45707,7 +45705,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="119.089285714286,132.623015873016">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32.6666666666655"
               Start="0,0"
               End="0,25.1666666666655">
@@ -45729,7 +45727,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="121.803571428572,207.289682539682">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,27.821428571429"
               Start="0,0"
               End="0,20.321428571429">
@@ -45794,7 +45792,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="156.297619047619,134.515873015872">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,42.1388888888899"
               Start="0,0"
               End="0,34.6388888888899">
@@ -45816,7 +45814,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="281.047619047619,40.7738095238096">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="71.2023809523807,0"
               Start="0,0"
               End="63.7023809523807,0">
@@ -45838,7 +45836,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="429.375,63.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,36.75"
               Start="0,0"
               End="0,29.25">
@@ -45860,7 +45858,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="158.226190476191,92.5158730158721">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-32.2182539682529"
               Start="0,0"
               End="0,-24.7182539682529">
@@ -45882,7 +45880,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="434.625,142">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,36.75"
               Start="0,0"
               End="0,29.25">
@@ -45904,7 +45902,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="439.5,220.75">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,29.25"
               Start="0,0"
               End="0,21.75">
@@ -45926,7 +45924,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="342.25,271">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-68.25,0"
               Start="0,0"
               End="-60.75,0">
@@ -45948,7 +45946,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="167.583333333334,292">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,28.444444444445"
               Start="0,0"
               End="0,20.944444444445">
@@ -45977,7 +45975,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="431.67460317461,218.734126984126">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-109.527777777785,-21.8531746031738"
               Start="0,0"
               End="-102.027777777785,-21.8531746031738">
@@ -46011,7 +46009,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1009.67460317461,218.734126984126">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="121.0119047619,-10.5158730158718"
               Start="0,0"
               End="113.5119047619,-10.5158730158718">
@@ -46047,7 +46045,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="720.253968253969,467.234126984126">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,37.1706349206324"
               Start="0,0"
               End="0,29.6706349206324">
@@ -46138,7 +46136,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="170.888888888889,33.9999999999999">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="61.0277777777783,0"
               Start="0,0"
               End="53.5277777777783,0">
@@ -46160,7 +46158,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="391.984126984126,35.2301587301586">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-38.0674603174591,0"
               Start="0,0"
               End="-30.5674603174591,0">
@@ -46182,7 +46180,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="109.009920634921,132.857142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30.7579365079362"
               Start="0,0"
               End="0,23.2579365079362">
@@ -46206,7 +46204,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="291.980158730158,128.980158730159">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,27.2341269841264"
               Start="0,0"
               End="0,19.7341269841264">
@@ -46230,7 +46228,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="297.089285714286,198.214285714286">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,29.9642857142863"
               Start="0,0"
               End="0,22.4642857142863">
@@ -46252,7 +46250,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="467.974206349207,57.4603174603172">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,36.6904761904768"
               Start="0,0"
               End="0,29.1904761904768">
@@ -46276,7 +46274,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="301.107142857143,270.178571428572">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32.071428571428"
               Start="0,0"
               End="0,24.571428571428">
@@ -46300,7 +46298,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="114.242063492063,205.615079365079">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,35.884920634921"
               Start="0,0"
               End="0,28.384920634921">
@@ -46324,7 +46322,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="474.892857142856,206.559523809523">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,25.7976190476198"
               Start="0,0"
               End="0,18.2976190476198">
@@ -46365,7 +46363,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="120.011904761908,130.190476190473">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,41.1428571428596"
               Start="0,0"
               End="0,33.6428571428596">
@@ -46387,7 +46385,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="114.011904761908,55">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,33.1904761904734"
               Start="0,0"
               End="0,25.6904761904734">
@@ -46492,7 +46490,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="107.535714285715,126.952380952381">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,26.4761904761904"
               Start="0,0"
               End="0,18.9761904761904">
@@ -46514,7 +46512,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="103.214285714286,195.428571428571">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,29.7142857142857"
               Start="0,0"
               End="0,22.2142857142857">
@@ -46536,7 +46534,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="513.25,250.125">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="27.75,0"
               Start="0,0"
               End="20.25,0">
@@ -46558,7 +46556,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="620.75,230">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-35"
               Start="0,0"
               End="0,-27.5">
@@ -46580,7 +46578,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="619.25,153">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-24"
               Start="0,0"
               End="0,-16.5">
@@ -46602,7 +46600,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="110.321428571429,52">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32.9523809523809"
               Start="0,0"
               End="0,25.4523809523809">
@@ -46624,7 +46622,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="615,87">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-25"
               Start="0,0"
               End="0,-17.5">
@@ -46646,7 +46644,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="438.5,270.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,26.25"
               Start="0,0"
               End="0,18.75">
@@ -46668,7 +46666,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="357.75,317.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-23.25,0"
               Start="0,0"
               End="-15.75,0">
@@ -46690,7 +46688,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="511.75,316.964285714286">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="29.392857142857,0"
               Start="0,0"
               End="21.892857142857,0">
@@ -46712,7 +46710,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="171,249.142857142857">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="27.571428571429,0"
               Start="0,0"
               End="20.071428571429,0">
@@ -46734,7 +46732,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="266.571428571429,231.142857142857">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="20.5714285714288,-33.2857142857135"
               Start="0,0"
               End="20.5714285714288,-25.7857142857135">
@@ -46768,7 +46766,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="284.714285714286,155.857142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-25.0000000000005"
               Start="0,0"
               End="0,-17.5000000000005">
@@ -46790,7 +46788,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="282.285714285715,88.857142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,-30.7142857142859"
               Start="0,0"
               End="0,-23.2142857142859">
@@ -46812,7 +46810,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="336.285714285714,37.2142857142857">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="42.142857142857,0"
               Start="0,0"
               End="34.642857142857,0">
@@ -46834,7 +46832,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="436.785714285714,58.2857142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,24.5714285714287"
               Start="0,0"
               End="0,17.0714285714287">
@@ -46856,7 +46854,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="439.696428571429,124.857142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,26.4523809523801"
               Start="0,0"
               End="0,18.9523809523801">
@@ -46878,7 +46876,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="441.75,193.309523809523">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,34.9404761904769"
               Start="0,0"
               End="0,27.4404761904769">
@@ -46915,7 +46913,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="226.285714285715,40.9285714285713">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="103.285714285713,0"
               Start="0,0"
               End="95.7857142857133,0">
@@ -46944,7 +46942,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="815.130952380953,441.261904761905">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="115.317460317465,-11.333333333333"
               Start="0,0"
               End="107.817460317465,-11.333333333333">
@@ -46978,10 +46976,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1700.44841269842,429.928571428572">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="82.9801587301527,-14.686507936508"
+              StartConnector="{x:Null}"
+              EndConnector="82.9801587301527,-14.6865079365081"
               Start="0,0"
-              End="75.4801587301527,-14.686507936508">
+              End="75.4801587301527,-14.6865079365081">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -46992,13 +46990,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
                     Point2="41.4900793650763,0"
                     Point3="41.4900793650763,-4" />
                   <mssgle:LineSegment
-                    End="41.4900793650763,-10.686507936508" />
+                    End="41.4900793650763,-10.6865079365081" />
                   <mssgle:CubicBezierSegment
-                    Point1="41.4900793650763,-10.686507936508"
-                    Point2="41.4900793650763,-14.686507936508"
-                    Point3="45.4900793650763,-14.686507936508" />
+                    Point1="41.4900793650763,-10.6865079365081"
+                    Point2="41.4900793650763,-14.6865079365081"
+                    Point3="45.4900793650763,-14.6865079365081" />
                   <mssgle:LineSegment
-                    End="75.4801587301527,-14.686507936508" />
+                    End="75.4801587301527,-14.6865079365081" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -47012,27 +47010,27 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="2090.92857142857,646.242063492064">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-1189.57142857143,104.829365079365"
               Start="0,0"
-              End="-1189.57142857143,97.3293650793648">
+              End="-1189.57142857143,97.3293650793649">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,48.4146825396824" />
+                    End="0,48.4146825396825" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,48.4146825396824"
-                    Point2="0,52.4146825396824"
-                    Point3="-4,52.4146825396824" />
+                    Point1="0,48.4146825396825"
+                    Point2="0,52.4146825396825"
+                    Point3="-4,52.4146825396825" />
                   <mssgle:LineSegment
-                    End="-1185.57142857143,52.4146825396824" />
+                    End="-1185.57142857143,52.4146825396825" />
                   <mssgle:CubicBezierSegment
-                    Point1="-1185.57142857143,52.4146825396824"
-                    Point2="-1189.57142857143,52.4146825396824"
-                    Point3="-1189.57142857143,56.4146825396824" />
+                    Point1="-1185.57142857143,52.4146825396825"
+                    Point2="-1189.57142857143,52.4146825396825"
+                    Point3="-1189.57142857143,56.4146825396825" />
                   <mssgle:LineSegment
-                    End="-1189.57142857143,97.3293650793648" />
+                    End="-1189.57142857143,97.3293650793649" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -47046,7 +47044,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1714.85714285714,1122.07142857143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="270.809523809527,-21.0714285714289"
               Start="0,0"
               End="263.309523809527,-21.0714285714289">
@@ -47080,7 +47078,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="451.60119047619,172.142857142857">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,50.6190476190478"
               Start="0,0"
               End="0,43.1190476190478">
@@ -47124,7 +47122,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Due Date">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\Due Date\Data Conversion"
@@ -47146,7 +47144,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47170,7 +47168,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,142">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -47194,7 +47192,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47241,7 +47239,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\ItemSuggested Price">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\ItemSuggested Price\Data Conversion"
@@ -47263,7 +47261,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="405,143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-16.5,44"
               Start="0,0"
               End="-16.5,36.5">
@@ -47299,7 +47297,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47323,7 +47321,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47357,7 +47355,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Not Valid EntityType">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="163,42"
           Id="Package\Exceptions\Not Valid EntityType\Insert Exceptions"
@@ -47379,7 +47377,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47403,7 +47401,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="390.5,141">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,46"
               Start="0,0"
               End="0,38.5">
@@ -47427,7 +47425,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47474,7 +47472,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Parent Tag">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="163,42"
           Id="Package\Exceptions\Parent Tag\Insert Exceptions"
@@ -47496,7 +47494,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47520,7 +47518,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="386,141">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,46"
               Start="0,0"
               End="0,38.5">
@@ -47544,7 +47542,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47591,7 +47589,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\PO Date">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\PO Date\Data Conversion"
@@ -47613,7 +47611,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="388,142">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -47637,7 +47635,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47661,7 +47659,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47708,7 +47706,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Product">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\Product\Data Conversion"
@@ -47730,7 +47728,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47754,7 +47752,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="390.5,144">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,43"
               Start="0,0"
               End="0,35.5">
@@ -47778,7 +47776,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47825,7 +47823,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Purchase Price">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\Purchase Price\Data Conversion"
@@ -47847,7 +47845,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389.75,143">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,44"
               Start="0,0"
               End="0,36.5">
@@ -47871,7 +47869,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -47895,7 +47893,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -47942,7 +47940,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Site">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="178,42"
           Id="Package\Exceptions\Site\Get SiteIDs TIPWeb"
@@ -47968,7 +47966,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="395.75,117">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -47992,7 +47990,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="394.25,198">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,42"
               Start="0,0"
               End="0,34.5">
@@ -48016,7 +48014,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="394,282">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48040,7 +48038,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="393.5,354">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -48110,7 +48108,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\StaffIDs">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="118,42"
           Id="Package\Exceptions\StaffIDs\StaffIDs"
@@ -48136,7 +48134,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="396.5,117">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -48160,7 +48158,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="394.25,198">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,42"
               Start="0,0"
               End="0,34.5">
@@ -48184,7 +48182,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="394,282">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48208,7 +48206,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="393.5,354">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -48278,7 +48276,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\StudentIDs">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="133,42"
           Id="Package\Exceptions\StudentIDs\StudentIDs"
@@ -48304,7 +48302,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="402.5,117">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -48328,7 +48326,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="396.5,198">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,42"
               Start="0,0"
               End="0,34.5">
@@ -48352,7 +48350,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="394,282">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48376,7 +48374,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="393.5,354">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -48433,7 +48431,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Tag Exists">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="163,42"
           Id="Package\Exceptions\Tag Exists\Insert Exceptions"
@@ -48459,7 +48457,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="478,171">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,61"
               Start="0,0"
               End="0,53.5">
@@ -48483,7 +48481,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="478.5,274">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,37"
               Start="0,0"
               End="0,29.5">
@@ -48507,7 +48505,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="478,353">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48531,7 +48529,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="476,425">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -48588,7 +48586,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Tag is Dup">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="127,42"
           Id="Package\Exceptions\Tag is Dup\Dup Tags"
@@ -48610,7 +48608,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -48634,7 +48632,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="377.5,141">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="11,46"
               Start="0,0"
               End="11,38.5">
@@ -48670,7 +48668,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48717,7 +48715,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Tag is Null">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="161,42"
           Id="Package\Exceptions\Tag is Null\Data Conversion"
@@ -48739,7 +48737,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="387,301">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -48763,7 +48761,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="376,142">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="12.5,45"
               Start="0,0"
               End="12.5,37.5">
@@ -48799,7 +48797,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="389,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48846,7 +48844,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Exceptions\Vendors">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="163,42"
           Id="Package\Exceptions\Vendors\Insert Exceptions"
@@ -48868,7 +48866,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="701.5,136">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,47"
               Start="0,0"
               End="0,39.5">
@@ -48892,7 +48890,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="700,225">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,30"
               Start="0,0"
               End="0,22.5">
@@ -48916,7 +48914,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="699.5,297">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,45"
               Start="0,0"
               End="0,37.5">
@@ -48963,7 +48961,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\Accessories\Accessory">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="139,42"
           Id="Package\Process Data\Accessories\Accessory\Set Defaults"
@@ -48989,7 +48987,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="611,117">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,55"
               Start="0,0"
               End="0,47.5">
@@ -49013,7 +49011,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="607.75,385">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,51"
               Start="0,0"
               End="0,43.5">
@@ -49037,7 +49035,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="608.5,214">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,35"
               Start="0,0"
               End="0,27.5">
@@ -49061,7 +49059,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="606.5,291">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,52"
               Start="0,0"
               End="0,44.5">
@@ -49131,7 +49129,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\Accessories\AccessoryItems">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="139,42"
           Id="Package\Process Data\Accessories\AccessoryItems\Set Defaults"
@@ -49153,7 +49151,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="375,98">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,55"
               Start="0,0"
               End="0,47.5">
@@ -49177,7 +49175,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="372.5,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,35"
               Start="0,0"
               End="0,27.5">
@@ -49201,7 +49199,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="368.75,272">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,53"
               Start="0,0"
               End="0,45.5">
@@ -49227,7 +49225,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 1">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="237,42"
           Id="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 1\Get InventoryExtUID By AssetID"
@@ -49253,7 +49251,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="823.5,269">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -49277,7 +49275,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="850.666666666667,350">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="152.333333333333,56"
               Start="0,0"
               End="152.333333333333,48.5">
@@ -49313,7 +49311,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="818.5,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32"
               Start="0,0"
               End="0,24.5">
@@ -49337,7 +49335,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="816.5,122">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -49407,7 +49405,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 2">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="237,42"
           Id="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 2\Get InventoryExtUID By AssetID"
@@ -49433,7 +49431,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="823.5,269">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -49457,7 +49455,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="850.666666666667,350">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="152.333333333333,56"
               Start="0,0"
               End="152.333333333333,48.5">
@@ -49493,7 +49491,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="818.5,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32"
               Start="0,0"
               End="0,24.5">
@@ -49517,7 +49515,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="816.5,122">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -49574,7 +49572,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 3">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="237,42"
           Id="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 3\Get InventoryExtUID By AssetID"
@@ -49600,7 +49598,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="823.5,269">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -49624,7 +49622,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="850.666666666667,350">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="152.333333333333,56"
               Start="0,0"
               End="152.333333333333,48.5">
@@ -49660,7 +49658,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="818.5,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32"
               Start="0,0"
               End="0,24.5">
@@ -49684,7 +49682,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="816.5,122">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -49741,7 +49739,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 4">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="237,42"
           Id="Package\Process Data\CustomFields\Pouplate tblTechInventoryExt Custom Field 4\Get InventoryExtUID By AssetID"
@@ -49767,7 +49765,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="823.5,269">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,39"
               Start="0,0"
               End="0,31.5">
@@ -49791,7 +49789,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="850.666666666667,350">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="152.333333333333,56"
               Start="0,0"
               End="152.333333333333,48.5">
@@ -49827,7 +49825,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="818.5,195">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,32"
               Start="0,0"
               End="0,24.5">
@@ -49851,7 +49849,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="816.5,122">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,31"
               Start="0,0"
               End="0,23.5">
@@ -49908,7 +49906,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\Purchase Orders\Purchase Details">
     <LayoutInfo>
       <GraphLayout
-        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="205,42"
           Id="Package\Process Data\Purchase Orders\Purchase Details\TIPWeb ManufacturerUID"
@@ -49962,7 +49960,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1215,209">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-66,0"
               Start="0,0"
               End="-58.5,0">
@@ -49986,7 +49984,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="839,229">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,59"
               Start="0,0"
               End="0,51.5">
@@ -50000,7 +49998,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -50008,7 +50008,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="402.5,82">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="124.5,30"
               Start="0,0"
               End="124.5,22.5">
@@ -50034,7 +50034,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -50042,7 +50044,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="268,58.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="54,0"
               Start="0,0"
               End="46.5,0">
@@ -50056,7 +50058,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -50064,7 +50068,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="839.75,330">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,58"
               Start="0,0"
               End="0,50.5">
@@ -50088,7 +50092,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="838.75,430">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,74"
               Start="0,0"
               End="0,66.5">
@@ -50112,7 +50116,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="599,134.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="66,0"
               Start="0,0"
               End="58.5,0">
@@ -50136,7 +50140,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="870,133.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="107,0"
               Start="0,0"
               End="99.5,0">
@@ -50160,7 +50164,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1313.75,157">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,29"
               Start="0,0"
               End="0,21.5">
@@ -50184,7 +50188,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1124,133.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="121,0"
               Start="0,0"
               End="113.5,0">
@@ -50208,7 +50212,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="974,209.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-78,0"
               Start="0,0"
               End="-70.5,0">
@@ -50439,7 +50443,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Process Data\Purchase Orders\Purchase Inventory">
     <LayoutInfo>
       <GraphLayout
-        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph" xmlns:mssge="clr-namespace:Microsoft.SqlServer.Graph.Extended;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
         <NodeLayout
           Size="238,42"
           Id="Package\Process Data\Purchase Orders\Purchase Inventory\Lookup if PurchaseShipmentUID"
@@ -50505,7 +50509,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="423,203">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="113,0"
               Start="0,0"
               End="105.5,0">
@@ -50529,7 +50533,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="599,484">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-133,0"
               Start="0,0"
               End="-125.5,0">
@@ -50553,7 +50557,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1122.75,228">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,48"
               Start="0,0"
               End="0,40.5">
@@ -50577,7 +50581,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1126.5,402">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,56"
               Start="0,0"
               End="0,48.5">
@@ -50601,7 +50605,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="989,383">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="50,0"
               Start="0,0"
               End="42.5,0">
@@ -50625,7 +50629,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1004,481">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-159,0"
               Start="0,0"
               End="-151.5,0">
@@ -50649,7 +50653,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="749,386.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="84,0"
               Start="0,0"
               End="76.5,0">
@@ -50673,7 +50677,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="415,386.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="97,0"
               Start="0,0"
               End="89.5,0">
@@ -50697,7 +50701,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="328.75,320">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,44"
               Start="0,0"
               End="0,36.5">
@@ -50721,7 +50725,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="572,299">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-144,0"
               Start="0,0"
               End="-136.5,0">
@@ -50745,7 +50749,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="822,299">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-111,0"
               Start="0,0"
               End="-103.5,0">
@@ -50769,7 +50773,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1049,298">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-80,0"
               Start="0,0"
               End="-72.5,0">
@@ -50793,7 +50797,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="655,206.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="102,0"
               Start="0,0"
               End="94.5,0">
@@ -50817,7 +50821,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="918,208.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="104,0"
               Start="0,0"
               End="96.5,0">
@@ -55130,7 +55134,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     design-time-name="Package\Ref Data\Rooms">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="134,42"
           Id="Package\Ref Data\Rooms\Get Rooms"
@@ -55156,7 +55160,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="690,237.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="134,0"
               Start="0,0"
               End="126.5,0">
@@ -55170,7 +55174,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -55178,7 +55184,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1185.5,260">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,56"
               Start="0,0"
               End="0,48.5">
@@ -55202,7 +55208,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="967,238">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="146,0"
               Start="0,0"
               End="138.5,0">
@@ -55226,7 +55232,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           TopLeft="1128,338">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="-152,0"
               Start="0,0"
               End="-144.5,0">
@@ -55240,7 +55246,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
