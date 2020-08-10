@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="8/7/2020 1:23:39 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="RND-RGAILEY"
+  DTS:CreatorName="HAYESSOFT\rgailey"
+  DTS:DTSID="{08DCAA19-04AB-4D3D-B472-6DDF9A651D23}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="15.0.2000.121"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="ImportTest"
+  DTS:PackageType="5"
+  DTS:VersionBuild="18"
+  DTS:VersionGUID="{8AC703CB-3B86-48FD-AF23-9F881ED9B285}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Source - ImportManagementSystem]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{CB91E05B-3EF4-4248-BDA2-0B09BEBF7789}"
+      DTS:ObjectName="Source - ImportManagementSystem">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=RND-RGAILEY\MSSQL2014;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{38103968-2E56-4DD9-9A09-4CBAB102B6A8}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="Counter">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{5AB8A5C1-17D2-4B2F-9D65-D70E6A132485}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="CounterMax">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{964E9E3A-208B-4E37-8D19-41AE5CE1563F}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="FileName">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\EZImportFiles\Test_SFTP_User\Student_Hayes.csv</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{B1184AC6-0984-46D0-BD75-C005AD520508}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="FileType">
+      <DTS:VariableValue
+        DTS:DataType="8">Student</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\For Loop Container"
+      DTS:AssignExpression="@Counter = @Counter + 1"
+      DTS:CreationName="STOCK:FORLOOP"
+      DTS:Description="For Loop Container"
+      DTS:DTSID="{F8AD303A-831F-4DAD-90AA-DD3DB0128088}"
+      DTS:EvalExpression="@Counter &lt;= @CounterMax"
+      DTS:ExecutableType="STOCK:FORLOOP"
+      DTS:InitExpression="@Counter = 1"
+      DTS:LocaleID="-1"
+      DTS:MaxConcurrent="1"
+      DTS:ObjectName="For Loop Container">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\For Loop Container\Check File Header"
+          DTS:CreationName="Microsoft.ExecuteProcess"
+          DTS:Description="Execute Process Task"
+          DTS:DTSID="{A2BAFA4E-E0DC-4BC1-BA75-47F6C1D5E17B}"
+          DTS:ExecutableType="Microsoft.ExecuteProcess"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Check File Header"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:PropertyExpression
+            DTS:Name="Arguments">" -ExecutionPolicy Unrestricted -File E:\\EZImportFiles\\_UFA_Scripts\\Check-SISFile.ps1 -FileName " + @[User::FileName] + " -FileType " + @[User::FileType]</DTS:PropertyExpression>
+          <DTS:ObjectData>
+            <ExecuteProcessData
+              Executable="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+              Arguments=" -ExecutionPolicy Unrestricted -File E:\EZImportFiles\_UFA_Scripts\Check-SISFile.ps1 -FileName E:\EZImportFiles\Test_SFTP_User\Student_Hayes.csv -FileType Student"
+              WindowStyle="Hidden" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\For Loop Container\Get FileName and Type"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{A9A5D47E-0A1D-4A65-92B3-1F8B4AB2534E}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Get FileName and Type"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{CB91E05B-3EF4-4248-BDA2-0B09BEBF7789}"
+              SQLTask:SqlStatementSource="DECLARE @Counter INT = ?&#xA;&#xA;SELECT ImportFileName,FileType&#xA;FROM &#xA;&#x9;(&#xA;&#x9;SELECT ImportFileName,FileType,ROW_NUMBER() OVER(ORDER BY CustomersUID,FileType DESC)  AS RowID&#xA;&#x9;FROM &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT CustomersUID,SFTPLocation + '\' + StudentDemogFile AS ImportFileName, 'Student' AS FileType&#xA;&#x9;&#x9;FROM CustomerList&#xA;&#x9;&#x9;WHERE CheckHeader = 1&#xA;&#x9;&#x9;AND StudentDemog = 1 &#xA;&#x9;&#x9;AND StudentDemogFile IS NOT NULL&#xA;&#x9;&#x9;AND Active = 1&#xA;&#xA;&#x9;&#x9;UNION &#xA;&#xA;&#x9;&#x9;SELECT CustomersUID,SFTPLocation + '\' + StaffFile AS ImportFileName, 'Staff' AS FileType&#xA;&#x9;&#x9;FROM CustomerList&#xA;&#x9;&#x9;WHERE CheckHeader = 1&#xA;&#x9;&#x9;AND Staff = 1&#xA;&#x9;&#x9;AND StaffFile IS NOT NULL &#xA;&#x9;&#x9;AND Active = 1&#xA;&#x9;&#x9;) AS Files&#xA;&#x9;) AS Counters&#xA;WHERE RowID = @Counter"
+              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="ImportFileName"
+                SQLTask:DtsVariableName="User::FileName" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="FileType"
+                SQLTask:DtsVariableName="User::FileType" />
+              <SQLTask:ParameterBinding
+                SQLTask:ParameterName="0"
+                SQLTask:DtsVariableName="User::Counter"
+                SQLTask:ParameterDirection="Input"
+                SQLTask:DataType="131"
+                SQLTask:ParameterSize="-1" />
+            </SQLTask:SqlTaskData>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\For Loop Container.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{35FC38CA-5A8A-47A7-93B0-2814003E2309}"
+          DTS:From="Package\For Loop Container\Get FileName and Type"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\For Loop Container\Check File Header" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Set Max Counter"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{59DB34FC-6293-4D46-9A48-B1536D0FA415}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Set Max Counter"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{CB91E05B-3EF4-4248-BDA2-0B09BEBF7789}"
+          SQLTask:SqlStatementSource="SELECT MAX(RowID) AS CounterMax&#xA;FROM &#xA;&#x9;(&#xA;&#x9;SELECT ImportFileName,FileType,ROW_NUMBER() OVER(ORDER BY CustomersUID,FileType DESC)  AS RowID&#xA;&#x9;FROM &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT CustomersUID,SFTPLocation + '\' + StudentDemogFile AS ImportFileName, 'Student' AS FileType&#xA;&#x9;&#x9;FROM CustomerList&#xA;&#x9;&#x9;WHERE CheckHeader = 1&#xA;&#x9;&#x9;AND StudentDemog = 1 &#xA;&#x9;&#x9;AND StudentDemogFile IS NOT NULL&#xA;&#x9;&#x9;AND Active = 1&#xA;&#xA;&#x9;&#x9;UNION &#xA;&#xA;&#x9;&#x9;SELECT CustomersUID,SFTPLocation + '\' + StaffFile AS ImportFileName, 'Staff' AS FileType&#xA;&#x9;&#x9;FROM CustomerList&#xA;&#x9;&#x9;WHERE CheckHeader = 1&#xA;&#x9;&#x9;AND Staff = 1&#xA;&#x9;&#x9;AND StaffFile IS NOT NULL&#xA;&#x9;&#x9;AND Active = 1 &#xA;&#x9;&#x9;) AS Files&#xA;&#x9;) AS Counters"
+          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding
+            SQLTask:ResultName="CounterMax"
+            SQLTask:DtsVariableName="User::CounterMax" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{C50AE87B-F9E1-40D3-9040-6ED981DC9C2F}"
+      DTS:From="Package\Set Max Counter"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\For Loop Container" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql12">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="170,42"
+          Id="Package\For Loop Container\Check File Header"
+          TopLeft="162,132" />
+        <NodeLayout
+          Size="195,42"
+          Id="Package\For Loop Container\Get FileName and Type"
+          TopLeft="144,32" />
+        <EdgeLayout
+          Id="Package\For Loop Container.PrecedenceConstraints[Constraint]"
+          TopLeft="244.25,74">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,58"
+              Start="0,0"
+              End="0,50.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,50.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="486,252"
+          Size="486,295"
+          Id="Package\For Loop Container"
+          TopLeft="819,228" />
+        <NodeLayout
+          Size="143,42"
+          Id="Package\Set Max Counter"
+          TopLeft="991,76" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="1062.25,118">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,110"
+              Start="0,0"
+              End="0,102.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,102.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
