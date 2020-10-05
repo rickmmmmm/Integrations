@@ -12,8 +12,8 @@
   DTS:ObjectName="TechXL Import"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="1026"
-  DTS:VersionGUID="{D1419C0C-FA6D-4EE8-A6F3-51DC1F768967}">
+  DTS:VersionBuild="1027"
+  DTS:VersionGUID="{39E31EBC-85AC-4166-82B1-3F551DFAACD5}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -374,6 +374,22 @@
             <SQLTask:SqlTaskData
               SQLTask:Connection="{245E98F5-54AE-46F8-AC46-084D687C3A23}"
               SQLTask:SqlStatementSource="&#xA;DROP TABLE Tempdb.dbo.ReconcileReport&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Create Process Report\Cleanup Totals Equal Zero"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{D5F8FC12-F919-411C-8D8F-8553667EFC05}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Cleanup Totals Equal Zero"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{245E98F5-54AE-46F8-AC46-084D687C3A23}"
+              SQLTask:SqlStatementSource="DELETE&#xA;FROM tblTechPurchaseItemShipments&#xA;WHERE QuantityShipped = 0&#xA;AND CreatedByUserID = 0 &#xA;AND LastModifiedByUserID = 0&#xA;&#xA;DELETE &#xA;FROM tblTechPurchaseItemDetails&#xA;WHERE QuantityOrdered = 0&#xA;AND CreatedByUserID = 0 &#xA;AND LastModifiedByUserID = 0&#xA;AND PurchaseItemDetailUID NOT IN (SELECT DISTINCT  PurchaseItemDetailUID&#xA;FROM tblTechPurchaseItemShipments)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -849,6 +865,14 @@ FROM Tempdb.dbo.ReconcileReport</property>
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 3"
           DTS:To="Package\Create Process Report\Cleanup" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Create Process Report.PrecedenceConstraints[Constraint 4]"
+          DTS:CreationName=""
+          DTS:DTSID="{3F469A7D-AA38-4B84-9A15-5341BBB9653D}"
+          DTS:From="Package\Create Process Report\Cleanup"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 4"
+          DTS:To="Package\Create Process Report\Cleanup Totals Equal Zero" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -8125,7 +8149,7 @@ where [refTable].[InventoryUID] = ? and [refTable].[InventoryMetaUID] = ?</prope
                       containsID="true"
                       dataType="System.String"
                       description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                      name="ParameterMap">#{Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 2\1007:invalid};#{Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 2\1008:invalid};</property>
+                      name="ParameterMap">#{Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 2\1001:invalid};#{Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 2\1002:invalid};</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -18042,14 +18066,14 @@ AND InventoryMetaUID=@InventoryMetaUID</property>
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Get InventoryExtUID By AssetID.Outputs[Lookup Match Output]" />
                 <path
                   refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output1]"
-                  endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Insert Custom Field 3 AssetID.Inputs[OLE DB Destination Input]"
-                  name="Lookup No Match Output"
-                  startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\If Exists for AssetID.Outputs[Lookup No Match Output]" />
-                <path
-                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Insert Custom Field 3 Tag.Inputs[OLE DB Destination Input]"
                   name="Lookup No Match Output"
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\If Exists for Tag.Outputs[Lookup No Match Output]" />
+                <path
+                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output]"
+                  endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Insert Custom Field 3 AssetID.Inputs[OLE DB Destination Input]"
+                  name="Lookup No Match Output"
+                  startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\If Exists for AssetID.Outputs[Lookup No Match Output]" />
                 <path
                   refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[OLE DB Destination Error Output]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Do Nothing AssetID.Inputs[Input 0]"
@@ -18067,24 +18091,24 @@ AND InventoryMetaUID=@InventoryMetaUID</property>
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Get TechXl Data.Outputs[OLE DB Source Output]" />
                 <path
                   refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output3]"
+                  endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Update CustomField 3 By Tag.Inputs[OLE DB Command Input]"
+                  name="Sort Output"
+                  startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Sort by Tag Update.Outputs[Sort Output]" />
+                <path
+                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Update CustomField 3 By AssetID.Inputs[OLE DB Command Input]"
                   name="Sort Output"
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Sort by AssetID Update.Outputs[Sort Output]" />
                 <path
-                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output]"
+                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output1]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\If Exists for AssetID.Inputs[Lookup Input]"
                   name="Sort Output"
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Sort by AssetID.Outputs[Sort Output]" />
                 <path
-                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output1]"
+                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output2]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\If Exists for Tag.Inputs[Lookup Input]"
                   name="Sort Output"
                   startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Sort by Tag.Outputs[Sort Output]" />
-                <path
-                  refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output2]"
-                  endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Update CustomField 3 By Tag.Inputs[OLE DB Command Input]"
-                  name="Sort Output"
-                  startId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Sort by Tag Update.Outputs[Sort Output]" />
                 <path
                   refId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output4]"
                   endId="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3\Get InventoryExtUID By AssetID.Inputs[Lookup Input]"
@@ -26080,44 +26104,44 @@ where [refTable].[OrderNumber] = ?</property>
                   startId="Package\PO Data\Populate PO Details\Check Shippment for Tag match.Outputs[Lookup Error Output]" />
                 <path
                   refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output7]"
-                  endId="Package\PO Data\Populate PO Details\Check AssiteID Exists.Inputs[Lookup Input]"
+                  endId="Package\PO Data\Populate PO Details\Insert PO Details TagNotes.Inputs[OLE DB Destination Input]"
                   name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Get FundingID.Outputs[Lookup Match Output]" />
+                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for TagNotes.Outputs[Lookup Match Output]" />
                 <path
                   refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output6]"
-                  endId="Package\PO Data\Populate PO Details\Sort For TagNotes.Inputs[Sort Input]"
-                  name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Check if TAG Exist in Notes Exists.Outputs[Lookup Match Output]" />
-                <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output5]"
-                  endId="Package\PO Data\Populate PO Details\Insert PO Details Tag.Inputs[OLE DB Destination Input]"
-                  name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for Tag match.Outputs[Lookup Match Output]" />
-                <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output4]"
-                  endId="Package\PO Data\Populate PO Details\Insert PO Details AssetID.Inputs[OLE DB Destination Input]"
-                  name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for AssetID.Outputs[Lookup Match Output]" />
-                <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output3]"
-                  endId="Package\PO Data\Populate PO Details\Sort For AssetID.Inputs[Sort Input]"
-                  name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Check AssiteID Exists.Outputs[Lookup Match Output]" />
-                <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output2]"
-                  endId="Package\PO Data\Populate PO Details\Add Defaults for Columns.Inputs[Derived Column Input]"
-                  name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Check if PO Exists.Outputs[Lookup Match Output]" />
-                <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output1]"
                   endId="Package\PO Data\Populate PO Details\Sort For Tag.Inputs[Sort Input]"
                   name="Lookup Match Output"
                   startId="Package\PO Data\Populate PO Details\Check TAG Exists.Outputs[Lookup Match Output]" />
                 <path
-                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output]"
-                  endId="Package\PO Data\Populate PO Details\Insert PO Details TagNotes.Inputs[OLE DB Destination Input]"
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output5]"
+                  endId="Package\PO Data\Populate PO Details\Add Defaults for Columns.Inputs[Derived Column Input]"
                   name="Lookup Match Output"
-                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for TagNotes.Outputs[Lookup Match Output]" />
+                  startId="Package\PO Data\Populate PO Details\Check if PO Exists.Outputs[Lookup Match Output]" />
+                <path
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output4]"
+                  endId="Package\PO Data\Populate PO Details\Sort For AssetID.Inputs[Sort Input]"
+                  name="Lookup Match Output"
+                  startId="Package\PO Data\Populate PO Details\Check AssiteID Exists.Outputs[Lookup Match Output]" />
+                <path
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output3]"
+                  endId="Package\PO Data\Populate PO Details\Insert PO Details AssetID.Inputs[OLE DB Destination Input]"
+                  name="Lookup Match Output"
+                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for AssetID.Outputs[Lookup Match Output]" />
+                <path
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output2]"
+                  endId="Package\PO Data\Populate PO Details\Insert PO Details Tag.Inputs[OLE DB Destination Input]"
+                  name="Lookup Match Output"
+                  startId="Package\PO Data\Populate PO Details\Lookup AccountCode for Tag match.Outputs[Lookup Match Output]" />
+                <path
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output1]"
+                  endId="Package\PO Data\Populate PO Details\Sort For TagNotes.Inputs[Sort Input]"
+                  name="Lookup Match Output"
+                  startId="Package\PO Data\Populate PO Details\Check if TAG Exist in Notes Exists.Outputs[Lookup Match Output]" />
+                <path
+                  refId="Package\PO Data\Populate PO Details.Paths[Lookup Match Output]"
+                  endId="Package\PO Data\Populate PO Details\Check AssiteID Exists.Inputs[Lookup Input]"
+                  name="Lookup Match Output"
+                  startId="Package\PO Data\Populate PO Details\Get FundingID.Outputs[Lookup Match Output]" />
                 <path
                   refId="Package\PO Data\Populate PO Details.Paths[Lookup No Match Output]"
                   endId="Package\PO Data\Populate PO Details\Lookup AccountCode for TagNotes.Inputs[Lookup Input]"
@@ -39541,7 +39565,7 @@ WHERE InventoryUID = @InventoryUID
         <NodeLayout
           Size="120,42"
           Id="Package\Create Process Report\Cleanup"
-          TopLeft="183.222222222222,156.888888888889" />
+          TopLeft="58.9365079365077,172.603174603174" />
         <NodeLayout
           Size="190,42"
           Id="Package\Create Process Report\Create Reconcile Data"
@@ -39626,30 +39650,44 @@ WHERE InventoryUID = @InventoryUID
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Create Process Report.PrecedenceConstraints[Constraint 3]"
-          TopLeft="119.666666666667,134.222222222222">
+          TopLeft="119.301587301587,134.222222222222">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="123.555555555556,22.666666666667"
+              EndConnector="0,38.3809523809527"
               Start="0,0"
-              End="123.555555555556,15.166666666667">
+              End="0,30.8809523809527">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,7.33333333333348" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,7.33333333333348"
-                    Point2="0,11.3333333333335"
-                    Point3="4,11.3333333333335" />
+                    End="0,30.8809523809527" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="210,42"
+          Id="Package\Create Process Report\Cleanup Totals Equal Zero"
+          TopLeft="274.571428571429,165.714285714286" />
+        <EdgeLayout
+          Id="Package\Create Process Report.PrecedenceConstraints[Constraint 4]"
+          TopLeft="178.936507936508,190.15873015873">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="95.6349206349209,0"
+              Start="0,0"
+              End="88.1349206349209,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
                   <mssgle:LineSegment
-                    End="119.555555555556,11.3333333333335" />
-                  <mssgle:CubicBezierSegment
-                    Point1="119.555555555556,11.3333333333335"
-                    Point2="123.555555555556,11.3333333333335"
-                    Point3="123.555555555556,15.3333333333335" />
-                  <mssgle:LineSegment
-                    End="123.555555555556,15.166666666667" />
+                    End="88.1349206349209,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -39661,8 +39699,8 @@ WHERE InventoryUID = @InventoryUID
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="541,254"
-          Size="541,297"
+          PanelSize="541,270"
+          Size="541,313"
           Id="Package\Create Process Report"
           TopLeft="853.6626984127,886.642857142856" />
         <NodeLayout
@@ -40023,8 +40061,8 @@ WHERE InventoryUID = @InventoryUID
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="488,333"
-          Size="488,376"
+          PanelSize="488,353"
+          Size="488,396"
           Id="Package\PO Data"
           TopLeft="84.6626984126984,860.063492063492" />
         <NodeLayout
@@ -40616,7 +40654,7 @@ WHERE InventoryUID = @InventoryUID
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 13]"
-          TopLeft="816.607142857143,1037.68452380952">
+          TopLeft="816.607142857143,1041.68452380952">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -40638,18 +40676,18 @@ WHERE InventoryUID = @InventoryUID
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 14]"
-          TopLeft="1394.6626984127,1035.49007936508">
+          TopLeft="1394.6626984127,1039.49007936508">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="97.1111111111097,0"
+              EndConnector="97.1111111111099,0"
               Start="0,0"
-              End="89.6111111111097,0">
+              End="89.6111111111099,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="89.6111111111097,0" />
+                    End="89.6111111111099,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -40772,18 +40810,30 @@ WHERE InventoryUID = @InventoryUID
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 6]"
-          TopLeft="572.662698412698,1044.14484126984">
+          TopLeft="572.662698412698,1058.06349206349">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="53.9444444444447,0"
+              EndConnector="53.9444444444446,-17.8373015873021"
               Start="0,0"
-              End="46.4444444444447,0">
+              End="46.4444444444446,-17.8373015873021">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="46.4444444444447,0" />
+                    End="22.9722222222223,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="22.9722222222223,0"
+                    Point2="26.9722222222223,0"
+                    Point3="26.9722222222223,-4" />
+                  <mssgle:LineSegment
+                    End="26.9722222222223,-13.8373015873021" />
+                  <mssgle:CubicBezierSegment
+                    Point1="26.9722222222223,-13.8373015873021"
+                    Point2="26.9722222222223,-17.8373015873021"
+                    Point3="30.9722222222223,-17.8373015873021" />
+                  <mssgle:LineSegment
+                    End="46.4444444444446,-17.8373015873021" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -42221,7 +42271,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output2]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output3]"
           TopLeft="822.5,343">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -42245,7 +42295,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output1]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output2]"
           TopLeft="1429.2,344.6">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -42269,7 +42319,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output1]"
           TopLeft="1167,340.6">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -42293,7 +42343,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output3]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Sort Output]"
           TopLeft="480.75,343">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -42389,7 +42439,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output1]"
           TopLeft="1429.9,430.2">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -42413,7 +42463,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output1]"
+          Id="Package\Custom Fields\Pouplate tblTechInventoryExt Custom Field 3.Paths[Lookup No Match Output]"
           TopLeft="1172.7,433.6">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43055,9 +43105,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -43079,9 +43127,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -43157,7 +43203,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output7]"
           TopLeft="488.25,533">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43181,7 +43227,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output1]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output6]"
           TopLeft="821,210">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43217,7 +43263,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output2]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output5]"
           TopLeft="972,80.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43241,7 +43287,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output3]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output4]"
           TopLeft="1143,209">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43277,7 +43323,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output4]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output3]"
           TopLeft="1205.5,516">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43301,7 +43347,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output5]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output2]"
           TopLeft="835.25,527">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43325,7 +43371,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output6]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output1]"
           TopLeft="479,204">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43349,7 +43395,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output7]"
+          Id="Package\PO Data\Populate PO Details.Paths[Lookup Match Output]"
           TopLeft="1370,102">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -43559,9 +43605,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -43583,9 +43627,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -43607,9 +43649,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -43643,9 +43683,7 @@ WHERE InventoryUID = @InventoryUID
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
