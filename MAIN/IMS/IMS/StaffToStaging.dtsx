@@ -12,8 +12,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="StaffToStaging"
   DTS:PackageType="5"
-  DTS:VersionBuild="191"
-  DTS:VersionGUID="{CEBA71F2-AF47-4933-B61B-1CE8F7893FCE}">
+  DTS:VersionBuild="206"
+  DTS:VersionGUID="{9EC8D595-28DF-401F-8029-CC6A5C0C97EE}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -749,21 +749,12 @@
       DTS:CreationName=""
       DTS:DTSID="{AA4FEA98-4C56-4316-AA36-021F43728A6F}"
       DTS:EvaluateAsExpression="True"
-      DTS:Expression="@[User::OneRosterQueryVersion] == 1 ? &#xA;&#xA;&quot; select st.StaffID, d.DepartmentID as CampusID, FirstName, LastName, MiddleName, replace(sj.JobTitle, 'Tchr', 'Teacher') as StaffType, &#xA; '' as Location, '' as Department, '' as Phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as State,  &#xA; '' as Zip, '0' as Deactivate &#xA; &#xA; from ImportManagementSystem.dbo.CustomerList cl&#xA; join ImportManagementSystem.OneRoster.Staff st on cl.ExternalKey = st.ClientUID&#xA; left outer join ImportManagementSystem.OneRoster.StaffJob sj on st.STaffID = sj.StaffID&#xA; left outer join ImportManagementSystem.OneRoster.StaffDepartment sd on st.StaffID = sd.StaffID&#xA; left outer join ImportManagementSystem.OneRoster.Department d on sd.DepartmentID  = d.DepartmentID&#xA; where cl.CustomersUID = &quot; + (DT_STR, 10, 1252) @[User::_CustomerUID] &#xA;&#xA;&#xA;:&#xA;&#xA;&quot; SELECT u.identifier as StaffID, o.identifier as CampusID,&#xA; givenName as FirstName, familyName as LastName, middlename, '' as StaffType,&#xA;  '' as Location, '' as Department,&#xA; phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as [State], '' as Zip,&#xA; '0' as Deactivate&#xA; &#xA;  from  ImportManagementSystem.dbo.CustomerList cl&#xA; join  ImportManagementSystem.OneRoster.Users u on cl.ExternalKey = u.ClientUID  &#xA; join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds&#xA; where cl.CustomersUID = &quot; + (DT_STR, 10, 1252) @[User::_CustomerUID] +&#xA; &quot; and u.[role] = 'administrator' &quot;"
+      DTS:Expression="@[User::OneRosterQueryVersion] == 1 ? &#xA;&#xA;&quot; select st.StaffID, d.DepartmentID as CampusID, FirstName, LastName, MiddleName, replace(sj.JobTitle, 'Tchr', 'Teacher') as StaffType, &#xA; '' as Location, '' as Department, '' as Phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as State,  &#xA; '' as Zip, '0' as Deactivate from ImportManagementSystem.OneRoster.Staff st  left outer join ImportManagementSystem.OneRoster.StaffJob sj on st.STaffID = sj.StaffID  left outer join ImportManagementSystem.OneRoster.StaffDepartment sd on st.StaffID = sd.StaffID  left outer join ImportManagementSystem.OneRoster.Department d on sd.DepartmentID  = d.DepartmentID  where st.ClientUID = &quot; + (DT_STR, 10, 1252) @[User::ExternalKey] &#xA; :&#xA;&#xA;&quot; SELECT u.identifier as StaffID, o.identifier as CampusID, givenName as FirstName, familyName as LastName, middlename, '' as StaffType, '' as Location, '' as Department, phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as [State], '' as Zip, '0' as Deactivate from ImportManagementSystem.OneRoster.Users u  join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds where u.ClientUID = &quot; + (DT_STR, 10, 1252) @[User::ExternalKey] +&quot; and u.[role] = 'administrator' &quot;"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="StaffSQL_OneRoster">
       <DTS:VariableValue
-        DTS:DataType="8"> SELECT u.identifier as StaffID, o.identifier as CampusID,
- givenName as FirstName, familyName as LastName, middlename, '' as StaffType,
-  '' as Location, '' as Department,
- phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as [State], '' as Zip,
- '0' as Deactivate
- 
-  from  ImportManagementSystem.dbo.CustomerList cl
- join  ImportManagementSystem.OneRoster.Users u on cl.ExternalKey = u.ClientUID  
- join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds
- where cl.CustomersUID = 0 and u.[role] = 'administrator' </DTS:VariableValue>
+        DTS:DataType="8"> SELECT u.identifier as StaffID, o.identifier as CampusID, givenName as FirstName, familyName as LastName, middlename, '' as StaffType, '' as Location, '' as Department, phone, substring(Email, 1, 100) as Email, '' as Address, '' as Address2, '' as City, '' as [State], '' as Zip, '0' as Deactivate from ImportManagementSystem.OneRoster.Users u  join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds where u.ClientUID = 0 and u.[role] = 'administrator' </DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1402,14 +1393,35 @@ and ltrim(rtrim(InactiveStatusCode)) = ''</property>
           ReadOnlyVariables="User::FullFileName"
           ReadWriteVariables="User::StaffFileExists">
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.resx"
             Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1779,35 +1791,14 @@ namespace ST_4876ece857284d2b80199d8b1a6d14cc.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_4876ece857284d2b80199d8b1a6d14cc.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -2019,13 +2010,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{2E479B4D-C8AD-4AF0-BA68-1DBE4C4A32F8}"
-          SQLTask:SqlStatementSource="declare @CustomerID int, @SourceOrigin varchar(50), @cnt int, @Qversion int&#xA;&#xA;set @CustomerID = ?&#xA;set @SourceOrigin = ?&#xA;&#xA;if @SourceOrigin = 'AERIES'&#xA;&#x9;select @cnt = count(*)&#xA;&#x9;--SELECT SchoolCode, StaffID1, FirstName, LastName&#xA;&#x9;FROM AeriesStaff &#xA;&#x9;WHERE CustomerID =@CustomerID&#xA;&#x9;AND ID NOT IN ('0','')  &#xA;&#x9;and ltrim(rtrim(InactiveStatusCode)) = '' &#xA;&#xA;if @SourceOrigin = 'ONEROSTER'&#xA;BEGIN&#xA;&#x9;SELECT @Qversion = QVersion&#xA;&#x9;from customerlist cl&#xA;&#x9;join OneRoster.Client ocl on cl.ExternalKey = ocl.ClientUID&#xA;&#x9;where cl.SourceOrigin = 'ONEROSTER'&#xA;&#x9;and cl.CustomersUID = @CustomersUID&#xA;&#xA;&#x9;if @Qversion = 1&#xA;&#x9;&#x9;select @cnt = count(*)&#xA;&#x9;&#x9;from ImportManagementSystem.dbo.CustomerList cl&#xA;&#x9;&#x9;join ImportManagementSystem.OneRoster.Staff st on cl.ExternalKey = st.ClientUID&#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.StaffJob sj on st.STaffID = sj.StaffID&#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.StaffDepartment sd on st.StaffID = sd.StaffID&#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.Department d on sd.DepartmentID  = d.DepartmentID&#xA;&#x9;&#x9;where cl.CustomersUID = @CustomersUID&#xA;&#xA;&#x9;if @Qversion = 2&#xA;&#xA;&#x9;&#x9;select @cnt = count(*)&#xA;&#x9;&#x9;from ImportManagementSystem.dbo.CustomerList cl&#xA;&#x9;&#x9;join  ImportManagementSystem.OneRoster.Users u on cl.ExternalKey = u.ClientUID&#xA;&#x9;&#x9;join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds&#xA;&#x9;&#x9;where cl.CustomersUID = @CustomersUID&#xA;&#x9;&#x9;and u.[role] = 'administrator' &#xA;END&#xA;&#xA;select @cnt as cnt"
+          SQLTask:SqlStatementSource="declare @ClientUID int, @SourceOrigin varchar(50), @cnt int, @Qversion int&#xA;&#xA;set @ClientUID = ?&#xA;set @SourceOrigin = ?&#xA;&#xA;if @SourceOrigin = 'AERIES'&#xA;&#x9;select @cnt = count(*)&#xA;&#x9;--SELECT SchoolCode, StaffID1, FirstName, LastName&#xA;&#x9;FROM AeriesStaff &#xA;&#x9;WHERE CustomerID = @ClientUID &#xA;&#x9;AND ID NOT IN ('0','')  &#xA;&#x9;and ltrim(rtrim(InactiveStatusCode)) = '' &#xA;&#xA;if @SourceOrigin = 'ONEROSTER'&#xA;BEGIN&#xA;&#x9;SELECT @Qversion = QVersion&#xA;&#x9;from  ImportManagementSystem.dbo.customerlist cl&#xA;&#x9;join  ImportManagementSystem.OneRoster.Client ocl on cl.ExternalKey = ocl.ClientUID&#xA;&#x9;where cl.SourceOrigin = 'ONEROSTER'&#xA;&#x9;and cl.ExternalKey = @ClientUID &#xA;&#xA;print @ClientUID&#xA;print @Qversion&#xA;&#xA;&#x9;if @Qversion = 1&#xA;&#x9;&#x9;select @cnt = count(*)&#xA;&#x9;&#x9;from ImportManagementSystem.OneRoster.Staff st &#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.StaffJob sj on st.STaffID = sj.StaffID&#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.StaffDepartment sd on st.StaffID = sd.StaffID&#xA;&#x9;&#x9;left outer join ImportManagementSystem.OneRoster.Department d on sd.DepartmentID  = d.DepartmentID&#xA;&#x9;&#x9;where st.ClientUID = @ClientUID &#xA;&#xA;&#x9;if @Qversion = 2&#xA;&#x9;&#x9;select @cnt = count(*)&#xA;&#x9;&#x9;from  ImportManagementSystem.OneRoster.Users u&#xA;&#x9;&#x9;join [ImportManagementSystem].[OneRoster].[Orgs] o on o.sourcedId =u.orgSourcedIds&#xA;&#x9;&#x9;where u.ClientUID = @ClientUID &#xA;&#x9;&#x9;and u.[role] = 'administrator' &#xA;END&#xA;&#xA;select @cnt as cnt"
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="cnt"
             SQLTask:DtsVariableName="User::StaffFileExists" />
           <SQLTask:ParameterBinding
-            SQLTask:ParameterName="@CustomerID"
+            SQLTask:ParameterName="@ClientUID"
             SQLTask:DtsVariableName="User::ExternalKey"
             SQLTask:ParameterDirection="Input"
             SQLTask:DataType="3"
@@ -2059,7 +2050,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             SQLTask:DtsVariableName="User::OneRosterQueryVersion" />
           <SQLTask:ParameterBinding
             SQLTask:ParameterName="@CustomersUID"
-            SQLTask:DtsVariableName="User::OneRosterQueryVersion"
+            SQLTask:DtsVariableName="$Package::CustomerUID"
             SQLTask:ParameterDirection="Input"
             SQLTask:DataType="3"
             SQLTask:ParameterSize="-1" />
@@ -5398,7 +5389,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                       refId="Package\One Roster Staff\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CampusID]"
                       cachedCodepage="1252"
                       cachedDataType="str"
-                      cachedLength="3"
+                      cachedLength="50"
                       cachedName="CampusID"
                       externalMetadataColumnId="Package\One Roster Staff\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CampusID]"
                       lineageId="Package\One Roster Staff\OLE DB Source.Outputs[OLE DB Source Output].Columns[CampusID]" />
@@ -5777,7 +5768,7 @@ left outer join OneRoster.Department d on sd.DepartmentID  = d.DepartmentID</pro
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       externalMetadataColumnId="Package\One Roster Staff\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CampusID]"
-                      length="3"
+                      length="50"
                       lineageId="Package\One Roster Staff\OLE DB Source.Outputs[OLE DB Source Output].Columns[CampusID]"
                       name="CampusID"
                       truncationRowDisposition="FailComponent" />
@@ -6452,14 +6443,35 @@ left outer join OneRoster.Department d on sd.DepartmentID  = d.DepartmentID</pro
   </resheader>
 </root>]]></ProjectItem>
           <ProjectItem
-            Name="Properties\Settings.settings"
-            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+            Name="Properties\AssemblyInfo.cs"
+            Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
+[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
           <ProjectItem
             Name="ScriptMain.cs"
             Encoding="UTF8"><![CDATA[/*
@@ -6567,35 +6579,14 @@ namespace ST_dbe19b346abb412eb5314eeaba1de116.csproj.Properties
     }
 }]]></ProjectItem>
           <ProjectItem
-            Name="Properties\AssemblyInfo.cs"
-            Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("ST_dbe19b346abb412eb5314eeaba1de116.csproj")]
-[assembly: AssemblyCopyright("Copyright @ Hewlett-Packard Company 2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+            Name="Properties\Settings.settings"
+            Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
           <ProjectItem
             Name="Properties\Resources.Designer.cs"
             Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7060,7 +7051,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\External Staff Data"
           TopLeft="102,110" />
         <NodeLayout
-          Size="170,42"
+          Size="158,42"
           Id="Package\GetQueryVersion"
           TopLeft="810,173" />
         <NodeLayout
@@ -7473,30 +7464,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 19]"
-          TopLeft="980,194">
+          TopLeft="968,194">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{x:Null}"
-              EndConnector="46,59"
+              EndConnector="58,59"
               Start="0,0"
-              End="38.5,59">
+              End="50.5,59">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="19,0" />
+                    End="25,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="19,0"
-                    Point2="23,0"
-                    Point3="23,4" />
+                    Point1="25,0"
+                    Point2="29,0"
+                    Point3="29,4" />
                   <mssgle:LineSegment
-                    End="23,55" />
+                    End="29,55" />
                   <mssgle:CubicBezierSegment
-                    Point1="23,55"
-                    Point2="23,59"
-                    Point3="27,59" />
+                    Point1="29,55"
+                    Point2="29,59"
+                    Point3="33,59" />
                   <mssgle:LineSegment
-                    End="38.5,59" />
+                    End="50.5,59" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -7828,7 +7819,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Aeries Staff File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Aeries Staff File\OLE DB Source"
@@ -7842,7 +7833,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="495,108">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="11.5,89"
               Start="0,0"
               End="11.5,81.5">
@@ -7868,7 +7859,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -7899,7 +7892,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Import AST Staff File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="173,42"
           Id="Package\Import AST Staff File\OLE DB Destination"
@@ -7913,7 +7906,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="92,47.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,60"
               Start="0,0"
               End="0,52.5">
@@ -7952,7 +7945,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Import EZ1 Staff File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="153,42"
           Id="Package\Import EZ1 Staff File\Flat File Source"
@@ -7966,7 +7959,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="92,47.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="0,60"
               Start="0,0"
               End="0,52.5">
@@ -8005,7 +7998,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Import EZ1 Staff File Staff Status">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="153,42"
           Id="Package\Import EZ1 Staff File Staff Status\Flat File Source"
@@ -8019,7 +8012,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="343,85.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="43.5,74.5"
               Start="0,0"
               End="43.5,67">
@@ -8070,7 +8063,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\Import UFA Staff File">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="153,42"
           Id="Package\Import UFA Staff File\Flat File Source"
@@ -8088,7 +8081,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="498,64.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="30,33.5"
               Start="0,0"
               End="30,26">
@@ -8124,7 +8117,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="528,140">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="84,80.5"
               Start="0,0"
               End="84,73">
@@ -8175,7 +8168,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package\One Roster Staff">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="157,42"
           Id="Package\One Roster Staff\OLE DB Source"
@@ -8189,7 +8182,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="530.5,130">
           <EdgeLayout.Curve>
             <mssgle:Curve
-              StartConnector="{assembly:Null}"
+              StartConnector="{x:Null}"
               EndConnector="17,73"
               Start="0,0"
               End="17,65.5">
