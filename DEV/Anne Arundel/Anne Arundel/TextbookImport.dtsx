@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="TextbookImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="29"
-  DTS:VersionGUID="{72489AE8-5734-4B6B-B4DF-D841FB59F1AE}">
+  DTS:VersionBuild="38"
+  DTS:VersionGUID="{17616EAE-3A35-4CB0-B76C-FD870516A2D7}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -189,7 +189,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileFullName">
       <DTS:VariableValue
-        DTS:DataType="8">E:\EZImportFiles\AnneArundelCPS_SFTP_User\Integrations\Textbook_Adoptions\Archive\AACPS_STACS_Titles_11102020.txt</DTS:VariableValue>
+        DTS:DataType="8">E:\EZImportFiles\AnneArundelCPS_SFTP_User\Integrations\Textbook_Adoptions\Archive\AACPS_STACS_Titles_11112020.txt</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -200,7 +200,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ArchiveFileName">
       <DTS:VariableValue
-        DTS:DataType="8">AACPS_STACS_Titles_11102020.txt</DTS:VariableValue>
+        DTS:DataType="8">AACPS_STACS_Titles_11112020.txt</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -481,140 +481,69 @@
           </DTS:PrecedenceConstraints>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Import and Update\Sequence Container"
+          DTS:refId="Package\Import and Update\Update Masters"
           DTS:CreationName="STOCK:SEQUENCE"
           DTS:Description="Sequence Container"
-          DTS:DTSID="{25323429-BA35-4410-B8B4-DE668A5D6966}"
+          DTS:DTSID="{15FBB8C8-484E-41BE-A7D2-BCA9A3662D9F}"
           DTS:ExecutableType="STOCK:SEQUENCE"
           DTS:LocaleID="-1"
-          DTS:ObjectName="Sequence Container">
+          DTS:ObjectName="Update Masters">
           <DTS:Variables />
           <DTS:Executables>
             <DTS:Executable
-              DTS:refId="Package\Import and Update\Sequence Container\District Distribution"
+              DTS:refId="Package\Import and Update\Update Masters\Update Master Publishers"
               DTS:CreationName="Microsoft.ExecuteSQLTask"
               DTS:Description="Execute SQL Task"
-              DTS:DTSID="{25EC3DFF-1E2B-4260-A165-463A0960F40A}"
+              DTS:DTSID="{0068B21C-2129-4FE4-A7BE-A0A763829D49}"
               DTS:ExecutableType="Microsoft.ExecuteSQLTask"
               DTS:LocaleID="-1"
-              DTS:ObjectName="District Distribution"
+              DTS:ObjectName="Update Master Publishers"
               DTS:ThreadHint="0">
               <DTS:Variables />
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{29D19D31-7728-4AEF-B997-501E7F43A173}"
-                  SQLTask:SqlStatementSource="&#xA;&#xA;INSERT INTO tblDistrictDistributions (ISBN, Code, Source, Amount, Copies, Notes, UserID, ModifiedDate)&#xA;&#xA; SELECT  bi.ISBN, 'DIST', 'Vendor Order' as source, 0 as Amount, Received as copies, ts.Publisher + ' - Integration Date: ' + convert(varchar(10), getdate(), 101),  -2 as userid, getdate() as modifieddate&#xA; FROM tblBookInventory bi&#xA; join tblVendorOrderDetails vod on bi.BookInventoryUID = vod.BookInventoryUID&#xA; join _ETL_TextbookStaging ts on vod.VendorOrderDetailsUID = ts.VendorOrderDetailsUID&#xA;&#xA;&#xA;--select * &#xA;update ts set DistributionID = dd.DistributionID&#xA;from tblDistrictDistributions dd&#xA;join _ETL_TextbookStaging ts on dd.ISBN = ts.ISBN&#xA;where dd.Notes = (ts.Publisher + ' - Integration Date: ' + convert(varchar(10), getdate(), 101))&#xA;and CODE = 'DIST' and [Source] = 'Vendor Order'&#xA;and cast(isnull(quantity, 0) as int) &gt; 0 &#xA;&#xA;&#xA;INSERT INTO tblDistrictDistributions_Tx (Distributionid, ISBN, Code, Source, Amount, Copies, Notes, UserID, ModifiedDate, ActionTaken)&#xA;&#xA;select Distributionid, ISBN, Code, Source, Amount, Copies, Notes, UserID, ModifiedDate, 'INSERTED'&#xA;from tblDistrictDistributions dd&#xA;where DistributionID in (select DistributionID from _ETL_TextbookStaging where ISBN = dd.ISBN)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  SQLTask:SqlStatementSource="declare @rowNum int&#xA;select @rowNum = max(PublisherID) from tblMasterPublishers&#xA;&#xA;&#xA;insert tblMasterPublishers (PublisherID, PublisherName)&#xA;&#xA;select (row_number() over (order by VendorName)+@rowNum), VendorName&#xA;from tblVendor v&#xA;left join tblMasterPublishers p on v.VendorName = p.PublisherName&#xA;where v.ApplicationUID = 1&#xA;and p.PublisherID is null" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
-              DTS:refId="Package\Import and Update\Sequence Container\Vendor Order"
+              DTS:refId="Package\Import and Update\Update Masters\Update Master Titles"
               DTS:CreationName="Microsoft.ExecuteSQLTask"
               DTS:Description="Execute SQL Task"
-              DTS:DTSID="{F91B3373-5D75-4E8D-890E-86EE6082BE27}"
+              DTS:DTSID="{36A0F62A-8FBF-4ECF-8E9E-0B641A14AF0D}"
               DTS:ExecutableType="Microsoft.ExecuteSQLTask"
               DTS:LocaleID="-1"
-              DTS:ObjectName="Vendor Order"
+              DTS:ObjectName="Update Master Titles"
               DTS:ThreadHint="0">
               <DTS:Variables />
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{29D19D31-7728-4AEF-B997-501E7F43A173}"
-                  SQLTask:SqlStatementSource="insert into dbo.tblVendorOrders (VendorOrderID, DateCreated, OrderStatus, PurchaseOrder, VendorID, ArrivalDate, SpecialInstructions, DateSubmitted, UserID, CampusID, DistrictCreated, FundingSourceUID, DateModified)&#xA;&#xA;select distinct Publisher + ' - Integration Date: ' + convert(varchar(10), getdate(), 101),  --VendorOrderID, &#xA;GETDATE(), --DateCreated&#xA;2, --OrderStatus complete&#xA;NULL,  --PurchaseOrder &#xA;PublisherID, --VendorID&#xA;GETDATE(),  -- Arrival Date&#xA;NULL, --Special Instructions&#xA;NULL, --DateSubmitted&#xA;-2,--userID&#xA;0, --campusID &#xA;'TRUE', --district Created &#xA;1, ---FundingSourceUID&#xA;GETDATE() --Date Modified&#xA;from _ETL_TextbookStaging&#xA;where cast(isnull(quantity, 0) as int) &gt; 0 &#xA;&#xA;&#xA;&#xA;&#xA;--select * &#xA;update ts set VendorOrderUID = vo.VendorOrderUID&#xA;from _ETL_TextbookStaging ts&#xA;join tblVendorOrders vo on ts.PublisherID = vo.VendorID&#xA;where cast(isnull(quantity, 0) as int) &gt; 0&#xA;and VendorOrderID = ts.Publisher + ' - Integration Date: ' + convert(varchar(10), getdate(), 101)" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-              </DTS:ObjectData>
-            </DTS:Executable>
-            <DTS:Executable
-              DTS:refId="Package\Import and Update\Sequence Container\Vendor Order Detail History"
-              DTS:CreationName="Microsoft.ExecuteSQLTask"
-              DTS:Description="Execute SQL Task"
-              DTS:DTSID="{EC9ED393-F8F4-4465-A616-9314142088D6}"
-              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Vendor Order Detail History"
-              DTS:ThreadHint="0">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <SQLTask:SqlTaskData
-                  SQLTask:Connection="{29D19D31-7728-4AEF-B997-501E7F43A173}"
-                  SQLTask:SqlStatementSource="insert into tblVendorOrderDetailsHistory (VendorOrderDetailsUID, Received, DateReceived, UserID)&#xA;&#xA;select distinct vod.VendorOrderDetailsUID, vod.Received, getdate(), -2&#xA;from _ETL_TextbookStaging tm&#xA;join tblVendorOrderDetails vod on tm.vendororderdetailsuid = vod.vendororderdetailsuid&#xA;where import = 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-              </DTS:ObjectData>
-            </DTS:Executable>
-            <DTS:Executable
-              DTS:refId="Package\Import and Update\Sequence Container\Vendor Order Details"
-              DTS:CreationName="Microsoft.ExecuteSQLTask"
-              DTS:Description="Execute SQL Task"
-              DTS:DTSID="{B530EEDE-9F43-44BC-9680-0FFF2794D1BD}"
-              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Vendor Order Details"
-              DTS:ThreadHint="0">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <SQLTask:SqlTaskData
-                  SQLTask:Connection="{29D19D31-7728-4AEF-B997-501E7F43A173}"
-                  SQLTask:SqlStatementSource="&#xA;&#xA;insert into tblVendorOrderDetails (VendorOrderUID, BookInventoryUID, &#xA;FundingSourceUID, Ordered, DateOrdered, Received, DateReceived, StatusID,&#xA;Price, UserID, DateModified, DateArriving)&#xA;&#xA;select VendorOrderUID, BookInventoryUID, fundingSourceUID, sum(CAST(Quantity AS INT)), getdate(), sum(CAST(Quantity AS INT)), getdate(), 2, isNull(Price, 0), -2, getdate(), getdate()&#xA;from _ETL_TextbookStaging tm&#xA;where Import = 1&#xA;and FundingSourceUID is not null&#xA;and cast(isnull(quantity, 0) as int) &gt; 0 &#xA;group by VendorOrderUID, BookInventoryUID, fundingSourceUID, Price&#xA;&#xA;&#xA;&#xA;--select *&#xA;update tm set VendorOrderDetailsUID = vod.VendorOrderDetailsUID&#xA;from _ETL_TextbookStaging tm&#xA;join tblVendorOrderDetails vod on tm.VendorOrderUID = vod.VendorOrderUID and tm.BookInventoryUID = vod.BookInventoryUID&#xA;&#x9;and tm.fundingSourceUID = vod.fundingSourceUID and isNull(tm.Price, 0) = isNull(vod.Price, 0)&#xA;where Import = 1&#xA;and tm.FundingSourceUID is not null&#xA;and cast(isnull(quantity, 0) as int) &gt; 0 " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  SQLTask:SqlStatementSource="Insert tblMasterBooks (ISBN, Title, SLC, Grade, Expire, Consumable, Publisher, Price, Copyright, Aid, Conforming, [State], Student_Percent, Teacher_Percent)&#xA;&#xA;select tbi.ISBN, tbi.Title, tbi.SLC, tbi.Grade, tbi.Expire, 0, p.PublisherID, tbi.Price, tbi.Copyright, 0, 0, 'MD', 0, 0&#xA;from tblBookInventory tbi&#xA;join tblVendor v on tbi.Publisher = v.VendorID and v.ApplicationUID = 1&#xA;join tblMasterPublishers p on v.VendorName = p.PublisherName&#xA;left join tblMasterBooks mb on tbi.ISBN = mb.ISBN&#xA;where mb.RecordID is null" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
               </DTS:ObjectData>
             </DTS:Executable>
           </DTS:Executables>
           <DTS:PrecedenceConstraints>
             <DTS:PrecedenceConstraint
-              DTS:refId="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint]"
+              DTS:refId="Package\Import and Update\Update Masters.PrecedenceConstraints[Constraint]"
               DTS:CreationName=""
-              DTS:DTSID="{A07AC4A8-0615-4A3D-91CF-E1544E818F0D}"
-              DTS:From="Package\Import and Update\Sequence Container\Vendor Order"
+              DTS:DTSID="{D12066FA-0951-4483-A895-768958D36480}"
+              DTS:From="Package\Import and Update\Update Masters\Update Master Publishers"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint"
-              DTS:To="Package\Import and Update\Sequence Container\Vendor Order Details" />
-            <DTS:PrecedenceConstraint
-              DTS:refId="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint 1]"
-              DTS:CreationName=""
-              DTS:DTSID="{5FF4450C-254C-4A2C-8474-9382651E7A85}"
-              DTS:From="Package\Import and Update\Sequence Container\Vendor Order Details"
-              DTS:LogicalAnd="True"
-              DTS:ObjectName="Constraint 1"
-              DTS:To="Package\Import and Update\Sequence Container\Vendor Order Detail History" />
-            <DTS:PrecedenceConstraint
-              DTS:refId="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint 2]"
-              DTS:CreationName=""
-              DTS:DTSID="{2AD5A69F-E185-405A-AAC1-33FEC7073911}"
-              DTS:From="Package\Import and Update\Sequence Container\Vendor Order Detail History"
-              DTS:LogicalAnd="True"
-              DTS:ObjectName="Constraint 2"
-              DTS:To="Package\Import and Update\Sequence Container\District Distribution" />
+              DTS:To="Package\Import and Update\Update Masters\Update Master Titles" />
           </DTS:PrecedenceConstraints>
-        </DTS:Executable>
-        <DTS:Executable
-          DTS:refId="Package\Import and Update\Vendor Order Test"
-          DTS:CreationName="Microsoft.ExecuteSQLTask"
-          DTS:Description="Execute SQL Task"
-          DTS:DTSID="{E81A98E1-F232-445F-AF57-898D4375B011}"
-          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Vendor Order Test"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:ObjectData>
-            <SQLTask:SqlTaskData
-              SQLTask:Connection="{29D19D31-7728-4AEF-B997-501E7F43A173}"
-              SQLTask:SqlStatementSource="select count(*) as numRecs&#xA;from _ETL_TextbookStaging&#xA;where cast(isnull(quantity, 0) as int) &gt; 0 "
-              SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
-              <SQLTask:ResultBinding
-                SQLTask:ResultName="numRecs"
-                SQLTask:DtsVariableName="User::CreateVendorOrder" />
-            </SQLTask:SqlTaskData>
-          </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
       <DTS:PrecedenceConstraints>
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Import and Update.PrecedenceConstraints[Constraint]"
           DTS:CreationName=""
-          DTS:DTSID="{F0E88883-130B-4B85-8178-FB97B3EB5FAE}"
-          DTS:EvalOp="3"
-          DTS:Expression="@[User::CreateVendorOrder] &gt; 0"
-          DTS:From="Package\Import and Update\Vendor Order Test"
+          DTS:DTSID="{084D2A7F-E8F1-4135-8DFF-5AB9FC89F157}"
+          DTS:From="Package\Import and Update\Process"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint"
-          DTS:To="Package\Import and Update\Sequence Container" />
+          DTS:To="Package\Import and Update\Update Masters" />
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Import and Update.PrecedenceConstraints[Constraint 1]"
           DTS:CreationName=""
@@ -623,14 +552,6 @@
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 1"
           DTS:To="Package\Import and Update\Process" />
-        <DTS:PrecedenceConstraint
-          DTS:refId="Package\Import and Update.PrecedenceConstraints[Constraint 2]"
-          DTS:CreationName=""
-          DTS:DTSID="{BDA4BEAA-6E60-4E93-901A-E076C8D93D34}"
-          DTS:From="Package\Import and Update\Process"
-          DTS:LogicalAnd="True"
-          DTS:ObjectName="Constraint 2"
-          DTS:To="Package\Import and Update\Vendor Order Test" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -663,6 +584,134 @@
               Language="CSharp"
               ReadOnlyVariables="User::FileFullName"
               ReadWriteVariables="User::FileExists">
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.resx"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+</root>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -789,154 +838,6 @@ namespace ST_759c3f87148240ca99e6fae594790b09
 	}
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Resources.resx"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-</root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_759c3f87148240ca99e6fae594790b09.Properties.Settings.get_Default():ST_759c3f87148240ca99e6fae594790b09.Properties.Sett" +
-    "ings")]
-
-namespace ST_759c3f87148240ca99e6fae594790b09.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="ST_759c3f87148240ca99e6fae594790b09.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -1018,14 +919,7 @@ namespace ST_759c3f87148240ca99e6fae594790b09.Properties {
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
+        <ProjectProperties HostName="ScriptTask" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoCommandLine="" DebugInfoWorkingDir="" IconImageList="" />
         <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
         </Host>
         <ProjectClient>
@@ -1056,6 +950,35 @@ namespace ST_759c3f87148240ca99e6fae594790b09.Properties {
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_759c3f87148240ca99e6fae594790b09.Properties.Settings.get_Default():ST_759c3f87148240ca99e6fae594790b09.Properties.Sett" +
+    "ings")]
+
+namespace ST_759c3f87148240ca99e6fae594790b09.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -1085,15 +1008,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -2068,6 +1982,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                           dataType="str"
                           length="500"
                           name="RejectNotes" />
+                        <externalMetadataColumn
+                          refId="Package\Prepare Data\Import Textbook File\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[New]"
+                          dataType="bool"
+                          name="New" />
                       </externalMetadataColumns>
                     </input>
                   </inputs>
@@ -2201,6 +2119,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   Language="CSharp"
                   ReadOnlyVariables="User::File">
                   <ProjectItem
+                    Name="Properties\Settings.settings"
+                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+                  <ProjectItem
                     Name="Properties\Resources.resx"
                     Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -2319,35 +2246,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-                  <ProjectItem
-                    Name="Properties\Settings.Designer.cs"
-                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_19f8f6c033b946a68db73fcefcf51d76.Properties.Settings.get_Default():ST_19f8f6c033b946a68db73fcefcf51d76.Properties.Sett" +
-    "ings")]
-
-namespace ST_19f8f6c033b946a68db73fcefcf51d76.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
                   <ProjectItem
                     Name="ScriptMain.cs"
                     Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -2554,14 +2452,7 @@ namespace ST_19f8f6c033b946a68db73fcefcf51d76
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
+        <ProjectProperties HostName="ScriptTask" HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}" ApplicationType="usd" Language="cs" TemplatesPath="" DebugInfoCommandLine="" DebugInfoWorkingDir="" IconImageList="" />
         <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
         </Host>
         <ProjectClient>
@@ -2592,6 +2483,35 @@ namespace ST_19f8f6c033b946a68db73fcefcf51d76
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
                   <ProjectItem
+                    Name="Properties\Settings.Designer.cs"
+                    Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_19f8f6c033b946a68db73fcefcf51d76.Properties.Settings.get_Default():ST_19f8f6c033b946a68db73fcefcf51d76.Properties.Sett" +
+    "ings")]
+
+namespace ST_19f8f6c033b946a68db73fcefcf51d76.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+                  <ProjectItem
                     Name="Properties\AssemblyInfo.cs"
                     Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -2621,15 +2541,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-                  <ProjectItem
-                    Name="Properties\Settings.settings"
-                    Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
                   <ProjectItem
                     Name="Properties\Resources.Designer.cs"
                     Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -2916,109 +2827,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="213,42"
-          Id="Package\Prepare Data\Drop, Create Staging Table"
-          TopLeft="16.3962264150943,29.698113207547" />
-        <NodeLayout
-          Size="179,42"
-          Id="Package\Prepare Data\Import Textbook File"
-          TopLeft="21,204" />
-        <NodeLayout
-          Size="163,42"
-          Id="Package\Prepare Data\Move File to Archive"
-          TopLeft="24,279" />
-        <EdgeLayout
-          Id="Package\Prepare Data.PrecedenceConstraints[Constraint 1]"
-          TopLeft="108,246">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,33"
-              Start="0,0"
-              End="0,25.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,25.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="152,42"
-          Id="Package\Prepare Data\Does File Exist"
-          TopLeft="43,111" />
-        <EdgeLayout
-          Id="Package\Prepare Data.PrecedenceConstraints[Constraint]"
-          TopLeft="120.948113207547,71.698113207547">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,39.301886792453"
-              Start="0,0"
-              End="0,31.801886792453">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.801886792453" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Prepare Data.PrecedenceConstraints[Constraint 2]"
-          TopLeft="119,153">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-8.5,51"
-              Start="0,0"
-              End="-8.5,43.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,21.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,21.5"
-                    Point2="0,25.5"
-                    Point3="-4,25.5" />
-                  <mssgle:LineSegment
-                    End="-4.5,25.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-4.5,25.5"
-                    Point2="-8.5,25.5"
-                    Point3="-8.5,29.5" />
-                  <mssgle:LineSegment
-                    End="-8.5,43.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-12.25,30.5,16,16"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <ContainerLayout
-          HeaderHeight="43.924528301886795"
-          IsExpanded="True"
-          PanelSize="234,460"
-          Size="234,504"
-          Id="Package\Prepare Data"
-          TopLeft="66,40" />
-        <NodeLayout
           Size="145,42"
           Id="Package\Import and Update\Cleanup\Missing ISBN"
           TopLeft="29,89" />
@@ -3081,40 +2889,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="227,347"
           Id="Package\Import and Update\Cleanup"
           TopLeft="26.5,43" />
-        <EdgeLayout
-          Id="Package\Import and Update.PrecedenceConstraints[Constraint 1]"
-          TopLeft="253.5,216.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="26,57"
-              Start="0,0"
-              End="18.5,57">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="9,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="9,0"
-                    Point2="13,0"
-                    Point3="13,4" />
-                  <mssgle:LineSegment
-                    End="13,53" />
-                  <mssgle:CubicBezierSegment
-                    Point1="13,53"
-                    Point2="13,57"
-                    Point3="17,57" />
-                  <mssgle:LineSegment
-                    End="18.5,57" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
         <NodeLayout
           Size="152,42"
           Id="Package\Import and Update\Process\Book Inventory"
@@ -3256,92 +3030,62 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="205,537"
           Id="Package\Import and Update\Process"
           TopLeft="279.5,5" />
+        <EdgeLayout
+          Id="Package\Import and Update.PrecedenceConstraints[Constraint 1]"
+          TopLeft="253.5,216.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="26,57"
+              Start="0,0"
+              End="18.5,57">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="9,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="9,0"
+                    Point2="13,0"
+                    Point3="13,4" />
+                  <mssgle:LineSegment
+                    End="13,53" />
+                  <mssgle:CubicBezierSegment
+                    Point1="13,53"
+                    Point2="13,57"
+                    Point3="17,57" />
+                  <mssgle:LineSegment
+                    End="18.5,57" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <NodeLayout
-          Size="146,42"
-          Id="Package\Import and Update\Sequence Container\Vendor Order"
-          TopLeft="43,18" />
+          Size="180,42"
+          Id="Package\Import and Update\Update Masters\Update Master Titles"
+          TopLeft="12,139" />
         <NodeLayout
           Size="170,42"
-          Id="Package\Import and Update\Sequence Container\Vendor Order Details"
-          TopLeft="32,86" />
+          Id="Package\Import and Update\Update Masters\Update Master Publishers"
+          TopLeft="13,44" />
         <EdgeLayout
-          Id="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint]"
-          TopLeft="116.5,60">
+          Id="Package\Import and Update\Update Masters.PrecedenceConstraints[Constraint]"
+          TopLeft="100,86">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,26"
+              EndConnector="0,53"
               Start="0,0"
-              End="0,18.5">
+              End="0,45.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,18.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="214,42"
-          Id="Package\Import and Update\Sequence Container\Vendor Order Detail History"
-          TopLeft="20,151" />
-        <EdgeLayout
-          Id="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint 1]"
-          TopLeft="117,128">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="10,23"
-              Start="0,0"
-              End="10,15.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,7.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,7.5"
-                    Point2="0,11.5"
-                    Point3="4,11.5" />
-                  <mssgle:LineSegment
-                    End="6,11.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="6,11.5"
-                    Point2="10,11.5"
-                    Point3="10,15.5" />
-                  <mssgle:LineSegment
-                    End="10,15.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="171,42"
-          Id="Package\Import and Update\Sequence Container\District Distribution"
-          TopLeft="43,221" />
-        <EdgeLayout
-          Id="Package\Import and Update\Sequence Container.PrecedenceConstraints[Constraint 2]"
-          TopLeft="127.5,193">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,28"
-              Start="0,0"
-              End="0,20.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.5" />
+                    End="0,45.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3353,76 +3097,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="244,318"
-          Size="244,361"
-          Id="Package\Import and Update\Sequence Container"
-          TopLeft="576,128" />
-        <NodeLayout
-          Size="170,42"
-          Id="Package\Import and Update\Vendor Order Test"
-          TopLeft="591,41" />
+          PanelSize="217,288"
+          Size="217,331"
+          Id="Package\Import and Update\Update Masters"
+          TopLeft="579,91" />
         <EdgeLayout
           Id="Package\Import and Update.PrecedenceConstraints[Constraint]"
-          TopLeft="676,83">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="22,45"
-              Start="0,0"
-              End="22,37.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,18.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,18.5"
-                    Point2="0,22.5"
-                    Point3="4,22.5" />
-                  <mssgle:LineSegment
-                    End="18,22.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="18,22.5"
-                    Point2="22,22.5"
-                    Point3="22,26.5" />
-                  <mssgle:LineSegment
-                    End="22,37.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="3,27.5,16,16"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Import and Update.PrecedenceConstraints[Constraint 2]"
           TopLeft="484.5,273.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="106.5,-211.5"
+              EndConnector="94.5,-17"
               Start="0,0"
-              End="99,-211.5">
+              End="87,-17">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="49.25,0" />
+                    End="43.25,0" />
                   <mssgle:CubicBezierSegment
-                    Point1="49.25,0"
-                    Point2="53.25,0"
-                    Point3="53.25,-4" />
+                    Point1="43.25,0"
+                    Point2="47.25,0"
+                    Point3="47.25,-4" />
                   <mssgle:LineSegment
-                    End="53.25,-207.5" />
+                    End="47.25,-13" />
                   <mssgle:CubicBezierSegment
-                    Point1="53.25,-207.5"
-                    Point2="53.25,-211.5"
-                    Point3="57.25,-211.5" />
+                    Point1="47.25,-13"
+                    Point2="47.25,-17"
+                    Point3="51.25,-17" />
                   <mssgle:LineSegment
-                    End="99,-211.5" />
+                    End="87,-17" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3438,46 +3142,109 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="882,644"
           Id="Package\Import and Update"
           TopLeft="374,73" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\Prepare Data\Does File Exist"
+          TopLeft="43,111" />
+        <NodeLayout
+          Size="213,42"
+          Id="Package\Prepare Data\Drop, Create Staging Table"
+          TopLeft="16.3962264150943,29.698113207547" />
+        <NodeLayout
+          Size="179,42"
+          Id="Package\Prepare Data\Import Textbook File"
+          TopLeft="21,204" />
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Prepare Data\Move File to Archive"
+          TopLeft="24,279" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="300,292">
+          Id="Package\Prepare Data.PrecedenceConstraints[Constraint]"
+          TopLeft="120.948113207547,71.698113207547">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="74,103"
+              EndConnector="0,39.301886792453"
               Start="0,0"
-              End="66.5,103">
+              End="0,31.801886792453">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="33,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="33,0"
-                    Point2="37,0"
-                    Point3="37,4" />
+                    End="0,31.801886792453" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Prepare Data.PrecedenceConstraints[Constraint 1]"
+          TopLeft="108,246">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,33"
+              Start="0,0"
+              End="0,25.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
                   <mssgle:LineSegment
-                    End="37,99" />
-                  <mssgle:CubicBezierSegment
-                    Point1="37,99"
-                    Point2="37,103"
-                    Point3="41,103" />
+                    End="0,25.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Prepare Data.PrecedenceConstraints[Constraint 2]"
+          TopLeft="119,153">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-8.5,51"
+              Start="0,0"
+              End="-8.5,43.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
                   <mssgle:LineSegment
-                    End="66.5,103" />
+                    End="0,21.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,21.5"
+                    Point2="0,25.5"
+                    Point3="-4,25.5" />
+                  <mssgle:LineSegment
+                    End="-4.5,25.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-4.5,25.5"
+                    Point2="-8.5,25.5"
+                    Point3="-8.5,29.5" />
+                  <mssgle:LineSegment
+                    End="-8.5,43.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="29,-22,16,16"
+              BoundingBox="-12.25,30.5,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="193,42"
-          Id="Package\Sequence Container\Send Processing Email"
-          TopLeft="49,69" />
+        <ContainerLayout
+          HeaderHeight="43.924528301886795"
+          IsExpanded="True"
+          PanelSize="234,460"
+          Size="234,504"
+          Id="Package\Prepare Data"
+          TopLeft="66,40" />
         <NodeLayout
           Size="191,42"
           Id="Package\Sequence Container\Delete Old Archives\Delete Old Archive File"
@@ -3489,6 +3256,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="220,157"
           Id="Package\Sequence Container\Delete Old Archives"
           TopLeft="288,30" />
+        <NodeLayout
+          Size="193,42"
+          Id="Package\Sequence Container\Send Processing Email"
+          TopLeft="49,69" />
         <EdgeLayout
           Id="Package\Sequence Container.PrecedenceConstraints[Constraint]"
           TopLeft="242,90">
@@ -3531,19 +3302,55 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Sequence Container"
           TopLeft="393.333333333333,790" />
         <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="300,292">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="74,103"
+              Start="0,0"
+              End="66.5,103">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="33,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="33,0"
+                    Point2="37,0"
+                    Point3="37,4" />
+                  <mssgle:LineSegment
+                    End="37,99" />
+                  <mssgle:CubicBezierSegment
+                    Point1="37,99"
+                    Point2="37,103"
+                    Point3="41,103" />
+                  <mssgle:LineSegment
+                    End="66.5,103" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="29,-22,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
           TopLeft="815.166666666667,717">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,73.0000000000001"
+              EndConnector="0,73"
               Start="0,0"
-              End="0,65.5000000000001">
+              End="0,65.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,65.5000000000001" />
+                    End="0,65.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
