@@ -12,8 +12,8 @@
   DTS:ObjectName="Aspen_IM_Charges_Export"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="267"
-  DTS:VersionGUID="{BC9A9ED4-F07C-4DEC-B809-4890F69369C8}">
+  DTS:VersionBuild="269"
+  DTS:VersionGUID="{C20AC6AD-700B-435E-80E1-E2F187015078}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -891,7 +891,9 @@
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].Columns[Serial]" />
                         <inputColumn
                           refId="Package\Create Export and Report\Export Assets\Flat File Destination.Inputs[Flat File Destination Input].Columns[Status]"
-                          cachedDataType="i4"
+                          cachedCodepage="1252"
+                          cachedDataType="str"
+                          cachedLength="50"
                           cachedName="Status"
                           externalMetadataColumnId="Package\Create Export and Report\Export Assets\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Status]"
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].Columns[Status]" />
@@ -1633,7 +1635,7 @@
     K.OrderNumber AS PONumber,
     ISNULL(K.PurchaseDate,A.PurchaseDate) AS PurchaseDate,
     L.VendorName,
-    K.Notes AS PONotes,
+    replace(replace(K.Notes, char(10), ' '), char(13), '')	AS PONotes,
     M.FundingDesc AS FundingSource,
     J.AccountCode,
     ISNULL(J.PurchasePrice, A.PurchasePrice) AS PurchasePrice,
@@ -1641,7 +1643,7 @@
     N.SiteName,
     N.[LastModifiedDate] AS Site_ChangeDate,
     [SiteChangeUser].[RealName] AS Site_ChangeUser,
-    A.[StatusUID] AS [Status],
+    O.statusDesc AS [Status],
     A.LastModifiedDate AS Status_ChangeDate, -- This is actually Inventory Modified Date
     [InventoryChangeUser].[RealName] AS Status_ChangeUser,
     CASE 
@@ -2094,10 +2096,12 @@ ORDER BY A.Tag</property>
                           truncationRowDisposition="FailComponent" />
                         <outputColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].Columns[Status]"
-                          dataType="i4"
+                          codePage="1252"
+                          dataType="str"
                           errorOrTruncationOperation="Conversion"
                           errorRowDisposition="FailComponent"
                           externalMetadataColumnId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[Status]"
+                          length="50"
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].Columns[Status]"
                           name="Status"
                           truncationRowDisposition="FailComponent" />
@@ -2474,7 +2478,7 @@ ORDER BY A.Tag</property>
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[PONotes]"
                           codePage="1252"
                           dataType="str"
-                          length="1000"
+                          length="8000"
                           name="PONotes" />
                         <externalMetadataColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[FundingSource]"
@@ -2518,7 +2522,9 @@ ORDER BY A.Tag</property>
                           name="Site_ChangeUser" />
                         <externalMetadataColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[Status]"
-                          dataType="i4"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
                           name="Status" />
                         <externalMetadataColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[Status_ChangeDate]"
@@ -2784,7 +2790,7 @@ ORDER BY A.Tag</property>
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[PONotes]"
                           codePage="1252"
                           dataType="str"
-                          length="1000"
+                          length="8000"
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[PONotes]"
                           name="PONotes" />
                         <outputColumn
@@ -2836,7 +2842,9 @@ ORDER BY A.Tag</property>
                           name="Site_ChangeUser" />
                         <outputColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[Status]"
-                          dataType="i4"
+                          codePage="1252"
+                          dataType="str"
+                          length="50"
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[Status]"
                           name="Status" />
                         <outputColumn
@@ -3168,6 +3176,15 @@ ORDER BY A.Tag</property>
               ReadOnlyVariables="User::Debug"
               ReadWriteVariables="User::ExportFileName">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -3286,35 +3303,6 @@ ORDER BY A.Tag</property>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties.Settings.get_Default():ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties.Sett" +
-    "ings")]
-
-namespace ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Help:  Introduction to the script task
@@ -3551,6 +3539,35 @@ namespace ST_facf9bd2aaa54e17ba9d5a4d8b1c0441
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties.Settings.get_Default():ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties.Sett" +
+    "ings")]
+
+namespace ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -3580,15 +3597,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4025,9 +4033,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="133,42"
-          Id="Package\Create Export and Report\Export Assets\Row Count"
-          TopLeft="336,273" />
+          Size="139,42"
+          Id="Package\Create Export and Report\Export Assets\Get Assets2"
+          TopLeft="329,147" />
         <NodeLayout
           Size="161,42"
           Id="Package\Create Export and Report\Export Assets\Data Conversion"
@@ -4036,28 +4044,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
           Size="176,42"
           Id="Package\Create Export and Report\Export Assets\Flat File Destination"
           TopLeft="324,463" />
-        <EdgeLayout
-          Id="Package\Create Export and Report\Export Assets.Paths[Row Count Output 1]"
-          TopLeft="405,315">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,50"
-              Start="0,0"
-              End="0,42.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,42.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
+        <NodeLayout
+          Size="133,42"
+          Id="Package\Create Export and Report\Export Assets\Row Count"
+          TopLeft="336,273" />
         <EdgeLayout
           Id="Package\Create Export and Report\Export Assets.Paths[Data Conversion Output]"
           TopLeft="409.75,407">
@@ -4080,10 +4070,28 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="139,42"
-          Id="Package\Create Export and Report\Export Assets\Get Assets2"
-          TopLeft="329,147" />
+        <EdgeLayout
+          Id="Package\Create Export and Report\Export Assets.Paths[Row Count Output 1]"
+          TopLeft="405,315">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,50"
+              Start="0,0"
+              End="0,42.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,42.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <EdgeLayout
           Id="Package\Create Export and Report\Export Assets.Paths[OLE DB Source Output]"
           TopLeft="400.5,189">
@@ -4109,6 +4117,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Create Export and Report\Export Assets\Get Assets2">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
   <DtsEventHandler
     design-time-name="Package\Create Export and Report\Set Export File Name.EventHandlers[OnPreExecute]">
     <LayoutInfo>
@@ -4133,13 +4149,5 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
       </GraphLayout>
     </LayoutInfo>
   </DtsEventHandler>
-  <PipelineComponentMetadata
-    design-time-name="Package\Create Export and Report\Export Assets\Get Assets2">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
