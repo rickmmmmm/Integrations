@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="OneRosterFiles"
   DTS:PackageType="5"
-  DTS:VersionBuild="173"
-  DTS:VersionGUID="{AAB5F419-2E7D-4914-819A-AD675CFA501B}">
+  DTS:VersionBuild="177"
+  DTS:VersionGUID="{BAA2DE9A-E067-4EE0-B55E-A7CCEEA03103}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -1401,6 +1401,15 @@
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:DTSID="{E873C316-BB01-4455-BE0E-97D22B7C95E6}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="FileBased">
+      <DTS:VariableValue
+        DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{EC6AE26D-2055-4DE8-B2B5-DA7F80831202}"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
@@ -1605,7 +1614,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{00AC2D93-335B-40CD-AD94-CB40873EEEBE}"
-              SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;SELECT ocl.ClientUID, ocl.Name, ocl.FileLocation, ocl.ZipFile, ocl.ZipFileName, ocl.UpdateLF, &#xA;ocl.SessionsFile, ocl.ClassesFile, ocl.CoursesFile, ocl.DemographicsFile, ocl.EnrollmentsFile, ocl.OrgsFile, ocl.UsersFile, IsNull(ocl.StaffFile, '') as StaffFile, isNull(ocl.StaffFileDept, '') as StaffFileDept, &#xA;isNull(ocl.StaffFileUserDept, '') as StaffFileUserDept, isNull(ocl.StaffFileJob, '') as StaffFileJob&#xA;  FROM customerlist cl&#xA;  &#xA;  join OneRoster.Client ocl on cl.ExternalKey = ocl.ClientUID&#xA;  where cl.CustomersUID = @CustomerUID&#xA;  and cl.SourceOrigin = 'ONEROSTER'&#xA;  and ocl.filebased = 1"
+              SQLTask:SqlStatementSource="declare @CustomerUID int&#xA;set @CustomerUID = ?&#xA;&#xA;SELECT ocl.ClientUID, ocl.Name, ocl.FileLocation, ocl.ZipFile, ocl.ZipFileName, ocl.UpdateLF, &#xA;ocl.SessionsFile, ocl.ClassesFile, ocl.CoursesFile, ocl.DemographicsFile, ocl.EnrollmentsFile, ocl.OrgsFile, &#xA;ocl.UsersFile, IsNull(ocl.StaffFile, '') as StaffFile, isNull(ocl.StaffFileDept, '') as StaffFileDept, &#xA;isNull(ocl.StaffFileUserDept, '') as StaffFileUserDept, isNull(ocl.StaffFileJob, '') as StaffFileJob, ocl.FileBased&#xA;  FROM customerlist cl&#xA;  &#xA;  join OneRoster.Client ocl on cl.ExternalKey = ocl.ClientUID&#xA;  where cl.CustomersUID = @CustomerUID&#xA;  and cl.SourceOrigin = 'ONEROSTER'&#xA;  and ocl.filebased = 1"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="Name"
@@ -1658,6 +1667,9 @@
               <SQLTask:ResultBinding
                 SQLTask:ResultName="UpdateLF"
                 SQLTask:DtsVariableName="User::UpdateLF" />
+              <SQLTask:ResultBinding
+                SQLTask:ResultName="FileBased"
+                SQLTask:DtsVariableName="User::FileBased" />
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@CustomerUID"
                 SQLTask:DtsVariableName="$Package::CustomerUID"
@@ -1731,7 +1743,7 @@
           DTS:CreationName=""
           DTS:DTSID="{8A65E7EC-7639-4F14-B9FE-B7F71821FF88}"
           DTS:EvalOp="3"
-          DTS:Expression="@[User::ZipFile]"
+          DTS:Expression="@[User::ZipFile] &amp;&amp;  @[User::FileBased]==1"
           DTS:From="Package\Get Started\Get Client Variables"
           DTS:ObjectName="Constraint 4"
           DTS:To="Package\Get Started\Unzip Files" />
