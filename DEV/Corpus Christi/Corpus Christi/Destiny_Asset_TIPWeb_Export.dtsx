@@ -12,8 +12,8 @@
   DTS:ObjectName="Aspen_IM_Charges_Export"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="269"
-  DTS:VersionGUID="{C20AC6AD-700B-435E-80E1-E2F187015078}">
+  DTS:VersionBuild="271"
+  DTS:VersionGUID="{38D671E3-793D-4570-BF0C-2A8C8508D9B5}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -54,7 +54,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWeb_CorpusChristi_1027;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWeb_CorpusChristi_0106;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -785,6 +785,22 @@
       DTS:ObjectName="Create Export and Report">
       <DTS:Variables />
       <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Create Export and Report\Create Tmp Tables"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{B6078D8A-B38F-4B07-934A-91A01A97E8A7}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Create Tmp Tables"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{16F82E29-42F6-406B-A139-A6B056A8A4F6}"
+              SQLTask:SqlStatementSource="IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name = 'TmpSiteChanges')&#xA;BEGIN &#xA;&#x9;DROP TABLE TmpSiteChanges&#xA;END&#xA;&#xA;SELECT InventoryUID, Site_ChangeDate, Site_ChangeUserID, Site_ChangeUser&#xA;INTO TmpSiteChanges&#xA;FROM&#xA;&#x9;(&#xA;&#x9;SELECT InventoryUID, A.CreatedByUserID AS Site_ChangeUserID,&#xA;&#x9;B.RealName AS Site_ChangeUser, A.CreatedDate AS Site_ChangeDate,&#xA;&#x9;ROW_NUMBER() OVER(PARTITION BY InventoryUID ORDER BY InventoryHistoryUID DESC) AS RowID&#xA;&#xA;&#x9;FROM tblTechInventoryHistory AS A WITH (NOLOCK)&#xA;&#xA;&#x9;INNER JOIN tblUser AS B WITH (NOLOCK)&#xA;&#x9;ON A.CreatedByUserID = B.UserID&#xA;&#xA;&#x9;WHERE A.SiteUID != OriginSiteUID&#xA;&#x9;) AS TB&#xA;&#xA;WHERE RowID = 1&#xA;---------------------------------------------------&#xA;&#xA;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name = 'TmpStatusChanges')&#xA;BEGIN &#xA;&#x9;DROP TABLE TmpStatusChanges&#xA;END&#xA;&#xA;SELECT InventoryUID, Status_ChangeDate, Status_ChangeUserID, Status_ChangeUser&#xA;INTO TmpStatusChanges&#xA;FROM&#xA;&#x9;(&#xA;&#x9;SELECT InventoryUID, A.CreatedByUserID AS Status_ChangeUserID,&#xA;&#x9;B.RealName AS Status_ChangeUser, A.CreatedDate AS Status_ChangeDate,&#xA;&#x9;ROW_NUMBER() OVER(PARTITION BY InventoryUID ORDER BY InventoryHistoryUID DESC) AS RowID&#xA;&#xA;&#x9;FROM tblTechInventoryHistory AS A WITH (NOLOCK)&#xA;&#xA;&#x9;INNER JOIN tblUser AS B WITH (NOLOCK)&#xA;&#x9;ON A.CreatedByUserID = B.UserID&#xA;&#xA;&#x9;WHERE A.StatusUID != A.OriginStatusUID&#xA;&#x9;) AS TB&#xA;&#xA;WHERE RowID = 1&#xA; -----------------------------------------------------------------&#xA;IF EXISTS (SELECT Name FROM SYS.OBJECTS WHERE Name = 'TmpEntityChanges')&#xA;BEGIN &#xA;&#x9;DROP TABLE TmpEntityChanges&#xA;END&#xA;&#xA;SELECT InventoryUID, Location_ChangeDate, Location_ChangeUserID, Location_ChangeUser&#xA;INTO TmpEntityChanges&#xA;FROM&#xA;&#x9;(&#xA;&#x9;SELECT InventoryUID, A.CreatedByUserID AS Location_ChangeUserID, B.RealName AS Location_ChangeUser,&#xA;&#x9;A.CreatedDate AS Location_ChangeDate,&#xA;&#x9;ROW_NUMBER() OVER(PARTITION BY InventoryUID ORDER BY InventoryHistoryUID DESC) AS RowID&#xA;&#xA;&#x9;FROM tblTechInventoryHistory AS A WITH (NOLOCK)&#xA;&#xA;&#x9;INNER JOIN tblUser AS B WITH (NOLOCK)&#xA;&#x9;ON A.CreatedByUserID = B.UserID&#xA;&#xA;&#x9;WHERE A.EntityUID != OriginEntityUID&#xA;&#x9;) AS TB&#xA;&#xA;WHERE RowID = 1" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Create Export and Report\Export Assets"
           DTS:CreationName="Microsoft.Pipeline"
@@ -1635,17 +1651,17 @@
     K.OrderNumber AS PONumber,
     ISNULL(K.PurchaseDate,A.PurchaseDate) AS PurchaseDate,
     L.VendorName,
-    replace(replace(K.Notes, char(10), ' '), char(13), '')	AS PONotes,
+    Substring(replace(replace(replace(K.Notes, char(10), ' '), char(13), ''), char(9), ' '), 1, 1000)	AS PONotes,
     M.FundingDesc AS FundingSource,
     J.AccountCode,
     ISNULL(J.PurchasePrice, A.PurchasePrice) AS PurchasePrice,
     N.SiteID,
     N.SiteName,
-    N.[LastModifiedDate] AS Site_ChangeDate,
-    [SiteChangeUser].[RealName] AS Site_ChangeUser,
+    chgSite.Site_ChangeDate AS Site_ChangeDate, --------------
+    chgSite.Site_ChangeUser AS Site_ChangeUser, ---------------------
     O.statusDesc AS [Status],
-    A.LastModifiedDate AS Status_ChangeDate, -- This is actually Inventory Modified Date
-    [InventoryChangeUser].[RealName] AS Status_ChangeUser,
+    chgStatus.Status_ChangeDate AS Status_ChangeDate, -- This is actually Inventory Modified Date
+    chgStatus.Status_ChangeUser AS Status_ChangeUser, -------------------------
     CASE 
         WHEN A.EntityTypeUID = 2 THEN 'Room' 
         WHEN A.EntityTypeUID = 3 THEN 'Staff' 
@@ -1655,8 +1671,8 @@
     --Rooms
     CASE WHEN A.EntityTypeUID = 2 THEN P.RoomNumber ELSE NULL END AS Location_RoomNumber,
     CASE WHEN A.EntityTypeUID = 2 THEN P.RoomDescription ELSE NULL END AS Location_RoomDesc,
-    CASE WHEN A.EntityTypeUID = 2 THEN P.[LastModifiedDate] ELSE NULL END AS Location_Room_ChangeDate,
-    CASE WHEN A.EntityTypeUID = 2 THEN [RoomChangeUser].[RealName] ELSE NULL END AS Location_Room_ChangeUser,
+    CASE WHEN A.EntityTypeUID = 2 THEN chgEntity.Location_ChangeDate ELSE NULL END AS Location_Room_ChangeDate, ----------------------
+    CASE WHEN A.EntityTypeUID = 2 THEN chgEntity.Location_ChangeUser ELSE NULL END AS Location_Room_ChangeUser, ----------------------
     --Students
     Q.StudentID AS Location_StudentID,
     Q.FirstName AS Location_Student_First_Name,
@@ -1665,8 +1681,8 @@
     CASE WHEN A.EntityTypeUID = 4 THEN R.CreatedDate ELSE NULL END AS Student_Issue_Date,
     CASE WHEN A.EntityTypeUID = 4 THEN R.DueDate ELSE NULL END AS Student_Due_Date,
     CASE WHEN A.EntityTypeUID = 4 THEN T.AccessoryName ELSE NULL END AS Student_Accessory_Issued,
-    CASE WHEN A.EntityTypeUID = 4 THEN Q.[ModifiedDate] ELSE NULL END AS Location_Student_ChangeDate,
-    CASE WHEN A.EntityTypeUID = 4 THEN [StudentChangeUser].[RealName] ELSE NULL END AS Location_Student_ChangeUser,
+    CASE WHEN A.EntityTypeUID = 4 THEN chgEntity.Location_ChangeDate ELSE NULL END AS Location_Student_ChangeDate, ---------------------
+    CASE WHEN A.EntityTypeUID = 4 THEN chgEntity.Location_ChangeUser ELSE NULL END AS Location_Student_ChangeUser, ---------------------
     --Staff
     U.TeacherID AS Location_StaffID,
     U.FirstName AS Location_Staff_First_Name,
@@ -1676,13 +1692,14 @@
     CASE WHEN A.EntityTypeUID = 3 THEN R.DueDate ELSE NULL END AS Staff_Due_Date,
     CASE WHEN A.EntityTypeUID = 3 THEN T.AccessoryName ELSE NULL END AS Staff_Accessory_Issued,
     CASE WHEN A.EntityTypeUID = 3 THEN V.StaffTypeName ELSE NULL END AS StaffType,
-    CASE WHEN A.EntityTypeUID = 3 THEN U.[ModifiedDate] ELSE NULL END AS Location_Staff_ChangeDate,
-    CASE WHEN A.EntityTypeUID = 3 THEN [TeacherChangeUser].[RealName] ELSE NULL END AS Location_Staff_ChangeUser
+    CASE WHEN A.EntityTypeUID = 3 THEN chgEntity.Location_ChangeDate ELSE NULL END AS Location_Staff_ChangeDate, ------------------------
+    CASE WHEN A.EntityTypeUID = 3 THEN chgEntity.Location_ChangeUser ELSE NULL END AS Location_Staff_ChangeUser --------------------
 
 FROM tblTechInventory AS A WITH (NOLOCK)
 
-INNER JOIN [dbo].[tblUser] AS [InventoryChangeUser] WITH (NOLOCK)
-    ON A.[LastModifiedByUserID] = [InventoryChangeUser].[UserID]
+JOIN TmpSiteChanges chgSite on a.InventoryUID = chgSite.InventoryUID
+join TmpStatusChanges chgStatus on a.InventoryUID = chgStatus.InventoryUID
+join TmpEntityChanges chgEntity on a.InventoryUID = chgEntity.InventoryUID
 
 INNER JOIN tblTechItems AS B WITH (NOLOCK)
     ON A.ItemUID = B.ItemUID
@@ -1753,8 +1770,6 @@ LEFT JOIN tblFundingSources AS M WITH (NOLOCK)
 INNER JOIN tblTechSites AS N WITH (NOLOCK)
     ON A.SiteUID = N.SiteUID
 
-INNER JOIN [dbo].[tblUser] AS [SiteChangeUser] WITH (NOLOCK)
-    ON N.[LastModifiedByUserID] = [SiteChangeUser].[UserID]
 
 INNER JOIN tblStatus AS O WITH (NOLOCK)
     ON A.StatusUID = O.statusID
@@ -1762,14 +1777,9 @@ INNER JOIN tblStatus AS O WITH (NOLOCK)
 LEFT JOIN tblUnvRooms P WITH (NOLOCK)
     ON A.EntityTypeUID = 2 AND A.EntityUID = P.RoomUID
 
-LEFT JOIN [dbo].[tblUser] AS [RoomChangeUser] WITH (NOLOCK)
-    ON P.[LastModifiedByUserID] = [RoomChangeUser].[UserID]
-
 LEFT JOIN tblStudents Q WITH (NOLOCK)
     ON A.EntityTypeUID = 4 AND A.EntityUID = Q.StudentsUID
 
-LEFT JOIN [dbo].[tblUser] AS [StudentChangeUser] WITH (NOLOCK)
-    ON Q.[UserID] = [StudentChangeUser].[UserID]
 
 LEFT JOIN tblTechInventoryDueDates AS R WITH (NOLOCK)
     ON A.InventoryUID = R.InventoryUID
@@ -1783,8 +1793,6 @@ LEFT JOIN tblTechAccessories AS T WITH (NOLOCK)
 LEFT JOIN tblTeachers U WITH (NOLOCK)
     ON A.EntityTypeUID = 3 AND A.EntityUID = U.TeachersUID
 
-LEFT JOIN [dbo].[tblUser] AS [TeacherChangeUser] WITH (NOLOCK)
-    ON U.[UserID] = [TeacherChangeUser].[UserID]
 
 LEFT JOIN tblUnvStaffTypes AS V WITH (NOLOCK)
     ON A.EntityTypeUID = 3 AND U.StaffTypeUID = V.StaffTypeUID
@@ -2478,7 +2486,7 @@ ORDER BY A.Tag</property>
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[PONotes]"
                           codePage="1252"
                           dataType="str"
-                          length="8000"
+                          length="1000"
                           name="PONotes" />
                         <externalMetadataColumn
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Output].ExternalColumns[FundingSource]"
@@ -2790,7 +2798,7 @@ ORDER BY A.Tag</property>
                           refId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[PONotes]"
                           codePage="1252"
                           dataType="str"
-                          length="8000"
+                          length="1000"
                           lineageId="Package\Create Export and Report\Export Assets\Get Assets2.Outputs[OLE DB Source Error Output].Columns[PONotes]"
                           name="PONotes" />
                         <outputColumn
@@ -3176,14 +3184,35 @@ ORDER BY A.Tag</property>
               ReadOnlyVariables="User::Debug"
               ReadWriteVariables="User::ExportFileName">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("ST_facf9bd2aaa54e17ba9d5a4d8b1c0441")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ST_facf9bd2aaa54e17ba9d5a4d8b1c0441")]
+[assembly: AssemblyCopyright("Copyright @  2020")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3568,35 +3597,14 @@ namespace ST_facf9bd2aaa54e17ba9d5a4d8b1c0441.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("ST_facf9bd2aaa54e17ba9d5a4d8b1c0441")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ST_facf9bd2aaa54e17ba9d5a4d8b1c0441")]
-[assembly: AssemblyCopyright("Copyright @  2020")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -3809,10 +3817,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Create Export and Report.PrecedenceConstraints[Constraint 1]"
           DTS:CreationName=""
-          DTS:DTSID="{F06A116C-A78B-4CD1-B2CF-90236A1F5970}"
+          DTS:DTSID="{04443B54-DC97-45ED-B8BC-B936669A708F}"
           DTS:From="Package\Create Export and Report\Set Export Date"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Create Export and Report\Create Tmp Tables" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Create Export and Report.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{AEE49A3D-7F17-490E-93A2-5A8A38FD3CAB}"
+          DTS:From="Package\Create Export and Report\Create Tmp Tables"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
           DTS:To="Package\Create Export and Report\Export Assets" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
@@ -3927,7 +3943,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
         <NodeLayout
           Size="147,42"
           Id="Package\Create Export and Report\Export Assets"
-          TopLeft="265,112" />
+          TopLeft="34,107" />
         <NodeLayout
           Size="156,42"
           Id="Package\Create Export and Report\Set Export Date"
@@ -3960,20 +3976,58 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="173,42"
+          Id="Package\Create Export and Report\Create Tmp Tables"
+          TopLeft="239,103" />
         <EdgeLayout
           Id="Package\Create Export and Report.PrecedenceConstraints[Constraint 1]"
-          TopLeft="338.25,61">
+          TopLeft="338,61">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,51"
+              EndConnector="-12.5,42"
               Start="0,0"
-              End="0,43.5">
+              End="-12.5,34.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,43.5" />
+                    End="0,17" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17"
+                    Point2="0,21"
+                    Point3="-4,21" />
+                  <mssgle:LineSegment
+                    End="-8.5,21" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-8.5,21"
+                    Point2="-12.5,21"
+                    Point3="-12.5,25" />
+                  <mssgle:LineSegment
+                    End="-12.5,34.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Create Export and Report.PrecedenceConstraints[Constraint 2]"
+          TopLeft="239,126">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-58,0"
+              Start="0,0"
+              End="-50.5,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-50.5,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
