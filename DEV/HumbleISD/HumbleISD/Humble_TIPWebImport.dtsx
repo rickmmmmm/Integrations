@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DTSID="{E5380435-0E1A-4053-8C27-6A511810A1DB}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="15.0.2000.68"
+  DTS:LastModifiedProductVersion="15.0.2000.150"
   DTS:LocaleID="1033"
   DTS:ObjectName="Humble_TIPWebImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="13"
-  DTS:VersionGUID="{9FE788AB-CAE9-4A23-872E-B77792139E12}">
+  DTS:VersionBuild="21"
+  DTS:VersionGUID="{C8C01CD8-1E69-4D7D-8F87-23DCF804998A}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -27,7 +27,7 @@
         DTS:Name="ServerName">@[$Project::DatabaseServer]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=RND-NBLAKELY;Initial Catalog=TipWeb_Humble_0226;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Humble_TIPWebImport-{F417D611-D00E-46F5-A6CC-63EAC002B061}DB.databasename;" />
+          DTS:ConnectionString="Data Source=.;Initial Catalog=TipWebHostedHumbleisd;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-Humble_TIPWebImport-{F417D611-D00E-46F5-A6CC-63EAC002B061}DB.databasename;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -62,7 +62,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{F417D611-D00E-46F5-A6CC-63EAC002B061}"
-          SQLTask:SqlStatementSource=" SET NOCOUNT ON;&#xA;&#xA; EXEC _ETL_SP13_InventoryUpdateInventory&#xA; EXEC _ETL_SP14_InventoryUpdateInventoryCustom;&#xA; EXEC _ETL_SP15_InventoryInsertInventory;&#xA; EXEC _ETL_SP16_InventoryInsertInventoryCustom;&#xA; EXEC _ETL_SP19_InventoryUpdatePurchaseItemDetails;&#xA; EXEC _ETL_SP20_InventoryInsertPurchaseItemDetails;&#xA; EXEC _ETL_SP22_InventoryUpdatePurchaseItemShipments;&#xA; EXEC _ETL_SP23_InventoryInsertPurchaseItemShipments;&#xA; EXEC _ETL_SP24_InventoryUpdatePurchaseInventory;&#xA; EXEC _ETL_SP25_InventoryInsertPurchaseInventory 1;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource=" SET NOCOUNT ON;&#xA;&#xA;-- EXEC _ETL_SP13_InventoryUpdateInventory&#xA;&#xA;SET NOCOUNT ON;&#xA;UPDATE _ETL_Inventory&#xA;SET Serial = ''&#xA;WHERE Serial IS NULL&#xA;OR Serial = 'N/A'&#xA;OR Serial = 'NONE'&#xA;OR Serial = 'UNKNOWN'&#xA;&#xA;UPDATE _ETL_Inventory&#xA;SET InventoryUID = tblTechInventory.InventoryUID&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN tblTechInventory ON UPPER(Tags.AssetID) = UPPER(tblTechInventory.AssetID)&#xA;WHERE (Tags.InventoryUID IS NULL&#xA;OR Tags.InventoryUID &lt;&gt; tblTechInventory.InventoryUID)&#xA;&#xA;IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 15 AND ETLSettingValue = 'True') = 1&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE _ETL_Inventory&#xA;&#x9;&#x9;SET InventoryUID = tblTechInventory.InventoryUID&#xA;&#x9;&#x9;FROM _ETL_Inventory AS Tags&#xA;&#x9;&#x9;JOIN tblTechInventory ON UPPER(Tags.Tag) = UPPER(tblTechInventory.Tag)&#xA;&#x9;&#x9;WHERE Tags.InventoryUID IS NULL&#xA;&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET AssetID = Tags.AssetID&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;WHERE TI.AssetID IS NULL&#xA;&#x9;END&#xA;&#xA;--InventoryUID set to -1 means Tag already exists in TIPWeb&#xA;UPDATE _ETL_Inventory&#xA;SET InventoryUID = -1&#xA;FROM _ETL_Inventory AS Tags&#xA;JOIN tblTechInventory ON UPPER(Tags.Tag) = UPPER(tblTechInventory.Tag)&#xA;WHERE Tags.InventoryUID IS NULL&#xA;&#xA;IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 6 AND ETLSettingValue = 'True') = 1&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET Tag = Tags.Tag,&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;WHERE TI.Tag &lt;&gt; Tags.Tag and tags.tag not in (select tag from tblTechInventory)&#xA;&#x9;&#x9;--WHERE TI.Tag &lt;&gt; Tags.Tag&#xA;&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET Serial = Tags.Serial,&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;WHERE TI.Serial &lt;&gt; Tags.Serial&#xA;&#x9;END&#xA;&#xA;IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 16 AND ETLSettingValue = 'True') = 1&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET ItemUID = Tags.ItemUID,&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;WHERE Tags.ItemUID &gt; 0&#xA;&#x9;&#x9;AND TI.ItemUID &lt;&gt; Tags.ItemUID&#xA;&#x9;END&#xA;ELSE&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET ItemUID = Tags.ItemUID,&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;LEFT JOIN tblTechPurchaseInventory TPI ON TI.InventoryUID = TPI.InventoryUID&#xA;&#x9;&#x9;WHERE Tags.PurchaseUID = 0&#xA;&#x9;&#x9;AND TPI.PurchaseInventoryUID IS NULL&#xA;&#x9;&#x9;AND Tags.ItemUID &gt; 0&#xA;&#x9;&#x9;AND TI.ItemUID = 0&#xA;&#x9;END&#xA;&#xA;IF (SELECT COUNT(*) FROM _ETL_Settings WHERE ETLSettingUID = 18 AND ETLSettingValue = 'True') = 1&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE tblTechInventory&#xA;&#x9;&#x9;SET FundingSourceUID = Tags.FundingSourceUID,&#xA;&#x9;&#x9;PurchasePrice = Tags.PurchasePrice, PurchaseDate = Tags.PurchaseDate,&#xA;&#x9;&#x9;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;&#x9;&#x9;FROM tblTechInventory AS TI&#xA;&#x9;&#x9;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;&#x9;&#x9;WHERE TI.FundingSourceUID &lt;&gt; Tags.FundingSourceUID&#xA;&#x9;&#x9;OR TI.PurchasePrice &lt;&gt; Tags.PurchasePrice&#xA;&#x9;&#x9;OR TI.PurchaseDate &lt;&gt; Tags.PurchaseDate&#xA;&#x9;&#x9;OR (TI.PurchasePrice IS NULL AND Tags.PurchasePrice IS NOT NULL)&#xA;&#x9;&#x9;OR (TI.PurchasePrice IS NOT NULL AND Tags.PurchasePrice IS NULL)&#xA;&#x9;&#x9;OR (TI.PurchaseDate IS NULL AND Tags.PurchaseDate IS NOT NULL)&#xA;&#x9;&#x9;OR (TI.PurchaseDate IS NOT NULL AND Tags.PurchaseDate IS NULL)&#xA;&#x9;END&#xA;&#xA;UPDATE tblTechInventory&#xA;SET InventoryTypeUID = Tags.InventoryTypeUID,&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechInventory AS TI&#xA;JOIN _ETL_Inventory AS Tags ON TI.InventoryUID = Tags.InventoryUID&#xA;WHERE TI.InventoryTypeUID &lt;&gt; Tags.InventoryTypeUID&#xA;&#xA;UPDATE tblTechInventoryHistory&#xA;SET InventoryTypeUID = tblTechInventory.InventoryTypeUID,&#xA;LastModifiedByUserID = 0, LastModifiedDate = GETDATE()&#xA;FROM tblTechInventoryHistory AS TIH&#xA;JOIN tblTechInventory ON TIH.InventoryUID = tblTechInventory.InventoryUID&#xA;WHERE TIH.InventoryTypeUID &lt;&gt; tblTechInventory.InventoryTypeUID&#xA;&#xA;&#xA; EXEC _ETL_SP14_InventoryUpdateInventoryCustom;&#xA; EXEC _ETL_SP15_InventoryInsertInventory;&#xA; EXEC _ETL_SP16_InventoryInsertInventoryCustom;&#xA; EXEC _ETL_SP19_InventoryUpdatePurchaseItemDetails;&#xA; EXEC _ETL_SP20_InventoryInsertPurchaseItemDetails;&#xA; EXEC _ETL_SP22_InventoryUpdatePurchaseItemShipments;&#xA; EXEC _ETL_SP23_InventoryInsertPurchaseItemShipments;&#xA; EXEC _ETL_SP24_InventoryUpdatePurchaseInventory;&#xA; EXEC _ETL_SP25_InventoryInsertPurchaseInventory 1;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -113,43 +113,31 @@
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="165,42"
+          Size="130,42"
           Id="Package\Begin SPs"
-          TopLeft="193,72" />
+          TopLeft="78,32" />
         <NodeLayout
-          Size="119,42"
+          Size="122,42"
           Id="Package\End SPs"
-          TopLeft="190,248" />
+          TopLeft="85,188" />
         <NodeLayout
           Size="174,42"
           Id="Package\Special SP 12"
-          TopLeft="174,139" />
+          TopLeft="57,108" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="275.5,114">
+          TopLeft="143.5,74">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-14.5,25"
+              EndConnector="0,34"
               Start="0,0"
-              End="-14.5,17.5">
+              End="0,26.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,8.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,8.5"
-                    Point2="0,12.5"
-                    Point3="-4,12.5" />
-                  <mssgle:LineSegment
-                    End="-10.5,12.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-10.5,12.5"
-                    Point2="-14.5,12.5"
-                    Point3="-14.5,16.5" />
-                  <mssgle:LineSegment
-                    End="-14.5,17.5" />
+                    End="0,26.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -160,30 +148,18 @@
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="261,181">
+          TopLeft="145,150">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-11.5,67"
+              EndConnector="0,38"
               Start="0,0"
-              End="-11.5,59.5">
+              End="0,30.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,29.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,29.5"
-                    Point2="0,33.5"
-                    Point3="-4,33.5" />
-                  <mssgle:LineSegment
-                    End="-7.5,33.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-7.5,33.5"
-                    Point2="-11.5,33.5"
-                    Point3="-11.5,37.5" />
-                  <mssgle:LineSegment
-                    End="-11.5,59.5" />
+                    End="0,30.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
