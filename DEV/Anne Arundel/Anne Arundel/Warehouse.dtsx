@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="TextbookImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="67"
-  DTS:VersionGUID="{71A62192-38E4-4D17-93EC-FD7F920F8E61}">
+  DTS:VersionBuild="71"
+  DTS:VersionGUID="{E7F44267-9FAF-4AB5-A1E6-0CEFDB1EC515}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -598,7 +598,7 @@
                           refId="Package\Cleanup and go home\Create Exception Report\Flat File Destination.Inputs[Flat File Destination Input].Columns[PONumber_Reference]"
                           cachedCodepage="1252"
                           cachedDataType="str"
-                          cachedLength="50"
+                          cachedLength="8000"
                           cachedName="PONumber_Reference"
                           externalMetadataColumnId="Package\Cleanup and go home\Create Exception Report\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[PONumber_Reference]"
                           lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[PONumber_Reference]" />
@@ -720,7 +720,9 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ISBN, Title, Publisher, SLC, FundingSource, Quantity, Price, VendorOrderName, VendorName, DateArriving, SpecialInstructions, PONumber_Reference, RejectNotes
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ISBN, Title, Publisher, SLC, FundingSource, Quantity, Price, VendorOrderName, VendorName, DateArriving, 
+replace(replace(SpecialInstructions, char(10), ''), char(13), ' ') as SpecialInstructions, 
+replace(replace(PONumber_Reference, char(10), ''), char(13), ' ') as PONumber_Reference, RejectNotes
 from [dbo].[_ETL_WarehouseStaging] tm
 where import = 0</property>
                     <property
@@ -880,17 +882,6 @@ where import = 0</property>
                           name="SpecialInstructions"
                           truncationRowDisposition="FailComponent" />
                         <outputColumn
-                          refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[PONumber_Reference]"
-                          codePage="1252"
-                          dataType="str"
-                          errorOrTruncationOperation="Conversion"
-                          errorRowDisposition="FailComponent"
-                          externalMetadataColumnId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[PONumber_Reference]"
-                          length="50"
-                          lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[PONumber_Reference]"
-                          name="PONumber_Reference"
-                          truncationRowDisposition="FailComponent" />
-                        <outputColumn
                           refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RejectNotes]"
                           codePage="1252"
                           dataType="str"
@@ -900,6 +891,17 @@ where import = 0</property>
                           length="500"
                           lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RejectNotes]"
                           name="RejectNotes"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[PONumber_Reference]"
+                          codePage="1252"
+                          dataType="str"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[PONumber_Reference]"
+                          length="8000"
+                          lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[PONumber_Reference]"
+                          name="PONumber_Reference"
                           truncationRowDisposition="FailComponent" />
                       </outputColumns>
                       <externalMetadataColumns
@@ -968,20 +970,20 @@ where import = 0</property>
                           refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SpecialInstructions]"
                           codePage="1252"
                           dataType="str"
-                          length="500"
+                          length="8000"
                           name="SpecialInstructions" />
-                        <externalMetadataColumn
-                          refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[PONumber_Reference]"
-                          codePage="1252"
-                          dataType="str"
-                          length="50"
-                          name="PONumber_Reference" />
                         <externalMetadataColumn
                           refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RejectNotes]"
                           codePage="1252"
                           dataType="str"
                           length="500"
                           name="RejectNotes" />
+                        <externalMetadataColumn
+                          refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[PONumber_Reference]"
+                          codePage="1252"
+                          dataType="str"
+                          length="8000"
+                          name="PONumber_Reference" />
                       </externalMetadataColumns>
                     </output>
                     <output
@@ -1063,14 +1065,14 @@ where import = 0</property>
                           refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SpecialInstructions]"
                           codePage="1252"
                           dataType="str"
-                          length="500"
+                          length="8000"
                           lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SpecialInstructions]"
                           name="SpecialInstructions" />
                         <outputColumn
                           refId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[PONumber_Reference]"
                           codePage="1252"
                           dataType="str"
-                          length="50"
+                          length="8000"
                           lineageId="Package\Cleanup and go home\Create Exception Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[PONumber_Reference]"
                           name="PONumber_Reference" />
                         <outputColumn
@@ -2856,7 +2858,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{F0BB0B6E-D05A-4227-A31F-0948057D32CA}"
-                  SQLTask:SqlStatementSource="&#xA;&#xA;insert into dbo.tblVendorOrders (VendorOrderID, DateCreated, OrderStatus, PurchaseOrder, VendorID, ArrivalDate, SpecialInstructions, DateSubmitted, UserID, CampusID, DistrictCreated, FundingSourceUID, DateModified)&#xA;&#xA;select distinct VendorOrderName,&#xA;GETDATE(), --DateCreated&#xA;4, --OrderStatus in progress&#xA;NULL,  --PurchaseOrder &#xA;VendorID, --VendorID&#xA;GETDATE(),  -- Arrival Date&#xA;NULL, --Special Instructions&#xA;NULL, --DateSubmitted&#xA;-2,--userID&#xA;0, --campusID &#xA;'TRUE', --district Created &#xA;1, ---FundingSourceUID&#xA;GETDATE() --Date Modified&#xA;from _ETL_WarehouseStaging&#xA;where cast(isnull(quantity, 0) as int) &gt; 0 &#xA;and Import = 1&#xA;and VendorOrderName not in (select VendorOrderID from tblVendorOrders)&#xA;&#xA;&#xA;&#xA;&#xA;--select * &#xA;update ts set VendorOrderUID = vo.VendorOrderUID&#xA;from _ETL_WarehouseStaging ts&#xA;join tblVendorOrders vo on ts.VendorOrderName = vo.VendorOrderID&#xA;where cast(isnull(quantity, 0) as int) &gt; 0&#xA;and Import = 1&#xA;&#xA;&#xA;&#xA;--select * &#xA;update e set Import = 0, RejectNotes = 'Could not match Vendor Order Name'&#xA;from _ETL_WarehouseStaging e&#xA;where VendorOrderUID is null" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  SQLTask:SqlStatementSource="&#xA;&#xA;insert into dbo.tblVendorOrders (VendorOrderID, DateCreated, OrderStatus, PurchaseOrder, VendorID, ArrivalDate, SpecialInstructions, DateSubmitted, UserID, CampusID, DistrictCreated, FundingSourceUID, DateModified)&#xA;&#xA;select distinct VendorOrderName,&#xA;GETDATE(), --DateCreated&#xA;4, --OrderStatus in progress&#xA;NULL,  --PurchaseOrder &#xA;VendorID, --VendorID&#xA;GETDATE(),  -- Arrival Date&#xA;NULL, --Special Instructions&#xA;NULL, --DateSubmitted&#xA;-2,--userID&#xA;0, --campusID &#xA;'TRUE', --district Created &#xA;1, ---FundingSourceUID&#xA;GETDATE() --Date Modified&#xA;from _ETL_WarehouseStaging&#xA;where cast(isnull(quantity, 0) as int) &gt; 0 &#xA;and Import = 1&#xA;and VendorOrderName not in (select VendorOrderID from tblVendorOrders)&#xA;&#xA;&#xA;&#xA;&#xA;--select * &#xA;update ts set VendorOrderUID = vo.VendorOrderUID&#xA;from _ETL_WarehouseStaging ts&#xA;join tblVendorOrders vo on ts.VendorOrderName = vo.VendorOrderID&#xA;where cast(isnull(quantity, 0) as int) &gt; 0&#xA;and Import = 1&#xA;&#xA;&#xA;&#xA;--select * &#xA;update e set Import = 0, RejectNotes = 'Could not match Vendor Order Name'&#xA;from _ETL_WarehouseStaging e&#xA;where import = 1&#xA;and VendorOrderUID is null" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
@@ -2932,7 +2934,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{F0BB0B6E-D05A-4227-A31F-0948057D32CA}"
-              SQLTask:SqlStatementSource="select count(*) as numRecs&#xA;from _ETL_WarehouseStaging tm&#xA;where Import = 1&#xA;and FundingSourceUID is not null&#xA;and cast(isnull(quantity, 0) as int) &gt; 0 &#xA;and BookInventoryUID not in (select BookInventoryUID &#xA;&#x9;&#x9;from tblVendorOrderDetails vod&#xA;&#x9;&#x9;join tblVendorOrders vo on vod.VendorOrderUID = vo.VendorOrderUID&#xA;&#x9;&#x9;where vo.VendorOrderID = tm.VendorOrderName&#xA;&#x9;&#x9;)&#xA;group by VendorOrderUID, BookInventoryUID, fundingSourceUID, Price"
+              SQLTask:SqlStatementSource="select count(*) as numRecs&#xA;from _ETL_WarehouseStaging tm&#xA;where Import = 1&#xA;and FundingSourceUID is not null&#xA;and cast(isnull(quantity, 0) as int) &gt; 0 &#xA;and BookInventoryUID not in (select BookInventoryUID &#xA;&#x9;from tblVendorOrderDetails vod&#xA;&#x9;join tblVendorOrders vo on vod.VendorOrderUID = vo.VendorOrderUID&#xA;&#x9;where vo.VendorOrderID = tm.VendorOrderName&#xA;&#x9;)"
               SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ResultBinding
                 SQLTask:ResultName="numRecs"
@@ -4689,7 +4691,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:refId="Package\Prepare Data\Move File to Archive"
           DTS:CreationName="Microsoft.FileSystemTask"
           DTS:Description="File System Task"
-          DTS:Disabled="True"
           DTS:DTSID="{74BC27AA-CDC9-401E-B5ED-1DA23D87B14D}"
           DTS:ExecutableType="Microsoft.FileSystemTask"
           DTS:LocaleID="-1"
