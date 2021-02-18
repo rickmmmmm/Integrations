@@ -52,7 +52,7 @@ echo " #### Sending completion email ";
 if [ $ENVIRONMENT = "Production" ]; then
     RECIPIENTS="ToAddresses=""support@hayessoft.com""";
 else
-    RECIPIENTS="ToAddresses=""rgailey@hayessoft.com""";
+    RECIPIENTS="ToAddresses=""Integration_results@hayessoft.com""";
 fi
 TEXTCONTENT="\nThe Chicago Hayes Oracle $TYPE Integration has completed.\n\nIf you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com\n\nHayes Software Systems";
 HTMLCONTENT="<br />The Chicago Hayes Oracle $TYPE Integration has completed.<br /><br />If you have any questions please contact support at 1-800-495-5993 or support@hayessoft.com<br /><br />Hayes Software Systems";
