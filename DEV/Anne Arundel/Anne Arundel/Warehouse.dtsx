@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="TextbookImport"
   DTS:PackageType="5"
-  DTS:VersionBuild="72"
-  DTS:VersionGUID="{6815A0A3-DA70-499E-9050-90F9B678B7FE}">
+  DTS:VersionBuild="75"
+  DTS:VersionGUID="{B79261D7-D581-4FDA-A2E9-3544229086E3}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -31,10 +31,12 @@
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Flat File Connection Manager]"
+      DTS:refId="Package.ConnectionManagers[ExceptionReport]"
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{D958B877-D1CE-4A16-8C6C-36E41137E73B}"
-      DTS:ObjectName="Flat File Connection Manager">
+      DTS:ObjectName="ExceptionReport">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[User::RejectFileFullName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -44,7 +46,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\EZImportFiles\AnneArundelCPS_SFTP_User\Integrations\Purchasing_Warehouse\Reports\AACPS_STACS_Orders_Warehouse_ExceptionReport_02182021.txt">
+          DTS:ConnectionString="E:\EZImportFiles\AnneArundelCPS_SFTP_User\Integrations\Purchasing_Warehouse\Reports\AACPS_STACS_Orders_Warehouse_ExceptionReport_02252021.txt">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -496,8 +498,8 @@
                   <connections>
                     <connection
                       refId="Package\Cleanup and go home\Create Exception Report\Flat File Destination.Connections[FlatFileConnection]"
-                      connectionManagerID="Package.ConnectionManagers[Flat File Connection Manager]"
-                      connectionManagerRefId="Package.ConnectionManagers[Flat File Connection Manager]"
+                      connectionManagerID="Package.ConnectionManagers[ExceptionReport]"
+                      connectionManagerRefId="Package.ConnectionManagers[ExceptionReport]"
                       name="FlatFileConnection" />
                   </connections>
                   <inputs>
@@ -2493,7 +2495,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{F0BB0B6E-D05A-4227-A31F-0948057D32CA}"
-              SQLTask:SqlStatementSource="&#xA;&#xA;DECLARE @ClientUID int, @rpt Nvarchar(max), @mailProfile NVARCHAR(MAX), @ZipExists int, @ZipFileSize NVARCHAR(MAX), @ZipFileSizeOver int &#xA;&#xA;DECLARE @body nvarchar(max), @subject NVARCHAR(max), @sText nvarchar(max), @logdate NVARCHAR(50) &#xA;DECLARE @ClientCatalog NVARCHAR(max), @CustomerName Nvarchar(max), @email NVARCHAR(MAX), @ccemail NVARCHAR(MAX)&#xA;&#xA;declare @EmailAttachment int, @recipients varchar(100), @copy_recipients varchar(100)&#xA;&#xA;&#xA;DECLARE @sSqlBase Nvarchar(max), @sSql Nvarchar(max), @ParamDef NVARCHAR(max)&#xA;DECLARE @total int, @reject INT&#xA;&#xA;&#xA;&#xA;SET @mailProfile = ?&#xA;set @email = ?&#xA;set @ccemail = ?&#xA;set @rpt = ?&#xA;&#xA;&#xA;SELECT @logdate = CONVERT(VARCHAR(10), GETDATE(),101)&#xA;SET @subject= 'Warehouse Purchasing Integration Processing Log for Anne Arundel (' + @logdate + ')'&#xA;&#xA;set @sSqlBase = N'SELECT @total = COUNT(*) FROM ' + @ClientCatalog + N'.dbo.'&#xA;set @ParamDef = N'@total int OUTPUT'&#xA;&#xA;&#xA;set @sText = ''&#xA;----------------------STUDENT DEMOGRAPHIC---------------------------&#xA;&#xA;&#xA;&#x9;SELECT @total = COUNT(*) FROM _ETL_WarehouseStaging &#xA;&#x9;SELECT @reject = COUNT(*) FROM _ETL_WarehouseStaging where import = 0 &#xA;&#xA;&#xA;&#xA;&#xA;set @sText = @sText +&#xA;&#x9;'Total Records Received: ' + CONVERT(VARCHAR(50), @total) + '&lt;br/&gt;' +&#xA;&#x9;'Total Records Rejected: ' + CONVERT(VARCHAR(50), @reject) + '&lt;br/&gt;' &#xA;&#xA;&#xA;&#xA;&#xA;SET @body = '&lt;html&gt;&lt;body&gt;' + @subject + &#xA;&#x9;'&lt;p&gt;' + @sText + '&lt;/p&gt;' +&#xA;&#x9; 'If you have any questions, please contact Customer Support at 1-800-495-5993.&lt;/p&gt;&lt;br&gt;' +&#xA;&#x9; '&lt;p&gt;Hayes Software Systems&lt;br&gt;1-800-495-5993&lt;/br&gt;&lt;/p&gt;' +&#xA;&#x9; '&lt;/body&gt;&lt;html&gt;'&#xA;&#xA;--print @body &#xA;&#xA;if @reject &gt; 0&#xA;BEGIN&#xA;&#x9;--print @sText  + ' ' + 'attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject,&#xA;&#x9;&#x9;@file_attachments = @rpt;&#xA;&#xA;END&#xA;ELSE&#xA;BEGIN&#xA;&#x9;&#xA;&#x9;--print @sText  + ' ' + 'no attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject;&#xA;END&#xA;&#xA;    &#xA;    &#xA;&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="&#xA;&#xA;DECLARE @rpt Nvarchar(max), @mailProfile NVARCHAR(MAX), @email NVARCHAR(MAX), @ccemail NVARCHAR(MAX)&#xA;DECLARE @body nvarchar(max), @subject NVARCHAR(max), @sText nvarchar(max), @logdate NVARCHAR(50) &#xA;&#xA;DECLARE @sSqlBase Nvarchar(max), @sSql Nvarchar(max)&#xA;DECLARE @total int, @reject INT&#xA;&#xA;SET @mailProfile = ?  ---'TIPWebIMEmail'&#xA;set @email = ? ---'nblakely@hayessoft.com'&#xA;set @ccemail = ? ---'nblakely@hayessoft.com'&#xA;set @rpt = ?  ---'E:\EZImportFiles\AnneArundelCPS_SFTP_User\Integrations\Purchasing_Warehouse\Reports\AACPS_STACS_Orders_Warehouse_ExceptionReport_02252021.txt'&#xA;&#xA;&#xA;SELECT @logdate = CONVERT(VARCHAR(10), GETDATE(),101)&#xA;SET @subject= 'Warehouse Purchasing Integration Processing Log for Anne Arundel (' + @logdate + ')'&#xA;&#xA;&#xA;&#xA;set @sText = ''&#xA;&#xA;SELECT @total = COUNT(*) FROM _ETL_WarehouseStaging &#xA;SELECT @reject = COUNT(*) FROM _ETL_WarehouseStaging where import = 0 &#xA;&#xA;&#xA;set @sText = @sText +&#xA;&#x9;'Total Records Received: ' + CONVERT(VARCHAR(50), @total) + '&lt;br/&gt;' +&#xA;&#x9;'Total Records Rejected: ' + CONVERT(VARCHAR(50), @reject) + '&lt;br/&gt;' &#xA;&#xA;SET @body = '&lt;html&gt;&lt;body&gt;' + @subject + &#xA;&#x9;'&lt;p&gt;' + @sText + '&lt;/p&gt;' +&#xA;&#x9; 'If you have any questions, please contact Customer Support at 1-800-495-5993.&lt;/p&gt;&lt;br&gt;' +&#xA;&#x9; '&lt;p&gt;Hayes Software Systems&lt;br&gt;1-800-495-5993&lt;/br&gt;&lt;/p&gt;' +&#xA;&#x9; '&lt;/body&gt;&lt;html&gt;'&#xA;&#xA;--print @body &#xA;&#xA;if @reject &gt; 0&#xA;BEGIN&#xA;&#x9;--print @sText  + ' ' + 'attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject,&#xA;&#x9;&#x9;@file_attachments = @rpt;&#xA;&#xA;END&#xA;ELSE&#xA;BEGIN&#xA;&#x9;&#xA;&#x9;--print @sText  + ' ' + 'no attach'&#xA;&#x9;EXEC msdb.dbo.sp_send_dbmail&#xA;&#x9;&#x9;@profile_name = @mailProfile,&#xA;&#x9;&#x9;@recipients =@email,&#xA;&#x9;&#x9;@copy_recipients = @ccemail,&#xA;&#x9;&#x9;@body_format = 'HTML',&#xA;&#x9;&#x9;@body = @body, &#xA;&#x9;&#x9;@subject = @subject;&#xA;END&#xA;&#xA;    &#xA;    &#xA;&#xA;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="@mailProfile"
                 SQLTask:DtsVariableName="$Project::EmailServer"
@@ -2598,7 +2600,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
                   SQLTask:Connection="{F0BB0B6E-D05A-4227-A31F-0948057D32CA}"
-                  SQLTask:SqlStatementSource="--select *&#xA;update e set ISBN = replace(replace(ISBN, ' ', ''), '-', '')&#xA;from _ETL_WarehouseStaging e" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  SQLTask:SqlStatementSource="--select *&#xA;update e set ISBN = replace(replace(ISBN, ' ', ''), '-', '')&#xA;from _ETL_WarehouseStaging e&#xA;&#xA;update e set SpecialInstructions = ltrim(rtrim(replace(replace(replace(SpecialInstructions, char(10), ' '), char(13), ''), char(9), ' ')))&#xA;from _ETL_WarehouseStaging e" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
@@ -5549,28 +5551,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="133,42"
           Id="Package\Cleanup and go home\Create Exception Report\Row Count"
           TopLeft="471,175" />
-        <EdgeLayout
-          Id="Package\Cleanup and go home\Create Exception Report.Paths[OLE DB Source Output]"
-          TopLeft="537,137">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,38"
-              Start="0,0"
-              End="0,30.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,30.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
         <NodeLayout
           Size="176,42"
           Id="Package\Cleanup and go home\Create Exception Report\Flat File Destination"
@@ -5601,6 +5581,28 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                     Point3="14.5,29" />
                   <mssgle:LineSegment
                     End="14.5,42.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Cleanup and go home\Create Exception Report.Paths[OLE DB Source Output]"
+          TopLeft="537,137">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,38"
+              Start="0,0"
+              End="0,30.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,30.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
