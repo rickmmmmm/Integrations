@@ -11,11 +11,51 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="147"
-  DTS:VersionGUID="{30A831EA-DD5F-4F1E-BB29-6E027685A46A}">
+  DTS:VersionBuild="149"
+  DTS:VersionGUID="{7E19800A-80D1-47B7-A2B0-38A9CC93043E}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[CSV Report]"
+      DTS:CreationName="FLATFILE"
+      DTS:DTSID="{56FFE799-EE65-47DF-B713-9D3A9350D52A}"
+      DTS:ObjectName="CSV Report">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[User::ReportsPath]+ "DistrictOfColumbia_Exceptions.csv"</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:Format="Delimited"
+          DTS:LocaleID="1033"
+          DTS:HeaderRowDelimiter="_x000D__x000A_"
+          DTS:ColumnNamesInFirstDataRow="True"
+          DTS:RowDelimiter=""
+          DTS:TextQualifier="_x0022_"
+          DTS:CodePage="1252"
+          DTS:ConnectionString="D:\Hayes\Customer\DistrictofColumbia\DistrictOfColumbia_Exceptions.csv">
+          <DTS:FlatFileColumns>
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x002C_"
+              DTS:MaximumWidth="255"
+              DTS:DataType="130"
+              DTS:TextQualified="True"
+              DTS:ObjectName="Serial"
+              DTS:DTSID="{22A28D0A-D3E4-416B-89DF-C81FA4E108B0}"
+              DTS:CreationName="" />
+            <DTS:FlatFileColumn
+              DTS:ColumnType="Delimited"
+              DTS:ColumnDelimiter="_x000D__x000A_"
+              DTS:MaximumWidth="1000"
+              DTS:DataType="129"
+              DTS:TextQualified="True"
+              DTS:ObjectName="RejectedNotes"
+              DTS:DTSID="{32530BDD-E4CE-4663-831F-0E33DF1BC21F}"
+              DTS:CreationName="" />
+          </DTS:FlatFileColumns>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[Source - Absolute Export]"
       DTS:CreationName="FLATFILE"
@@ -145,6 +185,18 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectionString="Data Source=HSS-NP-SQL-01;Initial Catalog=IntegrationMiddleWay;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Target - IntegrationMiddleWay 1]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{AB24DB72-B462-4089-A118-48D82D3A1CB5}"
+      DTS:ObjectName="Target - IntegrationMiddleWay 1">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=T100582\SQL2014;Initial Catalog=TipWebHostedAlbuquerquePS;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -295,6 +347,15 @@
       DTS:ObjectName="JobName">
       <DTS:VariableValue
         DTS:DataType="8">int_DCPS_Abolute_MDM_Import</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{041BE483-FCC3-49D8-812B-C87EAB6B7C8F}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="ReportsPath">
+      <DTS:VariableValue
+        DTS:DataType="8">D:\Hayes\Customer\DistrictofColumbia\</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -492,6 +553,727 @@
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Create CSV Report"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{191198c8-363e-4e89-9856-93ffd5c454b2}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Create CSV Report"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Create CSV Report\Flat File Destination"
+              componentClassID="Microsoft.FlatFileDestination"
+              contactInfo="Flat File Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Flat File Destination"
+              localeId="1033"
+              name="Flat File Destination">
+              <properties>
+                <property
+                  dataType="System.Boolean"
+                  description="Specifies whether the data will overwrite or append to the destination file."
+                  name="Overwrite">true</property>
+                <property
+                  dataType="System.Null"
+                  description="Specifies the text to write to the destination file before any data is written."
+                  expressionType="Notify"
+                  name="Header" />
+                <property
+                  dataType="System.Boolean"
+                  description="When text qualifier is enabled, specifies whether the text qualifier in the data written to the destination file will be escaped or not."
+                  name="EscapeQualifier">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Create CSV Report\Flat File Destination.Connections[FlatFileConnection]"
+                  connectionManagerID="Package.ConnectionManagers[CSV Report]"
+                  connectionManagerRefId="Package.ConnectionManagers[CSV Report]"
+                  name="FlatFileConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input]"
+                  hasSideEffects="true"
+                  name="Flat File Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].Columns[Serial]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="Serial"
+                      externalMetadataColumnId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Serial]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Serial]" />
+                    <inputColumn
+                      refId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].Columns[RejectedNotes]"
+                      cachedCodepage="1252"
+                      cachedDataType="text"
+                      cachedName="RejectedNotes"
+                      externalMetadataColumnId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[RejectedNotes]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RejectedNotes]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[Serial]"
+                      dataType="wstr"
+                      length="255"
+                      name="Serial" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input].ExternalColumns[RejectedNotes]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1000"
+                      name="RejectedNotes" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+            <component
+              refId="Package\Create CSV Report\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT TOP (1000) [RowID]
+      ,[Serial]
+      ,[AssetID]
+      ,[AtRisk]
+      ,[InsideGeofence]
+      ,[TagNotes]
+      ,[DeviceName]
+      ,[LastLoginDate]
+      ,[LastLoginUser]
+      ,[LastSeenDate]
+      ,[ExternalIP]
+      ,[InternalIP]
+      ,[LATLONG]
+      ,[MACAddress]
+      ,[OS]
+      ,[Blob]
+      ,[Customer]
+      ,[Rejected]
+      ,[RejectedNotes]
+      ,[Report]
+      ,[ReportOnColumns]
+      ,[ReportOnData]
+      ,[CreateDate]
+  FROM [Absolute].[StagingMDM]
+WHERE [Rejected] = 1</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Create CSV Report\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Target - IntegrationMiddleWay]"
+                  connectionManagerRefId="Package.ConnectionManagers[Target - IntegrationMiddleWay]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RowID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RowID]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RowID]"
+                      name="RowID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[AssetID]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AssetID]"
+                      length="255"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[AssetID]"
+                      name="AssetID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Serial]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Serial]"
+                      length="50"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Serial]"
+                      name="Serial"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[AtRisk]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AtRisk]"
+                      length="150"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[AtRisk]"
+                      name="AtRisk"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[InsideGeofence]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InsideGeofence]"
+                      length="150"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[InsideGeofence]"
+                      name="InsideGeofence"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[TagNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TagNotes]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[TagNotes]"
+                      name="TagNotes"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeviceName]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeviceName]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeviceName]"
+                      name="DeviceName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastLoginDate]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastLoginDate]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastLoginDate]"
+                      name="LastLoginDate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastLoginUser]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastLoginUser]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastLoginUser]"
+                      name="LastLoginUser"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastSeenDate]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastSeenDate]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastSeenDate]"
+                      name="LastSeenDate"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ExternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ExternalIP]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ExternalIP]"
+                      name="ExternalIP"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[InternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InternalIP]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[InternalIP]"
+                      name="InternalIP"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LATLONG]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LATLONG]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[LATLONG]"
+                      name="LATLONG"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[MACAddress]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MACAddress]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[MACAddress]"
+                      name="MACAddress"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[OS]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[OS]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[OS]"
+                      name="OS"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Blob]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Blob]"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Blob]"
+                      name="Blob"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Customer]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Customer]"
+                      length="255"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Customer]"
+                      name="Customer"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Rejected]"
+                      dataType="bool"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Rejected]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Rejected]"
+                      name="Rejected"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RejectedNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RejectedNotes]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[RejectedNotes]"
+                      name="RejectedNotes"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Report]"
+                      dataType="bool"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Report]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[Report]"
+                      name="Report"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReportOnColumns]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ReportOnColumns]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReportOnColumns]"
+                      name="ReportOnColumns"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReportOnData]"
+                      codePage="1252"
+                      dataType="text"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ReportOnData]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReportOnData]"
+                      name="ReportOnData"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[CreateDate]"
+                      dataType="dbTimeStamp"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CreateDate]"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].Columns[CreateDate]"
+                      name="CreateDate"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RowID]"
+                      dataType="i4"
+                      name="RowID" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AssetID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="AssetID" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Serial]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="Serial" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AtRisk]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="AtRisk" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InsideGeofence]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      name="InsideGeofence" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TagNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      name="TagNotes" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeviceName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="DeviceName" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastLoginDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="LastLoginDate" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastLoginUser]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="LastLoginUser" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastSeenDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="LastSeenDate" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ExternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="ExternalIP" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="InternalIP" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LATLONG]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="LATLONG" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MACAddress]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="MACAddress" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[OS]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="OS" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Blob]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      name="Blob" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Customer]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      name="Customer" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Rejected]"
+                      dataType="bool"
+                      name="Rejected" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RejectedNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      name="RejectedNotes" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Report]"
+                      dataType="bool"
+                      name="Report" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ReportOnColumns]"
+                      codePage="1252"
+                      dataType="text"
+                      name="ReportOnColumns" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ReportOnData]"
+                      codePage="1252"
+                      dataType="text"
+                      name="ReportOnData" />
+                    <externalMetadataColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[CreateDate]"
+                      dataType="dbTimeStamp"
+                      name="CreateDate" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RowID]"
+                      dataType="i4"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RowID]"
+                      name="RowID" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Serial]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Serial]"
+                      name="Serial" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AssetID]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AssetID]"
+                      name="AssetID" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AtRisk]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AtRisk]"
+                      name="AtRisk" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InsideGeofence]"
+                      codePage="1252"
+                      dataType="str"
+                      length="150"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InsideGeofence]"
+                      name="InsideGeofence" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TagNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TagNotes]"
+                      name="TagNotes" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeviceName]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeviceName]"
+                      name="DeviceName" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastLoginDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastLoginDate]"
+                      name="LastLoginDate" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastLoginUser]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastLoginUser]"
+                      name="LastLoginUser" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastSeenDate]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastSeenDate]"
+                      name="LastSeenDate" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ExternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ExternalIP]"
+                      name="ExternalIP" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InternalIP]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InternalIP]"
+                      name="InternalIP" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LATLONG]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LATLONG]"
+                      name="LATLONG" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MACAddress]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MACAddress]"
+                      name="MACAddress" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[OS]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[OS]"
+                      name="OS" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Blob]"
+                      codePage="1252"
+                      dataType="str"
+                      length="250"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Blob]"
+                      name="Blob" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Customer]"
+                      codePage="1252"
+                      dataType="str"
+                      length="255"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Customer]"
+                      name="Customer" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Rejected]"
+                      dataType="bool"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Rejected]"
+                      name="Rejected" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RejectedNotes]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RejectedNotes]"
+                      name="RejectedNotes" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Report]"
+                      dataType="bool"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Report]"
+                      name="Report" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ReportOnColumns]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ReportOnColumns]"
+                      name="ReportOnColumns" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ReportOnData]"
+                      codePage="1252"
+                      dataType="text"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ReportOnData]"
+                      name="ReportOnData" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CreateDate]"
+                      dataType="dbTimeStamp"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[CreateDate]"
+                      name="CreateDate" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Create CSV Report.Paths[OLE DB Source Output]"
+              endId="Package\Create CSV Report\Flat File Destination.Inputs[Flat File Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\Create CSV Report\OLE DB Source.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
     <DTS:Executable
       DTS:refId="Package\Exceptions"
       DTS:CreationName="STOCK:SEQUENCE"
@@ -5963,6 +6745,10 @@ WHERE InventoryUID = @InventoryUID</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="172.8,41.6"
+          Id="Package\Create CSV Report"
+          TopLeft="95.8333295252589,388.666668967141" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -6268,21 +7054,21 @@ WHERE InventoryUID = @InventoryUID</property>
     design-time-name="Package\Import &amp; Stage Data\Import File - Staging">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="186,42"
+          Size="185.6,41.6"
           Id="Package\Import &amp; Stage Data\Import File - Staging\Get Data from Source"
           TopLeft="425,113" />
         <NodeLayout
-          Size="158,42"
+          Size="158.4,41.6"
           Id="Package\Import &amp; Stage Data\Import File - Staging\Derived Column"
           TopLeft="441,194" />
         <NodeLayout
-          Size="154,42"
+          Size="153.6,41.6"
           Id="Package\Import &amp; Stage Data\Import File - Staging\Import to Stage"
           TopLeft="445,305" />
         <NodeLayout
-          Size="133,42"
+          Size="132.8,41.6"
           Id="Package\Import &amp; Stage Data\Import File - Staging\Row Count"
           TopLeft="677,218" />
         <EdgeLayout
@@ -6316,9 +7102,7 @@ WHERE InventoryUID = @InventoryUID</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -6340,9 +7124,7 @@ WHERE InventoryUID = @InventoryUID</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -6376,9 +7158,7 @@ WHERE InventoryUID = @InventoryUID</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -6651,6 +7431,64 @@ WHERE InventoryUID = @InventoryUID</property>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\tblTechInventory\Update TagNotes\Get Inventory">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Create CSV Report">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Create CSV Report\Flat File Destination"
+          TopLeft="622.499975264073,192.400001529058" />
+        <NodeLayout
+          Size="152,41.6"
+          Id="Package\Create CSV Report\OLE DB Source"
+          TopLeft="503.333313332665,44.20000035127" />
+        <EdgeLayout
+          Id="Package\Create CSV Report.Paths[OLE DB Source Output]"
+          TopLeft="579.333313332665,85.80000035127">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="128.366661931409,106.600001177788"
+              Start="0,0"
+              End="128.366661931409,99.1000011777879">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,49.3000005888939" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,49.3000005888939"
+                    Point2="0,53.3000005888939"
+                    Point3="4,53.3000005888939" />
+                  <mssgle:LineSegment
+                    End="124.366661931409,53.3000005888939" />
+                  <mssgle:CubicBezierSegment
+                    Point1="124.366661931409,53.3000005888939"
+                    Point2="128.366661931409,53.3000005888939"
+                    Point3="128.366661931409,57.3000005888939" />
+                  <mssgle:LineSegment
+                    End="128.366661931409,99.1000011777879" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Create CSV Report\OLE DB Source">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
