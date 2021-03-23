@@ -9,8 +9,39 @@
 --update tblTechMDMField set DisplayOrder = 7 where mdmfielduid = 7	---Internal
 
 
----------- Delete values from custom field data for Inside GeoFence
 
+/* The code below should take care of the following requirements:
+Part 2: Update Logic for Existing Field
+•	InsideGeofence
+•	Delete the custom field associated to all Product Types in the db.
+•	Send this data to the Lat/Long Field instead
+*/
+
+
+--DECLARE @MDMFieldUID INT
+--SELECT @MDMFieldUID = MDMFieldUID FROM tblTechMDMField WHERE MDMSourceTypeUID = 3 AND FieldUniqueName = 'LATLONG'
+
+--INSERT INTO [dbo].[tblTechInventoryMDM]
+--([InventoryUID],[MDMFieldUID],[Value], CreatedByUserID, createddate, LastModifiedByUserID, lastmodifieddate)
+
+
+select Distinct ti.InventoryUID, @MDMFieldUID, ext.InventoryExtValue AS Value , 0 as CreatedByUserID, Getdate() as createddate, 0 as LastModifiedByUserID, getdate() as lastmodifieddate 
+from [dbo].[tblTechInventory] ti
+inner join
+(
+	select  inv.InventoryUID, iext.InventoryExtValue
+	from tblTechInventory inv  
+	inner join tblTechInventoryExt iext on inv.InventoryUID = iext.InventoryUID
+	inner join tblTechInventoryMeta m on iext.InventoryMetaUID = m.InventoryMetaUID
+	join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeuid
+	where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
+	and m.InventoryMetaLabel = 'Inside GeoFence'
+) ext
+on ti.InventoryUID = ext.InventoryUID
+
+---52749
+
+---------- Delete values from custom field data for Inside GeoFence
 
 select *
 ---delete x
@@ -82,32 +113,3 @@ and m.InventoryMetaUID is null
 
 
 
-
-
-/* The code below should take care of the following requirements:
-Part 2: Update Logic for Existing Field
-•	InsideGeofence
-•	Delete the custom field associated to all Product Types in the db.
-•	Send this data to the Lat/Long Field instead
-*/
-
------------>>>> We are deleting the data from the custom field at this time; CODE SHOULD NOT BE USED
-
-
---DECLARE @MDMFieldUID INT
---SELECT @MDMFieldUID = MDMFieldUID FROM tblTechMDMField WHERE MDMSourceTypeUID = 3 AND FieldUniqueName = 'LATLONG'
-
---INSERT INTO [dbo].[tblTechInventoryMDM]
---([InventoryUID],[MDMFieldUID],[Value], CreatedByUserID, createddate, LastModifiedByUserID, lastmodifieddate)
---select ti.InventoryUID, @MDMFieldUID as MDMFieldUID, ext.InventoryExtValue AS Value , 0 as CreatedByUserID, Getdate() as createddate, 0 as LastModifiedByUserID, getdate() as lastmodifieddate 
---from [dbo].[tblTechInventory] ti
---inner join
---(
---	select  inv.Serial, iext.InventoryExtValue
---	from tblTechInventory inv  
---	inner join tblTechInventoryExt iext on inv.InventoryUID = iext.InventoryUID
---	inner join tblTechInventoryMeta m on iext.InventoryMetaUID = m.InventoryMetaUID
---	join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeuid
---	where m.InventoryMetaOrder = '4'
---) ext
---on ti.Serial = ext.Serial
