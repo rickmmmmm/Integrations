@@ -8,6 +8,9 @@
 --update tblTechMDMField set DisplayOrder = 6 where mdmfielduid = 6	---ExternalIP
 --update tblTechMDMField set DisplayOrder = 7 where mdmfielduid = 7	---Internal
 
+--Check
+select * from tblTechMDMField where MDMSourceTypeUID = 1
+
 
 
 /* The code below should take care of the following requirements:
@@ -18,11 +21,11 @@ Part 2: Update Logic for Existing Field
 */
 
 
---DECLARE @MDMFieldUID INT
---SELECT @MDMFieldUID = MDMFieldUID FROM tblTechMDMField WHERE MDMSourceTypeUID = 1 AND FieldUniqueName = 'LATLONG'
+DECLARE @MDMFieldUID INT
+SELECT @MDMFieldUID = MDMFieldUID FROM tblTechMDMField WHERE MDMSourceTypeUID = 1 AND FieldUniqueName = 'LATLONG'
 
---INSERT INTO [dbo].[tblTechInventoryMDM]
---([InventoryUID],[MDMFieldUID],[Value], CreatedByUserID, createddate, LastModifiedByUserID, lastmodifieddate)
+INSERT INTO [dbo].[tblTechInventoryMDM]
+([InventoryUID],[MDMFieldUID],[Value], CreatedByUserID, createddate, LastModifiedByUserID, lastmodifieddate)
 
 
 select Distinct ti.InventoryUID, @MDMFieldUID, ext.InventoryExtValue AS Value , 0 as CreatedByUserID, Getdate() as createddate, 0 as LastModifiedByUserID, getdate() as lastmodifieddate 
@@ -39,7 +42,7 @@ inner join
 ) ext
 on ti.InventoryUID = ext.InventoryUID
 
----52749
+---52964
 
 ---------- Delete values from custom field data for Inside GeoFence
 
@@ -53,7 +56,7 @@ where InventoryMetaUID in (
 	where InventoryMetaLabel like '%geo%'
 	)
 
-----52889
+----53124
 
 /*
 The code below should take care of the following requirements:
@@ -86,31 +89,37 @@ order by itemtypename, InventoryMetaOrder
 --------Insert new custom fields
 
 
-----insert tblTechInventoryMeta (ItemTYpeuid, InventoryMetaLabel, InventoryMetaType, InventoryMetaRequired, InventoryMetaOrder)
---select tty.ItemTypeUID, 'User Group', 'String', 0, '1'
---from tblTechInventoryMeta m
---right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'User Group'
---where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
---and m.InventoryMetaUID is null
---union
---select tty.ItemTypeUID, 'Take Home', 'Boolean', 0, '2'
---from tblTechInventoryMeta m
---right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'Take Home'
---where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
---and m.InventoryMetaUID is null
---union
---select tty.ItemTypeUID, 'At Risk', 'String', 0, '3'
---from tblTechInventoryMeta m
---right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'At Risk'
---where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
---and m.InventoryMetaUID is null
---union
---select tty.ItemTypeUID, 'LTE Connection', 'Boolean', 0, '4'
---from tblTechInventoryMeta m
---right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'LTE Connection'
---where itemtypename in ('2 in 1',  'CELLULAR PHONE', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
---and m.InventoryMetaUID is null
+--insert tblTechInventoryMeta (ItemTYpeuid, InventoryMetaLabel, InventoryMetaType, InventoryMetaRequired, InventoryMetaOrder)
+select tty.ItemTypeUID, 'User Group', 'String', 0, '1'
+from tblTechInventoryMeta m
+right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'User Group'
+where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
+and m.InventoryMetaUID is null
+union
+select tty.ItemTypeUID, 'Take Home', 'Boolean', 0, '2'
+from tblTechInventoryMeta m
+right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'Take Home'
+where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
+and m.InventoryMetaUID is null
+union
+select tty.ItemTypeUID, 'At Risk', 'String', 0, '3'
+from tblTechInventoryMeta m
+right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'At Risk'
+where itemtypename in ('2 in 1', 'all in 1 desktop pc', 'CELLULAR PHONE', 'CHROMEBOOK','DESKTOP', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
+and m.InventoryMetaUID is null
+union
+select tty.ItemTypeUID, 'LTE Connection', 'Boolean', 0, '4'
+from tblTechInventoryMeta m
+right join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID and m.InventoryMetaLabel = 'LTE Connection'
+where itemtypename in ('2 in 1',  'CELLULAR PHONE', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' )
+and m.InventoryMetaUID is null
 
 
+--------- Check that all are String
+select * 
+from tblTechInventoryMeta m
+--join tblTechItemTypes tty on m.ItemTypeUID = tty.ItemTypeUID 
+--where itemtypename in ('2 in 1',  'CELLULAR PHONE', 'LAPTOP (CHROMEBOOK)', 'LAPTOP (MACBOOK)', 'LAPTOP (PC)', 'TABLET/IPAD' ) 
+where m.InventoryMetaLabel = 'At Risk'
 
 
