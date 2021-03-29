@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="54"
-  DTS:VersionGUID="{F83C8F26-4663-48C4-AB84-777A68536577}">
+  DTS:VersionBuild="62"
+  DTS:VersionGUID="{5198CB23-F640-4078-81EC-7BFBB94DD1BD}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -308,7 +308,10 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">DECLARE @LastRunTimestamp DATETIME = ?
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">DECLARE @StrLastRunTimestamp VARCHAR(50) = ?
+ DECLARE @LastRunTimestamp DATETIME = CAST(@StrLastRunTimestamp AS DATETIME) 
+
+PRINT 'Timestamp: ' + @StrLastRunTimestamp 
 
 select SiteID, SiteName, 
 case when tti.EntityTYpeUID = 2 then 'Room'
@@ -344,7 +347,8 @@ left outer join tblUnvRooms rm on tti.EntityTypeUID = 2 and tti.EntityUID = rm.R
 
  
 
-where ttm.itemtypeuid in (7,160,96) and tti.LastModifiedDate &gt; dateadd(dd, -7, @LastRunTimestamp )</property>
+where ttm.itemtypeuid in (7,160,96) 
+and tti.LastModifiedDate &gt; dateadd(dd, -7, @LastRunTimestamp )</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -729,7 +733,7 @@ where ttm.itemtypeuid in (7,160,96) and tti.LastModifiedDate &gt; dateadd(dd, -7
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="156.8,41.6"
+          Size="152,41.6"
           Id="Package\Data Flow Task\OLE DB Source"
           TopLeft="459,80" />
         <NodeLayout
@@ -738,7 +742,7 @@ where ttm.itemtypeuid in (7,160,96) and tti.LastModifiedDate &gt; dateadd(dd, -7
           TopLeft="453,288" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
-          TopLeft="537.8,121.6">
+          TopLeft="536.6,121.6">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -756,7 +760,7 @@ where ttm.itemtypeuid in (7,160,96) and tti.LastModifiedDate &gt; dateadd(dd, -7
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
+              BoundingBox="-8,71.45,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
