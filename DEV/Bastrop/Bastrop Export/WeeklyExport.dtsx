@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="113"
-  DTS:VersionGUID="{02306D70-6D73-43AE-A5D7-8A4107917657}">
+  DTS:VersionBuild="121"
+  DTS:VersionGUID="{FF86F174-3E49-4930-811F-22EA9AACC7A9}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -378,7 +378,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="EmailSend">
       <DTS:VariableValue
-        DTS:DataType="3">0</DTS:VariableValue>
+        DTS:DataType="11">0</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -568,7 +568,7 @@
           DTS:ExecutableType="Microsoft.ScriptTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Script Task"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <ScriptProject
@@ -1240,7 +1240,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               DTS:ExecutableType="Microsoft.FileSystemTask"
               DTS:LocaleID="-1"
               DTS:ObjectName="Copy File to Archive"
-              DTS:ThreadHint="2">
+              DTS:ThreadHint="1">
               <DTS:Variables />
               <DTS:ObjectData>
                 <FileSystemData
@@ -1259,7 +1259,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               DTS:ExecutableType="Microsoft.ExecuteSQLTask"
               DTS:LocaleID="-1"
               DTS:ObjectName="Update Last Run in Config Table"
-              DTS:ThreadHint="2">
+              DTS:ThreadHint="1">
               <DTS:Variables />
               <DTS:ObjectData>
                 <SQLTask:SqlTaskData
@@ -1813,22 +1813,6 @@ and tti.LastModifiedDate &gt; ?</property>
           <DTS:Variables />
           <DTS:Executables>
             <DTS:Executable
-              DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Execute SQL Task"
-              DTS:CreationName="Microsoft.ExecuteSQLTask"
-              DTS:Description="Execute SQL Task"
-              DTS:DTSID="{9B3A4156-F35A-47EA-9DE6-3998E5D8E29B}"
-              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Execute SQL Task"
-              DTS:ThreadHint="1">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <SQLTask:SqlTaskData
-                  SQLTask:Connection="{f16dc5ca-7b8d-4ade-89f0-4a854f71ea24}"
-                  SQLTask:SqlStatementSource="declare @ReportUID int&#xA;&#xA;set @ReportUID = ?&#xA;&#xA;update  _ReportConfig set LastRunDate = getdate() where ReportUID = @ReportUID " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-              </DTS:ObjectData>
-            </DTS:Executable>
-            <DTS:Executable
               DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Assigned\File System Task"
               DTS:CreationName="Microsoft.FileSystemTask"
               DTS:Description="File System Task"
@@ -1836,14 +1820,37 @@ and tti.LastModifiedDate &gt; ?</property>
               DTS:ExecutableType="Microsoft.FileSystemTask"
               DTS:LocaleID="-1"
               DTS:ObjectName="File System Task"
-              DTS:ThreadHint="1">
+              DTS:ThreadHint="0">
               <DTS:Variables />
               <DTS:ObjectData>
                 <FileSystemData
-                  TaskSourcePath="User::WeeklyAssignedFileName"
+                  TaskSourcePath="User::WeeklyAssignedFullFileName"
                   TaskIsSourceVariable="True"
                   TaskDestinationPath="User::WeeklyAssignedArchiveFileName"
                   TaskIsDestinationVariable="True" />
+              </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable
+              DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Update Last Run in Config Table"
+              DTS:CreationName="Microsoft.ExecuteSQLTask"
+              DTS:Description="Execute SQL Task"
+              DTS:DTSID="{9B3A4156-F35A-47EA-9DE6-3998E5D8E29B}"
+              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="Update Last Run in Config Table"
+              DTS:ThreadHint="0">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <SQLTask:SqlTaskData
+                  SQLTask:Connection="{f16dc5ca-7b8d-4ade-89f0-4a854f71ea24}"
+                  SQLTask:SqlStatementSource="declare @ReportUID int&#xA;&#xA;set @ReportUID = ?&#xA;&#xA;update  _ReportConfig set LastRunDate = getdate() where ReportUID = @ReportUID " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  <SQLTask:ParameterBinding
+                    SQLTask:ParameterName="@ReportUID"
+                    SQLTask:DtsVariableName="User::ReportUID"
+                    SQLTask:ParameterDirection="Input"
+                    SQLTask:DataType="3"
+                    SQLTask:ParameterSize="-1" />
+                </SQLTask:SqlTaskData>
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
@@ -2350,12 +2357,12 @@ and tti.LastModifiedDate &gt; ?</property>
               DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Weekly Assigned"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint"
-              DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Execute SQL Task" />
+              DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Update Last Run in Config Table" />
             <DTS:PrecedenceConstraint
               DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Assigned.PrecedenceConstraints[Constraint 1]"
               DTS:CreationName=""
               DTS:DTSID="{AEDCA283-6A88-453A-B924-73F62D593BB3}"
-              DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Execute SQL Task"
+              DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Update Last Run in Config Table"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint 1"
               DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Assigned\File System Task" />
@@ -2372,22 +2379,6 @@ and tti.LastModifiedDate &gt; ?</property>
           <DTS:Variables />
           <DTS:Executables>
             <DTS:Executable
-              DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Execute SQL Task"
-              DTS:CreationName="Microsoft.ExecuteSQLTask"
-              DTS:Description="Execute SQL Task"
-              DTS:DTSID="{CA0EA29A-4A16-4DE7-B986-F7C80FCA77C3}"
-              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Execute SQL Task"
-              DTS:ThreadHint="3">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <SQLTask:SqlTaskData
-                  SQLTask:Connection="{f16dc5ca-7b8d-4ade-89f0-4a854f71ea24}"
-                  SQLTask:SqlStatementSource="declare @ReportUID int&#xA;&#xA;set @ReportUID = ?&#xA;&#xA;update  _ReportConfig set LastRunDate = getdate() where ReportUID = @ReportUID " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-              </DTS:ObjectData>
-            </DTS:Executable>
-            <DTS:Executable
               DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\File System Task"
               DTS:CreationName="Microsoft.FileSystemTask"
               DTS:Description="File System Task"
@@ -2395,14 +2386,37 @@ and tti.LastModifiedDate &gt; ?</property>
               DTS:ExecutableType="Microsoft.FileSystemTask"
               DTS:LocaleID="-1"
               DTS:ObjectName="File System Task"
-              DTS:ThreadHint="3">
+              DTS:ThreadHint="2">
               <DTS:Variables />
               <DTS:ObjectData>
                 <FileSystemData
-                  TaskSourcePath="User::WeeklyUnassignedFileName"
+                  TaskSourcePath="User::WeeklyUnassingedFullFileName"
                   TaskIsSourceVariable="True"
                   TaskDestinationPath="User::WeeklyUnassignedArchiveFileName"
                   TaskIsDestinationVariable="True" />
+              </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable
+              DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Update Last Run in Config Table"
+              DTS:CreationName="Microsoft.ExecuteSQLTask"
+              DTS:Description="Execute SQL Task"
+              DTS:DTSID="{CA0EA29A-4A16-4DE7-B986-F7C80FCA77C3}"
+              DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+              DTS:LocaleID="-1"
+              DTS:ObjectName="Update Last Run in Config Table"
+              DTS:ThreadHint="2">
+              <DTS:Variables />
+              <DTS:ObjectData>
+                <SQLTask:SqlTaskData
+                  SQLTask:Connection="{f16dc5ca-7b8d-4ade-89f0-4a854f71ea24}"
+                  SQLTask:SqlStatementSource="declare @ReportUID int&#xA;&#xA;set @ReportUID = ?&#xA;&#xA;update  _ReportConfig set LastRunDate = getdate() where ReportUID = @ReportUID " xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+                  <SQLTask:ParameterBinding
+                    SQLTask:ParameterName="@ReportUID"
+                    SQLTask:DtsVariableName="User::ReportUID"
+                    SQLTask:ParameterDirection="Input"
+                    SQLTask:DataType="3"
+                    SQLTask:ParameterSize="-1" />
+                </SQLTask:SqlTaskData>
               </DTS:ObjectData>
             </DTS:Executable>
             <DTS:Executable
@@ -2909,12 +2923,12 @@ and tti.LastModifiedDate &gt; ?</property>
               DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Weekly Unassigned"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint"
-              DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Execute SQL Task" />
+              DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Update Last Run in Config Table" />
             <DTS:PrecedenceConstraint
               DTS:refId="Package\Foreach Loop Container\Chrome - Weekly - Unassigned.PrecedenceConstraints[Constraint 1]"
               DTS:CreationName=""
               DTS:DTSID="{749E13C3-7BA3-4A15-8048-7F9D061FC3FE}"
-              DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Execute SQL Task"
+              DTS:From="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Update Last Run in Config Table"
               DTS:LogicalAnd="True"
               DTS:ObjectName="Constraint 1"
               DTS:To="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\File System Task" />
@@ -2928,7 +2942,7 @@ and tti.LastModifiedDate &gt; ?</property>
           DTS:ExecutableType="Microsoft.ExecuteSQLTask"
           DTS:LocaleID="-1"
           DTS:ObjectName="Execute SQL Task"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
@@ -2969,39 +2983,27 @@ and tti.LastModifiedDate &gt; ?</property>
       <DTS:ForEachVariableMappings>
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{A0E29619-484B-4419-8BC0-66788D4EF535}"
-          DTS:ObjectName="{A0E29619-484B-4419-8BC0-66788D4EF535}"
+          DTS:DTSID="{AC132E39-9DED-41BA-BF81-C274A02DB5CC}"
+          DTS:ObjectName="{AC132E39-9DED-41BA-BF81-C274A02DB5CC}"
           DTS:ValueIndex="0"
           DTS:VariableName="User::ReportUID" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{1EA80B2E-EFB4-4D45-AAC0-CEA4522917A5}"
-          DTS:ObjectName="{1EA80B2E-EFB4-4D45-AAC0-CEA4522917A5}"
+          DTS:DTSID="{E83030C7-8E9A-4381-8624-7576D4915AF4}"
+          DTS:ObjectName="{E83030C7-8E9A-4381-8624-7576D4915AF4}"
           DTS:ValueIndex="1"
-          DTS:VariableName="User::EmailSend" />
-        <DTS:ForEachVariableMapping
-          DTS:CreationName=""
-          DTS:DTSID="{4A049441-2F41-40E4-9A0E-18CA062BCEB4}"
-          DTS:ObjectName="{4A049441-2F41-40E4-9A0E-18CA062BCEB4}"
-          DTS:ValueIndex="2"
-          DTS:VariableName="User::EmailAddress" />
-        <DTS:ForEachVariableMapping
-          DTS:CreationName=""
-          DTS:DTSID="{17DFE0C9-8445-4125-8B69-E307E6CB4EE4}"
-          DTS:ObjectName="{17DFE0C9-8445-4125-8B69-E307E6CB4EE4}"
-          DTS:ValueIndex="3"
           DTS:VariableName="User::DaysBetween" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{09B9AC92-B543-42E5-853D-15A89C7D91D9}"
-          DTS:ObjectName="{09B9AC92-B543-42E5-853D-15A89C7D91D9}"
-          DTS:ValueIndex="4"
+          DTS:DTSID="{529165B8-A2AC-48B5-8390-F7C11DA99560}"
+          DTS:ObjectName="{529165B8-A2AC-48B5-8390-F7C11DA99560}"
+          DTS:ValueIndex="2"
           DTS:VariableName="User::LastRunDate" />
         <DTS:ForEachVariableMapping
           DTS:CreationName=""
-          DTS:DTSID="{0863C785-5CA0-479D-9ACC-44D0A3BB2FFE}"
-          DTS:ObjectName="{0863C785-5CA0-479D-9ACC-44D0A3BB2FFE}"
-          DTS:ValueIndex="5"
+          DTS:DTSID="{BBBE776C-F495-40A8-B3BB-081F0D0C3C29}"
+          DTS:ObjectName="{BBBE776C-F495-40A8-B3BB-081F0D0C3C29}"
+          DTS:ValueIndex="3"
           DTS:VariableName="User::ReportName" />
       </DTS:ForEachVariableMappings>
     </DTS:Executable>
@@ -3044,7 +3046,7 @@ and tti.LastModifiedDate &gt; ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ReportUID, SendEmail, EmailSendTo, DaysBetweenReports, LastRunDate, ReportName
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select ReportUID, DaysBetweenReports, LastRunDate, ReportName
 from _ReportConfig
 where CustomerName = 'Bastrop'
 and Active = 1</property>
@@ -3093,26 +3095,6 @@ and Active = 1</property>
                       name="ReportUID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[SendEmail]"
-                      dataType="bool"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SendEmail]"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[SendEmail]"
-                      name="SendEmail"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[EmailSendTo]"
-                      codePage="1252"
-                      dataType="str"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[EmailSendTo]"
-                      length="150"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[EmailSendTo]"
-                      name="EmailSendTo"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
                       refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[DaysBetweenReports]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
@@ -3149,16 +3131,6 @@ and Active = 1</property>
                       dataType="i4"
                       name="ReportUID" />
                     <externalMetadataColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SendEmail]"
-                      dataType="bool"
-                      name="SendEmail" />
-                    <externalMetadataColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[EmailSendTo]"
-                      codePage="1252"
-                      dataType="str"
-                      length="150"
-                      name="EmailSendTo" />
-                    <externalMetadataColumn
                       refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DaysBetweenReports]"
                       dataType="i4"
                       name="DaysBetweenReports" />
@@ -3184,18 +3156,6 @@ and Active = 1</property>
                       dataType="i4"
                       lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ReportUID]"
                       name="ReportUID" />
-                    <outputColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SendEmail]"
-                      dataType="bool"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SendEmail]"
-                      name="SendEmail" />
-                    <outputColumn
-                      refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[EmailSendTo]"
-                      codePage="1252"
-                      dataType="str"
-                      length="150"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[EmailSendTo]"
-                      name="EmailSendTo" />
                     <outputColumn
                       refId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DaysBetweenReports]"
                       dataType="i4"
@@ -3254,18 +3214,6 @@ and Active = 1</property>
                       cachedName="ReportUID"
                       lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReportUID]" />
                     <inputColumn
-                      refId="Package\Get Report List\Recordset Destination.Inputs[Recordset Destination Input].Columns[SendEmail]"
-                      cachedDataType="bool"
-                      cachedName="SendEmail"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[SendEmail]" />
-                    <inputColumn
-                      refId="Package\Get Report List\Recordset Destination.Inputs[Recordset Destination Input].Columns[EmailSendTo]"
-                      cachedCodepage="1252"
-                      cachedDataType="str"
-                      cachedLength="150"
-                      cachedName="EmailSendTo"
-                      lineageId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output].Columns[EmailSendTo]" />
-                    <inputColumn
                       refId="Package\Get Report List\Recordset Destination.Inputs[Recordset Destination Input].Columns[DaysBetweenReports]"
                       cachedDataType="i4"
                       cachedName="DaysBetweenReports"
@@ -3296,39 +3244,6 @@ and Active = 1</property>
               startId="Package\Get Report List\OLE DB Source.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
-      </DTS:ObjectData>
-    </DTS:Executable>
-    <DTS:Executable
-      DTS:refId="Package\Read Last Run from Config"
-      DTS:CreationName="Microsoft.ExecuteSQLTask"
-      DTS:Description="Execute SQL Task"
-      DTS:DTSID="{F8CA82AA-99F8-4346-8E73-62B73A6F193A}"
-      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Read Last Run from Config"
-      DTS:ThreadHint="0">
-      <DTS:Variables />
-      <DTS:ObjectData>
-        <SQLTask:SqlTaskData
-          SQLTask:Connection="{f16dc5ca-7b8d-4ade-89f0-4a854f71ea24}"
-          SQLTask:SqlStatementSource="select ReportUID, SendEmail, EmailSendTo, DaysBetweenReports, LastRunDate&#xA;from _ReportConfig&#xA;where CustomerName = 'Bastrop'&#xA;and ReportName = 'ChromebookReport'&#xA;and Active = 1 "
-          SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
-          <SQLTask:ResultBinding
-            SQLTask:ResultName="ReportUID"
-            SQLTask:DtsVariableName="User::ReportUID" />
-          <SQLTask:ResultBinding
-            SQLTask:ResultName="SendEmail"
-            SQLTask:DtsVariableName="User::EmailSend" />
-          <SQLTask:ResultBinding
-            SQLTask:ResultName="EmailSendTo"
-            SQLTask:DtsVariableName="User::EmailAddress" />
-          <SQLTask:ResultBinding
-            SQLTask:ResultName="DaysBetweenReports"
-            SQLTask:DtsVariableName="User::DaysBetween" />
-          <SQLTask:ResultBinding
-            SQLTask:ResultName="LastRunDate"
-            SQLTask:DtsVariableName="User::LastRunDate" />
-        </SQLTask:SqlTaskData>
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -3362,10 +3277,6 @@ and Active = 1</property>
     <LayoutInfo>
       <GraphLayout
         Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
-        <NodeLayout
-          Size="204,41.6"
-          Id="Package\Read Last Run from Config"
-          TopLeft="751.499985396862,34.2000005578995" />
         <NodeLayout
           Size="134.4,41.6"
           Id="Package\Clean up Archive\Script Task"
@@ -3501,8 +3412,8 @@ and Active = 1</property>
           Id="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Weekly Assigned"
           TopLeft="19.4555280160032,44.8222251724315" />
         <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Execute SQL Task"
+          Size="228.8,41.6"
+          Id="Package\Foreach Loop Container\Chrome - Weekly - Assigned\Update Last Run in Config Table"
           TopLeft="238.899963740509,40.4888918046599" />
         <NodeLayout
           Size="158.4,41.6"
@@ -3532,13 +3443,13 @@ and Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Foreach Loop Container\Chrome - Weekly - Assigned.PrecedenceConstraints[Constraint 1]"
-          TopLeft="321.299963740509,82.0888918046599">
+          TopLeft="353.299963740509,82.0888918046599">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-105.977773693756,62.4000008265179"
+              EndConnector="-137.977773693756,62.4000008265179"
               Start="0,0"
-              End="-105.977773693756,54.9000008265179">
+              End="-137.977773693756,54.9000008265179">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -3549,13 +3460,13 @@ and Active = 1</property>
                     Point2="0,31.2000004132589"
                     Point3="-4,31.2000004132589" />
                   <mssgle:LineSegment
-                    End="-101.977773693756,31.2000004132589" />
+                    End="-133.977773693756,31.2000004132589" />
                   <mssgle:CubicBezierSegment
-                    Point1="-101.977773693756,31.2000004132589"
-                    Point2="-105.977773693756,31.2000004132589"
-                    Point3="-105.977773693756,35.2000004132589" />
+                    Point1="-133.977773693756,31.2000004132589"
+                    Point2="-137.977773693756,31.2000004132589"
+                    Point3="-137.977773693756,35.2000004132589" />
                   <mssgle:LineSegment
-                    End="-105.977773693756,54.9000008265179" />
+                    End="-137.977773693756,54.9000008265179" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3567,8 +3478,8 @@ and Active = 1</property>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="452,256.8"
-          Size="452,300"
+          PanelSize="472.8,256.8"
+          Size="472.8,300"
           Id="Package\Foreach Loop Container\Chrome - Weekly - Assigned"
           TopLeft="540.011084344211,129.511113361076" />
         <NodeLayout
@@ -3576,8 +3487,8 @@ and Active = 1</property>
           Id="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\File System Task"
           TopLeft="91.3443944979619,176.111115117426" />
         <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Execute SQL Task"
+          Size="228.8,41.6"
+          Id="Package\Foreach Loop Container\Chrome - Weekly - Unassigned\Update Last Run in Config Table"
           TopLeft="231.622166701602,53.3333363638986" />
         <NodeLayout
           Size="170.4,41.6"
@@ -3607,13 +3518,13 @@ and Active = 1</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Foreach Loop Container\Chrome - Weekly - Unassigned.PrecedenceConstraints[Constraint 1]"
-          TopLeft="314.022166701602,94.9333363638986">
+          TopLeft="346.022166701602,94.9333363638986">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-143.47777220364,81.1777787535276"
+              EndConnector="-175.47777220364,81.1777787535276"
               Start="0,0"
-              End="-143.47777220364,73.6777787535276">
+              End="-175.47777220364,73.6777787535276">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -3624,13 +3535,13 @@ and Active = 1</property>
                     Point2="0,40.5888893767638"
                     Point3="-4,40.5888893767638" />
                   <mssgle:LineSegment
-                    End="-139.47777220364,40.5888893767638" />
+                    End="-171.47777220364,40.5888893767638" />
                   <mssgle:CubicBezierSegment
-                    Point1="-139.47777220364,40.5888893767638"
-                    Point2="-143.47777220364,40.5888893767638"
-                    Point3="-143.47777220364,44.5888893767638" />
+                    Point1="-171.47777220364,40.5888893767638"
+                    Point2="-175.47777220364,40.5888893767638"
+                    Point3="-175.47777220364,44.5888893767638" />
                   <mssgle:LineSegment
-                    End="-143.47777220364,73.6777787535276" />
+                    End="-175.47777220364,73.6777787535276" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3642,8 +3553,8 @@ and Active = 1</property>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="420.8,261.6"
-          Size="420.8,304.8"
+          PanelSize="465.6,258.4"
+          Size="465.6,301.6"
           Id="Package\Foreach Loop Container\Chrome - Weekly - Unassigned"
           TopLeft="1031.6777314738,130.955557817" />
         <EdgeLayout
@@ -3688,9 +3599,9 @@ and Active = 1</property>
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="197.779354049353,64.1619054752683"
+              EndConnector="220.179354049353,64.1619054752683"
               Start="0,0"
-              End="197.779354049353,56.6619054752683">
+              End="220.179354049353,56.6619054752683">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
@@ -3701,20 +3612,20 @@ and Active = 1</property>
                     Point2="0,21.6780877098629"
                     Point3="4,21.6780877098629" />
                   <mssgle:LineSegment
-                    End="193.779354049353,21.6780877098629" />
+                    End="216.179354049353,21.6780877098629" />
                   <mssgle:CubicBezierSegment
-                    Point1="193.779354049353,21.6780877098629"
-                    Point2="197.779354049353,21.6780877098629"
-                    Point3="197.779354049353,25.6780877098629" />
+                    Point1="216.179354049353,21.6780877098629"
+                    Point2="220.179354049353,21.6780877098629"
+                    Point3="220.179354049353,25.6780877098629" />
                   <mssgle:LineSegment
-                    End="197.779354049353,56.6619054752683" />
+                    End="220.179354049353,56.6619054752683" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="90.8896770246765,26.6780877098629,16,16"
+              BoundingBox="102.089677024676,26.6780877098629,16,16"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
