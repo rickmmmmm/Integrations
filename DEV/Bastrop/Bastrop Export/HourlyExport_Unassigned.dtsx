@@ -7,12 +7,12 @@
   DTS:CreatorName="HAYESSOFT\nblakely"
   DTS:DTSID="{C0C1D0C4-71A5-40BB-BFAE-C991B153BDE3}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="15.0.2000.152"
+  DTS:LastModifiedProductVersion="15.0.2000.157"
   DTS:LocaleID="1033"
   DTS:ObjectName="HourlyExport_Unassigned"
   DTS:PackageType="5"
-  DTS:VersionBuild="80"
-  DTS:VersionGUID="{E6F80C19-CAE1-40E1-AF1A-C7BD4E60D9E2}">
+  DTS:VersionBuild="83"
+  DTS:VersionGUID="{545472BD-11BE-4F5E-BDA3-34FF43356056}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -33,7 +33,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\temp\HourlyUnassignedReport_20210401_1544.csv">
+          DTS:ConnectionString="C:\EZImportFiles\BastropISD_SFTP_User\HourlyUnassignedReport_20210429_1351.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -102,20 +102,6 @@
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Target - IMS]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{7A76BC61-18FF-40C4-A7FF-F86DBED7B4C9}"
-      DTS:ObjectName="Target - IMS">
-      <DTS:PropertyExpression
-        DTS:Name="InitialCatalog">@[$Project::InfoMgmtSysDB]</DTS:PropertyExpression>
-      <DTS:PropertyExpression
-        DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=T100521\SQLDEV1;Initial Catalog=ImportManagementSystem;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[Target - TIPWeb]"
       DTS:CreationName="OLEDB"
       DTS:DTSID="{DC4BE79E-BD01-41F5-B026-4CBA60A9C62B}"
@@ -126,7 +112,7 @@
         DTS:Name="ServerName">@[$Project::Server]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=T100521\SQLDEV1;Initial Catalog=TipWebHostedBastropISD;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=T100582\SQLDEV1;Initial Catalog=TipWebHostedBastropISD;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -150,7 +136,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="FileName">
       <DTS:VariableValue
-        DTS:DataType="8">HourlyUnassignedReport_20210401_1544.csv</DTS:VariableValue>
+        DTS:DataType="8">HourlyUnassignedReport_20210429_1351.csv</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -333,37 +319,41 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select *
-from
-(
-	select his.InventoryHistoryUID,tti.InventoryUID, his.EntityTypeUID, his.OriginEntityTypeUID,  SiteID, SiteName, 
-	case when tti.EntityTYpeUID = 2 then 'Room'
-		when tti.EntityTYpeUID = 3 then 'Staff'
-		when tti.EntityTYpeUID = 4 then 'Student'
-	end as Location,
-	case when tti.EntityTypeUID = 2 then RoomNumber
-		when tti.EntityTypeUID = 3 then TeacherID
-		when tti.EntityTypeUID = 4 then StudentID
-	end as LocationID,
-	case when tti.EntityTypeUID = 2 then RoomDescription
-		when tti.EntityTypeUID = 3 then t.FullName
-		when tti.EntityTypeUID = 4 then s.FullName
-	end as LocationDescription, 
-	tti.Tag, tti.Serial, st.statusDesc, tti.LastModifiedDate,
-	RANK() OVER(PARTITION BY his.InventoryUID ORDER BY his.CreatedDate DESC) AS RankingForLatest
-	from tblTechInventory tti
-	join tblTechItems ttm on tti.ItemUid = ttm.ItemUID 
-	join tblStatus st on tti.StatusUID = st.StatusID
-	join tblTechSites ts on tti.SiteUID = ts.SiteUID
-	left outer join tblSTudents s on tti.EntityTypeUID = 4 and tti.EntityUID = s.StudentsUID
-	left outer join tblTeachers t on tti.EntityTypeUID = 3 and tti.EntityUID = t.TeachersUID
-	left outer join tblUnvRooms rm on tti.EntityTypeUID = 2 and tti.EntityUID = rm.RoomUID
-	inner join tblTechInventoryHistory his on tti.InventoryUID = his.InventoryUID and tti.EntityTypeUID = his.EntityTypeUID and tti.EntityUID = his.EntityUID
-	where his.CreatedDate &gt; dateadd(HOUR, -1, GETDATE())
-) t
-where RankingForLatest = 1
-and EntityTypeUID  = 2
-and OriginEntityTypeUID in (3,4)</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">select SiteID, SiteName, 
+case when tti.EntityTYpeUID = 2 then 'Room'
+    when tti.EntityTYpeUID = 3 then 'Staff'
+    when tti.EntityTYpeUID = 4 then 'Student'
+end as Location,
+case when tti.EntityTypeUID = 2 then RoomNumber
+    when tti.EntityTypeUID = 3 then TeacherID
+    when tti.EntityTypeUID = 4 then StudentID
+end as LocationID,
+
+ 
+
+case when tti.EntityTypeUID = 2 then RoomDescription
+    when tti.EntityTypeUID = 3 then t.FullName
+    when tti.EntityTypeUID = 4 then s.FullName
+end as LocationDescription, 
+
+ 
+
+tti.Tag, tti.Serial, st.statusDesc, tti.LastModifiedDate
+
+ 
+
+
+from tblTechInventory tti
+ join tblTechItems ttm on tti.ItemUid = ttm.ItemUID 
+join tblStatus st on tti.StatusUID = st.StatusID
+join tblTechSites ts on tti.SiteUID = ts.SiteUID
+left outer join tblSTudents s on tti.EntityTypeUID = 4 and tti.EntityUID = s.StudentsUID
+left outer join tblTeachers t on tti.EntityTypeUID = 3 and tti.EntityUID = t.TeachersUID
+left outer join tblUnvRooms rm on tti.EntityTypeUID = 2 and tti.EntityUID = rm.RoomUID
+
+where ttm.itemtypeuid in (7,160,96)
+and tti.EntityTypeUID = 2
+and tti.LastModifiedDate &gt;  dateadd(HOUR, -1, GETDATE())</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -496,51 +486,6 @@ and OriginEntityTypeUID in (3,4)</property>
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[LastModifiedDate]"
                       name="LastModifiedDate"
                       truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryHistoryUID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InventoryHistoryUID]"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryHistoryUID]"
-                      name="InventoryHistoryUID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryUID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InventoryUID]"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryUID]"
-                      name="InventoryUID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[EntityTypeUID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[EntityTypeUID]"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[EntityTypeUID]"
-                      name="EntityTypeUID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[OriginEntityTypeUID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[OriginEntityTypeUID]"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[OriginEntityTypeUID]"
-                      name="OriginEntityTypeUID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[RankingForLatest]"
-                      dataType="i8"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RankingForLatest]"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[RankingForLatest]"
-                      name="RankingForLatest"
-                      truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -596,26 +541,6 @@ and OriginEntityTypeUID in (3,4)</property>
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[LastModifiedDate]"
                       dataType="dbTimeStamp"
                       name="LastModifiedDate" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InventoryHistoryUID]"
-                      dataType="i4"
-                      name="InventoryHistoryUID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[InventoryUID]"
-                      dataType="i4"
-                      name="InventoryUID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[EntityTypeUID]"
-                      dataType="i4"
-                      name="EntityTypeUID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[OriginEntityTypeUID]"
-                      dataType="i4"
-                      name="OriginEntityTypeUID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RankingForLatest]"
-                      dataType="i8"
-                      name="RankingForLatest" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -623,26 +548,6 @@ and OriginEntityTypeUID in (3,4)</property>
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InventoryHistoryUID]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InventoryHistoryUID]"
-                      name="InventoryHistoryUID" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InventoryUID]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[InventoryUID]"
-                      name="InventoryUID" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[EntityTypeUID]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[EntityTypeUID]"
-                      name="EntityTypeUID" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[OriginEntityTypeUID]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[OriginEntityTypeUID]"
-                      name="OriginEntityTypeUID" />
                     <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SiteID]"
                       codePage="1252"
@@ -705,11 +610,6 @@ and OriginEntityTypeUID in (3,4)</property>
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[LastModifiedDate]"
                       name="LastModifiedDate" />
                     <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RankingForLatest]"
-                      dataType="i8"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RankingForLatest]"
-                      name="RankingForLatest" />
-                    <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
@@ -761,7 +661,7 @@ and OriginEntityTypeUID in (3,4)</property>
     design-time-name="Package\Data Flow Task">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\Flat File Destination"
@@ -789,7 +689,9 @@ and OriginEntityTypeUID in (3,4)</property>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-8,71.45,16,16"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
