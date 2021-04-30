@@ -12,8 +12,8 @@
   DTS:ObjectName="TechXL Import"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="1159"
-  DTS:VersionGUID="{B34FD705-41DC-4415-AD73-925074228899}">
+  DTS:VersionBuild="1162"
+  DTS:VersionGUID="{5EDAEF16-2631-4B60-8335-C91D83A36EDD}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -18730,7 +18730,7 @@ WHERE Rejected=0</property>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{3D1441DE-0F8C-4B55-AFDB-325B290E63E9}"
               SQLTask:BypassPrepare="False"
-              SQLTask:SqlStatementSource="&#xA;BEGIN&#xA;&#xA;&#x9;TRUNCATE TABLE StaggingTechXLData&#xA;END&#xA;   &#xA;&#xA;BEGIN&#xA;&#x9;TRUNCATE TABLE StaggingExceptions&#xA;END&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+              SQLTask:SqlStatementSource="IF NOT EXISTS (&#xA;  SELECT * &#xA;  FROM   sys.columns &#xA;  WHERE  object_id = OBJECT_ID(N'[dbo].[StaggingTechXLData]') &#xA;         AND name = 'TIPWebShipToSiteUID'&#xA;)&#xA;&#xA;IF COL_LENGTH('StaggingTechXLData', 'TIPWebShipToSiteUID') IS NULL&#xA;BEGIN&#xA;    ALTER TABLE StaggingTechXLData&#xA;    ADD [column_name] INT&#xA;END&#xA;&#xA;IF OBJECT_ID (N'dbo.StaggingTechXLData', N'U') IS NOT NULL&#xA;&#x9;DROP TABLE [dbo].[StaggingTechXLData]&#xA;GO&#xA;&#xA;CREATE TABLE [dbo].[StaggingTechXLData](&#xA;&#x9;[RowID] [int] IDENTITY(1,1) NOT NULL,&#xA;&#x9;[PO_NUMBER] [varchar](max) NULL,&#xA;&#x9;[PO_DATE] [varchar](max) NULL,&#xA;&#x9;[PURCHASE_PRICE] [decimal](10, 2) NULL,&#xA;&#x9;[LINE_NUMBER] [varchar](max) NULL,&#xA;&#x9;[PRODUCT_NAME] [varchar](max) NULL,&#xA;&#x9;[PRODUCT_TYPE_MAPPING] [varchar](max) NULL,&#xA;&#x9;[PRODUCT_TYPE] [varchar](max) NULL,&#xA;&#x9;[MODEL] [varchar](max) NULL,&#xA;&#x9;[MANUFACTURER] [varchar](max) NULL,&#xA;&#x9;[SHIPPEDTOSITE] [varchar](max) NULL,&#xA;&#x9;[ASSETUID] [varchar](max) NULL,&#xA;&#x9;[TAG] [varchar](max) NULL,&#xA;&#x9;[SERIALNUMBER] [varchar](max) NULL,&#xA;&#x9;[LOCATION] [varchar](max) NULL,&#xA;&#x9;[LOCATIONTYPE] [varchar](max) NULL,&#xA;&#x9;[DEPARTMENT] [varchar](max) NULL,&#xA;&#x9;[HOSTNAME] [varchar](max) NULL,&#xA;&#x9;[LASTLOGON] [varchar](max) NULL,&#xA;&#x9;[LASTSCANDATE] [varchar](max) NULL,&#xA;&#x9;[Rejected] [bit] NOT NULL,&#xA;&#x9;[RejectedNotes] [varchar](max) NULL,&#xA;&#x9;[CreateDate] [datetime] NOT NULL,&#xA;&#x9;[TIPWebShipToSiteUID] [int] NULL,&#xA; CONSTRAINT [PK_StaggingTechXLData] PRIMARY KEY CLUSTERED &#xA;(&#xA;&#x9;[RowID] ASC&#xA;)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 70) ON [PRIMARY]&#xA;) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]&#xA;GO&#xA;&#xA;ALTER TABLE [dbo].[StaggingTechXLData] ADD  DEFAULT ((0)) FOR [Rejected]&#xA;GO&#xA;&#xA;ALTER TABLE [dbo].[StaggingTechXLData] ADD  DEFAULT (getdate()) FOR [CreateDate]&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -19638,6 +19638,10 @@ ORDER BY LASTSCANDATE DESC</property>
                           refId="Package\Get RawData\Get TechXL Data\Target - Stagging Table.Inputs[OLE DB Destination Input].ExternalColumns[CreateDate]"
                           dataType="dbTimeStamp"
                           name="CreateDate" />
+                        <externalMetadataColumn
+                          refId="Package\Get RawData\Get TechXL Data\Target - Stagging Table.Inputs[OLE DB Destination Input].ExternalColumns[TIPWebShipToSiteUID]"
+                          dataType="i4"
+                          name="TIPWebShipToSiteUID" />
                       </externalMetadataColumns>
                     </input>
                   </inputs>
@@ -44471,7 +44475,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-108.3100390625,5,114.120078125,16"
+              BoundingBox="-99.44138671875,5,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -44507,7 +44511,7 @@ WHERE InventoryUID = @InventoryUID
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-152.5600390625,30.4913294797688,114.120078125,16"
+              BoundingBox="-143.69138671875,30.4913294797688,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
